@@ -1,0 +1,903 @@
+<!DOCTYPE html><html dir="rtl" lang="fa" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<meta content="web_standard" name="shell-type">
+<title>استودیو کُدولوژی // کارگاه شخصی‌سازی تم و دیزاین سیستم</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,600;0,700;0,800;1,700&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400;1,6..72,600&amp;family=Space+Grotesk:wght@500;600;700&amp;family=Vazirmatn:wght@300;400;500;600;700;800;900&amp;family=Plus+Jakarta+Sans:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style>
+    :root {
+      --primary: #d9532f;
+      --primary-hover: #c4492b;
+      --primary-subtle: #fbeee9;
+      --ink: #1e1b18;
+      --ink-navy: #1e284a;
+      --border-ink: #262320;
+      --canvas-bg: #fdf9f0;
+      --surface-paper: #ffffff;
+      --surface-muted: #f7f3ea;
+      --radius-theme: 4px;
+      --shadow-border: 2px 2px 0px #1e1b18;
+    }
+
+    body {
+      background-color: var(--canvas-bg);
+      color: var(--ink);
+      font-family: 'Vazirmatn', sans-serif;
+      overflow-x: hidden;
+    }
+
+    .theme-accent {
+      background-color: var(--primary) !important;
+      color: #ffffff !important;
+    }
+    .theme-accent-text {
+      color: var(--primary) !important;
+    }
+    .theme-accent-border {
+      border-color: var(--primary) !important;
+    }
+    .theme-accent-subtle {
+      background-color: var(--primary-subtle) !important;
+    }
+
+    .craft-border {
+      border: 1px solid var(--border-ink);
+      box-shadow: 2px 2px 0px var(--border-ink);
+    }
+    .craft-border-sm {
+      border: 1px solid var(--border-ink);
+      box-shadow: 1px 1px 0px var(--border-ink);
+    }
+    .craft-border-lg {
+      border: 1.5px solid var(--border-ink);
+      box-shadow: 3px 3px 0px var(--border-ink);
+    }
+
+    .interactive-canvas-item {
+      border-radius: var(--radius-theme);
+      transition: border-radius 0.2s ease, border-color 0.2s ease;
+    }
+
+    /* Risograph Paper Noise */
+    .paper-texture {
+      background-image: radial-gradient(rgba(30, 27, 24, 0.05) 1px, transparent 0);
+      background-size: 14px 14px;
+    }
+
+    /* Grid engineering overlay */
+    .grid-lines-overlay {
+      background-size: 24px 24px;
+      background-image: 
+        linear-gradient(to right, rgba(30, 40, 74, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(30, 40, 74, 0.05) 1px, transparent 1px);
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cfc8be;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body class="bg-[#fdf9f0] text-[#1e1b18] antialiased min-h-screen flex flex-col justify-between selection:bg-[#d9532f] selection:text-white">
+<!-- ==================== HEADER ==================== -->
+<header class="sticky top-0 w-full z-50 bg-[#fdf9f0]/95 backdrop-blur-md border-b border-[#262320]">
+<div class="max-w-[1440px] mx-auto px-4 sm:px-8 h-20 flex items-center justify-between">
+<!-- Logo Branding exactly matching SCREEN_22 Home -->
+<div class="flex items-center gap-6">
+<a class="flex items-center gap-3.5 group" href="#">
+<div class="w-10 h-10 rounded bg-[#d9532f] text-white flex items-center justify-center font-bold text-xl shadow-[2px_2px_0px_#1e1b18] border border-[#1e1b18] group-hover:translate-x-0.5 group-hover:translate-y-0.5 transition-all">
+<span class="">ک</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-black text-base text-[#1e1b18] tracking-tight">استودیو کُدولوژی</span>
+<span class="text-[10px] font-mono tracking-widest px-1.5 py-0.5 bg-[#f7f3ea] border border-[#262320] text-[#d9532f] font-bold rounded">CODOLOGY</span>
+</div>
+<span class="text-xs text-[#5b403c] font-medium hidden sm:inline">توسعه فرانت‌اند دست‌ساز و مهندسی خلاق</span>
+</div>
+</a>
+<!-- Main Navigation Links -->
+<nav class="hidden lg:flex items-center gap-1 text-sm font-semibold">
+<a class="px-3 py-1.5 text-[#5b403c] hover:text-[#1e1b18] hover:bg-[#f7f3ea] rounded transition-all" href="#">پورتفولیو</a>
+<a class="px-3 py-1.5 text-[#5b403c] hover:text-[#1e1b18] hover:bg-[#f7f3ea] rounded transition-all" href="#">برآورد قیمت</a>
+<a aria-current="page" class="px-3 py-1.5 bg-[#d9532f] text-white rounded font-bold shadow-[2px_2px_0px_#1e1b18] border border-[#1e1b18] flex items-center gap-1.5" href="#">
+<span class="material-symbols-outlined text-[16px]">tune</span>
+<span class="">شخصی‌سازی دیزاین</span>
+</a>
+<a class="px-3 py-1.5 text-[#5b403c] hover:text-[#1e1b18] hover:bg-[#f7f3ea] rounded transition-all" href="#">اصول کارگاه</a>
+<a class="px-3 py-1.5 text-[#5b403c] hover:text-[#1e1b18] hover:bg-[#f7f3ea] rounded transition-all" href="#">تماس</a>
+</nav>
+</div>
+<!-- Action items -->
+<div class="flex items-center gap-3">
+<!-- Language Switch -->
+<div class="flex items-center bg-[#f7f3ea] border border-[#262320] p-0.5 rounded text-xs font-bold shadow-[1px_1px_0px_#1e1b18]">
+<button class="px-2 py-1 bg-white border border-[#262320] text-[#1e1b18] rounded" type="button">فا</button>
+<button class="px-2 py-1 text-[#5b403c] hover:text-[#1e1b18] transition-colors" type="button">EN</button>
+</div>
+<!-- Quick Code action -->
+
+<!-- CTA Project -->
+<a class="inline-flex items-center justify-center text-xs font-bold bg-[#d9532f] text-white px-4 py-2 rounded border border-[#262320] shadow-[2px_2px_0px_#1e1b18] hover:bg-[#c4492b] active:translate-x-0.5 active:translate-y-0.5 transition-all" href="#">
+          مشاوره رایگان / شروع پروژه
+        </a>
+</div>
+</div>
+</header>
+<!-- ==================== SUB-HEADER / SHADCN WORKSPACE TOPBAR ==================== -->
+<section class="w-full bg-[#f7f3ea] border-b border-[#262320] py-2 px-4 sm:px-8">
+<div class="max-w-[1440px] mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+<!-- Archetype Mode Switcher (Requested Feature) -->
+<div class="flex items-center flex-wrap gap-1.5">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#1e284a] text-white text-xs font-mono font-bold shadow-[1px_1px_0px_#1e1b18]">
+<span class="material-symbols-outlined text-[14px]">auto_stories</span>
+          سناریوی بوم:
+        </span>
+<!-- Archetype Tabs -->
+<div class="inline-flex bg-white p-0.5 rounded border border-[#262320] shadow-[1px_1px_0px_#1e1b18] text-xs font-bold" id="archetype-tab-container">
+<button class="archetype-tab active-archetype px-3 py-1 rounded bg-[#d9532f] text-white transition-all" data-target="view-components">
+            کامپوننت‌ها و ویجت‌ها
+          </button>
+<button class="archetype-tab px-3 py-1 rounded text-[#5b403c] hover:text-[#1e1b18] transition-all" data-target="view-landing">
+            لندینگ پیج SaaS
+          </button>
+<button class="archetype-tab px-3 py-1 rounded text-[#5b403c] hover:text-[#1e1b18] transition-all" data-target="view-ecommerce">
+            فروشگاه آنلاین (نان و قهوه)
+          </button>
+<button class="archetype-tab px-3 py-1 rounded text-[#5b403c] hover:text-[#1e1b18] transition-all" data-target="view-clinic">
+            سامانه نوبت‌دهی کلینیک
+          </button>
+<button class="archetype-tab px-3 py-1 rounded text-[#5b403c] hover:text-[#1e1b18] transition-all" data-target="view-dashboard">
+            داشبورد داده و آمار
+          </button>
+</div>
+</div>
+<!-- Quick Control Tools -->
+<div class="flex items-center gap-2 self-end md:self-auto">
+<!-- Live status -->
+
+
+
+</div>
+</div>
+</section>
+<!-- ==================== MAIN WORKSPACE AREA ==================== -->
+<main class="w-full flex-1 flex flex-col lg:flex-row items-stretch border-b border-[#262320] bg-[#f1eee5]"><aside class="w-full lg:w-80 shrink-0 bg-white border-b lg:border-b-0 lg:border-l border-[#262320] p-4 flex flex-col gap-4 sticky top-20 h-auto lg:h-[calc(100vh-5rem)] overflow-y-auto order-1 z-20"><!-- Studio Header & Prominent Shuffle Button -->
+<div class="flex flex-col gap-3 pb-3 border-b border-[#262320]/20">
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <span class="w-8 h-8 rounded bg-[#f7f3ea] border border-[#262320] flex items-center justify-center text-[#d9532f] shadow-[1px_1px_0px_#1e1b18]">
+        <span class="material-symbols-outlined text-[20px]">palette</span>
+      </span>
+      <div>
+        <h2 class="text-xs font-black text-[#1e1b18]">تنظیمات استودیو</h2>
+        <span class="text-[10px] text-[#5b403c] font-normal">پوسته کارگاه Shadcn</span>
+      </div>
+    </div>
+    <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#f7f3ea] border border-[#262320] text-[#1e284a] shadow-[1px_1px_0px_#1e1b18]">v2.8 LIVE</span>
+  </div>
+
+  <!-- 1. Eye-catching Prominent Shuffle Button -->
+  <button class="w-full py-2.5 px-3 bg-[#d9532f] text-white border-2 border-[#1e1b18] text-xs font-black rounded shadow-[3px_3px_0px_#1e1b18] hover:bg-[#c4492b] active:translate-x-0.5 active:translate-y-0.5 transition-all flex items-center justify-center gap-2" id="btn-shuffle-theme" title="تولید تصادفی ترکیب استایل و رنگ">
+    <span class="material-symbols-outlined text-[18px] text-white animate-spin-hover">casino</span>
+    <span class="">بر زدن و ترکیب تصادفی تم</span>
+  </button>
+</div>
+
+<!-- 2. سبک‌های بصری (Visual Styles with Persian naming) -->
+<div class="flex flex-col gap-1.5">
+  <div class="flex items-center justify-between text-xs font-bold">
+    <span class="text-[#1e1b18] flex items-center gap-1">
+      <span class="">سبک‌های بصری</span>
+      <span class="text-[#5b403c] font-normal text-[10px]">(Style)</span>
+    </span>
+    <span class="text-[#d9532f] font-mono text-[11px] font-bold" id="current-style-badge">نووا مدرن</span>
+  </div>
+  <div class="grid grid-cols-2 gap-1.5" id="style-btn-group">
+    <button class="style-choice-btn active-style-choice text-right text-[11px] p-2 rounded bg-[#d9532f] text-white border border-[#262320] font-bold shadow-[1px_1px_0px_#1e1b18] transition-all flex items-center justify-between" data-style="nova">
+      <span class="">نووا مدرن</span>
+      <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+    </button>
+    <button class="style-choice-btn text-right text-[11px] p-2 rounded bg-[#f7f3ea] text-[#1e1b18] border border-[#262320] hover:bg-white font-medium transition-all" data-style="riso">
+      <span class="">چاپ دستی ریزو</span>
+    </button>
+    <button class="style-choice-btn text-right text-[11px] p-2 rounded bg-[#f7f3ea] text-[#1e1b18] border border-[#262320] hover:bg-white font-medium transition-all" data-style="brutalist">
+      <span class="">نئوبروتال جسور</span>
+    </button>
+    <button class="style-choice-btn text-right text-[11px] p-2 rounded bg-[#f7f3ea] text-[#1e1b18] border border-[#262320] hover:bg-white font-medium transition-all" data-style="editorial">
+      <span class="">ادیتوریال مینیمال</span>
+    </button>
+    <button class="style-choice-btn text-right text-[11px] p-2 rounded bg-[#f7f3ea] text-[#1e1b18] border border-[#262320] hover:bg-white font-medium transition-all" data-style="swiss">
+      <span class="">سازمانی سوییسی</span>
+    </button>
+    <button class="style-choice-btn text-right text-[11px] p-2 rounded bg-[#f7f3ea] text-[#1e1b18] border border-[#262320] hover:bg-white font-medium transition-all" data-style="terminal">
+      <span class="">ترمینال تکنیکال</span>
+    </button>
+  </div>
+</div>
+
+<!-- 3. پالت و نقش رنگ‌ها (Color Roles with clear labeling) -->
+<div class="flex flex-col gap-2 pt-1 border-t border-[#262320]/20">
+  <!-- Header & Segment Mode Switcher -->
+  <div class="flex items-center justify-between text-xs font-bold">
+    <span class="text-[#1e1b18] flex items-center gap-1">
+      <span class="material-symbols-outlined text-[15px] text-[#d9532f]">palette</span>
+      <span class="">پالت و نقش رنگ‌ها</span>
+    </span>
+    <span class="px-1.5 py-0.5 rounded bg-[#f7f3ea] border border-[#262320] text-[#1e1b18] text-[10px] font-mono" id="color-name-badge">سفال کهربایی</span>
+  </div>
+
+  <!-- Segment Switcher: Presets vs Custom -->
+  <div class="grid grid-cols-2 p-0.5 rounded bg-[#f7f3ea] border border-[#262320] shadow-[1px_1px_0px_#1e1b18] text-[11px] font-bold">
+    <button type="button" class="py-1 text-center rounded bg-[#d9532f] text-white shadow-[1px_1px_0px_#1e1b18] transition-all flex items-center justify-center gap-1">
+      <span class="material-symbols-outlined text-[13px]">auto_awesome</span>
+      <span class="">پالت‌های آماده</span>
+    </button>
+    <button type="button" class="py-1 text-center rounded text-[#5b403c] hover:text-[#1e1b18] hover:bg-white transition-all flex items-center justify-center gap-1">
+      <span class="material-symbols-outlined text-[13px]">colorize</span>
+      <span class="">پالت سفارشی</span>
+    </button>
+  </div>
+
+  <!-- Presets Quick Selector Pills -->
+  <div class="flex flex-wrap gap-1 py-1 border-b border-[#262320]/15">
+    <button type="button" class="px-2 py-0.5 rounded-full bg-[#d9532f] text-white border border-[#262320] text-[10px] font-bold shadow-[1px_1px_0px_#1e1b18] flex items-center gap-1">
+      <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+      <span class="">سفال کهربایی</span>
+    </button>
+    <button type="button" class="px-2 py-0.5 rounded-full bg-white text-[#1e1b18] hover:bg-[#f7f3ea] border border-[#262320] text-[10px] font-medium flex items-center gap-1 transition-all">
+      <span class="w-1.5 h-1.5 rounded-full bg-[#244234]"></span>
+      <span class="">جوهر سبز جنگلی</span>
+    </button>
+    <button type="button" class="px-2 py-0.5 rounded-full bg-white text-[#1e1b18] hover:bg-[#f7f3ea] border border-[#262320] text-[10px] font-medium flex items-center gap-1 transition-all">
+      <span class="w-1.5 h-1.5 rounded-full bg-[#1e284a]"></span>
+      <span class="">مرجانی و سرمه‌ای</span>
+    </button>
+    <button type="button" class="px-2 py-0.5 rounded-full bg-white text-[#1e1b18] hover:bg-[#f7f3ea] border border-[#262320] text-[10px] font-medium flex items-center gap-1 transition-all">
+      <span class="w-1.5 h-1.5 rounded-full bg-[#18181b]"></span>
+      <span class="">مونوکروم صنعتی</span>
+    </button>
+  </div>
+
+  <!-- Individual Swatches with Assigned Functional Roles -->
+  <div class="flex flex-col gap-1.5" id="color-swatches-wrap">
+    <button class="swatch-btn w-full p-1.5 rounded border border-[#262320] bg-white hover:bg-[#f7f3ea] flex items-center justify-between shadow-[1px_1px_0px_#1e1b18] ring-2 ring-[#d9532f] transition-all text-right" data-color="#d9532f" data-name="سفال کهربایی" data-subtle="#fbeee9">
+      <div class="flex items-center gap-2">
+        <span class="w-5 h-5 rounded border border-[#262320] shrink-0 flex items-center justify-center shadow-[1px_1px_0px_#1e1b18]" style="background-color: #d9532f;">
+          <span class="material-symbols-outlined text-[12px] text-white">check</span>
+        </span>
+        <div class="flex flex-col text-right">
+          <span class="text-[11px] font-bold text-[#1e1b18]">سفال کهربایی</span>
+          <span class="text-[9px] text-[#5b403c]">رنگ اصلی اکشن‌ها و دکمه‌های تاکیدی</span>
+        </div>
+      </div>
+      <span class="text-[9px] font-mono px-1 py-0.5 rounded bg-[#f7f3ea] border border-[#262320] text-[#d9532f] font-bold">Primary</span>
+    </button>
+
+    <button class="swatch-btn w-full p-1.5 rounded border border-[#262320] bg-[#f7f3ea] hover:bg-white flex items-center justify-between transition-all text-right" data-color="#1e284a" data-name="سرمه‌ای مرکب" data-subtle="#edf1fa">
+      <div class="flex items-center gap-2">
+        <span class="w-5 h-5 rounded border border-[#262320] shrink-0 flex items-center justify-center" style="background-color: #1e284a;">
+          <span class="material-symbols-outlined text-[12px] text-white hidden">check</span>
+        </span>
+        <div class="flex flex-col text-right">
+          <span class="text-[11px] font-bold text-[#1e1b18]">سرمه‌ای مرکب</span>
+          <span class="text-[9px] text-[#5b403c]">رنگ متن، عنوان و استروک‌های رسمی</span>
+        </div>
+      </div>
+      <span class="text-[9px] font-mono px-1 py-0.5 rounded bg-white border border-[#262320] text-[#1e284a] font-bold">Secondary</span>
+    </button>
+
+    <button class="swatch-btn w-full p-1.5 rounded border border-[#262320] bg-[#f7f3ea] hover:bg-white flex items-center justify-between transition-all text-right" data-color="#244234" data-name="سبز زیتونی پایدار" data-subtle="#e7f0ec">
+      <div class="flex items-center gap-2">
+        <span class="w-5 h-5 rounded border border-[#262320] shrink-0 flex items-center justify-center" style="background-color: #244234;">
+          <span class="material-symbols-outlined text-[12px] text-white hidden">check</span>
+        </span>
+        <div class="flex flex-col text-right">
+          <span class="text-[11px] font-bold text-[#1e1b18]">سبز زیتونی</span>
+          <span class="text-[9px] text-[#5b403c]">شاخص رشد، وضعیت موفقیت و پایداری</span>
+        </div>
+      </div>
+      <span class="text-[9px] font-mono px-1 py-0.5 rounded bg-white border border-[#262320] text-[#244234] font-bold">Success</span>
+    </button>
+
+    <button class="swatch-btn w-full p-1.5 rounded border border-[#262320] bg-[#f7f3ea] hover:bg-white flex items-center justify-between transition-all text-right" data-color="#d99b26" data-name="خردلی طلایی" data-subtle="#fdf7e7">
+      <div class="flex items-center gap-2">
+        <span class="w-5 h-5 rounded border border-[#262320] shrink-0 flex items-center justify-center" style="background-color: #d99b26;">
+          <span class="material-symbols-outlined text-[12px] text-white hidden">check</span>
+        </span>
+        <div class="flex flex-col text-right">
+          <span class="text-[11px] font-bold text-[#1e1b18]">خردلی طلایی</span>
+          <span class="text-[9px] text-[#5b403c]">رنگ هشدار، هایلایت و توجه کارگاهی</span>
+        </div>
+      </div>
+      <span class="text-[9px] font-mono px-1 py-0.5 rounded bg-white border border-[#262320] text-[#d99b26] font-bold">Warning</span>
+    </button>
+  </div>
+
+  <!-- Custom Color Tuning Controls (Available when Custom mode selected) -->
+  <div class="p-2.5 rounded bg-[#f7f3ea] border border-[#262320] flex flex-col gap-2 shadow-[1px_1px_0px_#1e1b18]">
+    <div class="flex items-center justify-between">
+      <span class="text-[10px] font-bold text-[#1e1b18] flex items-center gap-1">
+        <span class="material-symbols-outlined text-[12px] text-[#d9532f]">tune</span>
+        <span class="">تنظیم رنگ دلخواه (HEX Picker)</span>
+      </span>
+      <span class="text-[9px] font-mono font-bold text-[#5b403c]">RGB / HEX</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <div class="relative w-8 h-8 rounded border border-[#262320] shadow-[1px_1px_0px_#1e1b18] overflow-hidden shrink-0 cursor-pointer">
+        <input type="color" value="#d9532f" class="absolute -inset-2 w-12 h-12 cursor-pointer border-0 p-0">
+      </div>
+      <input type="text" value="#D9532F" class="w-full text-xs font-mono font-bold p-1.5 rounded bg-white border border-[#262320] outline-none focus:ring-1 focus:ring-[#d9532f] uppercase text-left dir-ltr" placeholder="#HEX">
+      <button type="button" class="shrink-0 px-2 py-1.5 bg-white border border-[#262320] rounded hover:bg-[#fdf9f0] shadow-[1px_1px_0px_#1e1b18] text-[10px] font-bold text-[#1e1b18] transition-all">
+        اعمال
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- 4. کتابخانه آیکون‌ها (Dedicated Icon Library Selector) -->
+<div class="flex flex-col gap-1.5 pt-1 border-t border-[#262320]/20">
+  <div class="flex items-center justify-between text-xs font-bold">
+    <span class="text-[#1e1b18] flex items-center gap-1">
+      <span class="material-symbols-outlined text-[14px] text-[#d9532f]">token</span>
+      <span class="">کتابخانه آیکون‌ها</span>
+    </span>
+    <span class="text-[10px] text-[#5b403c] font-mono">Icons</span>
+  </div>
+  <div class="grid grid-cols-3 gap-1">
+    <button class="p-1.5 rounded bg-[#d9532f] text-white border border-[#262320] shadow-[1px_1px_0px_#1e1b18] text-center flex flex-col items-center gap-0.5 transition-all">
+      <span class="material-symbols-outlined text-[16px]">polyline</span>
+      <span class="text-[10px] font-bold">نمادهای گوگل</span>
+      <span class="text-[8px] opacity-80 font-mono">Google</span>
+    </button>
+    <button class="p-1.5 rounded bg-[#f7f3ea] text-[#1e1b18] border border-[#262320] hover:bg-white text-center flex flex-col items-center gap-0.5 transition-all">
+      <span class="material-symbols-outlined text-[16px] text-[#5b403c]">sparkles</span>
+      <span class="text-[10px] font-bold">لوسید آیکون</span>
+      <span class="text-[8px] text-[#5b403c] font-mono">Lucide</span>
+    </button>
+    <button class="p-1.5 rounded bg-[#f7f3ea] text-[#1e1b18] border border-[#262320] hover:bg-white text-center flex flex-col items-center gap-0.5 transition-all">
+      <span class="material-symbols-outlined text-[16px] text-[#5b403c]">category</span>
+      <span class="text-[10px] font-bold">تب‌لر آیکون</span>
+      <span class="text-[8px] text-[#5b403c] font-mono">Tabler</span>
+    </button>
+  </div>
+</div>
+
+<!-- 5. گردی گوشه‌ها (Categorized Border Radius) -->
+<div class="flex flex-col gap-1.5 pt-1 border-t border-[#262320]/20">
+  <div class="flex items-center justify-between text-xs font-bold">
+    <span class="text-[#1e1b18] flex items-center gap-1">
+      <span class="">گردی گوشه‌ها</span>
+      <span class="text-[#5b403c] font-normal text-[10px]">(Radius)</span>
+    </span>
+    <span class="text-[#d9532f] font-mono text-[10px] font-bold" id="radius-badge">4px (ملایم)</span>
+  </div>
+  <div class="grid grid-cols-5 gap-1" id="radius-btn-group">
+    <button class="radius-choice-btn py-1 px-1 text-center bg-[#f7f3ea] border border-[#262320] rounded hover:bg-white transition-all flex flex-col items-center" data-label="۰px (تیز)" data-radius="0px" title="تیز (0px)">
+      <span class="font-mono font-bold text-xs">0</span>
+      <span class="text-[8px] text-[#5b403c]">تیز</span>
+    </button>
+    <button class="radius-choice-btn active-radius-choice py-1 px-1 text-center bg-[#d9532f] text-white border border-[#262320] rounded shadow-[1px_1px_0px_#1e1b18] font-bold flex flex-col items-center" data-label="۴px (ملایم)" data-radius="4px" title="ملایم (4px)">
+      <span class="font-mono text-xs">4px</span>
+      <span class="text-[8px] text-white/90">ملایم</span>
+    </button>
+    <button class="radius-choice-btn py-1 px-1 text-center bg-[#f7f3ea] border border-[#262320] rounded hover:bg-white transition-all flex flex-col items-center" data-label="۸px (متوسط)" data-radius="8px" title="متوسط (8px)">
+      <span class="font-mono font-bold text-xs">8px</span>
+      <span class="text-[8px] text-[#5b403c]">متوسط</span>
+    </button>
+    <button class="radius-choice-btn py-1 px-1 text-center bg-[#f7f3ea] border border-[#262320] rounded hover:bg-white transition-all flex flex-col items-center" data-label="۱۲px (گرد)" data-radius="12px" title="گرد (12px)">
+      <span class="font-mono font-bold text-xs">12px</span>
+      <span class="text-[8px] text-[#5b403c]">گرد</span>
+    </button>
+    <button class="radius-choice-btn py-1 px-1 text-center bg-[#f7f3ea] border border-[#262320] rounded hover:bg-white transition-all flex flex-col items-center" data-label="۱۶px (کپسولی)" data-radius="16px" title="کپسولی (16px)">
+      <span class="font-mono font-bold text-xs">16px</span>
+      <span class="text-[8px] text-[#5b403c]">کپسولی</span>
+    </button>
+  </div><div class="flex items-center gap-1.5 pt-1"><div class="relative flex-1 flex items-center bg-[#f7f3ea] border border-[#262320] rounded p-1 shadow-[1px_1px_0px_#1e1b18]"><input type="number" min="0" max="48" placeholder="عدد دلخواه" value="4" id="custom-radius-input" class="w-full text-xs font-mono font-bold bg-transparent border-0 outline-none p-0 text-left dir-ltr text-[#1e1b18]"><span class="text-[10px] font-mono text-[#5b403c] px-1 shrink-0">px</span></div><button type="button" id="btn-apply-custom-radius" class="px-2.5 py-1 text-[11px] font-bold bg-[#f7f3ea] hover:bg-white text-[#1e1b18] border border-[#262320] rounded shadow-[1px_1px_0px_#1e1b18] active:translate-x-0.5 active:translate-y-0.5 transition-all shrink-0">اعمال</button></div>
+</div>
+
+<!-- 6. تایپوگرافی جفت‌شده -->
+<div class="flex flex-col gap-1.5 pt-1 border-t border-[#262320]/20">
+  <div class="flex items-center justify-between text-xs font-bold">
+    <span class="text-[#1e1b18]">تایپوگرافی</span>
+    <span class="text-[#5b403c] text-[10px]">Pairing</span>
+  </div>
+  <div class="flex flex-col gap-1 text-xs">
+    <label class="flex items-center justify-between p-1.5 rounded bg-white border border-[#262320] shadow-[1px_1px_0px_#1e1b18] cursor-pointer">
+      <div class="flex items-center gap-1.5">
+        <input checked="" class="accent-[#d9532f] w-3 h-3" name="font_family_choice" type="radio" value="vazir">
+        <span class="font-bold text-[11px] text-[#1e1b18]">وزیرمتن + اسپیس‌گروتسک</span>
+      </div>
+      <span class="text-[9px] text-[#d9532f] font-mono font-bold">پیش‌فرض</span>
+    </label>
+    <label class="flex items-center justify-between p-1.5 rounded bg-[#f7f3ea] border border-[#262320] hover:bg-white cursor-pointer transition-colors">
+      <div class="flex items-center gap-1.5">
+        <input class="accent-[#d9532f] w-3 h-3" name="font_family_choice" type="radio" value="editorial">
+        <span class="text-[11px] text-[#1e1b18]">نیوزریدر ادبی + وزیرمتن</span>
+      </div>
+      <span class="text-[9px] text-[#5b403c]">ادیتوریال</span>
+    </label>
+  <label class="flex items-center justify-between p-1.5 rounded bg-[#f7f3ea] border border-[#262320] hover:bg-white cursor-pointer transition-colors"><div class="flex items-center gap-1.5"><input type="radio" name="font_family_choice" value="sahel" class="accent-[#d9532f] w-3 h-3"><span class="text-[11px] text-[#1e1b18]">ساحل + اینتر (Inter)</span></div><span class="text-[9px] text-[#5b403c]">خوانا و مدرن</span></label><label class="flex items-center justify-between p-1.5 rounded bg-[#f7f3ea] border border-[#262320] hover:bg-white cursor-pointer transition-colors"><div class="flex items-center gap-1.5"><input type="radio" name="font_family_choice" value="samim" class="accent-[#d9532f] w-3 h-3"><span class="text-[11px] text-[#1e1b18]">صمیم + روبوتو (Roboto)</span></div><span class="text-[9px] text-[#5b403c]">ساده و کاربردی</span></label><label class="flex items-center justify-between p-1.5 rounded bg-[#f7f3ea] border border-[#262320] hover:bg-white cursor-pointer transition-colors"><div class="flex items-center gap-1.5"><input type="radio" name="font_family_choice" value="shabnam" class="accent-[#d9532f] w-3 h-3"><span class="text-[11px] text-[#1e1b18]">شبنم + فیرا کد (Fira Code)</span></div><span class="text-[9px] text-[#5b403c] font-mono">تکنیکال</span></label><label class="flex items-center justify-between p-1.5 rounded bg-[#f7f3ea] border border-[#262320] hover:bg-white cursor-pointer transition-colors"><div class="flex items-center gap-1.5"><input type="radio" name="font_family_choice" value="tanha" class="accent-[#d9532f] w-3 h-3"><span class="text-[11px] text-[#1e1b18]">تنها + اوپن سنس (Open Sans)</span></div><span class="text-[9px] text-[#5b403c]">دوستانه و مینیمال</span></label></div>
+</div>
+
+<!-- Action Export -->
+<div class="flex flex-col gap-2 pt-2 border-t border-[#262320]/20 mt-auto">
+  <button class="w-full py-2 px-2.5 bg-[#d9532f] text-white border border-[#262320] text-xs font-bold rounded shadow-[2px_2px_0px_#1e1b18] hover:bg-[#c4492b] active:translate-x-0.5 active:translate-y-0.5 transition-all flex items-center justify-center gap-1.5" id="btn-export-full">
+    <span class="material-symbols-outlined text-[15px]">download</span>
+    <span class="">استخراج پیکربندی تم</span>
+  </button>
+</div></aside><section class="flex-1 p-4 sm:p-6 lg:p-8 flex flex-col gap-4 overflow-x-hidden order-2 bg-[#e6e2d9]" id="canvas-main-wrapper"><div class="paper-texture w-full min-h-[640px] bg-[#fdf9f0] border-2 border-[#1e1b18] rounded shadow-[4px_4px_0px_#1e1b18] transition-all relative overflow-hidden" id="interactive-render-zone"><div class="w-full bg-[#f7f3ea] border-b-2 border-[#1e1b18] px-4 py-2.5 flex items-center justify-between select-none"><div class="flex items-center gap-2.5"><div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-[#d9532f] border border-[#1e1b18]"></span><span class="w-3 h-3 rounded-full bg-[#d99b26] border border-[#1e1b18]"></span><span class="w-3 h-3 rounded-full bg-[#244234] border border-[#1e1b18]"></span></div><span class="h-4 w-px bg-[#262320]/20 mx-1"></span><div class="flex items-center gap-1.5 text-xs font-black text-[#1e1b18]"><span class="material-symbols-outlined text-[16px] text-[#d9532f]">space_dashboard</span><span class="">میز کارگاه زنده // Live Artboard Canvas</span></div></div><div class="flex items-center gap-2"><span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-white border border-[#1e1b18] text-[#1e284a] shadow-[1px_1px_0px_#1e1b18]">VIEWPORT: 100%</span><span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[#1e284a] text-white border border-[#1e1b18] flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>CANVAS OK</span></div></div><div class="archetype-view flex flex-col gap-6 p-5 sm:p-7" id="view-components"><div class="grid grid-cols-1 md:grid-cols-12 gap-5"><div class="interactive-canvas-item md:col-span-7 bg-white p-5 border border-[#262320] shadow-[2px_2px_0px_#1e1b18] flex flex-col justify-between gap-4"><div class="flex items-start justify-between"><div><span class="text-xs font-mono text-[#d9532f] font-bold block mb-1">METRICS &amp; REVENUE // 2025</span><h3 class="text-base font-black text-[#1e1b18]">رشد ماهانه و درآمد کارگاه</h3><p class="text-xs text-[#5b403c] mt-0.5">شاخص تراکنش‌های ثبت‌شده از طراحی وب‌سایت‌های سفارشی</p></div><span class="px-2 py-1 bg-[#f7f3ea] border border-[#262320] text-xs font-mono font-bold rounded text-[#1e1b18]">+۲۴.۸٪ YoY</span></div><div class="w-full bg-[#f7f3ea] border border-[#262320] p-3 rounded"><svg class="w-full h-32" fill="none" viewBox="0 0 420 130"><line stroke="rgba(30,27,24,0.12)" stroke-dasharray="2,2" x1="0" x2="420" y1="25" y2="25"></line><line stroke="rgba(30,27,24,0.12)" stroke-dasharray="2,2" x1="0" x2="420" y1="65" y2="65"></line><line stroke="rgba(30,27,24,0.12)" stroke-dasharray="2,2" x1="0" x2="420" y1="105" y2="105"></line><rect class="transition-all hover:opacity-85" fill="#1e284a" height="55" rx="2" width="36" x="25" y="55"></rect><text class="fill-[#5b403c] text-[11px] font-mono" text-anchor="middle" x="43" y="124">آذر</text><rect class="transition-all hover:opacity-85" fill="#1e284a" height="75" rx="2" width="36" x="95" y="35"></rect><text class="fill-[#5b403c] text-[11px] font-mono" text-anchor="middle" x="113" y="124">دی</text><rect class="chart-accent-bar transition-all hover:opacity-85" fill="var(--primary)" height="95" rx="2" width="36" x="165" y="15"></rect><text class="fill-[#5b403c] text-[11px] font-mono font-bold" text-anchor="middle" x="183" y="124">بهمن</text><rect class="transition-all hover:opacity-85" fill="#1e284a" height="70" rx="2" width="36" x="235" y="40"></rect><text class="fill-[#5b403c] text-[11px] font-mono" text-anchor="middle" x="253" y="124">اسفند</text><rect class="chart-accent-bar transition-all hover:opacity-85" fill="var(--primary)" height="102" rx="2" width="36" x="305" y="8"></rect><text class="fill-[#5b403c] text-[11px] font-mono font-bold" text-anchor="middle" x="323" y="124">فروردین</text><rect class="transition-all hover:opacity-85" fill="#1e284a" height="60" rx="2" width="36" x="375" y="50"></rect><text class="fill-[#5b403c] text-[11px] font-mono" text-anchor="middle" x="393" y="124">اردیبهشت</text></svg></div><div class="flex items-center justify-between text-xs pt-2 border-t border-[#262320]/15"><span class="text-[#5b403c]">میانگین سفارش هر پروژه: <b class="font-mono text-[#1e1b18]">$3,850</b></span><button class="font-bold text-[#d9532f] hover:underline flex items-center gap-1">مشاهده ریز گزارشات<span class="material-symbols-outlined text-[14px]">arrow_left</span></button></div></div><div class="interactive-canvas-item md:col-span-5 bg-white p-5 border border-[#262320] shadow-[2px_2px_0px_#1e1b18] flex flex-col justify-between gap-4"><div><div class="flex items-center justify-between"><h3 class="text-base font-black text-[#1e1b18]">آستانه تسویه حساب</h3><span class="material-symbols-outlined text-[#5b403c] text-[18px]">tune</span></div><p class="text-xs text-[#5b403c] mt-0.5">تعیین حداقل موجودی جهت واریز خودکار هفتگی</p></div><div class="flex flex-col gap-3"><div class="flex flex-col gap-1"><label class="text-xs font-bold text-[#1e1b18]">ارز انتخابی تسویه</label><div class="flex items-center justify-between p-2 rounded bg-[#f7f3ea] border border-[#262320] text-xs font-semibold"><span class="">USD — دلار ایالات متحده</span><span class="material-symbols-outlined text-[16px]">expand_more</span></div></div><div class="flex flex-col gap-1.5"><div class="flex items-center justify-between text-xs"><span class="text-[#5b403c]">مبلغ آستانه واریز:</span><span class="font-mono text-sm font-black text-[#d9532f]" id="slider-val-badge">$2,500.00</span></div><input class="w-full accent-[#d9532f] h-2 bg-[#f7f3ea] border border-[#262320] rounded-lg cursor-pointer" id="demo-slider" max="10000" min="500" step="100" type="range" value="2500"><div class="flex justify-between text-[10px] font-mono text-[#5b403c]"><span class="">$500</span><span class="">$10,000</span></div></div></div><button class="interactive-canvas-item theme-accent w-full py-2 text-xs font-bold border border-[#262320] shadow-[2px_2px_0px_#1e1b18] active:translate-x-0.5 active:translate-y-0.5 transition-all text-center">ذخیره تنظیمات تسویه</button></div><div class="interactive-canvas-item md:col-span-6 bg-white p-5 border border-[#262320] shadow-[2px_2px_0px_#1e1b18] flex flex-col gap-4"><div class="flex items-center justify-between"><h3 class="text-sm font-black text-[#1e1b18]">فرم و کنترل‌های تعاملی Shadcn</h3><span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#f7f3ea] border border-[#262320] text-[#1e284a]">ATOMIC UI</span></div><div class="flex flex-col gap-3"><div class="flex flex-col gap-1"><label class="text-xs font-bold text-[#1e1b18]">نام مشتری یا سازمان</label><input class="w-full text-xs p-2.5 rounded bg-[#f7f3ea] border border-[#262320] outline-none focus:ring-1 focus:ring-[#d9532f]" placeholder="مثال: شرکت راهکارهای ابری پیشرو" type="text"></div><div class="grid grid-cols-2 gap-2"><button class="interactive-canvas-item theme-accent py-2 px-3 text-xs font-bold border border-[#262320] shadow-[1px_1px_0px_#1e1b18] flex items-center justify-center gap-1.5"><span class="material-symbols-outlined text-[16px]">check</span>دکمه اولیه (Primary)</button><button class="interactive-canvas-item py-2 px-3 text-xs font-bold bg-[#f7f3ea] text-[#1e1b18] border border-[#262320] shadow-[1px_1px_0px_#1e1b18] hover:bg-white flex items-center justify-center gap-1.5">دکمه ثانویه (Outline)</button></div><div class="flex items-center justify-between p-2.5 rounded bg-[#f7f3ea] border border-[#262320] text-xs"><span class="font-bold text-[#1e1b18]">فعال‌سازی اطلاع‌رسانی پیامکی</span><input checked="" class="accent-[#d9532f] w-4 h-4 rounded" type="checkbox"></div></div></div><div class="interactive-canvas-item md:col-span-6 bg-white p-5 border border-[#262320] shadow-[2px_2px_0px_#1e1b18] flex flex-col justify-between gap-4"><div><h3 class="text-sm font-black text-[#1e1b18]">بج‌ها و هشدارهای ادیتوریال</h3><p class="text-xs text-[#5b403c] mt-0.5">وضعیت‌های مختلف سیستم همراه با استروک و بردر خطی</p></div><div class="flex flex-wrap gap-2"><span class="interactive-canvas-item theme-accent px-2.5 py-1 text-xs font-bold border border-[#262320] shadow-[1px_1px_0px_#1e1b18]">تکمیل شده</span><span class="interactive-canvas-item px-2.5 py-1 text-xs font-bold bg-[#1e284a] text-white border border-[#262320] shadow-[1px_1px_0px_#1e1b18]">در حال پردازش</span><span class="interactive-canvas-item px-2.5 py-1 text-xs font-bold bg-[#f7f3ea] text-[#1e1b18] border border-[#262320]">بایگانی شده</span><span class="interactive-canvas-item px-2.5 py-1 text-xs font-mono font-bold bg-[#244234] text-white border border-[#262320]">v3.4.1 LIVE</span></div><div class="p-3 rounded bg-[#f7f3ea] border border-[#262320] flex items-start gap-2.5 text-xs"><span class="material-symbols-outlined text-[#d9532f] text-[18px]">verified</span><div><span class="font-bold text-[#1e1b18] block">گارانتی تطابق ۱۰۰٪ ریسوگراف</span><p class="text-[#5b403c] mt-0.5">تمام مولفه‌های وب استاندارد با متغیرهای تم هماهنگ هستند.</p></div></div></div></div></div><div class="archetype-view hidden flex-col gap-6" id="view-landing"><div class="interactive-canvas-item bg-white p-6 sm:p-8 border border-[#262320] shadow-[3px_3px_0px_#1e1b18] flex flex-col md:flex-row items-center justify-between gap-6"><div class="flex flex-col gap-3 max-w-xl"><div class="inline-flex items-center gap-2 self-start px-2.5 py-1 rounded bg-[#f7f3ea] border border-[#262320] text-xs font-mono font-bold text-[#1e284a]"><span class="w-2 h-2 rounded-full bg-[#d9532f]"></span>ARCHETYPE: SAAS &amp; STARTUP LANDING</div><h2 class="text-xl sm:text-2xl font-black text-[#1e1b18] leading-tight">زیرساخت مدرن برای تیم‌های توسعه محصول دیجیتال با رویکرد بدون کالبد</h2><p class="text-xs sm:text-sm text-[#5b403c] leading-relaxed">طراحی سفارشی فرانت‌اند با معماری بدون فریم‌ورک‌های سنگین، لایت‌هاوس ۱۰۰ و حس طبیعی چاپ ریسو بر صفحات نمایش.</p><div class="flex items-center gap-3 pt-2"><button class="interactive-canvas-item theme-accent px-4 py-2 text-xs font-bold border border-[#262320] shadow-[2px_2px_0px_#1e1b18] active:translate-x-0.5 active:translate-y-0.5 transition-all">شروع نسخه آزمایشی ۱۴ روزه</button><button class="interactive-canvas-item px-4 py-2 text-xs font-bold bg-[#f7f3ea] text-[#1e1b18] border border-[#262320] hover:bg-white transition-all">مطالعه بنچمارک سرعت</button></div></div><div class="w-full md:w-64 bg-[#f7f3ea] p-4 rounded border border-[#262320] shadow-[2px_2px_0px_#1e1b18] flex flex-col gap-3"><div class="flex items-center justify-between text-xs font-bold"><span class="">امتیاز عملکرد لایت‌هاوس</span><span class="font-mono text-emerald-700">100/100</span></div><div class="w-full bg-white h-3 rounded-full border border-[#262320] overflow-hidden p-0.5"><div class="h-full bg-emerald-600 rounded-full w-full"></div></div><div class="flex justify-between text-[11px] font-mono text-[#5b403c]"><span class="">FCP: 0.4s</span><span class="">TTI: 0.7s</span><span class="">CO2: 0.12g</span></div></div></div><div class="grid grid-cols-1 md:grid-cols-3 gap-4"><div class="interactive-canvas-item bg-white p-4 border border-[#262320] shadow-[2px_2px_0px_#1e1b18] flex flex-col gap-2"><div class="w-8 h-8 rounded bg-[#f7f3ea] border border-[#262320] flex items-center justify-center text-[#d9532f]"><span class="material-symbols-outlined text-[18px]">bolt</span></div><h4 class="text-sm font-bold text-[#1e1b18]">کد سبک و بهینه‌سازی شده</h4><p class="text-xs text-[#5b403c]">بدون کتابخانه‌های حجیم جانبی؛ خالص‌ترین کد ممکن با بالاترین سرعت رندر.</p></div><div class="interactive-canvas-item bg-white p-4 border border-[#262320] shadow-[2px_2px_0px_#1e1b18] flex flex-col gap-2"><div class="w-8 h-8 rounded bg-[#f7f3ea] border border-[#262320] flex items-center justify-center text-[#1e284a]"><span class="material-symbols-outlined text-[18px]">verified_user</span></div><h4 class="text-sm font-bold text-[#1e1b18]">امنیت و پایداری سازمانی</h4><p class="text-xs text-[#5b403c]">رعایت آخرین استانداردهای OWASP و ایزولاسیون کامل کامپوننت‌های فرانت‌اند.</p></div><div class="interactive-canvas-item bg-white p-4 border border-[#262320] shadow-[2px_2px_0px_#1e1b18] flex flex-col gap-2"><div class="w-8 h-8 rounded bg-[#f7f3ea] border border-[#262320] flex items-center justify-center text-[#244234]"><span class="material-symbols-outlined text-[18px]">handshake</span></div><h4 class="text-sm font-bold text-[#1e1b18]">پشتیبانی کارگاهی مستقیم</h4><p class="text-xs text-[#5b403c]">ارتباط بدون واسطه با مهندس طراح و برنامه‌نویس اصلی در تمام فازها.</p></div></div></div><div class="archetype-view hidden flex-col gap-6" id="view-ecommerce"><div class="flex items-center justify-between pb-2 border-b border-[#262320]/20"><div><span class="text-xs font-mono text-[#d9532f] font-bold">ARCHETYPE: ARTISANAL BAKERY &amp; COFFEE</span><h3 class="text-base font-black text-[#1e1b18]">فروشگاه آنلاین کارگاهی نان تخمیر طبیعی و قهوه تخصصی</h3></div><div class="flex items-center gap-2"><span class="px-2.5 py-1 bg-white border border-[#262320] text-xs font-bold rounded shadow-[1px_1px_0px_#1e1b18]">سبد خرید (۳ قلم)</span></div></div><div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5"><div class="interactive-canvas-item bg-white border border-[#262320] shadow-[2px_2px_0px_#1e1b18] p-4 flex flex-col justify-between gap-3"><div class="w-full h-36 bg-[#f7f3ea] border border-[#262320] rounded flex flex-col items-center justify-center text-[#5b403c] relative overflow-hidden"><span class="material-symbols-outlined text-[42px] text-[#d9532f]">bakery_dining</span><span class="text-[11px] font-mono mt-1 font-bold">تخمیر طولانی ۴۸ ساعته</span><span class="absolute top-2 right-2 px-1.5 py-0.5 rounded bg-white border border-[#262320] text-[10px] font-bold text-[#d9532f]">داغ و تازه</span></div><div><h4 class="text-sm font-black text-[#1e1b18]">نان سوخاری چاودار روستیک</h4><p class="text-xs text-[#5b403c] mt-0.5">آرد سبوس‌دار سنگک، بدون مخمر صنعتی و سرشار از فیبر</p></div><div class="flex items-center justify-between pt-2 border-t border-[#262320]/15"><span class="font-mono text-sm font-black text-[#1e1b18]">۶۸,۰۰۰ تومان</span><button class="interactive-canvas-item theme-accent px-3 py-1.5 text-xs font-bold border border-[#262320] shadow-[1px_1px_0px_#1e1b18] active:translate-x-0.5 active:translate-y-0.5 transition-all">+ افزودن به سبد</button></div></div><div class="interactive-canvas-item bg-white border border-[#262320] shadow-[2px_2px_0px_#1e1b18] p-4 flex flex-col justify-between gap-3"><div class="w-full h-36 bg-[#f7f3ea] border border-[#262320] rounded flex flex-col items-center justify-center text-[#5b403c] relative overflow-hidden"><span class="material-symbols-outlined text-[42px] text-[#1e284a]">coffee</span><span class="text-[11px] font-mono mt-1 font-bold">رست تازه تخصصی</span><span class="absolute top-2 right-2 px-1.5 py-0.5 rounded bg-white border border-[#262320] text-[10px] font-bold text-[#1e284a]">اتیوپی یرگاچف</span></div><div><h4 class="text-sm font-black text-[#1e1b18]">دانه قهوه تخصصی ۲۵۰ گرمی</h4><p class="text-xs text-[#5b403c] mt-0.5">اسیدیته گلی مرکباتی، نوت‌های یاسمن و برشته‌کاری ملایم</p></div><div class="flex items-center justify-between pt-2 border-t border-[#262320]/15"><span class="font-mono text-sm font-black text-[#1e1b18]">۳۴۰,۰۰۰ تومان</span><button class="interactive-canvas-item theme-accent px-3 py-1.5 text-xs font-bold border border-[#262320] shadow-[1px_1px_0px_#1e1b18] active:translate-x-0.5 active:translate-y-0.5 transition-all">+ افزودن به سبد</button></div></div><div class="interactive-canvas-item bg-white border border-[#262320] shadow-[2px_2px_0px_#1e1b18] p-4 flex flex-col justify-between gap-3"><div class="w-full h-36 bg-[#f7f3ea] border border-[#262320] rounded flex flex-col items-center justify-center text-[#5b403c] relative overflow-hidden"><span class="material-symbols-outlined text-[42px] text-[#244234]">cookie</span><span class="text-[11px] font-mono mt-1 font-bold">دست‌پخت روز</span></div><div><h4 class="text-sm font-black text-[#1e1b18]">کوکی شکلات دست‌ساز بلژیکی</h4><p class="text-xs text-[#5b403c] mt-0.5">تکه‌های شکلات تلخ ۷۴ درصد با دانه‌های نمک دریا مالدون</p></div><div class="flex items-center justify-between pt-2 border-t border-[#262320]/15"><span class="font-mono text-sm font-black text-[#1e1b18]">۴۵,۰۰۰ تومان</span><button class="interactive-canvas-item theme-accent px-3 py-1.5 text-xs font-bold border border-[#262320] shadow-[1px_1px_0px_#1e1b18] active:translate-x-0.5 active:translate-y-0.5 transition-all">+ افزودن به سبد</button></div></div></div></div><div class="archetype-view hidden flex-col gap-6" id="view-clinic"><div class="flex items-center justify-between pb-2 border-b border-[#262320]/20"><div><span class="text-xs font-mono text-[#d9532f] font-bold">ARCHETYPE: MEDICAL CLINIC &amp; BOOKING</span><h3 class="text-base font-black text-[#1e1b18]">سامانه نوبت‌دهی آنلاین درمانگاه تخصصی حکیم</h3></div><span class="px-2.5 py-1 bg-[#244234] text-white text-xs font-mono font-bold rounded border border-[#262320]">درمانگاه شبانه‌روزی</span></div><div class="grid grid-cols-1 md:grid-cols-12 gap-5"><div class="interactive-canvas-item md:col-span-7 bg-white p-5 border border-[#262320] shadow-[2px_2px_0px_#1e1b18] flex flex-col gap-4"><div class="flex items-center gap-3"><div class="w-12 h-12 rounded bg-[#f7f3ea] border border-[#262320] flex items-center justify-center text-[#d9532f]"><span class="material-symbols-outlined text-[26px]">stethoscope</span></div><div><h4 class="text-sm font-black text-[#1e1b18]">دکتر سهراب دیبا</h4><span class="text-xs text-[#5b403c]">متخصص قلب و عروق • نظام پزشکی: ۱۰۴۹۲۸</span></div></div><div class="flex flex-col gap-1.5"><label class="text-xs font-bold text-[#1e1b18]">انتخاب روز نوبت ویزیت</label><div class="grid grid-cols-4 gap-2 text-center text-xs"><button class="p-2 rounded border border-[#262320] bg-[#f7f3ea] hover:bg-white transition-all font-mono">شنبه ۲۴</button><button class="interactive-canvas-item p-2 rounded border border-[#262320] theme-accent font-mono font-bold shadow-[1px_1px_0px_#1e1b18]">یکشنبه ۲۵</button><button class="p-2 rounded border border-[#262320] bg-[#f7f3ea] hover:bg-white transition-all font-mono">دوشنبه ۲۶</button><button class="p-2 rounded border border-[#262320] bg-[#f7f3ea] opacity-40 font-mono cursor-not-allowed">سه‌شنبه (تکمیل)</button></div></div><div class="flex flex-col gap-1.5"><label class="text-xs font-bold text-[#1e1b18]">انتخاب ساعت مراجعه</label><div class="grid grid-cols-3 gap-2 text-center text-xs font-mono font-bold"><button class="p-2 rounded border border-[#262320] bg-white hover:bg-[#f7f3ea] transition-all">۱۶:۳۰ عصر</button><button class="interactive-canvas-item p-2 rounded border border-[#262320] theme-accent shadow-[1px_1px_0px_#1e1b18]">۱۷:۱۵ عصر</button><button class="p-2 rounded border border-[#262320] bg-white hover:bg-[#f7f3ea] transition-all">۱۸:۰۰ عصر</button></div></div><div class="flex items-center justify-between pt-2 border-t border-[#262320]/15"><span class="text-xs text-[#5b403c]">هزینه ویزیت طبق تعرفه مصوب: <b class="text-[#1e1b18] font-mono">۲۲۰,۰۰۰ تومان</b></span><button class="interactive-canvas-item theme-accent px-4 py-2 text-xs font-bold border border-[#262320] shadow-[2px_2px_0px_#1e1b18] active:translate-x-0.5 active:translate-y-0.5 transition-all">ثبت نهایی و پرداخت</button></div></div><div class="interactive-canvas-item md:col-span-5 bg-white p-5 border border-[#262320] shadow-[2px_2px_0px_#1e1b18] flex flex-col justify-between gap-4"><div><h4 class="text-sm font-black text-[#1e1b18]">مدارک و الزامات مراجعه</h4><p class="text-xs text-[#5b403c] mt-0.5">لطفاً پیش از مراجعه حضوری نکات زیر را رعایت فرمایید:</p></div><div class="flex flex-col gap-2.5 text-xs text-[#1e1b18]"><div class="flex items-start gap-2"><span class="material-symbols-outlined text-[16px] text-[#d9532f]">check_circle</span><span class="">همراه داشتن کارت شناسایی ملی و دفترچه بیمه</span></div><div class="flex items-start gap-2"><span class="material-symbols-outlined text-[16px] text-[#d9532f]">check_circle</span><span class="">همراه داشتن کلیه نتایج آزمایشات و نوار قلب ۶ ماه گذشته</span></div><div class="flex items-start gap-2"><span class="material-symbols-outlined text-[16px] text-[#d9532f]">schedule</span><span class="">حضور در کلینیک دست‌کم ۱۵ دقیقه قبل از زمان رزرو</span></div></div><div class="p-3 rounded bg-[#f7f3ea] border border-[#262320] text-xs"><span class="font-bold text-[#1e1b18] block mb-0.5">نشانی درمانگاه:</span><span class="text-[#5b403c]">تهران، خیابان ولیعصر، نرسیده به میدان ونک، مجتمع پزشکی حکیم</span></div></div></div></div><div class="archetype-view hidden flex-col gap-6" id="view-dashboard"><div class="flex items-center justify-between pb-2 border-b border-[#262320]/20"><div><span class="text-xs font-mono text-[#d9532f] font-bold">ARCHETYPE: DATA MONITORING &amp; TELEMETRY</span><h3 class="text-base font-black text-[#1e1b18]">میز کار پایش داده‌های سرور و ترافیک لحظه‌ای</h3></div><span class="px-2 py-0.5 bg-[#f7f3ea] border border-[#262320] text-xs font-mono font-bold rounded">LIVE TELEMETRY</span></div><div class="grid grid-cols-2 md:grid-cols-4 gap-4"><div class="interactive-canvas-item bg-white p-4 border border-[#262320] shadow-[2px_2px_0px_#1e1b18]"><span class="text-xs text-[#5b403c] block">کاربران همزمان</span><span class="text-xl font-black font-mono text-[#1e1b18] mt-1 block">۱,۸۴۲</span><span class="text-[10px] text-emerald-700 font-bold">+۱۲٪ نسبت به دیروز</span></div><div class="interactive-canvas-item bg-white p-4 border border-[#262320] shadow-[2px_2px_0px_#1e1b18]"><span class="text-xs text-[#5b403c] block">میانگین لتنسی سرور</span><span class="text-xl font-black font-mono text-[#1e1b18] mt-1 block">۱۸ ms</span><span class="text-[10px] text-emerald-700 font-bold">عملکرد عالی</span></div><div class="interactive-canvas-item bg-white p-4 border border-[#262320] shadow-[2px_2px_0px_#1e1b18]"><span class="text-xs text-[#5b403c] block">نرخ کشینگ لبه (Edge)</span><span class="text-xl font-black font-mono text-[#1e1b18] mt-1 block">۹۹.۴٪</span><span class="text-[10px] text-emerald-700 font-bold">بهینه شده</span></div><div class="interactive-canvas-item bg-white p-4 border border-[#262320] shadow-[2px_2px_0px_#1e1b18]"><span class="text-xs text-[#5b403c] block">خطاهای ۵۰۰ (Error)</span><span class="text-xl font-black font-mono text-[#d9532f] mt-1 block">۰.۰۰٪</span><span class="text-[10px] text-emerald-700 font-bold">بدون خطا</span></div></div><div class="interactive-canvas-item bg-white p-5 border border-[#262320] shadow-[2px_2px_0px_#1e1b18] flex flex-col gap-3"><h4 class="text-sm font-black text-[#1e1b18]">وضعیت نودهای توزیع‌شده استودیو</h4><div class="flex flex-col gap-2 text-xs"><div class="flex items-center justify-between p-2.5 rounded bg-[#f7f3ea] border border-[#262320]"><div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-600"></span><span class="font-bold text-[#1e1b18]">نود فرانکفورت (EU-Central)</span></div><span class="font-mono text-[#5b403c]">لود مصرفی: ۳۲٪ | ۲.۴ GB</span></div><div class="flex items-center justify-between p-2.5 rounded bg-[#f7f3ea] border border-[#262320]"><div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-600"></span><span class="font-bold text-[#1e1b18]">نود استانبول (TR-Edge)</span></div><span class="font-mono text-[#5b403c]">لود مصرفی: ۴۱٪ | ۳.۱ GB</span></div><div class="flex items-center justify-between p-2.5 rounded bg-[#f7f3ea] border border-[#262320]"><div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-600"></span><span class="font-bold text-[#1e1b18]">نود تهران (IR-Tehran IXP)</span></div><span class="font-mono text-[#5b403c]">لود مصرفی: ۵۵٪ | ۴.۸ GB</span></div></div></div></div></div></section></main>
+<!-- ==================== FLOATING BOTTOM TOKEN BAR ==================== -->
+<section class="sticky bottom-0 z-40 bg-[#fdf9f0]/95 backdrop-blur-md border-t border-[#262320] py-2 px-4 sm:px-8">
+<div class="max-w-[1440px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+<div class="flex items-center gap-2 overflow-x-auto w-full sm:w-auto py-1">
+<span class="text-xs font-black text-[#1e1b18] whitespace-nowrap flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-[#d9532f]">terminal</span>
+          خروجی فعال توکن‌ها:
+        </span>
+<code class="font-mono text-[11px] bg-white border border-[#262320] px-3 py-1 rounded text-[#d9532f] font-bold shadow-[1px_1px_0px_#1e1b18] whitespace-nowrap" id="css-var-snippet">
+          --primary: #d9532f; --radius: 4px; --font-family: 'Vazirmatn'; --style: nova;
+        </code>
+</div>
+<div class="flex items-center gap-2 self-end sm:self-auto">
+<button class="flex items-center gap-1 px-3 py-1 bg-white border border-[#262320] text-xs font-bold rounded shadow-[1px_1px_0px_#1e1b18] hover:bg-[#f7f3ea] active:translate-x-0.5 active:translate-y-0.5 transition-all" id="btn-copy-bar-snippet">
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+<span class="">کپی سریع</span>
+</button>
+<span class="hidden text-xs px-2 py-0.5 rounded bg-[#d9532f] text-white font-bold border border-[#262320]" id="toast-copied-notification">
+          کپی شد!
+        </span>
+</div>
+</div>
+</section>
+<!-- ==================== FOOTER (Exact Match with Codology Studio Home SCREEN_22) ==================== -->
+<footer class="w-full bg-[#f7f3ea] border-t border-[#262320] mt-12">
+<div class="max-w-[1440px] mx-auto px-6 lg:px-12 pt-12 pb-8">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-8 pb-10 border-b border-[#262320]/20">
+<!-- Col 1: Studio Manifesto & Carbon -->
+<div class="md:col-span-5 flex flex-col gap-3">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-[#d9532f]"></div>
+<span class="text-base font-black text-[#1e1b18]">استودیو کُدولوژی // دست‌ساز در وب</span>
+</div>
+<p class="text-xs text-[#5b403c] leading-relaxed max-w-md">
+            مهندسی واسط‌های کاربری دیجیتال با حساسیت کارگاهی، الهام‌گرفته از چاپ ریسوگراف، معماری دقیق کد و تایپوگرافی بدون کالبد آماده.
+          </p>
+<div class="flex items-center gap-2 mt-2">
+<span class="text-[11px] font-mono px-2.5 py-1 bg-white border border-[#262320] text-[#1e1b18] rounded shadow-[1px_1px_0px_#1e1b18]">
+              ECO-WEB &lt; 0.18g CO2 / VIEW
+            </span>
+<span class="text-[11px] font-mono px-2.5 py-1 bg-white border border-[#262320] text-[#1e284a] rounded shadow-[1px_1px_0px_#1e1b18]">
+              VANILLA &amp; REACT TAILORED
+            </span>
+</div>
+</div>
+<!-- Col 2: Studio Sections -->
+<div class="md:col-span-4 flex flex-col gap-2">
+<span class="text-xs font-black text-[#1e1b18] uppercase tracking-wider mb-1">بخش‌های استودیو</span>
+<div class="flex flex-col gap-1.5 text-xs text-[#5b403c]">
+<a class="hover:text-[#d9532f] transition-colors" href="#">کاتالوگ پروژه‌ها و دیزاین سیستم‌ها</a>
+<a class="hover:text-[#d9532f] transition-colors" href="#">شخصی‌سازی بصری و موشن دیزاین</a>
+<a class="hover:text-[#d9532f] transition-colors" href="#">محاسبه شفاف هزینه و اسکوپ توسعه</a>
+<a class="hover:text-[#d9532f] transition-colors" href="#">مانیفست کارگاه: اصول و مرام‌نامه فنی</a>
+</div>
+</div>
+<!-- Col 3: Repositories & Networks -->
+<div class="md:col-span-3 flex flex-col gap-2">
+<span class="text-xs font-black text-[#1e1b18] uppercase tracking-wider mb-1">شبکه‌ها و مخزن‌ها</span>
+<div class="flex flex-col gap-1.5 text-xs">
+<a class="flex items-center justify-between p-2 bg-white border border-[#262320] rounded hover:bg-[#fdf9f0] transition-all" href="#">
+<span class="text-[#1e1b18] font-medium">گیت‌هاب استودیو</span>
+<span class="text-[#d9532f] font-mono">/codology-lab</span>
+</a>
+<a class="flex items-center justify-between p-2 bg-white border border-[#262320] rounded hover:bg-[#fdf9f0] transition-all" href="#">
+<span class="text-[#1e1b18] font-medium">لینکدین تخصصی</span>
+<span class="text-[#d9532f] font-mono">@codology-ir</span>
+</a>
+<a class="flex items-center justify-between p-2 bg-white border border-[#262320] rounded hover:bg-[#fdf9f0] transition-all" href="#">
+<span class="text-[#1e1b18] font-medium">کانال تلگرام یادداشت‌ها</span>
+<span class="text-[#d9532f] font-mono">@CodologyStudio</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Footer Bottom -->
+<div class="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#5b403c]">
+<span class="">تمامی حقوق مادی و معنوی متعلق به استودیو کدولوژی است © ۲۰۲۵</span>
+<div class="flex items-center gap-4">
+<span class="">چاپ ریسو دیجیتال بر بستر وب</span>
+<span class="">تهران // دست‌ساز و مستقل</span>
+</div>
+</div>
+</div>
+</footer>
+<!-- ==================== CODE EXPORT MODAL ==================== -->
+<div class="fixed inset-0 z-50 bg-[#1e1b18]/60 backdrop-blur-sm items-center justify-center p-4 hidden" id="code-modal">
+<div class="w-full max-w-2xl bg-white border border-[#262320] p-6 rounded shadow-[4px_4px_0px_#1e1b18] flex flex-col gap-4 max-h-[90vh] overflow-y-auto">
+<div class="flex items-center justify-between pb-3 border-b border-[#262320]/20">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#d9532f] text-[22px]">code_blocks</span>
+<h3 class="text-base font-black text-[#1e1b18]">کد تم و پیکربندی خروجی استودیو کُدولوژی</h3>
+</div>
+<button class="p-1 rounded bg-[#f7f3ea] border border-[#262320] text-[#1e1b18] hover:bg-white shadow-[1px_1px_0px_#1e1b18]" id="btn-close-modal">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<p class="text-xs text-[#5b403c]">این قطعه کد را در فایل <code>tailwind.config.js</code> یا شیوه پوشش‌دهی CSS متغیرهای پروژه خود کپی و جای‌گذاری نمایید.</p>
+<div class="relative">
+<pre class="bg-[#1e1b18] text-[#f7f3ea] p-4 rounded border border-[#262320] font-mono text-[12px] leading-relaxed overflow-x-auto text-left dir-ltr select-all" id="modal-code-block">/* استودیو کدولوژی // Warm Risograph CSS Theme Variables */
+:root {
+  --primary: #d9532f;
+  --primary-subtle: #fbeee9;
+  --ink: #1e1b18;
+  --background: #fdf9f0;
+  --surface: #ffffff;
+  --radius: 4px;
+  --font-family: 'Vazirmatn', sans-serif;
+  --box-shadow-offset: 2px 2px 0px #1e1b18;
+}
+
+/* Tailwind extend config */
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        primary: "var(--primary)",
+        background: "var(--background)",
+      },
+      borderRadius: {
+        craft: "var(--radius)",
+      }
+    }
+  }
+};</pre>
+</div>
+<div class="flex items-center justify-end gap-2 pt-2 border-t border-[#262320]/20">
+<button class="px-4 py-2 bg-[#d9532f] text-white border border-[#262320] text-xs font-bold rounded shadow-[2px_2px_0px_#1e1b18] hover:bg-[#c4492b] flex items-center gap-1.5 active:translate-x-0.5 active:translate-y-0.5 transition-all" id="btn-modal-copy">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+<span class="">کپی در کلیپ‌بورد</span>
+</button>
+</div>
+</div>
+</div>
+<!-- ==================== INTERACTIVE SCRIPT LOGIC ==================== -->
+<script>
+    (function initCodologyShadcnCustomizer() {
+      // Current State
+      const state = {
+        archetype: 'view-components',
+        style: 'nova',
+        colorHex: '#d9532f',
+        colorSubtle: '#fbeee9',
+        colorName: 'سفال کهربایی',
+        radius: '4px',
+        radiusLabel: '۴px (ملایم)',
+        font: 'vazir',
+        paperTexture: true,
+        gridOverlay: false
+      };
+
+      // Archetype Switcher
+      const archetypeTabs = document.querySelectorAll('.archetype-tab');
+      const archetypeViews = document.querySelectorAll('.archetype-view');
+      const activeScenarioBadge = document.getElementById('active-scenario-badge');
+
+      archetypeTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const targetId = tab.getAttribute('data-target');
+          state.archetype = targetId;
+
+          // Tab active states
+          archetypeTabs.forEach(t => {
+            t.classList.remove('bg-[#d9532f]', 'text-white');
+            t.classList.add('text-[#5b403c]');
+          });
+          tab.classList.add('bg-[#d9532f]', 'text-white');
+          tab.classList.remove('text-[#5b403c]');
+
+          // View visibility
+          archetypeViews.forEach(view => {
+            if (view.id === targetId) {
+              view.classList.remove('hidden');
+              view.classList.add('flex');
+            } else {
+              view.classList.add('hidden');
+              view.classList.remove('flex');
+            }
+          });
+
+          if (activeScenarioBadge) {
+            activeScenarioBadge.textContent = 'سناریو: ' + tab.textContent.trim();
+          }
+        });
+      });
+
+      // Swatches
+      const swatchBtns = document.querySelectorAll('.swatch-btn');
+      const colorBadge = document.getElementById('color-name-badge');
+
+      swatchBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.colorHex = btn.getAttribute('data-color');
+          state.colorSubtle = btn.getAttribute('data-subtle') || '#fbeee9';
+          state.colorName = btn.getAttribute('data-name');
+
+          swatchBtns.forEach(b => {
+            b.classList.remove('ring-2', 'ring-[#d9532f]');
+            const ic = b.querySelector('.material-symbols-outlined');
+            if (ic) ic.classList.add('hidden');
+          });
+
+          btn.classList.add('ring-2', 'ring-[#d9532f]');
+          const icon = btn.querySelector('.material-symbols-outlined');
+          if (icon) icon.classList.remove('hidden');
+
+          applyThemeCSS();
+        });
+      });
+
+      // Radius
+      const radiusBtns = document.querySelectorAll('.radius-choice-btn');
+      const radiusBadge = document.getElementById('radius-badge');
+
+      radiusBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.radius = btn.getAttribute('data-radius');
+          state.radiusLabel = btn.getAttribute('data-label');
+
+          radiusBtns.forEach(b => {
+            b.classList.remove('bg-[#d9532f]', 'text-white', 'shadow-[1px_1px_0px_#1e1b18]');
+            b.classList.add('bg-[#f7f3ea]', 'text-[#1e1b18]');
+          });
+
+          btn.classList.add('bg-[#d9532f]', 'text-white', 'shadow-[1px_1px_0px_#1e1b18]');
+          btn.classList.remove('bg-[#f7f3ea]', 'text-[#1e1b18]');
+
+          applyThemeCSS();
+        });
+      });
+
+      // Style Presets
+      const styleBtns = document.querySelectorAll('.style-choice-btn');
+      const styleBadge = document.getElementById('current-style-badge');
+
+      styleBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.style = btn.getAttribute('data-style');
+
+          styleBtns.forEach(b => {
+            b.classList.remove('bg-[#d9532f]', 'text-white', 'shadow-[2px_2px_0px_#1e1b18]');
+            b.classList.add('bg-[#f7f3ea]', 'text-[#1e1b18]');
+          });
+
+          btn.classList.add('bg-[#d9532f]', 'text-white', 'shadow-[2px_2px_0px_#1e1b18]');
+          btn.classList.remove('bg-[#f7f3ea]', 'text-[#1e1b18]');
+
+          if (styleBadge) {
+            styleBadge.textContent = btn.textContent.trim();
+          }
+
+          applyThemeCSS();
+        });
+      });
+
+      // Canvas Toggles
+      const togglePaper = document.getElementById('toggle-paper-noise');
+      const toggleGrid = document.getElementById('toggle-grid-overlay');
+      const renderZone = document.getElementById('interactive-render-zone');
+
+      if (togglePaper && renderZone) {
+        togglePaper.addEventListener('change', (e) => {
+          if (e.target.checked) {
+            renderZone.classList.add('paper-texture');
+          } else {
+            renderZone.classList.remove('paper-texture');
+          }
+        });
+      }
+
+      if (toggleGrid && renderZone) {
+        toggleGrid.addEventListener('change', (e) => {
+          if (e.target.checked) {
+            renderZone.classList.add('grid-lines-overlay');
+          } else {
+            renderZone.classList.remove('grid-lines-overlay');
+          }
+        });
+      }
+
+      // Slider Interaction
+      const demoSlider = document.getElementById('demo-slider');
+      const sliderValBadge = document.getElementById('slider-val-badge');
+      if (demoSlider && sliderValBadge) {
+        demoSlider.addEventListener('input', (e) => {
+          const val = Number(e.target.value).toLocaleString('en-US');
+          sliderValBadge.textContent = `$${val}.00`;
+        });
+      }
+
+      // Dynamic CSS Application
+      function applyThemeCSS() {
+        // 1. Root variables
+        document.documentElement.style.setProperty('--primary', state.colorHex);
+        document.documentElement.style.setProperty('--primary-subtle', state.colorSubtle);
+        document.documentElement.style.setProperty('--radius-theme', state.radius);
+
+        if (colorBadge) colorBadge.textContent = state.colorName;
+        if (radiusBadge) radiusBadge.textContent = state.radiusLabel;
+
+        // 2. SVG accent bars
+        const chartBars = document.querySelectorAll('.chart-accent-bar');
+        chartBars.forEach(b => b.setAttribute('fill', state.colorHex));
+
+        // 3. Update bottom bar snippet
+        const cssSnippet = document.getElementById('css-var-snippet');
+        if (cssSnippet) {
+          cssSnippet.textContent = `--primary: ${state.colorHex}; --radius: ${state.radius}; --font: 'Vazirmatn'; --style: ${state.style};`;
+        }
+
+        // 4. Update modal code
+        const modalCode = document.getElementById('modal-code-block');
+        if (modalCode) {
+          modalCode.textContent = `/* استودیو کُدولوژی // Warm Risograph Tailored CSS */
+:root {
+  --primary: ${state.colorHex};
+  --primary-subtle: ${state.colorSubtle};
+  --radius: ${state.radius};
+  --preset-style: "${state.style}";
+  --font-family: 'Vazirmatn', sans-serif;
+  --box-shadow-offset: ${state.style === 'brutalist' ? '4px 4px 0px #1e1b18' : '2px 2px 0px #1e1b18'};
+}
+
+/* Tailwind CSS v3 Config */
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        primary: "${state.colorHex}",
+      },
+      borderRadius: {
+        craft: "${state.radius}",
+      }
+    }
+  }
+};`;
+        }
+      }
+
+      // Toast feedback
+      const toastNotif = document.getElementById('toast-copied-notification');
+      function triggerToast() {
+        if (!toastNotif) return;
+        toastNotif.classList.remove('hidden');
+        setTimeout(() => {
+          toastNotif.classList.add('hidden');
+        }, 2000);
+      }
+
+      function copyText(txt) {
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(txt).then(triggerToast);
+        }
+      }
+
+      // Copy listeners
+      const btnCopyTokens = document.getElementById('btn-copy-css-tokens');
+      const btnCopyBottomBar = document.getElementById('btn-copy-bar-snippet');
+      const btnModalCopy = document.getElementById('btn-modal-copy');
+      const modalCodeBlock = document.getElementById('modal-code-block');
+      const cssVarSnippet = document.getElementById('css-var-snippet');
+
+      if (btnCopyTokens) {
+        btnCopyTokens.addEventListener('click', () => {
+          if (cssVarSnippet) copyText(cssVarSnippet.textContent.trim());
+        });
+      }
+
+      if (btnCopyBottomBar) {
+        btnCopyBottomBar.addEventListener('click', () => {
+          if (cssVarSnippet) copyText(cssVarSnippet.textContent.trim());
+        });
+      }
+
+      if (btnModalCopy && modalCodeBlock) {
+        btnModalCopy.addEventListener('click', () => {
+          copyText(modalCodeBlock.textContent);
+        });
+      }
+
+      // Modal Triggers
+      const codeModal = document.getElementById('code-modal');
+      const openModalBtn = document.getElementById('btn-open-code-modal');
+      const closeModalBtn = document.getElementById('btn-close-modal');
+      const headerCodeBtn = document.getElementById('btn-header-code');
+      const exportFullBtn = document.getElementById('btn-export-full');
+
+      const showModal = () => { if (codeModal) { codeModal.classList.remove('hidden'); codeModal.classList.add('flex'); } };
+      const hideModal = () => { if (codeModal) { codeModal.classList.add('hidden'); codeModal.classList.remove('flex'); } };
+
+      if (openModalBtn) openModalBtn.addEventListener('click', showModal);
+      if (headerCodeBtn) headerCodeBtn.addEventListener('click', showModal);
+      if (exportFullBtn) exportFullBtn.addEventListener('click', showModal);
+      if (closeModalBtn) closeModalBtn.addEventListener('click', hideModal);
+
+      // Shuffle Presets
+      const btnShuffle = document.getElementById('btn-shuffle-theme');
+      const presets = [
+        { colorHex: '#d9532f', colorSubtle: '#fbeee9', colorName: 'سفال کهربایی', radius: '4px', label: '۴px (ملایم)', style: 'nova' },
+        { colorHex: '#244234', colorSubtle: '#e7f0ec', colorName: 'سبز زیتونی پایدار', radius: '0px', label: '۰px (تیز)', style: 'riso' },
+        { colorHex: '#1e284a', colorSubtle: '#edf1fa', colorName: 'سرمه‌ای مرکب', radius: '8px', label: '۸px (گرد)', style: 'editorial' },
+        { colorHex: '#d99b26', colorSubtle: '#fdf7e7', colorName: 'خردلی گرم', radius: '12px', label: '۱۲px (مدرن)', style: 'nova' },
+        { colorHex: '#18181b', colorSubtle: '#f4f4f5', colorName: 'زغالی مونوکروم', radius: '16px', label: '۱۶px (نرم)', style: 'brutalist' }
+      ];
+
+      if (btnShuffle) {
+        btnShuffle.addEventListener('click', () => {
+          const item = presets[Math.floor(Math.random() * presets.length)];
+          state.colorHex = item.colorHex;
+          state.colorSubtle = item.colorSubtle;
+          state.colorName = item.colorName;
+          state.radius = item.radius;
+          state.radiusLabel = item.label;
+          state.style = item.style;
+
+          // Sync Swatches
+          swatchBtns.forEach(b => {
+            if (b.getAttribute('data-color') === item.colorHex) {
+              b.classList.add('ring-2', 'ring-[#d9532f]');
+              const ic = b.querySelector('.material-symbols-outlined');
+              if (ic) ic.classList.remove('hidden');
+            } else {
+              b.classList.remove('ring-2', 'ring-[#d9532f]');
+              const ic = b.querySelector('.material-symbols-outlined');
+              if (ic) ic.classList.add('hidden');
+            }
+          });
+
+          // Sync Radius
+          radiusBtns.forEach(b => {
+            if (b.getAttribute('data-radius') === item.radius) {
+              b.classList.add('bg-[#d9532f]', 'text-white', 'shadow-[1px_1px_0px_#1e1b18]');
+              b.classList.remove('bg-[#f7f3ea]', 'text-[#1e1b18]');
+            } else {
+              b.classList.remove('bg-[#d9532f]', 'text-white', 'shadow-[1px_1px_0px_#1e1b18]');
+              b.classList.add('bg-[#f7f3ea]', 'text-[#1e1b18]');
+            }
+          });
+
+          applyThemeCSS();
+          triggerToast();
+        });
+      }
+
+      // Reset
+      const btnReset = document.getElementById('btn-reset-sidebar');
+      if (btnReset) {
+        btnReset.addEventListener('click', () => {
+          state.colorHex = '#d9532f';
+          state.colorSubtle = '#fbeee9';
+          state.colorName = 'سفال کهربایی';
+          state.radius = '4px';
+          state.radiusLabel = '۴px (ملایم)';
+          state.style = 'nova';
+
+          swatchBtns[0].click();
+          radiusBtns[1].click();
+          styleBtns[0].click();
+          applyThemeCSS();
+        });
+      }
+
+      // Initial apply
+      applyThemeCSS();
+    })();
+  </script>
+</body></html>

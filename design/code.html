@@ -1,0 +1,786 @@
+<!DOCTYPE html><html class="scroll-smooth" dir="rtl" lang="fa" style="min-height: 100vh; position: relative;"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_standard" name="shell-type"><title>کدولوژی | استودیو طراحی وب مستقل و پایدار</title><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,400;0,600;0,700;0,900;1,400&amp;family=Space+Grotesk:wght@400;500;600;700&amp;family=Vazirmatn:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>
+@layer base {
+  html, body { margin: 0; padding: 0; }
+  body { overscroll-behavior: none; }
+}
+::-webkit-scrollbar { display: none; }
+body {
+  font-family: 'Vazirmatn', 'Space Grotesk', sans-serif;
+  background-color: #FFFDF5;
+  color: #264653;
+}
+
+/* Risograph Craft & Paper Texture styling */
+.paper-pattern {
+  background-color: #FFFDF5;
+  background-image: radial-gradient(#264653 0.65px, transparent 0.65px), radial-gradient(#E76F51 0.65px, #FFFDF5 0.65px);
+  background-size: 26px 26px;
+  background-position: 0 0, 13px 13px;
+  background-opacity: 0.04;
+}
+
+/* Risograph Stamp style */
+.riso-stamp {
+  position: relative;
+  border: 2px dashed #E76F51;
+  border-radius: 9999px;
+  padding: 0.25rem 0.85rem;
+  font-weight: 800;
+  color: #E76F51;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(231, 111, 81, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(231, 111, 81, 0.2);
+}
+
+.riso-stamp-teal {
+  border: 2px dashed #2A9D8F;
+  color: #2A9D8F;
+  background: rgba(42, 157, 143, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(42, 157, 143, 0.2);
+}
+
+.riso-stamp-mustard {
+  border: 2px dashed #D4A017;
+  color: #B58500;
+  background: rgba(233, 196, 106, 0.15);
+  box-shadow: inset 0 0 0 1px rgba(233, 196, 106, 0.3);
+}
+
+/* Wobbly Handcrafted Border */
+.craft-card {
+  border: 2.5px solid #264653;
+  box-shadow: 4px 4px 0px #264653;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.craft-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px #E76F51;
+}
+
+.craft-btn {
+  border: 2.5px solid #264653;
+  box-shadow: 3.5px 3.5px 0px #264653;
+  transition: all 0.18s ease;
+}
+.craft-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 5.5px 5.5px 0px #264653;
+}
+.craft-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px #264653;
+}
+
+/* Custom interactive riso cursor */
+@media (pointer: fine) {
+  body { cursor: default; }
+  .cursor-dot {
+    position: fixed; top: 0; left: 0; width: 10px; height: 10px;
+    background-color: #E76F51; border-radius: 50%; pointer-events: none;
+    z-index: 9999; transform: translate(-50%, -50%);
+    box-shadow: 0 0 0 2px rgba(255,253,245,0.8);
+    transition: opacity 0.2s ease, transform 0.12s ease-out;
+  }
+  .cursor-ring {
+    position: fixed; top: 0; left: 0; width: 40px; height: 40px;
+    border: 2px solid #264653; background-color: rgba(233, 196, 106, 0.25);
+    border-radius: 50%; pointer-events: none; z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: width 0.22s ease, height 0.22s ease, background-color 0.22s ease, border-color 0.22s ease;
+    mix-blend-mode: multiply;
+  }
+  .cursor-ring.cursor-hover {
+    width: 58px; height: 58px;
+    background-color: rgba(231, 111, 81, 0.3);
+    border-color: #E76F51;
+  }
+}
+
+/* Risograph Ink Splatter & Burst Keyframes */
+.ink-splash-wrapper {
+  position: relative;
+  display: inline-block;
+  vertical-align: baseline;
+  cursor: pointer;
+  user-select: none;
+}
+
+.ink-blot-backdrop {
+  position: absolute;
+  inset: -12px -16px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  transform: scale(0.65) rotate(-3deg);
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  mix-blend-mode: multiply;
+}
+
+.ink-splash-wrapper.splashed .ink-blot-backdrop {
+  opacity: 1;
+  transform: scale(1.08) rotate(1.5deg);
+}
+
+.ink-text-target {
+  position: relative;
+  z-index: 10;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.2s ease;
+  display: inline-block;
+}
+
+.ink-splash-wrapper.splashed .ink-text-target {
+  animation: inkStampImpact 0.48s cubic-bezier(0.25, 1.4, 0.5, 1) forwards;
+  color: #FFFDF5 !important;
+  text-shadow: -1.5px 1.5px 0px #264653;
+}
+
+@keyframes inkStampImpact {
+  0% { transform: scale(1) translateY(0); }
+  25% { transform: scale(1.14) translateY(-3px) rotate(-1.5deg); }
+  50% { transform: scale(0.96) translateY(1.5px) rotate(1deg); }
+  75% { transform: scale(1.04) translateY(-1px) rotate(-0.5deg); }
+  100% { transform: scale(1.02) translateY(0) rotate(0deg); }
+}
+
+.ink-particle {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 50%;
+  mix-blend-mode: multiply;
+  opacity: 0;
+  z-index: 15;
+}
+
+.ink-droplet-svg {
+  position: absolute;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  opacity: 0;
+  z-index: 12;
+  transform-origin: center center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ink-text-target, .ink-blot-backdrop {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "paper": "#FFFDF5",
+          "paper-light": "#FFFFFF",
+          "paper-dim": "#F4EFE2",
+          "coral": "#E76F51",
+          "coral-dark": "#C8553D",
+          "indigo-ink": "#264653",
+          "indigo-light": "#3C6373",
+          "mustard": "#E9C46A",
+          "mustard-deep": "#DDA15E",
+          "teal-craft": "#2A9D8F",
+          "teal-light": "#E0F2F1"
+        },
+        borderRadius: {
+          "sm": "0.25rem",
+          "md": "0.5rem",
+          "lg": "0.75rem",
+          "xl": "1rem",
+          "2xl": "1.25rem"
+        },
+        fontFamily: {
+          vazir: ["Vazirmatn", "Space Grotesk", "sans-serif"],
+          display: ["Epilogue", "Vazirmatn", "sans-serif"],
+          mono: ["Space Grotesk", "Courier New", "monospace"]
+        }
+      }
+    }
+  }
+</script></head><body class="bg-paper font-vazir text-indigo-ink antialiased selection:bg-mustard selection:text-indigo-ink min-h-screen flex flex-col relative"><div class="cursor-dot opacity-0" id="custom-cursor-dot" style="opacity: 0; left: 1253px; top: 2805px;"></div><div class="cursor-ring opacity-0" id="custom-cursor-ring" style="opacity: 0; left: 1111.6px; top: 2974.89px;"></div><header class="fixed top-0 left-0 right-0 z-50 bg-[#FFFDF5]/90 backdrop-blur-md border-b-[2.5px] border-indigo-ink"><div class="max-w-7xl mx-auto h-20 px-4 sm:px-8 flex items-center justify-between flex-nowrap gap-4"><div class="flex items-center gap-3 shrink-0"><div class="relative flex items-center"><img alt="لوگو استودیو" class="h-8 w-auto object-contain border-[1.5px] border-indigo-ink bg-mustard/20 p-1 rounded-sm shadow-[-1.5px_1.5px_0px_#264653]" src="https://lh3.googleusercontent.com/aida/AEtjO1V-b8zrBQ-5lOeN_n7UgIuRukUPnHOgFaX6RdmBNvgYhDy2vRc5mKSJGdg25UJrFcy_8QNrxlnTYIYoc5vC0jZc1IcY89Fh5pWSpzX3sJleFR8DaEn_akHxTg2MhhNiNs0q1Tkp23q7Kv6a2Ar7e_59S5IHj_e45N6vJnipmopjF9bWV-g--Sa1NGHNvAovXSD0UdOC5i-AQj5KjJFPY7xcGFriY_IMakVaBbvazZxXcUjy7AYeStTnqg"><span class="absolute -top-1 -right-1 flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-craft opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-teal-craft"></span></span></div><div class="flex flex-col"><a class="font-display text-base sm:text-lg text-indigo-ink font-black hover:text-coral transition-colors tracking-tight leading-tight" href="#">استودیو کدولوژی</a><span class="text-[11px] text-indigo-light font-medium leading-none mt-0.5">توسعه فرانت‌اند دست‌ساز</span></div></div><nav class="hidden lg:flex items-center gap-4 shrink whitespace-nowrap text-[13px] font-bold text-indigo-ink"><a class="px-2 py-1 text-indigo-ink/80 hover:text-coral hover:bg-mustard/20 rounded transition-all" href="#projects-container">پروژه‌ها</a><a class="px-2 py-1 text-indigo-ink/80 hover:text-coral hover:bg-mustard/20 rounded transition-all" href="#estimator-section">برآورد هزینه</a><a class="px-2 py-1 text-indigo-ink/80 hover:text-coral hover:bg-mustard/20 rounded transition-all" href="#why-me-section">چرا مستقل؟</a><a class="px-2 py-1 text-indigo-ink/80 hover:text-coral hover:bg-mustard/20 rounded transition-all" href="#craft-values">اصول کارگاه</a><a class="px-2 py-1 text-indigo-ink/80 hover:text-coral hover:bg-mustard/20 rounded transition-all" href="#contact-section">تماس و سفارش</a></nav><div class="flex items-center gap-2.5 shrink-0 whitespace-nowrap"><div class="inline-flex items-center border-[1.5px] border-indigo-ink bg-paper-dim p-[2px] text-[10px] font-bold rounded-sm shadow-[-1.5px_1.5px_0px_#264653]"><a class="px-2 py-[2px] bg-indigo-ink text-paper rounded-[2px]" href="#">فا</a><a class="px-1.5 py-[2px] text-indigo-ink hover:text-coral transition-colors" href="#">EN</a></div><a class="craft-btn inline-flex items-center justify-center font-bold text-xs sm:text-[13px] px-3.5 py-1.5 bg-coral text-white rounded-sm whitespace-nowrap" href="#contact-section"><span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">coffee</span><span class="">مشاوره و سفارش</span></span></a></div></div></header><main class="w-full pt-20 bg-paper flex-1"><div class="flex flex-col w-full" dir="rtl"><canvas class="fixed inset-0 pointer-events-none z-30 opacity-60" height="4998" id="riso-canvas-trail" width="1280"></canvas><section class="w-full px-4 sm:px-8 lg:px-12 pt-12 pb-20 bg-paper border-b-[2.5px] border-indigo-ink relative overflow-hidden"><div class="absolute -top-10 left-10 w-72 h-72 bg-mustard/25 rounded-full blur-3xl pointer-events-none"></div><div class="absolute bottom-4 right-10 w-80 h-80 bg-coral/15 rounded-full blur-3xl pointer-events-none"></div><div class="absolute inset-0 paper-pattern opacity-40 pointer-events-none"></div><div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12 relative z-10"><div class="w-full lg:w-7/12 flex flex-col gap-6 text-right"><div class="flex flex-wrap items-center gap-2.5"><span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-coral/10 text-coral border border-coral/40"><span class="material-symbols-outlined text-[16px]">coffee</span>مشاوره ۱۰۰٪ رایگان و بدون تعهد</span><span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-teal-craft/15 text-teal-craft border border-teal-craft/40"><span class="material-symbols-outlined text-[16px]">calculate</span>ماشین‌حساب آنلاین قیمت و زمان</span><span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-mustard/25 text-indigo-ink border border-indigo-ink/20"><span class="material-symbols-outlined text-[16px] text-teal-craft">tune</span>امکان تست و شخصی‌سازی آزمایشی</span></div><h1 class="font-display text-[32px] sm:text-[46px] leading-[1.3] text-indigo-ink font-black">
+          طراحی وب با 
+          <span class="ink-splash-wrapper group relative inline-block text-coral px-3 py-1 mx-1.5 align-baseline" id="ink-interactive-phrase" title="برای پاشش جوهر ریزوگراف هاور کنید!">
+<!-- Organic SVG Ink Blots Backdrop -->
+<span class="ink-blot-backdrop flex items-center justify-center">
+<svg class="w-full h-full text-coral overflow-visible drop-shadow-[-2px_3px_0px_rgba(38,70,83,0.35)]" preserveAspectRatio="none" viewBox="0 0 160 60">
+<!-- Primary ink blot layer -->
+<path d="M12,28 C8,12 28,6 52,10 C75,5 95,2 120,6 C144,9 155,20 152,35 C149,49 135,54 110,52 C82,56 65,58 38,54 C16,51 6,42 12,28 Z" fill="#E76F51" opacity="0.94"></path>
+<!-- Secondary mustard under-layer accent for risograph registration look -->
+<path d="M8,32 C4,16 26,10 50,14 C73,9 91,6 116,10 C140,13 151,24 148,39 C145,53 131,58 106,56 C78,60 61,62 34,58 C12,55 2,46 8,32 Z" fill="#E9C46A" opacity="0.45" transform="translate(3, 2)"></path>
+<!-- Vibrant pink accent spot -->
+<circle cx="146" cy="18" fill="#F237A1" opacity="0.75" r="5"></circle>
+<circle cx="15" cy="46" fill="#F237A1" opacity="0.7" r="4"></circle>
+</svg>
+</span>
+<!-- Splatter Burst Particle Anchor Container -->
+<span class="absolute inset-0 pointer-events-none overflow-visible" id="ink-splatter-particles"></span>
+<!-- Splatter Satellite Droplets SVG Overlay -->
+<svg class="ink-droplet-svg -inset-6 w-[calc(100%+48px)] h-[calc(100%+48px)] transition-all duration-300" id="ink-droplets-overlay" style="opacity: 0; transform: scale(0.8);" viewBox="0 0 200 90">
+<circle class="origin-center" cx="12" cy="16" fill="#E76F51" opacity="0.85" r="4"></circle>
+<circle class="origin-center" cx="24" cy="6" fill="#E9C46A" opacity="0.9" r="3"></circle>
+<circle class="origin-center" cx="188" cy="18" fill="#E76F51" opacity="0.8" r="4.5"></circle>
+<circle class="origin-center" cx="178" cy="72" fill="#F237A1" opacity="0.85" r="3.5"></circle>
+<circle class="origin-center" cx="8" cy="76" fill="#2A9D8F" opacity="0.75" r="3"></circle>
+<path d="M 194,44 Q 200,42 196,48 Q 192,46 194,44 Z" fill="#E76F51" opacity="0.9"></path>
+<path d="M 6,34 Q 0,38 4,42 Q 8,38 6,34 Z" fill="#E76F51" opacity="0.85"></path>
+</svg>
+<!-- Ink Stamp Text -->
+<span class="ink-text-target font-black tracking-normal z-10 inline-block px-1">روح و اصالت</span>
+<!-- Underline accent base (when not splashed) -->
+<span class="absolute bottom-0 left-0 right-0 h-[3px] bg-coral rounded-full transition-opacity duration-200 group-[.splashed]:opacity-0"></span>
+</span>
+          برای کسب‌وکارهای مستقل و خلاق
+        </h1><p class="text-indigo-light text-[17px] sm:text-[18px] leading-[1.85] font-medium max-w-2xl">بدون واسطه و مستقیم با سازنده گفتگو کنید! قبل از هرگونه تعهد، با <strong class="">ماشین‌حساب آنلاین</strong> هزینه و زمان دقیق پروژه‌تان را برآورد کنید، در <strong class="">جلسه مشاوره رایگان ۳۰ دقیقه‌ای</strong> ایده‌تان را موشکافی کنیم و حتی چیدمان و دیزاین را به صورت <strong class="">تست و شخصی‌سازی زنده</strong> مطابق سلیقه برند خود بررسی فرمایید.</p><div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1"><div class="bg-paper-light border-[2px] border-indigo-ink p-3 rounded-sm shadow-[-2px_2px_0px_#264653] flex items-center gap-3"><span class="w-9 h-9 rounded bg-paper-dim text-indigo-ink flex items-center justify-center font-bold border border-indigo-ink/40"><span class="material-symbols-outlined text-[20px]">sentiment_satisfied</span></span><div class="text-xs sm:text-sm"><strong class="text-indigo-ink block">مشاوره رایگان ۳۰ دقیقه‌ای</strong><span class="">بدون هیچ پیش‌پرداخت یا تعهد مالی</span></div></div><div class="bg-paper-light border-[2px] border-indigo-ink p-3 rounded-sm shadow-[-2px_2px_0px_#264653] flex items-center gap-3"><span class="w-9 h-9 rounded bg-mustard/30 text-indigo-ink flex items-center justify-center font-bold border border-indigo-ink/40"><span class="material-symbols-outlined text-[20px]">calculate</span></span><div class="text-xs sm:text-sm"><strong class="text-indigo-ink block">تخمین آنلاین و شفاف هزینه</strong><span class="">محاسبه دقیق قیمت و تحویل در چند ثانیه</span></div></div><div class="bg-paper-light border-[2px] border-indigo-ink p-3 rounded-sm shadow-[-2px_2px_0px_#264653] flex items-center gap-3"><span class="w-9 h-9 rounded bg-teal-craft/20 text-teal-craft flex items-center justify-center font-bold border border-teal-craft/40"><span class="material-symbols-outlined text-[20px]">tune</span></span><div class="text-xs sm:text-sm"><strong class="text-indigo-ink block">تست و شخصی‌سازی آزمایشی</strong><span class="">بررسی زنده چیدمان قبل از شروع رسمی</span></div></div><div class="bg-paper-light border-[2px] border-indigo-ink p-3 rounded-sm shadow-[-2px_2px_0px_#264653] flex items-center gap-3"><span class="w-9 h-9 rounded bg-coral/20 text-coral flex items-center justify-center font-bold border border-coral/40"><span class="material-symbols-outlined text-[20px]">rocket_launch</span></span><div class="text-xs sm:text-sm"><strong class="text-indigo-ink block">تحویل چابک ۳ الی ۵ روز</strong><span class="">ارتباط مستقیم و کدنویسی اختصاصی</span></div></div></div><div class="flex flex-wrap items-center gap-4 pt-3"><a class="craft-btn inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-coral text-white rounded-sm font-bold text-base" href="#contact-section"><span class="">رزرو جلسه مشاوره رایگان (۳۰ دقیقه)</span><span class="material-symbols-outlined text-[20px]">coffee</span></a><a class="craft-btn inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-mustard text-indigo-ink rounded-sm font-bold text-base" href="#estimator-section"><span class="">محاسبه آنلاین قیمت و زمان تحویل</span><span class="material-symbols-outlined text-[20px]">calculate</span></a></div></div><div class="w-full lg:w-5/12 flex justify-center"><div class="relative w-full max-w-sm sm:max-w-md"><!-- Editorial Craft Backdrop & Shadow Card --><div class="absolute -top-3 -right-3 w-full h-full bg-mustard border-[2.5px] border-indigo-ink rounded-sm pointer-events-none"></div><!-- Main Editorial Identity Badge & Spec Sheet Container --><div class="relative bg-paper-light border-[2.5px] border-indigo-ink p-5 sm:p-6 rounded-sm shadow-[-5px_5px_0px_#264653] flex flex-col gap-4 overflow-hidden"><!-- Print Shop Crop Marks (Lines at 4 corners) --><div class="absolute top-1 right-1 w-3 h-3 border-t-2 border-r-2 border-indigo-ink/40 pointer-events-none"></div><div class="absolute top-1 left-1 w-3 h-3 border-t-2 border-l-2 border-indigo-ink/40 pointer-events-none"></div><div class="absolute bottom-1 right-1 w-3 h-3 border-b-2 border-r-2 border-indigo-ink/40 pointer-events-none"></div><div class="absolute bottom-1 left-1 w-3 h-3 border-b-2 border-l-2 border-indigo-ink/40 pointer-events-none"></div><!-- Header Banner: Identity Card & Serial --><div class="flex items-center justify-between border-b-[2px] border-indigo-ink pb-3 text-xs font-mono text-indigo-ink relative"><div class="flex items-center gap-2 font-bold"><span class="flex h-2.5 w-2.5 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-craft opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-teal-craft"></span></span><span class="tracking-tight text-indigo-ink">STUDIO ARCHIVE // SPEC-2025</span></div><div class="flex items-center gap-1.5"><span class="riso-stamp-teal text-[10px] py-[2px] px-2 font-bold">شناسنامه فنی کارگاه</span><span class="bg-indigo-ink text-paper text-[10px] px-1.5 py-[2px] rounded-sm font-mono font-bold">№ ۰۸۴</span></div></div><!-- Official Gelatin Riso Stamp & Studio Manifesto Quote --><div class="relative bg-paper-dim border-[2px] border-indigo-ink rounded-sm p-4 flex flex-col gap-3 shadow-[-2px_2px_0px_#264653] overflow-hidden"><!-- Floating Gelatin Embossed Riso Stamp --><div class="absolute -top-2 left-3 pointer-events-none select-none z-10 opacity-90 rotate-[-12deg]"><div class="border-[2.5px] border-dashed border-coral bg-coral/10 text-coral p-1.5 rounded-full w-20 h-20 flex flex-col items-center justify-center text-center shadow-inner backdrop-blur-[1px]"><span class="text-[8px] font-mono font-black tracking-widest leading-tight">ORIGINAL</span><span class="material-symbols-outlined text-[18px]">verified</span><span class="text-[8px] font-bold leading-tight">مهر کارگاه</span><span class="text-[7px] font-mono">100% CRAFT</span></div></div><div class="text-right pr-1"><span class="text-[11px] font-bold text-coral uppercase tracking-wider font-mono">MANIFESTO // مانیفست خلق محصول</span><h3 class="text-[17px] font-black text-indigo-ink mt-0.5 leading-snug"></h3><h3 class="text-[17px] font-black text-indigo-ink mt-0.5 leading-snug" style="--tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-gradient-from-position: ; --tw-gradient-via-position: ; --tw-gradient-to-position: ; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / 0.5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ; --tw-contain-size: ; --tw-contain-layout: ; --tw-contain-paint: ; --tw-contain-style: ; --tw-text-opacity: 1; color: rgb(38, 70, 83); letter-spacing: -0.24px; outline: none !important; box-shadow: none !important;">کد سبک، سرعت بالا، تبدیل حداکثری</h3><p class="text-[12px] text-indigo-light leading-relaxed mt-1 font-medium max-w-[82%]">توسعه فرانت‌اند دست‌ساز بر پایه مهندسی تمیز، بدون افزونه‌های مخرب، با وفاداری به هویت بصری چاپ ریزوگراف و بالاترین سرعت بارگذاری در وب فارسی.</p></div><!-- Spec Sheet Technical Grid --><div class="grid grid-cols-2 gap-2 pt-2 border-t border-dashed border-indigo-ink/30"><div class="bg-paper border border-indigo-ink/40 p-2 rounded-sm text-right"><span class="text-[10px] text-indigo-light font-bold block mb-0.5">معماری و استاندارد:</span><div class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-teal-craft"></span><span class="text-[12px] font-mono font-black text-indigo-ink">Zero-Bloat Next 15</span></div></div><div class="bg-paper border border-indigo-ink/40 p-2 rounded-sm text-right"><span class="text-[10px] text-indigo-light font-bold block mb-0.5">شاخص عملکرد (Lighthouse):</span><div class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-coral"></span><span class="text-[12px] font-mono font-black text-indigo-ink">99/100 Perf &amp; SEO</span></div></div><div class="bg-paper border border-indigo-ink/40 p-2 rounded-sm text-right"><span class="text-[10px] text-indigo-light font-bold block mb-0.5">میانگین وزن صفحه:</span><div class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-mustard-deep"></span><span class="text-[12px] font-mono font-black text-indigo-ink">&lt; 380 KB (سبک)</span></div></div><div class="bg-paper border border-indigo-ink/40 p-2 rounded-sm text-right"><span class="text-[10px] text-indigo-light font-bold block mb-0.5">آثار زیست‌محیطی:</span><div class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-teal-craft"></span><span class="text-[12px] font-mono font-black text-indigo-ink">~0.14g CO2 (Eco)</span></div></div></div></div><!-- Quick Comparison: Handcrafted Code vs Generic Templates --><div class="border-[1.5px] border-indigo-ink bg-paper p-3 rounded-sm flex flex-col gap-2"><div class="flex items-center justify-between text-[11px] font-bold text-indigo-ink pb-1 border-b border-indigo-ink/20"><span class="">مقایسه فنی: کد دست‌ساز در برابر وردپرس سنگین</span><span class="text-[10px] font-mono text-teal-craft font-bold">BENCHMARK</span></div><div class="grid grid-cols-2 gap-2 text-right"><div class="bg-teal-light/60 border border-teal-craft/40 p-2 rounded-sm"><span class="text-[10px] font-bold text-teal-craft flex items-center gap-1"><span class="material-symbols-outlined text-[13px]">check_circle</span>کد اختصاصی کارگاه:</span><ul class="text-[10px] text-indigo-ink mt-1 space-y-0.5 font-medium leading-tight"><li class="">• لود زیر ۰.۷ ثانیه</li><li class="">• ۱۰۰٪ سازگار با هویت برند</li><li class="">• امنیت بدون باگ و رخنه</li></ul></div><div class="bg-coral/10 border border-coral/30 p-2 rounded-sm"><span class="text-[10px] font-bold text-coral-dark flex items-center gap-1"><span class="material-symbols-outlined text-[13px]">cancel</span>قالب آماده و المنتور:</span><ul class="text-[10px] text-indigo-light mt-1 space-y-0.5 font-medium leading-tight"><li class="">• لود کند (۴ تا ۸ ثانیه)</li><li class="">• ۳۰+ افزونه ناهمگون و تکراری</li><li class="">• هزینه مداوم رفع باگ و سرور</li></ul></div></div></div><!-- Tech Stack Badges (RTL/LTR Friendly) --><div class="flex flex-wrap gap-1.5 pt-0.5" dir="ltr"><span class="px-2 py-0.5 bg-paper-dim border border-indigo-ink text-[10px] font-mono text-indigo-ink font-bold rounded-sm">Next.js 15</span><span class="px-2 py-0.5 bg-coral/20 border border-indigo-ink text-[10px] font-mono text-coral font-bold rounded-sm">Tailwind CSS</span><span class="px-2 py-0.5 bg-paper-dim border border-indigo-ink text-[10px] font-mono text-indigo-ink font-bold rounded-sm">TypeScript</span><span class="px-2 py-0.5 bg-teal-light border border-indigo-ink text-[10px] font-mono text-teal-craft font-bold rounded-sm">Clean Canvas</span><span class="px-2 py-0.5 bg-mustard/30 border border-indigo-ink text-[10px] font-mono text-indigo-ink font-bold rounded-sm">Bespoke UI</span></div><!-- Footer Barcode & Authenticity Seal --><div class="flex items-center justify-between pt-2 border-t border-dashed border-indigo-ink/30"><div class="flex items-center gap-2"><svg class="h-6 w-24 text-indigo-ink" preserveAspectRatio="none" viewBox="0 0 100 24"><path d="M2,2 h2 v20 h-2 Z M6,2 h1 v20 h-1 Z M9,2 h3 v20 h-3 Z M14,2 h1 v20 h-1 Z M17,2 h4 v20 h-4 Z M23,2 h2 v20 h-2 Z M27,2 h1 v20 h-1 Z M30,2 h3 v20 h-3 Z M35,2 h2 v20 h-2 Z M39,2 h4 v20 h-4 Z M45,2 h1 v20 h-1 Z M48,2 h3 v20 h-3 Z M53,2 h2 v20 h-2 Z M57,2 h1 v20 h-1 Z M60,2 h4 v20 h-4 Z M66,2 h2 v20 h-2 Z M70,2 h1 v20 h-1 Z M73,2 h3 v20 h-3 Z M78,2 h2 v20 h-2 Z M82,2 h3 v20 h-3 Z M87,2 h1 v20 h-1 Z M90,2 h4 v20 h-4 Z M96,2 h2 v20 h-2 Z" fill="currentColor"></path></svg><span class="text-[9px] font-mono font-bold text-indigo-light tracking-widest hidden sm:inline">CODOLOGY-SPEC#084</span></div><div class="flex items-center gap-1.5 bg-mustard/25 border border-indigo-ink/30 px-2.5 py-1 rounded-sm text-[10px] font-bold text-indigo-ink"><span class="material-symbols-outlined text-[13px] text-coral">verified</span><span class="">ضمانت کد تمیز و اصیل</span></div></div></div></div></div></div></section><section class="w-full px-4 sm:px-8 lg:px-12 py-20 bg-paper-dim border-b-[2.5px] border-indigo-ink" id="why-me-section"><div class="max-w-7xl mx-auto flex flex-col gap-10"><div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b-[2px] border-indigo-ink pb-6"><div><h2 class="text-[26px] sm:text-[34px] text-indigo-ink font-black">چرا کار با یک سازنده مستقل بهتر و کم هزینه تر است؟</h2></div><div class="riso-stamp-mustard text-xs font-bold">
+          بدون بوروکراسی شرکتی، مستقیم با خود سازنده
+        </div></div><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"><div class="craft-card bg-paper-light p-6 rounded-sm flex flex-col justify-between relative overflow-hidden"><div class="absolute -top-6 -left-6 w-16 h-16 bg-coral/10 rounded-full"></div><div><div class="w-12 h-12 bg-coral text-white border-[2px] border-indigo-ink rounded-sm flex items-center justify-center mb-4 shadow-[-2px_2px_0px_#264653]"><span class="material-symbols-outlined text-[26px]">flash_on</span></div><h3 class="text-[19px] text-indigo-ink font-extrabold pb-2">تحویل فوق‌سریع در چند روز</h3><p class="text-sm text-indigo-light leading-relaxed">
+              دیگر ماه‌ها منتظر جلسات اداری و رفت‌وبرگشت‌های فرسایشی نشوید. پروژه شما طی ۳ تا ۷ روز آماده بهره‌برداری و جذب مشتری می‌شود.
+            </p></div><div class="mt-5 pt-3 border-t-2 border-dashed border-indigo-ink/20 flex items-center justify-between text-xs font-bold text-coral"><span class="">⚡ میانگین تحویل: ۳ تا ۵ روز</span><span class="material-symbols-outlined text-[16px]">schedule</span></div></div><div class="craft-card bg-paper-light p-6 rounded-sm flex flex-col justify-between relative overflow-hidden"><div class="absolute -top-6 -left-6 w-16 h-16 bg-mustard/20 rounded-full"></div><div><div class="w-12 h-12 bg-mustard text-indigo-ink border-[2px] border-indigo-ink rounded-sm flex items-center justify-center mb-4 shadow-[-2px_2px_0px_#264653]"><span class="material-symbols-outlined text-[26px]">local_atm</span></div><h3 class="text-[19px] text-indigo-ink font-extrabold pb-2">تعرفه منصفانه و اقتصادی</h3><p class="text-sm text-indigo-light leading-relaxed">
+              بودجه شما صرف کیفیت کد و زیبایی بصری می‌شود؛ نه اجاره دفترهای لوکس آژانس‌ها یا حقوق مدیران واسطه و کارشناسان فروش.
+            </p></div><div class="mt-5 pt-3 border-t-2 border-dashed border-indigo-ink/20 flex items-center justify-between text-xs font-bold text-indigo-ink"><span class="">💰 تا ۵۰٪ صرفه‌جویی بودجه</span><span class="material-symbols-outlined text-[16px]">verified</span></div></div><div class="craft-card bg-paper-light p-6 rounded-sm flex flex-col justify-between relative overflow-hidden"><div class="absolute -top-6 -left-6 w-16 h-16 bg-teal-craft/15 rounded-full"></div><div><div class="w-12 h-12 bg-teal-craft text-white border-[2px] border-indigo-ink rounded-sm flex items-center justify-center mb-4 shadow-[-2px_2px_0px_#264653]"><span class="material-symbols-outlined text-[26px]">palette</span></div><h3 class="text-[19px] text-indigo-ink font-extrabold pb-2">طراحی دست‌ساز و بااصالت</h3><p class="text-sm text-indigo-light leading-relaxed">
+              سایت شما شبیه هزاران وب‌سایت کپی‌شده دیگر نخواهد بود. پالت‌های رنگی جذاب، تایپوگرافی خوش‌خوان و بافت بصری باهویت متناسب با کسب‌وکارتان.
+            </p></div><div class="mt-5 pt-3 border-t-2 border-dashed border-indigo-ink/20 flex items-center justify-between text-xs font-bold text-teal-craft"><span class="">✨ هویت بصری منحصر‌به‌فرد</span><span class="material-symbols-outlined text-[16px]">stars</span></div></div><div class="craft-card bg-paper-light p-6 rounded-sm flex flex-col justify-between relative overflow-hidden"><div class="absolute -top-6 -left-6 w-16 h-16 bg-indigo-ink/10 rounded-full"></div><div><div class="w-12 h-12 bg-indigo-ink text-paper border-[2px] border-indigo-ink rounded-sm flex items-center justify-center mb-4 shadow-[-2px_2px_0px_#E76F51]"><span class="material-symbols-outlined text-[26px]">science</span></div><h3 class="text-[19px] text-indigo-ink font-extrabold pb-2">نظم علمی و معماری پایدار</h3><p class="text-sm text-indigo-light leading-relaxed">
+              تخصص ارشد مهندسی بهداشت محیط به معنای احترام عمیق به بهینگی است: کدهای تمیز، لود زیر یک ثانیه و کمترین بار سرور و مصرف باتری.
+            </p></div><div class="mt-5 pt-3 border-t-2 border-dashed border-indigo-ink/20 flex items-center justify-between text-xs font-bold text-indigo-ink"><span class="">🌱 رتبه لایت‌هاوس ۹۵ به بالا</span><span class="material-symbols-outlined text-[16px]">eco</span></div></div></div></div></section><section class="w-full px-4 sm:px-8 lg:px-12 py-20 bg-paper border-b-[2.5px] border-indigo-ink" id="projects-container"><div class="max-w-7xl mx-auto flex flex-col gap-10"><div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b-[2px] border-indigo-ink pb-6"><div><div class="flex items-center gap-2 mb-1.5"><span class="riso-stamp text-[11px]">ویترین کارهای دست‌ساز</span></div><h2 class="text-[26px] sm:text-[34px] text-indigo-ink font-black">پروژه‌های منتخب</h2></div><div class="flex items-center gap-2 overflow-x-auto pb-1" id="project-filters"><button class="filter-btn active craft-btn px-4 py-1.5 text-xs font-bold bg-coral text-white rounded-sm" data-filter="all">همه کارها</button><button class="filter-btn craft-btn px-4 py-1.5 text-xs font-bold bg-paper-light text-indigo-ink rounded-sm hover:bg-mustard/30 transition-colors" data-filter="web-app">وب‌اپ و ابزارها</button><button class="filter-btn craft-btn px-4 py-1.5 text-xs font-bold bg-paper-light text-indigo-ink rounded-sm hover:bg-mustard/30 transition-colors" data-filter="landing">لندینگ تبلیغاتی</button><button class="filter-btn craft-btn px-4 py-1.5 text-xs font-bold bg-paper-light text-indigo-ink rounded-sm hover:bg-mustard/30 transition-colors" data-filter="store">فروشگاه اختصاصی</button></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-8"><div class="project-item craft-card bg-paper-light p-5 rounded-sm relative flex flex-col justify-between" data-category="web-app"><div class="relative w-full h-60 bg-paper-dim border-[2px] border-indigo-ink overflow-hidden mb-4 flex items-center justify-center p-3 rounded-sm"><svg class="w-full h-full text-indigo-ink opacity-90" fill="none" stroke="currentColor" viewBox="0 0 400 200"><rect height="180" stroke-dasharray="4 4" stroke-width="2" width="380" x="10" y="10"></rect><path d="M 20 160 Q 80 80, 140 120 T 260 50 T 380 90" fill="none" stroke="#e64833" stroke-width="3"></path><circle cx="140" cy="120" fill="#1e2640" r="5"></circle><circle cx="260" cy="50" fill="#e64833" r="5"></circle><circle cx="380" cy="90" fill="#a46700" r="5"></circle><text fill="#1e2640" font-family="Space Grotesk" font-size="12" x="30" y="45">AQI: 42 (Clean) | Temp: 21.4°C | CO2: 412ppm</text></svg><div class="absolute top-2.5 right-2.5 riso-stamp text-[10px] bg-paper-light shadow-sm">
+                مهر تایید فنی IoT
+              </div><div class="absolute bottom-2.5 left-2.5 bg-indigo-ink text-paper px-2 py-0.5 text-[10px] font-mono font-bold rounded">
+                NEXT.JS 15
+              </div></div><div class="flex items-center justify-between text-indigo-light font-mono text-[11px] mb-1.5"><span class="font-bold text-teal-craft">سیستم پایش آلودگی محیط زیست</span><span class="text-coral font-bold">زمان اجرا: ۴ روز</span></div><h3 class="text-[20px] text-indigo-ink font-black mb-2">سامانه تحلیلی پایش آنلاین شاخص‌های بهداشت محیط</h3><p class="text-sm text-indigo-light leading-relaxed mb-4">
+              داشبورد داده‌محور اختصاصی جهت مانیتورینگ آنلاین کیفیت هوا، میکروکلیمای شهری و پارامترهای بهداشتی محیط کار با نمودارهای واکنش‌گرا و هشدار خودکار.
+            </p><div class="flex items-center justify-between pt-3 border-t-2 border-dashed border-indigo-ink/20"><a class="inline-flex items-center gap-1.5 text-xs text-coral hover:text-indigo-ink font-extrabold group" href="#contact-section"><span class="">درخواست ساخت سیستم مشابه</span><span class="material-symbols-outlined text-[17px] group-hover:translate-x-[-2px] transition-transform">arrow_left</span></a><span class="text-[11px] font-mono text-indigo-ink bg-mustard/30 px-2 py-0.5 border border-indigo-ink/30 rounded">کدنویسی بهینه</span></div></div><div class="project-item craft-card bg-paper-light p-5 rounded-sm relative flex flex-col justify-between" data-category="store"><div class="relative w-full h-60 bg-paper-dim border-[2px] border-indigo-ink overflow-hidden mb-4 flex items-center justify-center p-3 rounded-sm"><svg class="w-full h-primary opacity-90" fill="none" stroke="currentColor" viewBox="0 0 400 200"><rect height="150" stroke="#1e2640" stroke-width="2" width="110" x="20" y="20"></rect><rect height="150" stroke="#e64833" stroke-width="2" width="110" x="145" y="20"></rect><rect height="150" stroke="#1e2640" stroke-width="2" width="110" x="270" y="20"></rect><circle cx="75" cy="70" r="25" stroke="#e64833" stroke-width="2"></circle><circle cx="200" cy="70" r="25" stroke="#1e2640" stroke-width="2"></circle><circle cx="325" cy="70" r="25" stroke="#e64833" stroke-width="2"></circle><text fill="#1e2640" font-family="Space Grotesk" font-size="11" x="35" y="140">Artisan Bread</text><text fill="#e64833" font-family="Space Grotesk" font-size="11" x="160" y="140">Pour-over</text><text fill="#1e2640" font-family="Space Grotesk" font-size="11" x="285" y="140">Pastry Box</text></svg><div class="absolute top-2.5 right-2.5 riso-stamp-mustard text-[10px] bg-paper-light shadow-sm">
+                سبد خرید فوق‌سریع
+              </div><div class="absolute bottom-2.5 left-2.5 bg-coral text-white px-2 py-0.5 text-[10px] font-mono font-bold rounded">
+                VUE + PINIA
+              </div></div><div class="flex items-center justify-between text-indigo-light font-mono text-[11px] mb-1.5"><span class="font-bold text-coral">کافه و نانوایی دست‌ساز</span><span class="text-coral font-bold">زمان اجرا: ۶ روز</span></div><h3 class="text-[20px] text-indigo-ink font-black mb-2">وب‌سایت فروشگاهی اختصاصی نان فانتزی و کافه تخصصی</h3><p class="text-sm text-indigo-light leading-relaxed mb-4">
+              سبک، بسیار سریع با رابط کاربری اشتهاآور و مدرن؛ تسویه حساب دو مرحله‌ای، سبد خرید فوری و بارگذاری کمتر از ۰.۸ ثانیه روی سرور داخلی.
+            </p><div class="flex items-center justify-between pt-3 border-t-2 border-dashed border-indigo-ink/20"><a class="inline-flex items-center gap-1.5 text-xs text-coral hover:text-indigo-ink font-extrabold group" href="#contact-section"><span class="">سفارش فروشگاه اینترنتی</span><span class="material-symbols-outlined text-[17px] group-hover:translate-x-[-2px] transition-transform">arrow_left</span></a><span class="text-[11px] font-mono text-indigo-ink bg-mustard/30 px-2 py-0.5 border border-indigo-ink/30 rounded">لود ۰.۸ ثانیه</span></div></div><div class="project-item craft-card bg-paper-light p-5 rounded-sm relative flex flex-col justify-between" data-category="landing"><div class="relative w-full h-60 bg-paper-dim border-[2px] border-indigo-ink overflow-hidden mb-4 flex items-center justify-center p-3 rounded-sm"><svg class="w-full h-full text-secondary" fill="none" viewBox="0 0 400 200"><path d="M 40 150 L 120 120 L 200 135 L 280 80 L 360 40" stroke="#1e2640" stroke-width="3"></path><rect fill="#ffdad4" height="25" stroke="#e64833" stroke-width="1.5" width="70" x="310" y="25"></rect><text fill="#e64833" font-family="Space Grotesk" font-size="11" font-weight="bold" x="318" y="42">+40% CONV</text><line stroke="#8f706b" stroke-dasharray="3 3" x1="40" x2="360" y1="160" y2="160"></line></svg><div class="absolute top-2.5 right-2.5 riso-stamp-teal text-[10px] bg-paper-light shadow-sm">
+                نرخ تبدیل بالا (+۴۰٪)
+              </div><div class="absolute bottom-2.5 left-2.5 bg-teal-craft text-white px-2 py-0.5 text-[10px] font-mono font-bold rounded">
+                REACT + FRAMER
+              </div></div><div class="flex items-center justify-between text-indigo-light font-mono text-[11px] mb-1.5"><span class="font-bold text-indigo-ink">B2B SaaS کمپین مارکتینگ</span><span class="text-coral font-bold">زمان اجرا: ۳ روز</span></div><h3 class="text-[20px] text-indigo-ink font-black mb-2">لندینگ‌پیج افزایش مشتری پلتفرم نرم‌افزاری ابری</h3><p class="text-sm text-indigo-light leading-relaxed mb-4">
+              طراحی مهندسی‌شده مسیر تبدیل کاربر به خریدار، انیمیشن‌های مینیمال در هاورها و تست A/B موفق که منجر به جهش ۴۰ درصدی ثبت‌نام نسخه آزمایشی شد.
+            </p><div class="flex items-center justify-between pt-3 border-t-2 border-dashed border-indigo-ink/20"><a class="inline-flex items-center gap-1.5 text-xs text-coral hover:text-indigo-ink font-extrabold group" href="#contact-section"><span class="">مشاوره برای لندینگ پیج</span><span class="material-symbols-outlined text-[17px] group-hover:translate-x-[-2px] transition-transform">arrow_left</span></a><span class="text-[11px] font-mono text-indigo-ink bg-mustard/30 px-2 py-0.5 border border-indigo-ink/30 rounded">A/B تست‌شده</span></div></div><div class="project-item craft-card bg-paper-light p-5 rounded-sm relative flex flex-col justify-between" data-category="web-app"><div class="relative w-full h-60 bg-paper-dim border-[2px] border-indigo-ink overflow-hidden mb-4 flex items-center justify-center p-3 rounded-sm"><svg class="w-full h-full text-secondary" fill="none" viewBox="0 0 400 200"><rect height="140" rx="4" stroke="#1e2640" stroke-width="2" width="320" x="40" y="30"></rect><rect fill="#dbe1ff" height="40" stroke="#1e2640" width="80" x="60" y="55"></rect><rect fill="#ffdad4" height="40" stroke="#e64833" width="80" x="160" y="55"></rect><rect fill="#dbe1ff" height="40" stroke="#1e2640" width="80" x="260" y="55"></rect><circle cx="100" cy="130" fill="#a46700" r="14"></circle><text fill="#1c1c17" font-family="Space Grotesk" font-size="12" x="130" y="135">دکتر م. رضایی - وقت‌های باز امروز</text></svg><div class="absolute top-2.5 right-2.5 riso-stamp text-[10px] bg-paper-light shadow-sm">
+                نوبت‌دهی خودکار پیامکی
+              </div><div class="absolute bottom-2.5 left-2.5 bg-indigo-ink text-paper px-2 py-0.5 text-[10px] font-mono font-bold rounded">
+                TYPESCRIPT
+              </div></div><div class="flex items-center justify-between text-indigo-light font-mono text-[11px] mb-1.5"><span class="font-bold text-teal-craft">بهداشت و سلامت دیجیتال</span><span class="text-coral font-bold">زمان اجرا: ۵ روز</span></div><h3 class="text-[20px] text-indigo-ink font-black mb-2">پورتال نوبت‌دهی آنلاین کلینیک تخصصی و دندانپزشکی</h3><p class="text-sm text-indigo-light leading-relaxed mb-4">
+              سامانه رزرو خودکار با پیامک تایید آنی، مدیریت پزشکان بدون سردرگمی بیماران، و تطابق با استانداردهای بهداشت دیجیتال و حریم خصوصی.
+            </p><div class="flex items-center justify-between pt-3 border-t-2 border-dashed border-indigo-ink/20"><a class="inline-flex items-center gap-1.5 text-xs text-coral hover:text-indigo-ink font-extrabold group" href="#contact-section"><span class="">درخواست دمو سامانه نوبت‌دهی</span><span class="material-symbols-outlined text-[17px] group-hover:translate-x-[-2px] transition-transform">arrow_left</span></a><span class="text-[11px] font-mono text-indigo-ink bg-mustard/30 px-2 py-0.5 border border-indigo-ink/30 rounded">سامانه پیامکی</span></div></div></div></div></section><section class="w-full px-4 sm:px-8 lg:px-12 py-20 bg-paper-dim border-b-[2.5px] border-indigo-ink" id="estimator-section"><div class="max-w-7xl mx-auto flex flex-col gap-10"><div class="text-right border-b-[2px] border-indigo-ink pb-6"><h2 class="text-[26px] sm:text-[34px] text-indigo-ink font-black">برآورد رایگان زمان و هزینه پروژه شما</h2><p class="text-indigo-light text-base max-w-2xl pt-2 font-medium">
+            بدون نیاز به مذاکرات طولانی و قیمت‌های متغیر؛ نوع سایت خود را انتخاب کنید تا محدوده سرمایه‌گذاری و&nbsp;</p><div>تاریخ دقیق تحویل بدون واسطه مشخص گردد.
+          </div><p></p></div><div class="grid grid-cols-1 lg:grid-cols-12 gap-8"><div class="lg:col-span-7 craft-card bg-paper-light p-6 sm:p-8 rounded-sm flex flex-col gap-6"><div><label class="block text-[16px] text-indigo-ink font-black mb-3 flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-coral text-white text-xs flex items-center justify-center font-mono">۱</span><span class="">نوع وب‌سایت یا پروژه مورد نیاز:</span></label><div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="site-types"><label class="flex items-center justify-between p-3.5 border-[2px] border-indigo-ink cursor-pointer bg-paper hover:bg-mustard/20 rounded-sm transition-colors"><div class="flex items-center gap-2.5"><input checked="" class="accent-coral w-4 h-4" name="projectType" type="radio" value="landing"><span class="font-bold text-sm text-indigo-ink">لندینگ‌پیج معرفی و تبلیغاتی</span></div><span class="text-[12px] font-mono text-coral font-bold">پایه ۴ م.ت</span></label><label class="flex items-center justify-between p-3.5 border-[2px] border-indigo-ink cursor-pointer bg-paper hover:bg-mustard/20 rounded-sm transition-colors"><div class="flex items-center gap-2.5"><input class="accent-coral w-4 h-4" name="projectType" type="radio" value="corporate"><span class="font-bold text-sm text-indigo-ink">وب‌سایت شرکتی / خدماتی</span></div><span class="text-[12px] font-mono text-coral font-bold">پایه ۷ م.ت</span></label><label class="flex items-center justify-between p-3.5 border-[2px] border-indigo-ink cursor-pointer bg-paper hover:bg-mustard/20 rounded-sm transition-colors"><div class="flex items-center gap-2.5"><input class="accent-coral w-4 h-4" name="projectType" type="radio" value="ecommerce"><span class="font-bold text-sm text-indigo-ink">فروشگاه آنلاین دست‌ساز</span></div><span class="text-[12px] font-mono text-coral font-bold">پایه ۱۱ م.ت</span></label><label class="flex items-center justify-between p-3.5 border-[2px] border-indigo-ink cursor-pointer bg-paper hover:bg-mustard/20 rounded-sm transition-colors"><div class="flex items-center gap-2.5"><input class="accent-coral w-4 h-4" name="projectType" type="radio" value="webapp"><span class="font-bold text-sm text-indigo-ink">وب‌اپلیکیشن یا پورتال سفارشی</span></div><span class="text-[12px] font-mono text-coral font-bold">پایه ۱۴ م.ت</span></label></div></div><div><label class="block text-[16px] text-indigo-ink font-black mb-3 flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-coral text-white text-xs flex items-center justify-center font-mono">۲</span><span class="">اولویت زمان‌بندی و تحویل کار:</span></label><div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="timeline-options"><label class="p-3 border-[2px] border-indigo-ink cursor-pointer text-center bg-paper hover:bg-mustard/20 rounded-sm transition-colors"><input checked="" class="accent-coral sr-only" name="speedOption" type="radio" value="standard"><div class="font-bold text-sm text-indigo-ink option-title">عادی (۷ تا ۱۰ روز)</div><div class="text-[11px] font-mono text-indigo-light mt-0.5">اقتصادی و آرام</div></label><label class="p-3 border-[2px] border-indigo-ink cursor-pointer text-center bg-paper hover:bg-mustard/20 rounded-sm transition-colors"><input class="accent-coral sr-only" name="speedOption" type="radio" value="fast"><div class="font-bold text-sm text-indigo-ink option-title">سریع (۳ تا ۵ روز)</div><div class="text-[11px] font-mono text-coral font-bold mt-0.5">+۲۰٪ شتاب‌یافته</div></label><label class="p-3 border-[2px] border-indigo-ink cursor-pointer text-center bg-paper hover:bg-mustard/20 rounded-sm transition-colors"><input class="accent-coral sr-only" name="speedOption" type="radio" value="urgent"><div class="font-bold text-sm text-indigo-ink option-title">فوری (۴۸ ساعته)</div><div class="text-[11px] font-mono text-coral-dark font-black mt-0.5">+۴۰٪ شیفت شبانه</div></label></div></div><div><label class="block text-[16px] text-indigo-ink font-black mb-3 flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-coral text-white text-xs flex items-center justify-center font-mono">۳</span><span class="">امکانات و ماژول‌های تکمیلی کارگاه:</span></label><div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><label class="flex items-center gap-2.5 p-3 border-[1.5px] border-indigo-ink/40 bg-paper cursor-pointer rounded-sm hover:border-indigo-ink"><input class="addon-check accent-coral h-4 w-4" name="addons" type="checkbox" value="seo"><span class="text-xs sm:text-sm text-indigo-ink font-medium">سئو تکنیکال و رتبه گوگل (+۱.۵ م.ت)</span></label><label class="flex items-center gap-2.5 p-3 border-[1.5px] border-indigo-ink/40 bg-paper cursor-pointer rounded-sm hover:border-indigo-ink"><input class="addon-check accent-coral h-4 w-4" name="addons" type="checkbox" value="cms"><span class="text-xs sm:text-sm text-indigo-ink font-medium">پنل مدیریت محتوای ساده (+۲ م.ت)</span></label><label class="flex items-center gap-2.5 p-3 border-[1.5px] border-indigo-ink/40 bg-paper cursor-pointer rounded-sm hover:border-indigo-ink"><input class="addon-check accent-coral h-4 w-4" name="addons" type="checkbox" value="support"><span class="text-xs sm:text-sm text-indigo-ink font-medium">پشتیبانی و مراقبت ۶ ماهه (+۱ م.ت)</span></label><label class="flex items-center gap-2.5 p-3 border-[1.5px] border-indigo-ink/40 bg-paper cursor-pointer rounded-sm hover:border-indigo-ink"><input class="addon-check accent-coral h-4 w-4" name="addons" type="checkbox" value="motion"><span class="text-xs sm:text-sm text-indigo-ink font-medium">میکروانیمیشن‌های جذاب (+۱.۲ م.ت)</span></label></div></div></div><div class="lg:col-span-5 craft-card bg-paper-light p-6 sm:p-8 rounded-sm flex flex-col justify-between relative"><div class="flex flex-col gap-5"><div class="flex items-center justify-between border-b-[2px] border-indigo-ink pb-3"><span class="text-xs font-mono font-bold text-indigo-ink">INVOICE SUMMARY // پیش‌فاکتور زنده</span><span class="riso-stamp text-[10px]">بدون واسطه</span></div><div class="space-y-3 text-sm text-indigo-light"><div class="flex justify-between items-center py-1.5 border-b border-indigo-ink/15"><span class="">پروژه انتخابی:</span><span class="font-extrabold text-indigo-ink" id="summary-project-type">وب‌سایت شرکتی / خدماتی</span></div><div class="flex justify-between items-center py-1.5 border-b border-indigo-ink/15"><span class="">زمان‌بندی تحویل:</span><span class="font-extrabold text-teal-craft" id="summary-timeline">۷ تا ۱۰ روز کاری</span></div><div class="flex justify-between items-center py-1.5 border-b border-indigo-ink/15"><span class="">امکانات جانبی:</span><span class="font-extrabold text-coral" id="summary-addons-count">0 مورد انتخاب شده</span></div><div class="flex justify-between items-center py-1.5 border-b border-indigo-ink/15"><span class="">راه‌اندازی هاست و اتصال دامنه:</span><span class="font-extrabold text-teal-craft">۱۰۰٪ هدیه رایگان</span></div></div><div class="p-4 bg-mustard/20 border-[2px] border-indigo-ink rounded-sm flex flex-col gap-1 text-center my-2 shadow-[-2px_2px_0px_#264653]"><span class="text-xs font-bold text-indigo-ink">محدوده سرمایه‌گذاری تقریبی</span><div class="flex items-baseline justify-center gap-1.5"><span class="font-display text-[34px] font-black text-coral" id="calc-price-min">7.0</span><span class="text-indigo-ink font-black text-lg">تا</span><span class="font-display text-[34px] font-black text-coral" id="calc-price-max">10.0</span><span class="text-sm font-bold text-indigo-ink">میلیون تومان</span></div><span class="text-[11px] text-indigo-light">شامل صفر تا صد کدنویسی، رسپانسیو و تحویل نهایی</span></div></div><div class="flex flex-col gap-2 pt-4"><button class="craft-btn w-full py-3.5 bg-coral text-white rounded-sm font-black text-base flex items-center justify-center gap-2" id="book-estimate-btn"><span class="">تایید برآورد و شروع گفتگو</span><span class="material-symbols-outlined text-[18px]">send</span></button><p class="text-center text-[11px] text-indigo-light font-medium">
+                جلسه ۳۰ دقیقه‌ای بدون نیاز به پیش‌پرداخت • بررسی تخصصی نیازمندی‌ها
+              </p></div></div></div></div></section><section class="w-full px-4 sm:px-8 lg:px-12 py-20 bg-paper border-b-[2.5px] border-indigo-ink" id="craft-values"><div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-8 bg-paper-dim border-[2px] border-indigo-ink p-8 rounded-sm shadow-[-4px_4px_0px_#264653]"><div class="w-16 h-16 bg-mustard text-indigo-ink border-[2px] border-indigo-ink rounded-sm flex items-center justify-center shrink-0 shadow-[-2px_2px_0px_#264653]"><span class="material-symbols-outlined text-[34px]">history_edu</span></div><div class="flex flex-col gap-1 text-right flex-1"><h4 class="text-lg font-black text-indigo-ink">تعهد اخلاقی استودیو چاپ و کد</h4><p class="text-sm text-indigo-light leading-relaxed">
+            هیچ پروژه‌ای به شخص ثالث یا کارآموز برونسپاری نمی‌شود. تمامی خطوط کدنویسی، بهینه‌سازی تصاویر و چیدمان‌ها مستقیماً توسط خودم با وسواس علمی مهندسی و ذوق دیزاین انجام خواهد شد.
+          </p></div></div></section><section class="w-full px-4 sm:px-8 lg:px-12 py-20 bg-paper" id="contact-section"><div class="max-w-7xl mx-auto flex flex-col gap-10"><div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b-[2px] border-indigo-ink pb-6"><div><h2 class="text-[26px] sm:text-[34px] text-indigo-ink font-black">شروع گفتگو و هماهنگی جلسه مشاوره رایگان</h2></div><div class="riso-stamp text-xs font-bold">
+          پاسخگویی سریع در کمتر از ۲ ساعت
+        </div></div><div class="grid grid-cols-1 lg:grid-cols-12 gap-8"><div class="lg:col-span-5 flex flex-col gap-5"><p class="text-indigo-light text-base leading-relaxed font-medium">
+              ایده شما در چه مرحله‌ای است؟ فرقی نمی‌کند یک ایده خام روی کاغذ باشد یا محصولی آماده راه‌اندازی؛ مستقیماً پیام دهید تا کم‌هزینه‌ترین و سریع‌ترین مسیر فنی را رایگان با هم مرور کنیم.
+            </p><div class="flex flex-col gap-3"><a class="craft-card flex items-center justify-between p-3.5 bg-paper-light rounded-sm" href="https://t.me" rel="noopener noreferrer" target="_blank"><div class="flex items-center gap-3"><span class="w-10 h-10 bg-indigo-ink text-paper rounded-sm flex items-center justify-center"><span class="material-symbols-outlined text-[20px]">send</span></span><div class="flex flex-col text-right"><span class="font-bold text-indigo-ink text-sm">پیام مستقیم در تلگرام</span><span class="text-[11px] text-indigo-light">پاسخگویی سریع روزانه</span></div></div><span class="text-xs text-coral font-black">پیام دهید ←</span></a><a class="craft-card flex items-center justify-between p-3.5 bg-paper-light rounded-sm" href="mailto:hello@code-ecology.dev"><div class="flex items-center gap-3"><span class="w-10 h-10 bg-coral text-white rounded-sm flex items-center justify-center"><span class="material-symbols-outlined text-[20px]">mail</span></span><div class="flex flex-col text-right"><span class="font-bold text-indigo-ink text-sm">ارسال ایمیل مستقیم</span><span class="text-[11px] text-indigo-light font-mono">hello@code-ecology.dev</span></div></div><span class="text-xs text-indigo-ink font-black">ارسال نامه ←</span></a></div><div class="pt-2"><span class="text-xs font-bold text-indigo-light block mb-2">شبکه‌های تخصصی و دفترچه کدها:</span><div class="grid grid-cols-3 gap-2" dir="ltr"><a class="p-2 border-[2px] border-indigo-ink bg-paper text-center text-indigo-ink hover:bg-indigo-ink hover:text-paper rounded-sm text-xs font-mono font-bold transition-colors" href="https://github.com" rel="noopener noreferrer" target="_blank">
+                  GitHub
+                </a><a class="p-2 border-[2px] border-indigo-ink bg-paper text-center text-indigo-ink hover:bg-indigo-ink hover:text-paper rounded-sm text-xs font-mono font-bold transition-colors" href="https://linkedin.com" rel="noopener noreferrer" target="_blank">
+                  LinkedIn
+                </a><a class="p-2 border-[2px] border-indigo-ink bg-paper text-center text-indigo-ink hover:bg-indigo-ink hover:text-paper rounded-sm text-xs font-mono font-bold transition-colors" href="https://instagram.com" rel="noopener noreferrer" target="_blank">
+                  Instagram
+                </a></div></div></div><div class="lg:col-span-7 craft-card bg-paper-light p-6 sm:p-8 rounded-sm"><form class="flex flex-col gap-4" id="contact-form" onsubmit="event.preventDefault(); handleFormSubmit();"><div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><div class="flex flex-col gap-1.5"><label class="text-[13px] text-indigo-ink font-bold">نام و نام خانوادگی شما *</label><input class="p-3 bg-paper border-[2px] border-indigo-ink rounded-sm focus:border-coral focus:outline-none text-sm text-indigo-ink" id="form-name" placeholder="مثال: مریم راد" required="" type="text"></div><div class="flex flex-col gap-1.5"><label class="text-[13px] text-indigo-ink font-bold">شماره تماس یا آیدی تلگرام *</label><input class="p-3 bg-paper border-[2px] border-indigo-ink rounded-sm focus:border-coral focus:outline-none text-sm text-indigo-ink" id="form-contact" placeholder="۰۹۱۲... یا @username" required="" type="text"></div></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><div class="flex flex-col gap-1.5"><label class="text-[13px] text-indigo-ink font-bold">نام کسب‌وکار یا ایده</label><input class="p-3 bg-paper border-[2px] border-indigo-ink rounded-sm focus:border-coral focus:outline-none text-sm text-indigo-ink" id="form-biz" placeholder="مثال: کافه کارگاه هنر" type="text"></div><div class="flex flex-col gap-1.5"><label class="text-[13px] text-indigo-ink font-bold">محدوده بودجه مدنظر</label><select class="p-3 bg-paper border-[2px] border-indigo-ink rounded-sm focus:border-coral focus:outline-none text-sm text-indigo-ink font-medium" id="form-budget"><option value="4-7">۴ تا ۷ میلیون تومان (پروژه سریع)</option><option value="7-12">۷ تا ۱۲ میلیون تومان (سایت شرکتی کامل)</option><option value="12-20">۱۲ تا ۲۰ میلیون تومان (فروشگاه / اپلیکیشن)</option><option value="undecided">هنوز مطمئن نیستم (نیاز به راهنمایی)</option></select></div></div><div class="flex flex-col gap-1.5"><label class="text-[13px] text-indigo-ink font-bold">توضیح کوتاه درباره نیازمندی‌های پروژه</label><textarea class="p-3 bg-paper border-[2px] border-indigo-ink rounded-sm focus:border-coral focus:outline-none text-sm text-indigo-ink resize-none font-medium" id="form-msg" placeholder="خلاصه‌ای از آنچه در ذهن دارید، سلیقه بصری یا سایت‌هایی که می‌پسندید..." rows="4"></textarea></div><button class="craft-btn w-full py-3.5 bg-coral text-white rounded-sm font-black text-base flex items-center justify-center gap-2" type="submit"><span class="">ارسال پیام و هماهنگی گفتگوی رایگان</span><span class="material-symbols-outlined text-[20px]">send</span></button><div class="hidden p-3 bg-teal-light border-[2px] border-teal-craft text-teal-craft rounded-sm text-center font-bold text-sm" id="form-success-banner">
+                ✓ پیام شما با مهر کارگاه دریافت شد! ظرف ۲ ساعت آینده جهت هماهنگی جلسه با شما تماس می‌گیرم.
+              </div></form></div></div></div></section></div><script>
+  // Filter portfolio cards
+  const filterButtons = document.querySelectorAll('.filter-btn');
+  const projectCards = document.querySelectorAll('.project-item');
+
+  filterButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterButtons.forEach(b => {
+        b.classList.remove('bg-coral', 'text-white');
+        b.classList.add('bg-paper-light', 'text-indigo-ink');
+      });
+      btn.classList.add('bg-coral', 'text-white');
+      btn.classList.remove('bg-paper-light', 'text-indigo-ink');
+
+      const filterValue = btn.getAttribute('data-filter');
+      projectCards.forEach(card => {
+        if (filterValue === 'all' || card.getAttribute('data-category') === filterValue) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+  });
+
+  // Price Estimator Logic
+  const projectPrices = {
+    landing: { min: 4, max: 6, title: 'لندینگ‌پیج معرفی و تبلیغاتی', days: '۳ تا ۵ روز کاری' },
+    corporate: { min: 7, max: 10, title: 'وب‌سایت شرکتی / خدماتی', days: '۵ تا ۷ روز کاری' },
+    ecommerce: { min: 11, max: 15, title: 'فروشگاه آنلاین دست‌ساز', days: '۷ تا ۱۰ روز کاری' },
+    webapp: { min: 14, max: 22, title: 'وب‌اپلیکیشن یا پورتال سفارشی', days: '۱۰ تا ۱۵ روز کاری' }
+  };
+
+  const speedMultiplier = {
+    standard: { factor: 1.0, title: '۷ تا ۱۰ روز کاری' },
+    fast: { factor: 1.2, title: '۳ تا ۵ روز کاری (شتاب‌یافته)' },
+    urgent: { factor: 1.4, title: '۴۸ ساعته (تحویل فوری)' }
+  };
+
+  const addonPrices = {
+    seo: 1.5,
+    cms: 2.0,
+    support: 1.0,
+    motion: 1.2
+  };
+
+  function updateEstimator() {
+    const selectedType = document.querySelector('input[name="projectType"]:checked')?.value || 'landing';
+    const selectedSpeed = document.querySelector('input[name="speedOption"]:checked')?.value || 'standard';
+    const checkedAddons = Array.from(document.querySelectorAll('input[name="addons"]:checked')).map(el => el.value);
+
+    const base = projectPrices[selectedType];
+    const speed = speedMultiplier[selectedSpeed];
+
+    let addonSum = 0;
+    checkedAddons.forEach(ad => {
+      if (addonPrices[ad]) addonSum += addonPrices[ad];
+    });
+
+    const finalMin = ((base.min * speed.factor) + addonSum).toFixed(1);
+    const finalMax = ((base.max * speed.factor) + addonSum).toFixed(1);
+
+    const minEl = document.getElementById('calc-price-min');
+    const maxEl = document.getElementById('calc-price-max');
+    const typeEl = document.getElementById('summary-project-type');
+    const timeEl = document.getElementById('summary-timeline');
+    const addonsCountEl = document.getElementById('summary-addons-count');
+
+    if (minEl) minEl.innerText = finalMin;
+    if (maxEl) maxEl.innerText = finalMax;
+    if (typeEl) typeEl.innerText = base.title;
+    if (timeEl) timeEl.innerText = speed.title;
+    if (addonsCountEl) addonsCountEl.innerText = checkedAddons.length + ' مورد انتخاب شده';
+  }
+
+  document.querySelectorAll('input[name="projectType"]').forEach(r => r.addEventListener('change', updateEstimator));
+  document.querySelectorAll('input[name="speedOption"]').forEach(r => r.addEventListener('change', updateEstimator));
+  document.querySelectorAll('.addon-check').forEach(c => c.addEventListener('change', updateEstimator));
+
+  const bookBtn = document.getElementById('book-estimate-btn');
+  if (bookBtn) {
+    bookBtn.addEventListener('click', () => {
+      const contactSection = document.getElementById('contact-section');
+      if (contactSection) {
+        contactSection.scrollIntoView({ behavior: 'smooth' });
+        const msgField = document.getElementById('form-msg');
+        if (msgField) {
+          const typeTitle = document.getElementById('summary-project-type')?.innerText || '';
+          const timeTitle = document.getElementById('summary-timeline')?.innerText || '';
+          const minP = document.getElementById('calc-price-min')?.innerText || '';
+          const maxP = document.getElementById('calc-price-max')?.innerText || '';
+          msgField.value = `سلام، من در برآوردگر آنلاین شما پروژه "${typeTitle}" با زمان‌بندی "${timeTitle}" و محدوده تخمینی ${minP} الی ${maxP} میلیون تومان را مشخص کردم. مایل به گفتگوی ۳۰ دقیقه‌ای رایگان هستم.`;
+        }
+      }
+    });
+  }
+
+  function handleFormSubmit() {
+    const banner = document.getElementById('form-success-banner');
+    if (banner) {
+      banner.classList.remove('hidden');
+      document.getElementById('form-name').value = '';
+      document.getElementById('form-contact').value = '';
+      document.getElementById('form-biz').value = '';
+      document.getElementById('form-msg').value = '';
+    }
+  }
+
+  // Interactive Riso Cursor & Canvas Trail
+  (function initCustomCursor() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (window.matchMedia('(pointer: coarse)').matches) return;
+
+    const dot = document.getElementById('custom-cursor-dot');
+    const ring = document.getElementById('custom-cursor-ring');
+    if (!dot || !ring) return;
+
+    let mouseX = -100, mouseY = -100;
+    let ringX = -100, ringY = -100;
+    let isVisible = false;
+
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      if (!isVisible) {
+        isVisible = true;
+        dot.style.opacity = '1';
+        ring.style.opacity = '1';
+        ringX = mouseX;
+        ringY = mouseY;
+      }
+      dot.style.left = mouseX + 'px';
+      dot.style.top = mouseY + 'px';
+    });
+
+    document.addEventListener('mouseleave', () => {
+      isVisible = false;
+      dot.style.opacity = '0';
+      ring.style.opacity = '0';
+    });
+
+    document.addEventListener('mouseenter', () => {
+      isVisible = true;
+      dot.style.opacity = '1';
+      ring.style.opacity = '1';
+    });
+
+    document.querySelectorAll('a, button, input, select, textarea, label, .craft-card, .ink-splash-wrapper').forEach((el) => {
+      el.addEventListener('mouseenter', () => ring.classList.add('cursor-hover'));
+      el.addEventListener('mouseleave', () => ring.classList.remove('cursor-hover'));
+    });
+
+    function render() {
+      if (isVisible) {
+        ringX += (mouseX - ringX) * 0.18;
+        ringY += (mouseY - ringY) * 0.18;
+        ring.style.left = ringX + 'px';
+        ring.style.top = ringY + 'px';
+      }
+      requestAnimationFrame(render);
+    }
+    requestAnimationFrame(render);
+  })();
+
+  // Risograph ink particle canvas trail
+  const canvas = document.getElementById('riso-canvas-trail');
+  if (canvas && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const ctx = canvas.getContext('2d');
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    const particles = [];
+    const colors = ['#E76F51', '#264653', '#E9C46A', '#2A9D8F'];
+
+    window.addEventListener('mousemove', e => {
+      if (Math.random() < 0.45) {
+        particles.push({
+          x: e.clientX,
+          y: e.clientY,
+          vx: (Math.random() - 0.5) * 1.0,
+          vy: (Math.random() - 0.5) * 1.0,
+          size: Math.random() * 4 + 2,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          alpha: 0.65
+        });
+      }
+    });
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.alpha -= 0.015;
+
+        if (p.alpha <= 0) {
+          particles.splice(i, 1);
+          i--;
+          continue;
+        }
+
+        ctx.save();
+        ctx.globalAlpha = p.alpha;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.rect(p.x, p.y, p.size, p.size);
+        ctx.fill();
+        ctx.restore();
+      }
+      requestAnimationFrame(animate);
+    }
+    animate();
+  }
+
+  // Dynamic Ink Splatter & Splash burst for "روح و اصالت"
+  (function initInkSplatterBurst() {
+    const wrapper = document.getElementById('ink-interactive-phrase');
+    const container = document.getElementById('ink-splatter-particles');
+    const dropletsOverlay = document.getElementById('ink-droplets-overlay');
+    if (!wrapper || !container) return;
+
+    const risoColors = ['#E76F51', '#E9C46A', '#F237A1', '#264653', '#2A9D8F'];
+    let splashResetTimeout = null;
+
+    function createSplatter() {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        wrapper.classList.add('splashed');
+        return;
+      }
+
+      wrapper.classList.remove('splashed');
+      void wrapper.offsetWidth; // trigger reflow
+      wrapper.classList.add('splashed');
+
+      // Animate SVG droplets overlay
+      if (dropletsOverlay) {
+        dropletsOverlay.style.opacity = '1';
+        dropletsOverlay.style.transform = `scale(${1.08 + Math.random() * 0.15}) rotate(${(Math.random() - 0.5) * 12}deg)`;
+      }
+
+      // Clear any remaining particles
+      container.innerHTML = '';
+
+      // Generate burst particles around the text
+      const particleCount = 20;
+      const rect = wrapper.getBoundingClientRect();
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+
+      for (let i = 0; i < particleCount; i++) {
+        const dot = document.createElement('span');
+        dot.className = 'ink-particle';
+        const size = Math.floor(Math.random() * 9) + 4; // 4px to 13px
+        const color = risoColors[Math.floor(Math.random() * risoColors.length)];
+
+        // Random blast angle and distance
+        const angle = Math.random() * Math.PI * 2;
+        const distance = Math.random() * 48 + 32; // 32px to 80px out
+        const destX = Math.cos(angle) * distance;
+        const destY = Math.sin(angle) * (distance * 0.65); // oval distribution
+
+        dot.style.width = size + 'px';
+        dot.style.height = size + 'px';
+        dot.style.backgroundColor = color;
+        dot.style.left = centerX + 'px';
+        dot.style.top = centerY + 'px';
+        dot.style.transform = `translate(-50%, -50%) scale(0.2)`;
+        dot.style.opacity = '0.95';
+
+        // Organic squircle shape for artisan risograph feel
+        if (Math.random() > 0.4) {
+          dot.style.borderRadius = `${Math.floor(Math.random() * 40 + 30)}% ${Math.floor(Math.random() * 40 + 30)}% ${Math.floor(Math.random() * 40 + 30)}% ${Math.floor(Math.random() * 40 + 30)}%`;
+        }
+
+        container.appendChild(dot);
+
+        // Animate out
+        const duration = Math.random() * 320 + 380; // 380ms - 700ms
+        const delay = Math.random() * 40;
+
+        dot.animate([
+          {
+            transform: `translate(-50%, -50%) scale(0.2) rotate(0deg)`,
+            opacity: 0.95
+          },
+          {
+            transform: `translate(calc(-50% + ${destX * 0.7}px), calc(-50% + ${destY * 0.7}px)) scale(${1.3 + Math.random() * 0.4}) rotate(${Math.random() * 90 - 45}deg)`,
+            opacity: 0.9,
+            offset: 0.5
+          },
+          {
+            transform: `translate(calc(-50% + ${destX}px), calc(-50% + ${destY}px)) scale(${0.8 + Math.random() * 0.4}) rotate(${Math.random() * 180 - 90}deg)`,
+            opacity: 0.75
+          }
+        ], {
+          duration: duration,
+          delay: delay,
+          easing: 'cubic-bezier(0.18, 0.89, 0.32, 1.28)',
+          fill: 'forwards'
+        });
+      }
+
+      // Also throw a few small ink drips directly onto the text canvas
+      const canvasEl = document.getElementById('riso-canvas-trail');
+      if (canvasEl) {
+        const cCtx = canvasEl.getContext('2d');
+        if (cCtx) {
+          const bRect = wrapper.getBoundingClientRect();
+          for (let k = 0; k < 6; k++) {
+            const rx = bRect.left + Math.random() * bRect.width;
+            const ry = bRect.top + window.scrollY + Math.random() * bRect.height;
+            cCtx.fillStyle = risoColors[Math.floor(Math.random() * risoColors.length)];
+            cCtx.globalAlpha = 0.55;
+            cCtx.beginPath();
+            cCtx.arc(rx, ry, Math.random() * 3 + 1.5, 0, Math.PI * 2);
+            cCtx.fill();
+          }
+        }
+      }
+    }
+
+    wrapper.addEventListener('mouseenter', () => {
+      if (splashResetTimeout) clearTimeout(splashResetTimeout);
+      createSplatter();
+    });
+
+    wrapper.addEventListener('mouseleave', () => {
+      splashResetTimeout = setTimeout(() => {
+        wrapper.classList.remove('splashed');
+        if (dropletsOverlay) {
+          dropletsOverlay.style.opacity = '0';
+          dropletsOverlay.style.transform = 'scale(0.8)';
+        }
+        // Smoothly fade particles out
+        const particles = container.querySelectorAll('.ink-particle');
+        particles.forEach(p => {
+          p.animate([
+            { opacity: p.style.opacity || 0.75 },
+            { opacity: 0 }
+          ], { duration: 250, fill: 'forwards' });
+          setTimeout(() => p.remove(), 260);
+        });
+      }, 700);
+    });
+
+    // Support touch devices tap-burst
+    wrapper.addEventListener('click', (e) => {
+      createSplatter();
+    });
+  })();
+</script></main><footer class="w-full bg-paper border-t-[2.5px] border-indigo-ink"><!-- Top Decorative Riso Bar & Workshop Status Banner -->
+<div class="border-b-[2.5px] border-indigo-ink bg-paper-dim/80 py-3.5 px-4 sm:px-8">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-xs">
+<div class="flex items-center gap-3">
+<span class="riso-stamp text-[11px] bg-paper shadow-sm py-1 px-3 flex items-center gap-1.5">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-craft opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-teal-craft"></span>
+</span>
+<strong class="text-indigo-ink font-bold">ظرفیت باز:</strong> پذیرش فعال سفارش‌های جدید ماه جاری
+      </span>
+<span class="hidden sm:inline-block font-mono text-indigo-light text-[11px]">EST. 2025 // CRAFT STUDIO</span>
+</div>
+<div class="flex items-center gap-2 font-mono text-[11px] font-bold text-indigo-ink/80 flex-wrap justify-center" dir="ltr">
+<span class="px-2 py-0.5 bg-paper rounded border border-indigo-ink/20 text-coral">Clean Code</span>
+<span class="">✦</span>
+<span class="px-2 py-0.5 bg-paper rounded border border-indigo-ink/20 text-teal-craft">Sustainable Web</span>
+<span class="">✦</span>
+<span class="px-2 py-0.5 bg-paper rounded border border-indigo-ink/20 text-mustard-deep">Risograph Spirit</span>
+<span class="">✦</span>
+<span class="px-2 py-0.5 bg-paper rounded border border-indigo-ink/20 text-indigo-ink">Direct Delivery</span>
+</div>
+</div>
+</div>
+<!-- Main Content Grid (4 Columns) -->
+<div class="max-w-7xl mx-auto px-4 sm:px-8 pt-12 pb-10">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10">
+<!-- Col 1: Studio Identity & Manifesto Note (4 cols) -->
+<div class="lg:col-span-4 flex flex-col gap-4 text-right">
+<div class="flex items-center gap-3">
+<div class="relative flex items-center">
+<img alt="لوگو استودیو" class="h-9 w-auto object-contain border-[1.5px] border-indigo-ink bg-mustard/20 p-1 rounded-sm shadow-[-1.5px_1.5px_0px_#264653]" src="https://lh3.googleusercontent.com/aida/AEtjO1V-b8zrBQ-5lOeN_n7UgIuRukUPnHOgFaX6RdmBNvgYhDy2vRc5mKSJGdg25UJrFcy_8QNrxlnTYIYoc5vC0jZc1IcY89Fh5pWSpzX3sJleFR8DaEn_akHxTg2MhhNiNs0q1Tkp23q7Kv6a2Ar7e_59S5IHj_e45N6vJnipmopjF9bWV-g--Sa1NGHNvAovXSD0UdOC5i-AQj5KjJFPY7xcGFriY_IMakVaBbvazZxXcUjy7AYeStTnqg">
+</div>
+<div class="flex flex-col">
+<span class="font-display text-lg text-indigo-ink font-black tracking-tight leading-tight">استودیو کدولوژی</span>
+<span class="text-[11px] text-teal-craft font-mono font-bold leading-none mt-0.5">CRAFT WEB &amp; DIGITAL PRINT</span>
+</div>
+</div>
+<p class="text-xs sm:text-sm text-indigo-light leading-[1.8] font-medium">
+        تلفیق وسواس مهندسی و هویت بصری چاپ ریزوگراف. بدون فریمورک‌های زائد، واسطه‌های آژانس و قالب‌های آماده؛ وب‌سایت‌هایی سبک، اصیل و دست‌ساز برای سازندگان مستقل.
+      </p>
+<div class="flex flex-wrap gap-2 pt-1"><span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-sm text-xs font-bold border border-indigo-ink/20 bg-paper-dim text-indigo-ink shadow-[-1px_1px_0px_#264653]"><span class="w-1.5 h-1.5 rounded-full bg-coral shrink-0"></span>۱۰۰٪ کد اختصاصی</span><span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-sm text-xs font-bold border border-indigo-ink/20 bg-paper-dim text-indigo-ink shadow-[-1px_1px_0px_#264653]"><span class="w-1.5 h-1.5 rounded-full bg-coral shrink-0"></span>بدون واسطه آژانس</span><span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-sm text-xs font-bold border border-indigo-ink/20 bg-paper-dim text-indigo-ink shadow-[-1px_1px_0px_#264653]"><span class="w-1.5 h-1.5 rounded-full bg-coral shrink-0"></span>لود زیر ۱ ثانیه</span></div>
+</div>
+<!-- Col 2: Navigation Links (2.5 cols) -->
+<div class="lg:col-span-3 flex flex-col gap-3 text-right">
+<div class="flex items-center gap-2 pb-1 border-b border-indigo-ink/20">
+<span class="w-2 h-2 rounded-full bg-coral inline-block"></span>
+<span class="font-bold text-sm text-indigo-ink">دسترسی سریع و بخش‌ها</span>
+</div>
+<ul class="flex flex-col gap-2.5 text-xs sm:text-[13px] font-bold text-indigo-ink/80 pt-1">
+<li class="">
+<a class="hover:text-coral transition-colors flex items-center gap-1.5" href="#projects-container">
+<span class="material-symbols-outlined text-[14px] text-coral">arrow_left</span>پروژه‌های منتخب و آزموده
+          </a>
+</li>
+<li class="">
+<a class="hover:text-coral transition-colors flex items-center gap-1.5" href="#estimator-section">
+<span class="material-symbols-outlined text-[14px] text-coral">arrow_left</span>برآوردگر زنده هزینه و زمان
+          </a>
+</li>
+<li class="">
+<a class="hover:text-coral transition-colors flex items-center gap-1.5" href="#why-me-section">
+<span class="material-symbols-outlined text-[14px] text-coral">arrow_left</span>چرا کار با سازنده مستقل؟
+          </a>
+</li>
+<li class="">
+<a class="hover:text-coral transition-colors flex items-center gap-1.5" href="#craft-values">
+<span class="material-symbols-outlined text-[14px] text-coral">arrow_left</span>مرام‌نامه و تعهد اخلاقی کارگاه
+          </a>
+</li>
+<li class="">
+<a class="hover:text-coral transition-colors flex items-center gap-1.5" href="#contact-section">
+<span class="material-symbols-outlined text-[14px] text-coral">arrow_left</span>جلسه مشاوره رایگان ۳۰ دقیقه‌ای
+          </a>
+</li>
+</ul>
+</div>
+<!-- Col 3: Direct Channels & Networks (2.5 cols) -->
+<div class="lg:col-span-2 flex flex-col gap-3 text-right">
+<div class="flex items-center gap-2 pb-1 border-b border-indigo-ink/20">
+<span class="w-2 h-2 rounded-full bg-teal-craft inline-block"></span>
+<span class="font-bold text-sm text-indigo-ink">ارتباط مستقیم</span>
+</div>
+<div class="flex flex-col gap-2 text-xs font-bold pt-1">
+<a class="flex items-center justify-between p-2 rounded-sm border border-indigo-ink/25 bg-paper hover:bg-mustard/20 hover:border-indigo-ink transition-all text-indigo-ink" href="https://t.me" rel="noopener noreferrer" target="_blank">
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[15px] text-coral">send</span>تلگرام</span>
+<span class="font-mono text-[10px] text-indigo-light" dir="ltr">@code_ecology</span>
+</a>
+<a class="flex items-center justify-between p-2 rounded-sm border border-indigo-ink/25 bg-paper hover:bg-mustard/20 hover:border-indigo-ink transition-all text-indigo-ink" href="mailto:hello@code-ecology.dev">
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[15px] text-coral">mail</span>ایمیل</span>
+<span class="font-mono text-[10px] text-indigo-light" dir="ltr">hello@...</span>
+</a>
+<div class="grid grid-cols-3 gap-1.5 pt-1" dir="ltr">
+<a class="p-1.5 border border-indigo-ink/30 bg-paper text-center text-indigo-ink hover:bg-indigo-ink hover:text-paper rounded-sm text-[11px] font-mono font-bold transition-colors" href="https://github.com" rel="noopener noreferrer" target="_blank">GH</a>
+<a class="p-1.5 border border-indigo-ink/30 bg-paper text-center text-indigo-ink hover:bg-indigo-ink hover:text-paper rounded-sm text-[11px] font-mono font-bold transition-colors" href="https://linkedin.com" rel="noopener noreferrer" target="_blank">IN</a>
+<a class="p-1.5 border border-indigo-ink/30 bg-paper text-center text-indigo-ink hover:bg-indigo-ink hover:text-paper rounded-sm text-[11px] font-mono font-bold transition-colors" href="https://instagram.com" rel="noopener noreferrer" target="_blank">IG</a>
+</div>
+</div>
+</div>
+<!-- Col 4: Eco & Green Web Manifesto Badge (3 cols) -->
+<div class="lg:col-span-3 flex flex-col">
+<div class="craft-card bg-paper-light p-4 rounded-sm flex flex-col gap-2.5 relative border-[2px] border-indigo-ink shadow-[-3px_3px_0px_#264653]">
+<div class="flex items-center justify-between pb-1 border-b border-dashed border-indigo-ink/20">
+<span class="text-[11px] font-mono font-bold text-teal-craft flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">eco</span>
+            GREEN WEB ACCREDITED
+          </span>
+<span class="text-[10px] font-mono text-coral font-bold">~0.12g CO2/view</span>
+</div>
+<h5 class="text-[13px] font-black text-indigo-ink">طراحی وب کم‌کربن و دوستدار محیط زیست</h5>
+<p class="text-[11px] text-indigo-light leading-relaxed font-medium">
+          بهینه‌سازی حداکثری اسکریپت‌ها و بار سرور بر اساس موازین علمی مهندسی بهداشت محیط؛ تضمین حداقل مصرف انرژی سخت‌افزار کاربر و نهایت سبکی در اینترنت.
+        </p>
+<div class="pt-1 flex items-center justify-between text-[10px] font-bold text-indigo-ink/70 border-t border-indigo-ink/15">
+<span class="">فاقد ترکر تبلیغاتی</span>
+<span class="text-teal-craft font-mono font-bold">99+ ECO LIGHTHOUSE</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Colophon / Bar -->
+<div class="border-t border-dashed border-indigo-ink/30 bg-paper-dim/40 py-5 px-4 sm:px-8">
+<div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-medium text-indigo-light">
+<div class="flex items-center gap-3 flex-wrap justify-center sm:justify-start">
+<span class="text-indigo-ink font-bold">© ۲۰۲۵ استودیو کدولوژی</span>
+<span class="hidden sm:inline-block text-indigo-ink/30">|</span>
+<span class="">تمامی حقوق و دیزاین با هویت چاپ دیجیتال دو رنگ ریزوگراف محفوظ است.</span>
+</div>
+<div class="flex items-center gap-3 shrink-0">
+<div class="inline-flex items-center border-[1.5px] border-indigo-ink bg-paper p-[2px] text-[10px] font-bold rounded-sm shadow-[-1px_1px_0px_#264653]">
+<a class="px-2 py-[2px] bg-indigo-ink text-paper rounded-[2px]" href="#">فا</a>
+<a class="px-2 py-[2px] text-indigo-ink hover:text-coral transition-colors font-mono" href="#">EN</a>
+</div>
+<span class="riso-stamp-mustard text-[10px] py-[2px] px-2 font-bold">ساخته‌شده با وسواس مهندسی و عشق به وب اصیل</span>
+</div>
+</div>
+</div></footer>
+
+
+</body></html>
