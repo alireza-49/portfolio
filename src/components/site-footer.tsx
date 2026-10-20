@@ -1,4 +1,5 @@
 import { ArrowLeft, Leaf, Mail, Send } from "lucide-react";
+import Logo from "@/assets/logo";
 
 const QUICK_LINKS = [
   { href: "#projects-container", label: "پروژه‌های منتخب و آزموده" },
@@ -72,8 +73,8 @@ export function SiteFooter() {
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-12 lg:gap-10">
           <div className="flex flex-col gap-4 text-right lg:col-span-4">
             <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-sm border-[1.5px] border-indigo-ink bg-mustard/30 font-display text-sm font-black text-indigo-ink shadow-craft-inset">
-                ک
+              <span className="flex h-9 w-9 items-center justify-center rounded-sm border-[1.5px] border-indigo-ink bg-mustard/30 p-1 text-indigo-ink shadow-craft-inset">
+                <Logo className="h-full w-full" />
               </span>
               <div className="flex flex-col">
                 <span className="font-display text-lg leading-tight font-black tracking-tight text-indigo-ink">

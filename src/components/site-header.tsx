@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Coffee, Menu, X } from "lucide-react";
+import Logo from "@/assets/logo";
 
 type NavLink = {
   href: string;
@@ -25,8 +26,8 @@ export function SiteHeader() {
       <div className="mx-auto flex h-20 max-w-7xl flex-nowrap items-center justify-between gap-4 px-4 sm:px-8">
         <div className="flex shrink-0 items-center gap-3">
           <div className="relative flex items-center">
-            <span className="flex h-8 w-8 items-center justify-center rounded-sm border-[1.5px] border-indigo-ink bg-mustard/30 p-1 font-display text-sm font-black text-indigo-ink shadow-craft-inset">
-              ک
+            <span className="flex h-8 w-8 items-center justify-center rounded-sm border-[1.5px] border-indigo-ink bg-mustard/30 p-1 text-indigo-ink shadow-craft-inset">
+              <Logo className="h-full w-full" />
             </span>
             <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-teal-craft opacity-75" />
