@@ -1,85 +1,68 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { BookOpen, Code2, Copy, Terminal, X } from "lucide-react";
+import { CreateStudioCanvas } from "@/components/create-studio-canvas";
+import { CreateStudioSidebar } from "@/components/create-studio-sidebar";
 import {
-  Check,
-  Code2,
-  Copy,
-  Eye,
-  Palette,
-  SlidersHorizontal,
-  Sparkles,
-} from "lucide-react";
-
-type PaletteId = "coral" | "mustard" | "teal" | "indigo";
-type DensityId = "compact" | "comfortable" | "spacious";
-
-type Palette = {
-  name: string;
-  hex: string;
-  soft: string;
-  ink: string;
-};
-
-type Density = {
-  name: string;
-  label: string;
-  pad: number;
-  gap: number;
-};
-
-const PALETTES: Record<PaletteId, Palette> = {
-  coral: { name: "مرجانی", hex: "#e76f51", soft: "#fbeee9", ink: "#ffffff" },
-  mustard: { name: "خردلی", hex: "#e9c46a", soft: "#fdf7e7", ink: "#264653" },
-  teal: { name: "فیروزه‌ای", hex: "#2a9d8f", soft: "#e0f2f1", ink: "#ffffff" },
-  indigo: { name: "سرمه‌ای", hex: "#264653", soft: "#e6eef1", ink: "#ffffff" },
-};
-
-const PALETTE_ORDER: PaletteId[] = ["coral", "mustard", "teal", "indigo"];
-
-const DENSITIES: Record<DensityId, Density> = {
-  compact: { name: "فشرده", label: "compact", pad: 12, gap: 8 },
-  comfortable: { name: "متعادل", label: "comfortable", pad: 20, gap: 12 },
-  spacious: { name: "جادار", label: "spacious", pad: 28, gap: 18 },
-};
-
-const DENSITY_ORDER: DensityId[] = ["compact", "comfortable", "spacious"];
-
-const RADII = [0, 4, 8, 12, 16];
+  ARCHETYPES,
+  SHUFFLE_PRESETS,
+  buildThemeSnippet,
+  buildTokenLine,
+  type ArchetypeId,
+  type FontId,
+  type IconLibraryId,
+  type StyleId,
+} from "@/components/create-studio-config";
 
 export function CreateStudio() {
-  const [paletteId, setPaletteId] = useState<PaletteId>("coral");
-  const [radius, setRadius] = useState<number>(4);
-  const [densityId, setDensityId] = useState<DensityId>("comfortable");
+  const [archetype, setArchetype] = useState<ArchetypeId>("components");
+  const [styleId, setStyleId] = useState<StyleId>("nova");
+  const [primary, setPrimary] = useState("#e76f51");
+  const [primarySubtle, setPrimarySubtle] = useState("#fbeee9");
+  const [colorName, setColorName] = useState("سفال کهربایی");
+  const [radius, setRadius] = useState(4);
+  const [font, setFont] = useState<FontId>("vazir");
+  const [iconLibrary, setIconLibrary] = useState<IconLibraryId>("google");
+  const [modalOpen, setModalOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const palette = PALETTES[paletteId];
-  const density = DENSITIES[densityId];
-
   const snippet = useMemo(
-    () => `/* استودیو کدولوژی // خروجی تم */
-:root {
-  --accent: ${palette.hex};
-  --accent-soft: ${palette.soft};
-  --radius: ${radius}px;
-  --density: ${density.label};
-}
-
-/* tailwind.config.ts */
-export default {
-  theme: {
-    extend: {
-      colors: { accent: "${palette.hex}" },
-      borderRadius: { craft: "${radius}px" },
-    },
-  },
-};`,
-    [palette, radius, density],
+    () =>
+      buildThemeSnippet({
+        primary,
+        primarySubtle,
+        radius,
+        style: styleId,
+        font,
+      }),
+    [primary, primarySubtle, radius, styleId, font],
   );
 
-  const copySnippet = async () => {
+  const tokenLine = useMemo(
+    () => buildTokenLine({ primary, radius, style: styleId }),
+    [primary, radius, styleId],
+  );
+
+  const selectColor = (hex: string, subtle: string, name: string) => {
+    setPrimary(hex);
+    setPrimarySubtle(subtle);
+    setColorName(name);
+  };
+
+  const shuffle = () => {
+    const preset =
+      SHUFFLE_PRESETS[Math.floor(Math.random() * SHUFFLE_PRESETS.length)];
+    setPrimary(preset.hex);
+    setPrimarySubtle(preset.subtle);
+    setColorName(preset.name);
+    setRadius(preset.radius);
+    setStyleId(preset.style);
+  };
+
+  const copy = async (text: string) => {
     try {
-      await navigator.clipboard.writeText(snippet);
+      await navigator.clipboard.writeText(text);
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -88,286 +71,146 @@ export default {
   };
 
   return (
-    <section
-      id="create-studio"
-      className="w-full border-b-[2.5px] border-indigo-ink bg-paper px-4 py-20 sm:px-8 lg:px-12"
-    >
-      <div className="mx-auto flex max-w-7xl flex-col gap-10">
-        <div className="border-b-[2px] border-indigo-ink pb-6 text-right">
-          <span className="riso-stamp mb-3 inline-flex text-[10px]">
-            THEME WORKSHOP // کارگاه تم
-          </span>
-          <h1 className="text-[26px] font-black text-indigo-ink sm:text-[34px]">
-            تم ریسوگراف خودت را بساز
-          </h1>
-          <p className="max-w-2xl pt-2 text-base font-medium text-indigo-light">
-            پالت رنگ، شعاع گوشه و تراکم را انتخاب کن؛ پیش‌نمایش زنده بلافاصله
-            به‌روز می‌شود و خروجی CSS و Tailwind آماده کپی است. بدون واسطه،
-            بدون حدس و گمان.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-          <div className="craft-card flex flex-col gap-6 rounded-sm bg-paper-light p-6 sm:p-8 lg:col-span-5">
-            <div>
-              <span className="mb-3 flex items-center gap-2 text-[16px] font-black text-indigo-ink">
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-coral font-mono text-xs text-white">
-                  ۱
-                </span>
-                <Palette className="size-4" />
-                <span>پالت رنگ اصلی:</span>
-              </span>
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                {PALETTE_ORDER.map((id) => {
-                  const option = PALETTES[id];
-                  const active = paletteId === id;
-                  return (
-                    <button
-                      key={id}
-                      type="button"
-                      onClick={() => setPaletteId(id)}
-                      aria-pressed={active}
-                      className={`flex items-center justify-between gap-2 rounded-sm border-[2px] p-2.5 text-right transition-colors ${
-                        active
-                          ? "border-indigo-ink bg-mustard/25"
-                          : "border-indigo-ink/40 bg-paper hover:border-indigo-ink"
-                      }`}
-                    >
-                      <span className="flex items-center gap-2">
-                        <span
-                          className="flex size-5 items-center justify-center rounded-[2px] border border-indigo-ink"
-                          style={{ backgroundColor: option.hex }}
-                        >
-                          {active ? (
-                            <Check
-                              className="size-3"
-                              style={{ color: option.ink }}
-                            />
-                          ) : null}
-                        </span>
-                        <span className="text-xs font-bold text-indigo-ink">
-                          {option.name}
-                        </span>
-                      </span>
-                      <span className="font-mono text-[10px] font-bold text-indigo-light">
-                        {option.hex.toUpperCase()}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div>
-              <span className="mb-3 flex items-center gap-2 text-[16px] font-black text-indigo-ink">
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-coral font-mono text-xs text-white">
-                  ۲
-                </span>
-                <SlidersHorizontal className="size-4" />
-                <span>شعاع گوشه‌ها:</span>
-              </span>
-              <div className="grid grid-cols-5 gap-2">
-                {RADII.map((value) => {
-                  const active = radius === value;
-                  return (
-                    <button
-                      key={value}
-                      type="button"
-                      onClick={() => setRadius(value)}
-                      aria-pressed={active}
-                      className={`flex flex-col items-center gap-1 rounded-sm border-[2px] py-2 transition-colors ${
-                        active
-                          ? "border-indigo-ink bg-mustard/25"
-                          : "border-indigo-ink/40 bg-paper hover:border-indigo-ink"
-                      }`}
-                    >
-                      <span
-                        className="size-4 border-[1.5px] border-indigo-ink bg-coral/30"
-                        style={{ borderRadius: value }}
-                      />
-                      <span className="font-mono text-[10px] font-bold text-indigo-ink">
-                        {value}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div>
-              <span className="mb-3 flex items-center gap-2 text-[16px] font-black text-indigo-ink">
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-coral font-mono text-xs text-white">
-                  ۳
-                </span>
-                <span>تراکم چیدمان:</span>
-              </span>
-              <div className="grid grid-cols-3 gap-2">
-                {DENSITY_ORDER.map((id) => {
-                  const option = DENSITIES[id];
-                  const active = densityId === id;
-                  return (
-                    <button
-                      key={id}
-                      type="button"
-                      onClick={() => setDensityId(id)}
-                      aria-pressed={active}
-                      className={`rounded-sm border-[2px] p-2.5 text-center transition-colors ${
-                        active
-                          ? "border-indigo-ink bg-mustard/25"
-                          : "border-indigo-ink/40 bg-paper hover:border-indigo-ink"
-                      }`}
-                    >
-                      <span className="block text-xs font-bold text-indigo-ink">
-                        {option.name}
-                      </span>
-                      <span className="mt-0.5 block font-mono text-[10px] text-indigo-light">
-                        {option.label}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="rounded-sm border-[1.5px] border-dashed border-indigo-ink/40 bg-paper-dim p-3 text-[11px] leading-relaxed font-medium text-indigo-light">
-              همه مقادیر با توکن‌های کارگاه هم‌خوان هستند؛ خروجی را می‌توانی
-              مستقیم در <span className="font-mono font-bold">globals.css</span>{" "}
-              پروژه خودت جای‌گذاری کنی.
+    <>
+      <section className="w-full border-b-[2.5px] border-indigo-ink bg-paper-dim px-4 py-2 sm:px-8">
+        <div className="mx-auto flex max-w-[1440px] flex-col items-start justify-between gap-3 md:flex-row md:items-center">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="inline-flex items-center gap-1 rounded-sm bg-indigo-ink px-2 py-0.5 font-mono text-xs font-bold text-paper shadow-craft-sm">
+              <BookOpen className="size-3.5" />
+              سناریوی بوم:
+            </span>
+            <div className="inline-flex flex-wrap gap-0.5 rounded-sm border border-indigo-ink bg-paper-light p-0.5 text-xs font-bold shadow-craft-sm">
+              {ARCHETYPES.map((item) => {
+                const active = archetype === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setArchetype(item.id)}
+                    aria-pressed={active}
+                    className={`rounded-sm px-3 py-1 transition-all ${
+                      active
+                        ? "bg-coral text-white shadow-craft-sm"
+                        : "text-indigo-light hover:text-indigo-ink"
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          <div className="flex flex-col gap-6 lg:col-span-7">
-            <div className="craft-card rounded-sm bg-paper-light p-4 sm:p-5">
-              <div className="flex flex-wrap items-center justify-between gap-2 border-b-[2px] border-indigo-ink pb-2">
-                <span className="flex items-center gap-1.5 font-mono text-[11px] font-bold text-indigo-ink">
-                  <Eye className="size-3.5" />
-                  LIVE PREVIEW // پیش‌نمایش زنده
-                </span>
-                <span className="riso-stamp-teal px-2 py-[2px] text-[10px] font-bold">
-                  {palette.name} / {radius}px
-                </span>
-              </div>
-
-              <div
-                className="mt-4 border-[2.5px] border-indigo-ink bg-paper"
-                style={{ borderRadius: radius, padding: density.pad }}
-              >
-                <div
-                  className="flex flex-col"
-                  style={{ gap: density.gap }}
-                >
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <span
-                      className="inline-flex items-center gap-1.5 border-[1.5px] border-indigo-ink px-2.5 py-1 text-[11px] font-bold"
-                      style={{
-                        borderRadius: radius,
-                        backgroundColor: palette.soft,
-                        color: palette.hex,
-                      }}
-                    >
-                      <Sparkles className="size-3.5" />
-                      نمونه کارت
-                    </span>
-                    <span className="font-mono text-[10px] font-bold text-indigo-light">
-                      {palette.hex.toUpperCase()} / {radius}px / {density.label}
-                    </span>
-                  </div>
-
-                  <div>
-                    <h3 className="text-lg font-black text-indigo-ink">
-                      تیتر نمونه کارت
-                    </h3>
-                    <p className="mt-1 text-xs leading-relaxed font-medium text-indigo-light">
-                      این متن با تراکم «{density.name}» و شعاع گوشه {radius}{" "}
-                      پیکسل رندر می‌شود. تغییرات را در پنل کنار اعمال کن.
-                    </p>
-                  </div>
-
-                  <div
-                    className="flex flex-wrap items-center"
-                    style={{ gap: density.gap / 2 }}
-                  >
-                    <button
-                      type="button"
-                      className="border-[2px] border-indigo-ink px-3 py-1.5 text-xs font-bold"
-                      style={{
-                        borderRadius: radius,
-                        backgroundColor: palette.hex,
-                        color: palette.ink,
-                      }}
-                    >
-                      دکمه اصلی
-                    </button>
-                    <button
-                      type="button"
-                      className="border-[2px] border-indigo-ink bg-paper-light px-3 py-1.5 text-xs font-bold text-indigo-ink"
-                      style={{ borderRadius: radius }}
-                    >
-                      دکمه ثانویه
-                    </button>
-                  </div>
-
-                  <div
-                    className="grid grid-cols-2"
-                    style={{ gap: density.gap / 2 }}
-                  >
-                    <div
-                      className="border-[1.5px] border-indigo-ink/40 bg-paper-light p-2"
-                      style={{ borderRadius: radius }}
-                    >
-                      <span className="block text-[10px] font-bold text-indigo-light">
-                        شاخص عملکرد
-                      </span>
-                      <span className="font-mono text-sm font-black text-indigo-ink">
-                        99/100
-                      </span>
-                    </div>
-                    <div
-                      className="border-[1.5px] border-indigo-ink/40 bg-paper-light p-2"
-                      style={{ borderRadius: radius }}
-                    >
-                      <span className="block text-[10px] font-bold text-indigo-light">
-                        وزن صفحه
-                      </span>
-                      <span className="font-mono text-sm font-black text-indigo-ink">
-                        &lt; 380 KB
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="craft-card rounded-sm bg-paper-light p-4 sm:p-5">
-              <div className="flex flex-wrap items-center justify-between gap-2 border-b-[2px] border-indigo-ink pb-2">
-                <span className="flex items-center gap-1.5 font-mono text-[11px] font-bold text-indigo-ink">
-                  <Code2 className="size-3.5" />
-                  THEME EXPORT // خروجی تم
-                </span>
-                <button
-                  type="button"
-                  onClick={copySnippet}
-                  className="craft-btn inline-flex items-center gap-1.5 rounded-sm bg-mustard px-2.5 py-1 text-[11px] font-bold text-indigo-ink"
-                >
-                  {copied ? (
-                    <Check className="size-3.5" />
-                  ) : (
-                    <Copy className="size-3.5" />
-                  )}
-                  <span>{copied ? "کپی شد" : "کپی کد"}</span>
-                </button>
-              </div>
-
-              <pre
-                dir="ltr"
-                className="mt-3 overflow-x-auto rounded-sm bg-indigo-ink p-3 text-left font-mono text-[11px] leading-relaxed text-paper"
-              >
-                <code>{snippet}</code>
-              </pre>
-            </div>
+          <div className="flex items-center gap-2 self-end md:self-auto">
+            <span className="flex items-center gap-1 rounded-sm border border-indigo-ink bg-paper-light px-2 py-0.5 font-mono text-[10px] font-bold text-indigo-ink shadow-craft-sm">
+              <span className="size-1.5 rounded-full bg-teal-craft" />
+              STUDIO READY
+            </span>
           </div>
         </div>
+      </section>
+
+      <div className="flex w-full flex-1 flex-col items-stretch border-b-[2.5px] border-indigo-ink bg-paper-shade lg:flex-row">
+        <CreateStudioSidebar
+          styleId={styleId}
+          onStyleChange={setStyleId}
+          primary={primary}
+          primarySubtle={primarySubtle}
+          colorName={colorName}
+          onColorChange={selectColor}
+          radius={radius}
+          onRadiusChange={setRadius}
+          font={font}
+          onFontChange={setFont}
+          iconLibrary={iconLibrary}
+          onIconLibraryChange={setIconLibrary}
+          onShuffle={shuffle}
+          onExport={() => setModalOpen(true)}
+        />
+        <CreateStudioCanvas
+          archetype={archetype}
+          primary={primary}
+          primarySubtle={primarySubtle}
+          radius={radius}
+          styleId={styleId}
+        />
       </div>
-    </section>
+
+      <section className="sticky bottom-0 z-40 border-t-[2.5px] border-indigo-ink bg-paper/95 px-4 py-2 backdrop-blur-md sm:px-8">
+        <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-2 sm:flex-row">
+          <div className="flex w-full items-center gap-2 overflow-x-auto py-1 sm:w-auto">
+            <span className="flex items-center gap-1 whitespace-nowrap text-xs font-black text-indigo-ink">
+              <Terminal className="size-4 text-coral" />
+              خروجی فعال توکن‌ها:
+            </span>
+            <code
+              dir="ltr"
+              className="whitespace-nowrap rounded-sm border border-indigo-ink bg-paper-light px-3 py-1 font-mono text-[11px] font-bold text-coral shadow-craft-sm"
+            >
+              {tokenLine}
+            </code>
+          </div>
+          <div className="flex items-center gap-2 self-end sm:self-auto">
+            <button
+              type="button"
+              onClick={() => copy(tokenLine)}
+              className="flex items-center gap-1 rounded-sm border border-indigo-ink bg-paper-light px-3 py-1 text-xs font-bold text-indigo-ink shadow-craft-sm transition-all hover:bg-paper-dim active:translate-x-0.5 active:translate-y-0.5"
+            >
+              <Copy className="size-3.5" />
+              <span>کپی سریع</span>
+            </button>
+            {copied ? (
+              <span className="rounded-sm border border-indigo-ink bg-coral px-2 py-0.5 text-xs font-bold text-white">
+                کپی شد!
+              </span>
+            ) : null}
+          </div>
+        </div>
+      </section>
+
+      {modalOpen ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-indigo-ink/60 p-4 backdrop-blur-sm">
+          <div className="flex max-h-[90vh] w-full max-w-2xl flex-col gap-4 overflow-y-auto rounded-sm border border-indigo-ink bg-paper-light p-6 shadow-craft-lg">
+            <div className="flex items-center justify-between border-b border-indigo-ink/20 pb-3">
+              <div className="flex items-center gap-2">
+                <Code2 className="size-[22px] text-coral" />
+                <h3 className="text-base font-black text-indigo-ink">
+                  کد تم و پیکربندی خروجی استودیو کُدولوژی
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setModalOpen(false)}
+                aria-label="بستن"
+                className="rounded-sm border border-indigo-ink bg-paper-dim p-1 text-indigo-ink shadow-craft-sm hover:bg-paper-light"
+              >
+                <X className="size-[18px]" />
+              </button>
+            </div>
+            <p className="text-xs text-indigo-light">
+              این قطعه کد را در فایل{" "}
+              <code className="font-mono">tailwind.config.js</code> یا شیوه
+              پوشش‌دهی CSS متغیرهای پروژه خود کپی و جای‌گذاری نمایید.
+            </p>
+            <pre
+              dir="ltr"
+              className="overflow-x-auto rounded-sm border border-indigo-ink bg-indigo-ink p-4 text-left font-mono text-[12px] leading-relaxed text-paper select-all"
+            >
+              <code>{snippet}</code>
+            </pre>
+            <div className="flex items-center justify-end gap-2 border-t border-indigo-ink/20 pt-2">
+              <button
+                type="button"
+                onClick={() => copy(snippet)}
+                className="flex items-center gap-1.5 rounded-sm border border-indigo-ink bg-coral px-4 py-2 text-xs font-bold text-white shadow-craft-sm transition-all hover:bg-coral-dark active:translate-x-0.5 active:translate-y-0.5"
+              >
+                <Copy className="size-4" />
+                <span>کپی در کلیپ‌بورد</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </>
   );
 }
