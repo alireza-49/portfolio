@@ -243,6 +243,17 @@
     13px 13px;
 }
 
+/* Dotted engineering grid — hero backdrop and studio canvas bed.
+   Sets only background-image so it layers over any bg-* colour. */
+@utility dot-grid {
+  background-image: radial-gradient(
+    rgba(38, 70, 83, 0.16) 1px,
+    transparent 1px
+  );
+  background-size: 20px 20px;
+  background-position: 0 0;
+}
+
 @utility grid-lines-overlay {
   background-size: 24px 24px;
   background-image:

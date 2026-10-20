@@ -136,7 +136,7 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section className="relative w-full overflow-hidden border-b-[2.5px] border-indigo-ink bg-paper px-4 pt-12 pb-20 sm:px-8 lg:px-12">
+    <section className="dot-grid relative w-full overflow-hidden border-b-[2.5px] border-indigo-ink bg-paper px-4 pt-12 pb-20 sm:px-8 lg:px-12">
       <div
         aria-hidden
         className="pointer-events-none absolute -top-10 left-10 h-72 w-72 rounded-full bg-mustard/25 blur-3xl"
@@ -144,10 +144,6 @@ export function HeroSection() {
       <div
         aria-hidden
         className="pointer-events-none absolute right-10 bottom-4 h-80 w-80 rounded-full bg-coral/15 blur-3xl"
-      />
-      <div
-        aria-hidden
-        className="paper-pattern pointer-events-none absolute inset-0 opacity-40"
       />
 
       <div className="relative z-10 mx-auto flex max-w-7xl flex-col items-center gap-12 lg:flex-row">
