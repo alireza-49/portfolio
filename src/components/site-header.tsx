@@ -3,11 +3,17 @@
 import { useState } from "react";
 import { Coffee, Menu, X } from "lucide-react";
 
-const NAV_LINKS = [
+type NavLink = {
+  href: string;
+  label: string;
+  highlight?: boolean;
+};
+
+const NAV_LINKS: NavLink[] = [
   { href: "#projects-container", label: "پروژه‌ها" },
   { href: "#estimator-section", label: "برآورد هزینه" },
   { href: "#why-me-section", label: "چرا مستقل؟" },
-  { href: "#craft-values", label: "اصول کارگاه" },
+  { href: "/create", label: "ساخت آنلاین", highlight: true },
   { href: "#contact-section", label: "تماس و سفارش" },
 ];
 
@@ -29,7 +35,7 @@ export function SiteHeader() {
           </div>
           <div className="flex flex-col">
             <a
-              href="#"
+              href="/"
               className="font-display text-base leading-tight font-black tracking-tight text-indigo-ink transition-colors hover:text-coral sm:text-lg"
             >
               استودیو کدولوژی
@@ -40,12 +46,16 @@ export function SiteHeader() {
           </div>
         </div>
 
-        <nav className="hidden shrink items-center gap-4 text-[13px] font-bold whitespace-nowrap text-indigo-ink lg:flex">
+        <nav className="hidden shrink items-center gap-3 text-[13px] font-bold whitespace-nowrap text-indigo-ink lg:flex">
           {NAV_LINKS.map((link) => (
             <a
               key={link.href}
               href={link.href}
-              className="rounded px-2 py-1 text-indigo-ink/80 transition-all hover:bg-mustard/20 hover:text-coral"
+              className={
+                link.highlight
+                  ? "rounded-sm border-[1.5px] border-indigo-ink bg-mustard/40 px-2.5 py-1 font-black text-indigo-ink shadow-craft-sm transition-all hover:bg-mustard"
+                  : "rounded px-2 py-1 text-indigo-ink/80 transition-all hover:bg-mustard/20 hover:text-coral"
+              }
             >
               {link.label}
             </a>
@@ -95,7 +105,11 @@ export function SiteHeader() {
                 <a
                   href={link.href}
                   onClick={() => setOpen(false)}
-                  className="block py-3 text-sm font-bold text-indigo-ink transition-colors hover:text-coral"
+                  className={
+                    link.highlight
+                      ? "block py-3 text-sm font-black text-coral transition-colors hover:text-coral-dark"
+                      : "block py-3 text-sm font-bold text-indigo-ink transition-colors hover:text-coral"
+                  }
                 >
                   {link.label}
                 </a>
