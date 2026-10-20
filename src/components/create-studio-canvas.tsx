@@ -139,7 +139,7 @@ export function CreateStudioCanvas({
   };
 
   return (
-    <section className="order-2 flex flex-1 flex-col gap-4 overflow-x-hidden bg-paper-shade p-4 sm:p-6 lg:p-8">
+    <section className="order-2 flex w-full flex-col gap-4 overflow-x-hidden bg-paper-shade p-4 sm:p-6 lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:p-8">
       <div
         className="paper-pattern relative min-h-[640px] w-full overflow-hidden rounded-sm border-2 border-indigo-ink bg-paper transition-all"
         style={{ boxShadow: artboardShadow }}

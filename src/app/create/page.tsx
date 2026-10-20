@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { CreateStudio } from "@/components/create-studio";
-import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 
 export const metadata: Metadata = {
@@ -14,10 +13,12 @@ export default function CreatePage() {
   return (
     <>
       <SiteHeader />
-      <main className="flex w-full flex-1 flex-col bg-paper pt-20" dir="rtl">
+      <main
+        className="flex h-dvh w-full flex-col overflow-hidden bg-paper pt-20"
+        dir="rtl"
+      >
         <CreateStudio />
       </main>
-      <SiteFooter />
     </>
   );
 }

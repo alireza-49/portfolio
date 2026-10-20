@@ -72,7 +72,7 @@ export function CreateStudio() {
 
   return (
     <>
-      <section className="w-full border-b-[2.5px] border-indigo-ink bg-paper-dim px-4 py-2 sm:px-8">
+      <section className="w-full shrink-0 border-b-[2.5px] border-indigo-ink bg-paper-dim px-4 py-2 sm:px-8">
         <div className="mx-auto flex max-w-[1440px] flex-col items-start justify-between gap-3 md:flex-row md:items-center">
           <div className="flex flex-wrap items-center gap-1.5">
             <span className="inline-flex items-center gap-1 rounded-sm bg-indigo-ink px-2 py-0.5 font-mono text-xs font-bold text-paper shadow-craft-sm">
@@ -110,7 +110,7 @@ export function CreateStudio() {
         </div>
       </section>
 
-      <div className="flex w-full flex-1 flex-col items-stretch border-b-[2.5px] border-indigo-ink bg-paper-shade lg:flex-row">
+      <div className="flex min-h-0 w-full flex-1 flex-col items-stretch overflow-y-auto border-b-[2.5px] border-indigo-ink bg-paper-shade lg:flex-row lg:overflow-hidden">
         <CreateStudioSidebar
           styleId={styleId}
           onStyleChange={setStyleId}
@@ -136,7 +136,7 @@ export function CreateStudio() {
         />
       </div>
 
-      <section className="sticky bottom-0 z-40 border-t-[2.5px] border-indigo-ink bg-paper/95 px-4 py-2 backdrop-blur-md sm:px-8">
+      <section className="z-40 w-full shrink-0 border-t-[2.5px] border-indigo-ink bg-paper/95 px-4 py-2 backdrop-blur-md sm:px-8">
         <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-2 sm:flex-row">
           <div className="flex w-full items-center gap-2 overflow-x-auto py-1 sm:w-auto">
             <span className="flex items-center gap-1 whitespace-nowrap text-xs font-black text-indigo-ink">
