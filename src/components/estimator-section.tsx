@@ -13,6 +13,7 @@ const PROJECT_TYPES = [
   { value: "corporate", label: "وب‌سایت شرکتی / خدماتی", base: "پایه ۷ م.ت" },
   { value: "ecommerce", label: "فروشگاه آنلاین دست‌ساز", base: "پایه ۱۱ م.ت" },
   { value: "webapp", label: "وب‌اپلیکیشن یا پورتال سفارشی", base: "پایه ۱۴ م.ت" },
+  { value: "wordpress", label: "سایت وردپرسی و قالب آماده", base: "پایه ۴ م.ت" },
 ] as const;
 
 const SPEEDS = [
@@ -37,6 +38,7 @@ const PRICES: Record<ProjectType, { min: number; max: number; title: string }> =
   corporate: { min: 7, max: 10, title: "وب‌سایت شرکتی / خدماتی" },
   ecommerce: { min: 11, max: 15, title: "فروشگاه آنلاین دست‌ساز" },
   webapp: { min: 14, max: 22, title: "وب‌اپلیکیشن یا پورتال سفارشی" },
+  wordpress: { min: 4, max: 5, title: "سایت وردپرسی و قالب آماده" },
 };
 
 const SPEED_FACTORS: Record<Speed, { factor: number; title: string }> = {
@@ -51,6 +53,15 @@ const ADDON_PRICES: Record<Addon, number> = {
   support: 1,
   motion: 1.2,
 };
+
+const PERSIAN_DIGITS = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
+
+/** Renders Latin digits as Persian ones, with the Persian decimal separator. */
+function toPersianDigits(value: string | number) {
+  return String(value)
+    .replace(/\d/g, (digit) => PERSIAN_DIGITS[Number(digit)])
+    .replace(/\./g, "٫");
+}
 
 export function EstimatorSection() {
   const [projectType, setProjectType] = useState<ProjectType>("landing");
@@ -246,7 +257,7 @@ export function EstimatorSection() {
                 <div className="flex items-center justify-between border-b border-indigo-ink/15 py-1.5">
                   <span>امکانات جانبی:</span>
                   <span className="font-extrabold text-coral">
-                    {estimate.addonsCount} مورد انتخاب شده
+                    {toPersianDigits(estimate.addonsCount)} مورد انتخاب شده
                   </span>
                 </div>
                 <div className="flex items-center justify-between border-b border-indigo-ink/15 py-1.5">
@@ -263,11 +274,11 @@ export function EstimatorSection() {
                 </span>
                 <div className="flex items-baseline justify-center gap-1.5">
                   <span className="font-display text-[34px] font-black text-coral">
-                    {estimate.min}
+                    {toPersianDigits(estimate.min)}
                   </span>
                   <span className="text-lg font-black text-indigo-ink">تا</span>
                   <span className="font-display text-[34px] font-black text-coral">
-                    {estimate.max}
+                    {toPersianDigits(estimate.max)}
                   </span>
                   <span className="text-sm font-bold text-indigo-ink">
                     میلیون تومان
