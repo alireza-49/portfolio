@@ -10,10 +10,10 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const PROJECT_TYPES = [
   { value: "landing", label: "لندینگ‌پیج معرفی و تبلیغاتی", base: "پایه ۴ م.ت" },
+  { value: "wordpress", label: "سایت وردپرسی و قالب آماده", base: "پایه ۴ م.ت" },
   { value: "corporate", label: "وب‌سایت شرکتی / خدماتی", base: "پایه ۷ م.ت" },
   { value: "ecommerce", label: "فروشگاه آنلاین دست‌ساز", base: "پایه ۱۱ م.ت" },
   { value: "webapp", label: "وب‌اپلیکیشن یا پورتال سفارشی", base: "پایه ۱۴ م.ت" },
-  { value: "wordpress", label: "سایت وردپرسی و قالب آماده", base: "پایه ۴ م.ت" },
 ] as const;
 
 const SPEEDS = [
@@ -35,10 +35,10 @@ type Addon = (typeof ADDONS)[number]["value"];
 
 const PRICES: Record<ProjectType, { min: number; max: number; title: string }> = {
   landing: { min: 4, max: 6, title: "لندینگ‌پیج معرفی و تبلیغاتی" },
+  wordpress: { min: 4, max: 5, title: "سایت وردپرسی و قالب آماده" },
   corporate: { min: 7, max: 10, title: "وب‌سایت شرکتی / خدماتی" },
   ecommerce: { min: 11, max: 15, title: "فروشگاه آنلاین دست‌ساز" },
   webapp: { min: 14, max: 22, title: "وب‌اپلیکیشن یا پورتال سفارشی" },
-  wordpress: { min: 4, max: 5, title: "سایت وردپرسی و قالب آماده" },
 };
 
 const SPEED_FACTORS: Record<Speed, { factor: number; title: string }> = {
