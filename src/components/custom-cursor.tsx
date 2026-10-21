@@ -17,6 +17,11 @@ const EMIT_THRESHOLD = 0.05; // normalized speed below which nothing is emitted
 const RING_SIZE = 34;
 const DOT_SIZE = 7;
 
+/** How much of the travel direction is turned into ring rotation. */
+const ROTATION_FACTOR = 0.12;
+/** Hard cap on the ring tilt, in radians (~8deg). */
+const MAX_ROTATION = 0.14;
+
 /** Elements the ring snaps around and grows to match. */
 const MORPH_SELECTOR = [
   "a",
@@ -51,6 +56,8 @@ type MorphTarget = {
   w: number;
   h: number;
   r: number;
+  /** Cached border radius so we don't read computed style every frame. */
+  radius: number;
 };
 
 export function CustomCursor({
@@ -113,16 +120,41 @@ export function CustomCursor({
         w,
         h,
         r: Math.min(radius + MORPH_PADDING, Math.min(w, h) / 2),
+        radius,
       };
     };
 
-    const refreshMorph = () => {
+    /**
+     * Re-measure the hovered element. Called every frame so the ring keeps
+     * hugging elements that move while hovered (hover lifts, transitions,
+     * layout shifts, carousels).
+     */
+    const syncMorph = () => {
       if (!morphTarget) return;
-      if (!morphTarget.el.isConnected) {
+
+      const el = morphTarget.el;
+      if (!el.isConnected) {
         morphTarget = null;
         return;
       }
-      morphTarget = readMorph(morphTarget.el);
+
+      const rect = el.getBoundingClientRect();
+      if (rect.width < 1 || rect.height < 1) {
+        morphTarget = null;
+        return;
+      }
+
+      const w = rect.width + MORPH_PADDING * 2;
+      const h = rect.height + MORPH_PADDING * 2;
+
+      morphTarget.x = rect.left + rect.width / 2;
+      morphTarget.y = rect.top + rect.height / 2;
+      morphTarget.w = w;
+      morphTarget.h = h;
+      morphTarget.r = Math.min(
+        morphTarget.radius + MORPH_PADDING,
+        Math.min(w, h) / 2,
+      );
     };
 
     // ---- canvas sizing ---------------------------------------------------
@@ -138,7 +170,7 @@ export function CustomCursor({
       canvas.style.width = `${width}px`;
       canvas.style.height = `${height}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      refreshMorph();
+      syncMorph();
     };
     resize();
 
@@ -241,6 +273,9 @@ export function CustomCursor({
       lastFrame = now;
       const step = dt / 16.667;
 
+      // keep the ring glued to elements that move while hovered
+      syncMorph();
+
       // let the velocity bleed off when the pointer stops moving
       speed *= Math.exp(-dt / 110);
 
@@ -284,7 +319,10 @@ export function CustomCursor({
       // ring: stretched along the travel axis, squashed across it
       const scaleX = (1 + stretch * 0.9) * (1 + stretch * 0.18);
       const scaleY = (1 - stretch * 0.32) * (1 + stretch * 0.18);
-      const rot = angle * (1 - morphAmount);
+
+      // only a slight tilt in the direction of travel, hard-capped
+      const rawRot = angle * ROTATION_FACTOR * (1 - morphAmount);
+      const rot = Math.max(-MAX_ROTATION, Math.min(MAX_ROTATION, rawRot));
 
       ring.style.width = `${ringW}px`;
       ring.style.height = `${ringH}px`;
@@ -357,7 +395,7 @@ export function CustomCursor({
     // ---- wiring ----------------------------------------------------------
     window.addEventListener("pointermove", onPointerMove, { passive: true });
     window.addEventListener("resize", resize);
-    window.addEventListener("scroll", refreshMorph, {
+    window.addEventListener("scroll", syncMorph, {
       passive: true,
       capture: true,
     });
@@ -391,7 +429,7 @@ export function CustomCursor({
       cancelAnimationFrame(raf);
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("resize", resize);
-      window.removeEventListener("scroll", refreshMorph, { capture: true });
+      window.removeEventListener("scroll", syncMorph, { capture: true });
       document.removeEventListener("pointerover", onPointerOver);
       document.removeEventListener("pointerleave", onPointerLeave);
       document.removeEventListener("pointerenter", onPointerEnter);
