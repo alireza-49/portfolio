@@ -1,4 +1,10 @@
-type Props = { className: string };
+import type { ComponentProps } from "react";
+import { cn } from "cn";
+
+import { Button } from "@/components/ui/button";
+
+type Props = { className?: string };
+
 const Logo = (props: Props) => {
   return (
     <svg
@@ -219,4 +225,40 @@ const Logo = (props: Props) => {
   );
 };
 
+type LogoButtonProps = ComponentProps<typeof Button> & {
+  /** Extra classes applied to the inner SVG. */
+  logoClassName?: string;
+};
+
+/**
+ * The logo wrapped in `Button`, so it inherits the cursor-following
+ * radial glow (`--btn-x` / `--btn-y`) from the button primitive.
+ */
+const LogoButton = ({
+  className,
+  logoClassName,
+  variant = "ghost",
+  size = "default",
+  ...props
+}: LogoButtonProps) => {
+  return (
+    <Button
+      variant={variant}
+      size={size}
+      className={cn(
+        // strip the default button chrome so only the logo is visible
+        "h-auto w-auto rounded-[1.75rem] p-0",
+        "hover:bg-transparent aria-expanded:bg-transparent",
+        // the SVG is opaque, so lift the glow above it
+        "before:z-10",
+        className,
+      )}
+      {...props}
+    >
+      <Logo className={cn("size-12", logoClassName)} />
+    </Button>
+  );
+};
+
+export { LogoButton };
 export default Logo;
