@@ -318,8 +318,8 @@ export function CustomCursor({
       dot.style.transform = `translate3d(${pointer.x}px, ${pointer.y}px, 0) translate(-50%, -50%)`;
 
       // ring: stretched along the travel axis, squashed across it
-      const scaleX = (1 + stretch * 0.9) * (1 + stretch * 0.18);
-      const scaleY = (1 - stretch * 0.32) * (1 + stretch * 0.18);
+      const scaleY = (1 + stretch * 0.9) * (1 + stretch * 0.18);
+      const scaleX = (1 - stretch * 0.32) * (1 + stretch * 0.18);
 
       // only a slight tilt in the direction of travel, hard-capped
       const rawRot = angle * ROTATION_FACTOR * (1 - morphAmount);
@@ -443,13 +443,13 @@ export function CustomCursor({
   return (
     <div
       ref={containerRef}
-      aria-hidden="true"
-      className="pointer-events-none fixed inset-0 z-[9999] overflow-hidden"
+      aria-hidden='true'
+      className='pointer-events-none fixed inset-0 z-[9999] overflow-hidden'
     >
-      <canvas ref={canvasRef} className="absolute inset-0" />
+      <canvas ref={canvasRef} className='absolute inset-0' />
       <div
         ref={ringRef}
-        className="absolute left-0 top-0 border-2 will-change-transform"
+        className='absolute left-0 top-0 border-2 will-change-transform'
         style={{
           width: RING_SIZE,
           height: RING_SIZE,
@@ -461,7 +461,7 @@ export function CustomCursor({
       />
       <div
         ref={dotRef}
-        className="absolute left-0 top-0 rounded-full will-change-transform"
+        className='absolute left-0 top-0 rounded-full will-change-transform'
         style={{
           width: DOT_SIZE,
           height: DOT_SIZE,
