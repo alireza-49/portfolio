@@ -22,6 +22,26 @@ const ROTATION_FACTOR = 0.12;
 /** Hard cap on the ring tilt, in radians (~8deg). */
 const MAX_ROTATION = 0.14;
 
+/**
+ * Hides the OS cursor everywhere.
+ *
+ * The universal `!important` rule is required: utility classes such as
+ * Tailwind's `cursor-pointer` (used on buttons, links, `[role='button']`, …)
+ * are class selectors and would otherwise beat a plain `html, body` rule,
+ * making the native arrow pop back in on hover.
+ *
+ * Text fields keep a real caret cursor — that rule is more specific
+ * (`html input` = 0,0,2 vs `*` = 0,0,0) and also `!important`, so it wins.
+ */
+const NATIVE_CURSOR_CSS = `
+  html, body, *, *::before, *::after { cursor: none !important; }
+  html input,
+  html textarea,
+  html select,
+  html [contenteditable='true'],
+  html [contenteditable=''] { cursor: text !important; }
+`;
+
 /** Elements the ring snaps around and grows to match. */
 const MORPH_SELECTOR = [
   "a",
@@ -419,10 +439,8 @@ export function CustomCursor({
     let styleEl: HTMLStyleElement | null = null;
     if (hideNativeCursor) {
       styleEl = document.createElement("style");
-      styleEl.textContent = `
-        html, body { cursor: none; }
-        html input, html textarea, html select { cursor: text; }
-      `;
+      styleEl.dataset.customCursor = "";
+      styleEl.textContent = NATIVE_CURSOR_CSS;
       document.head.appendChild(styleEl);
     }
 
