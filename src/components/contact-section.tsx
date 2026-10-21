@@ -1,28 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState, type FormEvent } from "react";
 import Link from "next/link";
-import { Mail, Send } from "lucide-react";
+import { Calculator, Mail, Send } from "lucide-react";
 import { cn } from "cn";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-
-type EstimateDetail = {
-  typeTitle: string;
-  timeline: string;
-  min: string;
-  max: string;
-};
+import { useEstimate } from "@/components/estimate-store";
 
 const SOCIALS = [
   { href: "https://github.com", label: "GitHub" },
@@ -30,30 +17,33 @@ const SOCIALS = [
   { href: "https://instagram.com", label: "Instagram" },
 ];
 
-const BUDGET_OPTIONS: { value: string; label: string }[] = [
-  { value: "4-7", label: "۴ تا ۷ میلیون تومان (پروژه سریع)" },
-  { value: "7-12", label: "۷ تا ۱۲ میلیون تومان (سایت شرکتی کامل)" },
-  { value: "12-20", label: "۱۲ تا ۲۰ میلیون تومان (فروشگاه / اپلیکیشن)" },
-  { value: "undecided", label: "هنوز مطمئن نیستم (نیاز به راهنمایی)" },
-];
-
 const FIELD_CLASS =
   "h-auto rounded-sm border-[2px] border-indigo-ink bg-paper p-3 text-sm text-indigo-ink placeholder:text-indigo-ink/50 focus-visible:border-coral focus-visible:ring-2 focus-visible:ring-coral/30";
 
 export function ContactSection() {
   const [sent, setSent] = useState(false);
-  const messageRef = useRef<HTMLTextAreaElement>(null);
+  const [name, setName] = useState("");
+  const [contact, setContact] = useState("");
+  const estimate = useEstimate();
 
-  useEffect(() => {
-    const handleEstimate = (event: Event) => {
-      const detail = (event as CustomEvent<EstimateDetail>).detail;
-      if (!detail || !messageRef.current) return;
-      messageRef.current.value = `سلام، من در برآوردگر آنلاین شما پروژه "${detail.typeTitle}" با زمان‌بندی "${detail.timeline}" و محدوده تخمینی ${detail.min} الی ${detail.max} میلیون تومان را مشخص کردم. مایل به گفتگوی ۳۰ دقیقه‌ای رایگان هستم.`;
-    };
+  const canSubmit = name.trim().length > 0 && contact.trim().length > 0;
 
-    window.addEventListener("codology:estimate", handleEstimate);
-    return () => window.removeEventListener("codology:estimate", handleEstimate);
-  }, []);
+  const scrollToEstimator = () => {
+    document
+      .getElementById("estimator-section")
+      ?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!canSubmit) return;
+    const form = event.currentTarget;
+    setSent(true);
+    form.reset();
+    setName("");
+    setContact("");
+    window.setTimeout(() => setSent(false), 6000);
+  };
 
   return (
     <section id="contact-section" className="w-full bg-paper px-4 py-12 sm:px-8 lg:px-12">
@@ -74,6 +64,16 @@ export function ContactSection() {
               یا محصولی آماده راه‌اندازی؛ مستقیماً پیام دهید تا کم‌هزینه‌ترین و
               سریع‌ترین مسیر فنی را رایگان با هم مرور کنیم.
             </p>
+
+            <Button
+              type="button"
+              variant="outline"
+              onClick={scrollToEstimator}
+              className="craft-btn flex h-auto w-full items-center justify-center gap-2 rounded-sm border-[2.5px] border-indigo-ink bg-paper py-3 text-sm font-black text-indigo-ink hover:bg-indigo-ink hover:text-paper"
+            >
+              <Calculator className="size-4" />
+              <span>برآورد هزینه پروژه</span>
+            </Button>
 
             <div className="flex flex-col gap-3">
               <Link href="https://t.me" target="_blank" rel="noopener noreferrer">
@@ -141,16 +141,7 @@ export function ContactSection() {
           </div>
 
           <Card className="craft-card gap-0 rounded-sm bg-paper-light p-6 sm:p-8 lg:col-span-7">
-            <form
-              className="flex flex-col gap-4"
-              onSubmit={(event) => {
-                event.preventDefault();
-                const form = event.currentTarget;
-                setSent(true);
-                form.reset();
-                window.setTimeout(() => setSent(false), 6000);
-              }}
-            >
+            <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="flex flex-col gap-1.5">
                   <Label htmlFor="form-name" className="text-[13px] font-bold text-indigo-ink">
@@ -161,6 +152,8 @@ export function ContactSection() {
                     name="name"
                     type="text"
                     required
+                    value={name}
+                    onChange={(event) => setName(event.target.value)}
                     placeholder="مثال: مریم راد"
                     className={FIELD_CLASS}
                   />
@@ -174,49 +167,25 @@ export function ContactSection() {
                     name="contact"
                     type="text"
                     required
+                    value={contact}
+                    onChange={(event) => setContact(event.target.value)}
                     placeholder="۰۹۱۲... یا @username"
                     className={FIELD_CLASS}
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="form-biz" className="text-[13px] font-bold text-indigo-ink">
-                    نام کسب‌وکار یا ایده
-                  </Label>
-                  <Input
-                    id="form-biz"
-                    name="business"
-                    type="text"
-                    placeholder="مثال: کافه کارگاه هنر"
-                    className={FIELD_CLASS}
-                  />
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="form-budget" className="text-[13px] font-bold text-indigo-ink">
-                    محدوده بودجه مدنظر
-                  </Label>
-                  <Select name="budget" items={BUDGET_OPTIONS} defaultValue="4-7">
-                    <SelectTrigger
-                      id="form-budget"
-                      className="h-auto w-full rounded-sm border-[2px] border-indigo-ink bg-paper p-3 text-sm font-medium text-indigo-ink"
-                    >
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="rounded-sm border-[2px] border-indigo-ink bg-paper-light">
-                      {BUDGET_OPTIONS.map((option) => (
-                        <SelectItem
-                          key={option.value}
-                          value={option.value}
-                          className="text-sm font-medium text-indigo-ink focus:bg-mustard/30"
-                        >
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="form-biz" className="text-[13px] font-bold text-indigo-ink">
+                  نام کسب‌وکار یا ایده
+                </Label>
+                <Input
+                  id="form-biz"
+                  name="business"
+                  type="text"
+                  placeholder="مثال: کافه کارگاه هنر"
+                  className={FIELD_CLASS}
+                />
               </div>
 
               <div className="flex flex-col gap-1.5">
@@ -227,16 +196,52 @@ export function ContactSection() {
                   id="form-msg"
                   name="message"
                   rows={4}
-                  ref={messageRef}
                   placeholder="خلاصه‌ای از آنچه در ذهن دارید، سلیقه بصری یا سایت‌هایی که می‌پسندید..."
                   className={cn(FIELD_CLASS, "resize-none font-medium")}
                 />
               </div>
 
+              {estimate ? (
+                <div className="rounded-sm border-[2px] border-indigo-ink bg-mustard/20 p-3">
+                  <div className="mb-2 flex items-center justify-between border-b border-indigo-ink/20 pb-1.5">
+                    <span className="text-[13px] font-black text-indigo-ink">
+                      برآورد انتخابی شما
+                    </span>
+                    <span className="riso-stamp text-[10px]">از برآوردگر</span>
+                  </div>
+                  <div className="flex flex-col gap-1 text-xs text-indigo-light">
+                    <div className="flex items-center justify-between">
+                      <span>پروژه:</span>
+                      <span className="font-bold text-indigo-ink">
+                        {estimate.typeTitle}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span>زمان‌بندی:</span>
+                      <span className="font-bold text-teal-craft">
+                        {estimate.timeline}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span>محدوده هزینه:</span>
+                      <span className="font-bold text-coral">
+                        {estimate.min} تا {estimate.max} میلیون تومان
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="rounded-sm border-[2px] border-dashed border-indigo-ink/40 bg-paper p-3 text-center text-xs font-medium text-indigo-light">
+                  هنوز برآوردی ثبت نشده است. با دکمه «برآورد هزینه پروژه» محدوده
+                  قیمت را مشخص کنید.
+                </div>
+              )}
+
               <Button
                 type="submit"
                 variant="default"
-                className="craft-btn flex h-auto w-full items-center justify-center gap-2 rounded-sm border-[2.5px] border-indigo-ink py-3.5 text-base font-black"
+                disabled={!canSubmit}
+                className="craft-btn flex h-auto w-full items-center justify-center gap-2 rounded-sm border-[2.5px] border-indigo-ink py-3.5 text-base font-black disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <span>ارسال پیام و هماهنگی گفتگوی رایگان</span>
                 <Send className="size-5" />

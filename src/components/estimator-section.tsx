@@ -1,12 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Send } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { cn } from "cn";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { setEstimate } from "@/components/estimate-store";
 
 const PROJECT_TYPES = [
   {
@@ -111,27 +110,21 @@ export function EstimatorSection() {
     };
   }, [projectType, speed, addons]);
 
+  useEffect(() => {
+    setEstimate({
+      typeTitle: estimate.typeTitle,
+      timeline: estimate.timeline,
+      min: estimate.min,
+      max: estimate.max,
+      addonsCount: estimate.addonsCount,
+    });
+  }, [estimate]);
+
   const toggleAddon = (addon: Addon) => {
     setAddons((current) =>
       current.includes(addon)
         ? current.filter((item) => item !== addon)
         : [...current, addon],
-    );
-  };
-
-  const handleBook = () => {
-    document
-      .getElementById("contact-section")
-      ?.scrollIntoView({ behavior: "smooth" });
-    window.dispatchEvent(
-      new CustomEvent("codology:estimate", {
-        detail: {
-          typeTitle: estimate.typeTitle,
-          timeline: estimate.timeline,
-          min: estimate.min,
-          max: estimate.max,
-        },
-      }),
     );
   };
 
@@ -333,19 +326,15 @@ export function EstimatorSection() {
             </div>
 
             <div className='flex flex-col gap-2 pt-4'>
-              <Button
-                type='button'
-                variant='default'
-                onClick={handleBook}
-                className='craft-btn flex h-auto w-full items-center justify-center gap-2 rounded-sm border-[2.5px] border-indigo-ink py-3.5 text-base font-black'
-              >
-                <span>تایید برآورد و شروع گفتگو</span>
-                <Send className='size-[18px]' />
-              </Button>
               <p className='text-center text-[11px] font-medium text-indigo-light'>
-                جلسه ۳۰ دقیقه‌ای بدون نیاز به پیش‌پرداخت • بررسی تخصصی
-                نیازمندی‌ها
+                برآورد شما به‌صورت زنده در فرم تماس ثبت می‌شود.
               </p>
+              <a
+                href='#contact-section'
+                className='text-center text-xs font-black text-coral underline underline-offset-4'
+              >
+                رفتن به فرم تماس و ارسال پیام ←
+              </a>
             </div>
           </Card>
         </div>
