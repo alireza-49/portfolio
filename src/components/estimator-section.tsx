@@ -179,13 +179,13 @@ export function EstimatorSection() {
                     <label
                       key={option.value}
                       className={cn(
-                        "flex cursor-pointer flex-col items-center gap-1 rounded-sm border-[2px] p-3 text-center transition-colors",
+                        "flex cursor-pointer flex-col items-center justify-center gap-1 rounded-sm border-[2px] p-3 text-center transition-colors",
                         checked
                           ? "border-coral bg-coral/10"
                           : "border-indigo-ink bg-paper hover:bg-mustard/20",
                       )}
                     >
-                      <RadioGroupItem value={option.value} className="shrink-0" />
+                      <RadioGroupItem value={option.value} className="sr-only" />
                       <div className="text-sm font-bold text-indigo-ink">
                         {option.title}
                       </div>
