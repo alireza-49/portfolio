@@ -335,9 +335,9 @@ export function EstimatorSection() {
             <div className='flex flex-col gap-2 pt-4'>
               <Button
                 type='button'
-                variant='outline'
+                variant='default'
                 onClick={handleBook}
-                className='craft-btn flex h-auto w-full items-center justify-center gap-2 rounded-sm border-[2.5px] border-indigo-ink bg-coral py-3.5 text-base font-black text-white'
+                className='craft-btn flex h-auto w-full items-center justify-center gap-2 rounded-sm border-[2.5px] border-indigo-ink py-3.5 text-base font-black'
               >
                 <span>تایید برآورد و شروع گفتگو</span>
                 <Send className='size-[18px]' />
