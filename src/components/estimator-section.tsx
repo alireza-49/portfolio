@@ -17,9 +17,9 @@ const PROJECT_TYPES = [
 ] as const;
 
 const SPEEDS = [
-  { value: "standard", title: "عادی (۷ تا ۱۰ روز)", note: "اقتصادی و آرام", noteTone: "text-indigo-light" },
-  { value: "fast", title: "سریع (۳ تا ۵ روز)", note: "+۲۰٪ شتاب‌یافته", noteTone: "text-coral font-bold" },
-  { value: "urgent", title: "فوری (۴۸ ساعته)", note: "+۴۰٪ شیفت شبانه", noteTone: "text-coral-dark font-black" },
+  { value: "standard", title: "عادی (۱۰ تا ۱۴ روز)", note: "اقتصادی و آرام", noteTone: "text-indigo-light" },
+  { value: "fast", title: "سریع (۵ تا ۷ روز)", note: "+۲۰٪ شتاب‌یافته", noteTone: "text-coral font-bold" },
+  { value: "urgent", title: "فوری (۲ تا ۳ روز)", note: "+۴۰٪ شیفت شبانه", noteTone: "text-coral-dark font-black" },
 ] as const;
 
 const ADDONS = [
@@ -42,9 +42,9 @@ const PRICES: Record<ProjectType, { min: number; max: number; title: string }> =
 };
 
 const SPEED_FACTORS: Record<Speed, { factor: number; title: string }> = {
-  standard: { factor: 1, title: "۷ تا ۱۰ روز کاری" },
-  fast: { factor: 1.2, title: "۳ تا ۵ روز کاری (شتاب‌یافته)" },
-  urgent: { factor: 1.4, title: "۴۸ ساعته (تحویل فوری)" },
+  standard: { factor: 1, title: "۱۰ تا ۱۴ روز کاری" },
+  fast: { factor: 1.2, title: "۵ تا ۷ روز کاری (شتاب‌یافته)" },
+  urgent: { factor: 1.4, title: "۲ تا ۳ روز کاری (تحویل فوری)" },
 };
 
 const ADDON_PRICES: Record<Addon, number> = {
