@@ -1,4 +1,4 @@
-import Logo from "@/assests/logo";
+import { LogoButton } from "@/assests/logo";
 import { ArrowLeft, Leaf, Mail, Send } from "lucide-react";
 
 const QUICK_LINKS = [
@@ -78,9 +78,11 @@ export function SiteFooter() {
         <div className='grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-12 lg:gap-10'>
           <div className='flex flex-col gap-4 text-right lg:col-span-4'>
             <div className='flex items-center gap-3'>
-              <span className='flex h-9 w-9 items-center justify-center rounded-sm border-[1.5px] border-indigo-ink bg-mustard/30 p-1 text-indigo-ink shadow-craft-inset'>
-                <Logo className='h-full w-full' />
-              </span>
+              <LogoButton
+                aria-label='استودیو کدولوژی'
+                logoClassName='size-full'
+                className='size-9 rounded-sm border-[1.5px] border-indigo-ink bg-mustard/30 p-1 text-indigo-ink shadow-craft-inset hover:bg-mustard/30 hover:text-indigo-ink'
+              />
               <div className='flex flex-col'>
                 <span className='font-display text-lg leading-tight font-black tracking-tight text-indigo-ink'>
                   استودیو کدولوژی
