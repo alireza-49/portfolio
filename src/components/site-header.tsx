@@ -3,9 +3,7 @@
 import { useState } from "react";
 import { Coffee, Menu } from "lucide-react";
 import Link from "next/link";
-import { cn } from "cn";
 import { LogoButton } from "@/assests/logo";
-import { buttonVariants } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
@@ -94,10 +92,7 @@ export function SiteHeader() {
 
           <Link
             href='#contact-section'
-            className={cn(
-              buttonVariants({ variant: "outline", size: "sm" }),
-              "craft-btn hidden h-auto items-center justify-center gap-1 rounded-sm border-[2.5px] border-indigo-ink bg-coral px-3.5 py-1.5 text-xs font-bold whitespace-nowrap text-white sm:inline-flex sm:text-[13px]",
-            )}
+            className='craft-btn hidden h-auto items-center justify-center gap-1 rounded-sm border-[2.5px] border-indigo-ink bg-coral px-3.5 py-1.5 text-xs font-bold whitespace-nowrap text-white shadow-craft-sm transition-colors hover:bg-coral-dark sm:inline-flex sm:text-[13px]'
           >
             <Coffee className='size-4' />
             <span>مشاوره و سفارش</span>
