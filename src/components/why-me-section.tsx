@@ -57,24 +57,24 @@ const REASONS = [
 export function WhyMeSection() {
   return (
     <section
-      id="why-me-section"
-      className="w-full border-b-[2.5px] border-indigo-ink bg-paper-dim px-4 py-12 sm:px-8 lg:px-12"
+      id='why-me-section'
+      className='w-full border-b-[2.5px] border-indigo-ink bg-paper-dim px-4 py-12 sm:px-8 lg:px-12'
     >
-      <div className="mx-auto flex max-w-7xl flex-col gap-10">
-        <div className="flex flex-col justify-between gap-4 border-b-[2px] border-indigo-ink pb-6 md:flex-row md:items-end">
-          <h2 className="text-[26px] font-black text-indigo-ink sm:text-[34px]">
+      <div className='mx-auto flex max-w-7xl flex-col gap-10'>
+        <div className='flex flex-col justify-between gap-4 border-b-[2px] border-indigo-ink pb-6 md:flex-row md:items-end'>
+          <h2 className='text-[26px] font-black text-indigo-ink sm:text-[34px]'>
             چرا کار با یک سازنده مستقل بهتر و کم هزینه تر است؟
           </h2>
-          <div className="riso-stamp-mustard self-start text-xs font-bold md:self-auto">
+          <div className='riso-stamp-mustard self-start text-xs font-bold md:self-auto p-1 rounded-4xl'>
             بدون بوروکراسی شرکتی، مستقیم با خود سازنده
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className='grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4'>
           {REASONS.map((reason) => (
             <Card
               key={reason.title}
-              className="craft-card relative flex flex-col justify-between gap-0 overflow-hidden rounded-sm bg-paper-light p-6"
+              className='craft-card relative flex flex-col justify-between gap-0 overflow-hidden rounded-sm bg-paper-light p-6'
             >
               <div
                 aria-hidden
@@ -90,12 +90,12 @@ export function WhyMeSection() {
                     reason.iconBox,
                   )}
                 >
-                  <reason.icon className="size-[26px]" />
+                  <reason.icon className='size-[26px]' />
                 </div>
-                <h3 className="pb-2 text-[19px] font-extrabold text-indigo-ink">
+                <h3 className='pb-2 text-[19px] font-extrabold text-indigo-ink'>
                   {reason.title}
                 </h3>
-                <p className="text-sm leading-relaxed text-indigo-light">
+                <p className='text-sm leading-relaxed text-indigo-light'>
                   {reason.body}
                 </p>
               </div>
@@ -106,7 +106,7 @@ export function WhyMeSection() {
                 )}
               >
                 <span>{reason.footer}</span>
-                <reason.footerIcon className="size-4" />
+                <reason.footerIcon className='size-4' />
               </div>
             </Card>
           ))}
