@@ -158,6 +158,7 @@ export function HeroSection() {
               <Badge
                 key={badge.label}
                 variant="outline"
+                data-cursor-morph
                 className={cn(
                   "inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-bold [&>svg]:size-4",
                   BADGE_TONES[badge.tone],
@@ -278,6 +279,7 @@ export function HeroSection() {
             {HERO_PROMISES.map((promise) => (
               <Card
                 key={promise.title}
+                data-cursor-morph
                 className="flex flex-row items-center gap-3 rounded-sm border-[2px] border-indigo-ink bg-paper-light p-3 shadow-craft-inset"
               >
                 <span
@@ -327,7 +329,10 @@ export function HeroSection() {
               className="pointer-events-none absolute -top-3 -right-3 h-full w-full rounded-sm border-[2.5px] border-indigo-ink bg-mustard"
             />
 
-            <Card className="relative flex flex-col gap-4 overflow-hidden rounded-sm border-[2.5px] border-indigo-ink bg-paper-light p-5 shadow-craft-inset sm:p-6">
+            <Card
+              data-cursor-morph
+              className="relative flex flex-col gap-4 overflow-hidden rounded-sm border-[2.5px] border-indigo-ink bg-paper-light p-5 shadow-craft-inset sm:p-6"
+            >
               <div
                 aria-hidden
                 className="pointer-events-none absolute top-1 right-1 h-3 w-3 border-t-2 border-r-2 border-indigo-ink/40"

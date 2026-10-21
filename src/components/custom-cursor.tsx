@@ -28,6 +28,7 @@ const MORPH_SELECTOR = [
   "button",
   "[role='button']",
   "[data-cursor-morph]",
+  "[data-slot='badge']",
   ".craft-card",
   ".craft-btn",
 ].join(",");
