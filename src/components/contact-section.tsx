@@ -235,8 +235,8 @@ export function ContactSection() {
 
               <Button
                 type="submit"
-                variant="outline"
-                className="craft-btn flex h-auto w-full items-center justify-center gap-2 rounded-sm border-[2.5px] border-indigo-ink bg-coral py-3.5 text-base font-black text-white"
+                variant="default"
+                className="craft-btn flex h-auto w-full items-center justify-center gap-2 rounded-sm border-[2.5px] border-indigo-ink py-3.5 text-base font-black"
               >
                 <span>ارسال پیام و هماهنگی گفتگوی رایگان</span>
                 <Send className="size-5" />
