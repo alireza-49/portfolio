@@ -60,7 +60,7 @@ export function SiteHeader() {
 
         <nav className='hidden shrink items-center gap-3 text-[13px] font-bold whitespace-nowrap text-indigo-ink lg:flex'>
           {NAV_LINKS.map((link) => (
-            <a
+            <Link
               key={link.href}
               href={link.href}
               className={
@@ -70,27 +70,27 @@ export function SiteHeader() {
               }
             >
               {link.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
         <div className='flex shrink-0 items-center gap-2.5 whitespace-nowrap'>
           <div className='inline-flex items-center rounded-sm border-[1.5px] border-indigo-ink bg-paper-dim p-[2px] text-[10px] font-bold shadow-craft-inset'>
-            <a
+            <Link
               href='#'
               className='rounded-[2px] bg-indigo-ink px-2 py-[2px] text-paper'
             >
               فا
-            </a>
-            <a
+            </Link>
+            <Link
               href='#'
               className='px-1.5 py-[2px] text-indigo-ink transition-colors hover:text-coral'
             >
               EN
-            </a>
+            </Link>
           </div>
 
-          <a
+          <Link
             href='#contact-section'
             className={cn(
               buttonVariants({ variant: "outline", size: "sm" }),
@@ -99,7 +99,7 @@ export function SiteHeader() {
           >
             <Coffee className='size-4' />
             <span>مشاوره و سفارش</span>
-          </a>
+          </Link>
 
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger
@@ -121,7 +121,7 @@ export function SiteHeader() {
                 <ul className='flex flex-col divide-y divide-dashed divide-indigo-ink/20'>
                   {NAV_LINKS.map((link) => (
                     <li key={link.href}>
-                      <a
+                      <Link
                         href={link.href}
                         onClick={() => setOpen(false)}
                         className={
@@ -131,7 +131,7 @@ export function SiteHeader() {
                         }
                       >
                         {link.label}
-                      </a>
+                      </Link>
                     </li>
                   ))}
                 </ul>

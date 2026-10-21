@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type ReactElement } from "react";
+import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { cn } from "cn";
 import { Badge } from "@/components/ui/badge";
@@ -227,13 +228,13 @@ function ProjectCard({ project }: { project: Project }) {
       </p>
 
       <div className="flex items-center justify-between border-t-2 border-dashed border-indigo-ink/20 pt-3">
-        <a
+        <Link
           href="#contact-section"
           className="group inline-flex items-center gap-1.5 text-xs font-extrabold text-coral hover:text-indigo-ink"
         >
           <span>{project.cta}</span>
           <ArrowLeft className="size-[17px] transition-transform group-hover:-translate-x-0.5" />
-        </a>
+        </Link>
         <Badge
           variant="outline"
           className="rounded border-indigo-ink/30 bg-mustard/30 px-2 py-0.5 font-mono text-[11px] font-normal text-indigo-ink"

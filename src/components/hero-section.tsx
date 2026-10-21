@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState, type CSSProperties } from "react";
+import Link from "next/link";
 import {
   BadgeCheck,
   Calculator,
@@ -296,7 +297,7 @@ export function HeroSection() {
           </div>
 
           <div className="flex flex-wrap items-center gap-4 pt-3">
-            <a
+            <Link
               href="#contact-section"
               className={cn(
                 buttonVariants({ variant: "outline", size: "lg" }),
@@ -305,8 +306,8 @@ export function HeroSection() {
             >
               <span>رزرو جلسه مشاوره رایگان (۳۰ دقیقه)</span>
               <Coffee className="size-5" />
-            </a>
-            <a
+            </Link>
+            <Link
               href="#estimator-section"
               className={cn(
                 buttonVariants({ variant: "outline", size: "lg" }),
@@ -315,7 +316,7 @@ export function HeroSection() {
             >
               <span>محاسبه آنلاین قیمت و زمان تحویل</span>
               <Calculator className="size-5" />
-            </a>
+            </Link>
           </div>
         </div>
 

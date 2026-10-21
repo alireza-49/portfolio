@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { Mail, Send } from "lucide-react";
 import { cn } from "cn";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -75,7 +76,7 @@ export function ContactSection() {
             </p>
 
             <div className="flex flex-col gap-3">
-              <a href="https://t.me" target="_blank" rel="noopener noreferrer">
+              <Link href="https://t.me" target="_blank" rel="noopener noreferrer">
                 <Card className="craft-card flex flex-row items-center justify-between gap-0 rounded-sm bg-paper-light p-3.5">
                   <div className="flex items-center gap-3">
                     <span className="flex h-10 w-10 items-center justify-center rounded-sm bg-indigo-ink text-paper">
@@ -92,9 +93,9 @@ export function ContactSection() {
                   </div>
                   <span className="text-xs font-black text-coral">پیام دهید ←</span>
                 </Card>
-              </a>
+              </Link>
 
-              <a href="mailto:hello@code-ecology.dev">
+              <Link href="mailto:hello@code-ecology.dev">
                 <Card className="craft-card flex flex-row items-center justify-between gap-0 rounded-sm bg-paper-light p-3.5">
                   <div className="flex items-center gap-3">
                     <span className="flex h-10 w-10 items-center justify-center rounded-sm bg-coral text-white">
@@ -113,7 +114,7 @@ export function ContactSection() {
                     ارسال نامه ←
                   </span>
                 </Card>
-              </a>
+              </Link>
             </div>
 
             <div className="pt-2">
@@ -122,7 +123,7 @@ export function ContactSection() {
               </span>
               <div className="grid grid-cols-3 gap-2" dir="ltr">
                 {SOCIALS.map((social) => (
-                  <a
+                  <Link
                     key={social.label}
                     href={social.href}
                     target="_blank"
@@ -133,7 +134,7 @@ export function ContactSection() {
                     )}
                   >
                     {social.label}
-                  </a>
+                  </Link>
                 ))}
               </div>
             </div>
