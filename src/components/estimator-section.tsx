@@ -2,6 +2,11 @@
 
 import { useMemo, useState } from "react";
 import { Send } from "lucide-react";
+import { cn } from "cn";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const PROJECT_TYPES = [
   { value: "landing", label: "لندینگ‌پیج معرفی و تبلیغاتی", base: "پایه ۴ م.ت" },
@@ -105,7 +110,7 @@ export function EstimatorSection() {
         </div>
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-          <div className="craft-card flex flex-col gap-6 rounded-sm bg-paper-light p-6 sm:p-8 lg:col-span-7">
+          <Card className="craft-card flex flex-col gap-6 rounded-sm bg-paper-light p-6 sm:p-8 lg:col-span-7">
             <div>
               <span className="mb-3 flex items-center gap-2 text-[16px] font-black text-indigo-ink">
                 <span className="flex h-6 w-6 items-center justify-center rounded-full bg-coral font-mono text-xs text-white">
@@ -113,27 +118,25 @@ export function EstimatorSection() {
                 </span>
                 <span>نوع وب‌سایت یا پروژه مورد نیاز:</span>
               </span>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <RadioGroup
+                value={projectType}
+                onValueChange={(value) => setProjectType(value as ProjectType)}
+                className="grid grid-cols-1 gap-3 sm:grid-cols-2"
+              >
                 {PROJECT_TYPES.map((type) => {
                   const checked = projectType === type.value;
                   return (
                     <label
                       key={type.value}
-                      className={`flex cursor-pointer items-center justify-between rounded-sm border-[2px] p-3.5 transition-colors ${
+                      className={cn(
+                        "flex cursor-pointer items-center justify-between rounded-sm border-[2px] p-3.5 transition-colors",
                         checked
                           ? "border-coral bg-coral/10"
-                          : "border-indigo-ink bg-paper hover:bg-mustard/20"
-                      }`}
+                          : "border-indigo-ink bg-paper hover:bg-mustard/20",
+                      )}
                     >
                       <div className="flex items-center gap-2.5">
-                        <input
-                          type="radio"
-                          name="projectType"
-                          value={type.value}
-                          checked={checked}
-                          onChange={() => setProjectType(type.value)}
-                          className="size-4 accent-coral"
-                        />
+                        <RadioGroupItem value={type.value} />
                         <span className="text-sm font-bold text-indigo-ink">
                           {type.label}
                         </span>
@@ -144,7 +147,7 @@ export function EstimatorSection() {
                     </label>
                   );
                 })}
-              </div>
+              </RadioGroup>
             </div>
 
             <div>
@@ -154,36 +157,34 @@ export function EstimatorSection() {
                 </span>
                 <span>اولویت زمان‌بندی و تحویل کار:</span>
               </span>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <RadioGroup
+                value={speed}
+                onValueChange={(value) => setSpeed(value as Speed)}
+                className="grid grid-cols-1 gap-3 sm:grid-cols-3"
+              >
                 {SPEEDS.map((option) => {
                   const checked = speed === option.value;
                   return (
                     <label
                       key={option.value}
-                      className={`cursor-pointer rounded-sm border-[2px] p-3 text-center transition-colors ${
+                      className={cn(
+                        "flex cursor-pointer flex-col items-center gap-1 rounded-sm border-[2px] p-3 text-center transition-colors",
                         checked
                           ? "border-coral bg-coral/10"
-                          : "border-indigo-ink bg-paper hover:bg-mustard/20"
-                      }`}
+                          : "border-indigo-ink bg-paper hover:bg-mustard/20",
+                      )}
                     >
-                      <input
-                        type="radio"
-                        name="speedOption"
-                        value={option.value}
-                        checked={checked}
-                        onChange={() => setSpeed(option.value)}
-                        className="sr-only"
-                      />
+                      <RadioGroupItem value={option.value} />
                       <div className="text-sm font-bold text-indigo-ink">
                         {option.title}
                       </div>
-                      <div className={`mt-0.5 font-mono text-[11px] ${option.noteTone}`}>
+                      <div className={cn("mt-0.5 font-mono text-[11px]", option.noteTone)}>
                         {option.note}
                       </div>
                     </label>
                   );
                 })}
-              </div>
+              </RadioGroup>
             </div>
 
             <div>
@@ -199,18 +200,16 @@ export function EstimatorSection() {
                   return (
                     <label
                       key={addon.value}
-                      className={`flex cursor-pointer items-center gap-2.5 rounded-sm border-[1.5px] p-3 ${
+                      className={cn(
+                        "flex cursor-pointer items-center gap-2.5 rounded-sm border-[1.5px] p-3",
                         checked
                           ? "border-coral bg-coral/10"
-                          : "border-indigo-ink/40 bg-paper hover:border-indigo-ink"
-                      }`}
+                          : "border-indigo-ink/40 bg-paper hover:border-indigo-ink",
+                      )}
                     >
-                      <input
-                        type="checkbox"
-                        value={addon.value}
+                      <Checkbox
                         checked={checked}
-                        onChange={() => toggleAddon(addon.value)}
-                        className="size-4 accent-coral"
+                        onCheckedChange={() => toggleAddon(addon.value)}
                       />
                       <span className="text-xs font-medium text-indigo-ink sm:text-sm">
                         {addon.label}
@@ -220,9 +219,9 @@ export function EstimatorSection() {
                 })}
               </div>
             </div>
-          </div>
+          </Card>
 
-          <div className="craft-card relative flex flex-col justify-between rounded-sm bg-paper-light p-6 sm:p-8 lg:col-span-5">
+          <Card className="craft-card relative flex flex-col justify-between gap-6 rounded-sm bg-paper-light p-6 sm:p-8 lg:col-span-5">
             <div className="flex flex-col gap-5">
               <div className="flex items-center justify-between border-b-[2px] border-indigo-ink pb-3">
                 <span className="font-mono text-xs font-bold text-indigo-ink">
@@ -258,7 +257,7 @@ export function EstimatorSection() {
                 </div>
               </div>
 
-              <div className="my-2 flex flex-col gap-1 rounded-sm border-[2px] border-indigo-ink bg-mustard/20 p-4 text-center shadow-craft-inset">
+              <Card className="my-2 flex flex-col gap-1 rounded-sm border-[2px] border-indigo-ink bg-mustard/20 p-4 text-center shadow-craft-inset">
                 <span className="text-xs font-bold text-indigo-ink">
                   محدوده سرمایه‌گذاری تقریبی
                 </span>
@@ -277,23 +276,24 @@ export function EstimatorSection() {
                 <span className="text-[11px] text-indigo-light">
                   شامل صفر تا صد کدنویسی، رسپانسیو و تحویل نهایی
                 </span>
-              </div>
+              </Card>
             </div>
 
             <div className="flex flex-col gap-2 pt-4">
-              <button
+              <Button
                 type="button"
+                variant="outline"
                 onClick={handleBook}
-                className="craft-btn flex w-full items-center justify-center gap-2 rounded-sm bg-coral py-3.5 text-base font-black text-white"
+                className="craft-btn flex h-auto w-full items-center justify-center gap-2 rounded-sm border-[2.5px] border-indigo-ink bg-coral py-3.5 text-base font-black text-white"
               >
                 <span>تایید برآورد و شروع گفتگو</span>
                 <Send className="size-[18px]" />
-              </button>
+              </Button>
               <p className="text-center text-[11px] font-medium text-indigo-light">
                 جلسه ۳۰ دقیقه‌ای بدون نیاز به پیش‌پرداخت • بررسی تخصصی نیازمندی‌ها
               </p>
             </div>
-          </div>
+          </Card>
         </div>
       </div>
     </section>

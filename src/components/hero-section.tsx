@@ -11,6 +11,10 @@ import {
   Smile,
   XCircle,
 } from "lucide-react";
+import { cn } from "cn";
+import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 const HERO_BADGES = [
   { icon: Coffee, label: "مشاوره ۱۰۰٪ رایگان و بدون تعهد", tone: "coral" },
@@ -150,13 +154,17 @@ export function HeroSection() {
         <div className="flex w-full flex-col gap-6 text-right lg:w-7/12">
           <div className="flex flex-wrap items-center gap-2.5">
             {HERO_BADGES.map((badge) => (
-              <span
+              <Badge
                 key={badge.label}
-                className={`inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-bold ${BADGE_TONES[badge.tone]}`}
+                variant="outline"
+                className={cn(
+                  "inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-bold [&>svg]:size-4",
+                  BADGE_TONES[badge.tone],
+                )}
               >
                 <badge.icon className="size-4" />
                 {badge.label}
-              </span>
+              </Badge>
             ))}
           </div>
 
@@ -267,12 +275,15 @@ export function HeroSection() {
 
           <div className="grid grid-cols-1 gap-3 pt-1 sm:grid-cols-2">
             {HERO_PROMISES.map((promise) => (
-              <div
+              <Card
                 key={promise.title}
-                className="flex items-center gap-3 rounded-sm border-[2px] border-indigo-ink bg-paper-light p-3 shadow-craft-inset"
+                className="flex flex-row items-center gap-3 rounded-sm border-[2px] border-indigo-ink bg-paper-light p-3 shadow-craft-inset"
               >
                 <span
-                  className={`flex size-9 items-center justify-center rounded border font-bold ${promise.box}`}
+                  className={cn(
+                    "flex size-9 items-center justify-center rounded border font-bold",
+                    promise.box,
+                  )}
                 >
                   <promise.icon className="size-5" />
                 </span>
@@ -280,21 +291,27 @@ export function HeroSection() {
                   <strong className="block text-indigo-ink">{promise.title}</strong>
                   <span className="text-indigo-light">{promise.body}</span>
                 </div>
-              </div>
+              </Card>
             ))}
           </div>
 
           <div className="flex flex-wrap items-center gap-4 pt-3">
             <a
               href="#contact-section"
-              className="craft-btn inline-flex items-center justify-center gap-2 rounded-sm bg-coral px-6 py-3.5 text-base font-bold text-white"
+              className={cn(
+                buttonVariants({ variant: "outline", size: "lg" }),
+                "craft-btn inline-flex h-auto items-center justify-center gap-2 rounded-sm border-[2.5px] border-indigo-ink bg-coral px-6 py-3.5 text-base font-bold text-white",
+              )}
             >
               <span>رزرو جلسه مشاوره رایگان (۳۰ دقیقه)</span>
               <Coffee className="size-5" />
             </a>
             <a
               href="#estimator-section"
-              className="craft-btn inline-flex items-center justify-center gap-2 rounded-sm bg-mustard px-6 py-3.5 text-base font-bold text-indigo-ink"
+              className={cn(
+                buttonVariants({ variant: "outline", size: "lg" }),
+                "craft-btn inline-flex h-auto items-center justify-center gap-2 rounded-sm border-[2.5px] border-indigo-ink bg-mustard px-6 py-3.5 text-base font-bold text-indigo-ink",
+              )}
             >
               <span>محاسبه آنلاین قیمت و زمان تحویل</span>
               <Calculator className="size-5" />
@@ -309,7 +326,7 @@ export function HeroSection() {
               className="pointer-events-none absolute -top-3 -right-3 h-full w-full rounded-sm border-[2.5px] border-indigo-ink bg-mustard"
             />
 
-            <div className="relative flex flex-col gap-4 overflow-hidden rounded-sm border-[2.5px] border-indigo-ink bg-paper-light p-5 shadow-craft-inset sm:p-6">
+            <Card className="relative flex flex-col gap-4 overflow-hidden rounded-sm border-[2.5px] border-indigo-ink bg-paper-light p-5 shadow-craft-inset sm:p-6">
               <div
                 aria-hidden
                 className="pointer-events-none absolute top-1 right-1 h-3 w-3 border-t-2 border-r-2 border-indigo-ink/40"
@@ -347,7 +364,7 @@ export function HeroSection() {
                 </div>
               </div>
 
-              <div className="relative flex flex-col gap-3 overflow-hidden rounded-sm border-[2px] border-indigo-ink bg-paper-dim p-4 shadow-craft-inset">
+              <Card className="relative flex flex-col gap-3 overflow-hidden rounded-sm border-[2px] border-indigo-ink bg-paper-dim p-4 shadow-craft-inset">
                 <div className="pointer-events-none absolute -top-2 left-3 z-10 -rotate-12 opacity-90 select-none">
                   <div className="flex h-20 w-20 flex-col items-center justify-center rounded-full border-[2.5px] border-dashed border-coral bg-coral/10 p-1.5 text-center text-coral shadow-inner backdrop-blur-[1px]">
                     <span className="font-mono text-[8px] leading-tight font-black tracking-widest">
@@ -377,27 +394,27 @@ export function HeroSection() {
 
                 <div className="grid grid-cols-2 gap-2 border-t border-dashed border-indigo-ink/30 pt-2">
                   {SPEC_SHEET.map((spec) => (
-                    <div
+                    <Card
                       key={spec.label}
-                      className="rounded-sm border border-indigo-ink/40 bg-paper p-2 text-right"
+                      className="gap-0 rounded-sm border border-indigo-ink/40 bg-paper p-2 text-right"
                     >
                       <span className="mb-0.5 block text-[10px] font-bold text-indigo-light">
                         {spec.label}
                       </span>
                       <div className="flex items-center gap-1">
                         <span
-                          className={`h-1.5 w-1.5 rounded-full ${spec.dot}`}
+                          className={cn("h-1.5 w-1.5 rounded-full", spec.dot)}
                         />
                         <span className="font-mono text-[12px] font-black text-indigo-ink">
                           {spec.value}
                         </span>
                       </div>
-                    </div>
+                    </Card>
                   ))}
                 </div>
-              </div>
+              </Card>
 
-              <div className="flex flex-col gap-2 rounded-sm border-[1.5px] border-indigo-ink bg-paper p-3">
+              <Card className="flex flex-col gap-2 rounded-sm border-[1.5px] border-indigo-ink bg-paper p-3">
                 <div className="flex items-center justify-between border-b border-indigo-ink/20 pb-1 text-[11px] font-bold text-indigo-ink">
                   <span>مقایسه فنی: کد دست‌ساز در برابر وردپرس سنگین</span>
                   <span className="font-mono text-[10px] font-bold text-teal-craft">
@@ -405,7 +422,7 @@ export function HeroSection() {
                   </span>
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-right">
-                  <div className="rounded-sm border border-teal-craft/40 bg-teal-light/60 p-2">
+                  <Card className="gap-0 rounded-sm border border-teal-craft/40 bg-teal-light/60 p-2">
                     <span className="flex items-center gap-1 text-[10px] font-bold text-teal-craft">
                       <CheckCircle2 className="size-3.5" />
                       کد اختصاصی کارگاه:
@@ -415,8 +432,8 @@ export function HeroSection() {
                       <li>• ۱۰۰٪ سازگار با هویت برند</li>
                       <li>• امنیت بدون باگ و رخنه</li>
                     </ul>
-                  </div>
-                  <div className="rounded-sm border border-coral/30 bg-coral/10 p-2">
+                  </Card>
+                  <Card className="gap-0 rounded-sm border border-coral/30 bg-coral/10 p-2">
                     <span className="flex items-center gap-1 text-[10px] font-bold text-coral-dark">
                       <XCircle className="size-3.5" />
                       قالب آماده و المنتور:
@@ -426,18 +443,22 @@ export function HeroSection() {
                       <li>• ۳۰+ افزونه ناهمگون و تکراری</li>
                       <li>• هزینه مداوم رفع باگ و سرور</li>
                     </ul>
-                  </div>
+                  </Card>
                 </div>
-              </div>
+              </Card>
 
               <div className="flex flex-wrap gap-1.5 pt-0.5" dir="ltr">
                 {TECH_BADGES.map((tech) => (
-                  <span
+                  <Badge
                     key={tech.label}
-                    className={`rounded-sm border border-indigo-ink px-2 py-0.5 font-mono text-[10px] font-bold ${tech.className}`}
+                    variant="outline"
+                    className={cn(
+                      "rounded-sm border border-indigo-ink px-2 py-0.5 font-mono text-[10px] font-bold",
+                      tech.className,
+                    )}
                   >
                     {tech.label}
-                  </span>
+                  </Badge>
                 ))}
               </div>
 
@@ -463,7 +484,7 @@ export function HeroSection() {
                   <span>ضمانت کد تمیز و اصیل</span>
                 </div>
               </div>
-            </div>
+            </Card>
           </div>
         </div>
       </div>

@@ -2,6 +2,10 @@
 
 import { useState, type ReactElement } from "react";
 import { ArrowLeft } from "lucide-react";
+import { cn } from "cn";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type Category = "web-app" | "landing" | "store";
 
@@ -182,18 +186,78 @@ const FILTERS = [
   { value: "store", label: "فروشگاه اختصاصی" },
 ] as const;
 
-export function ProjectsSection() {
-  const [active, setActive] = useState<(typeof FILTERS)[number]["value"]>("all");
+type FilterValue = (typeof FILTERS)[number]["value"];
 
-  const visible =
-    active === "all" ? PROJECTS : PROJECTS.filter((project) => project.category === active);
+function ProjectCard({ project }: { project: Project }) {
+  return (
+    <Card className="craft-card relative flex flex-col justify-between gap-0 rounded-sm bg-paper-light p-5">
+      <div className="relative mb-4 flex h-60 w-full items-center justify-center overflow-hidden rounded-sm border-[2px] border-indigo-ink bg-paper-dim p-3">
+        <project.thumbnail className="h-full w-full text-indigo-ink opacity-90" />
+        <span
+          className={cn(
+            "absolute top-2.5 right-2.5 bg-paper-light text-[10px] shadow-sm",
+            STAMP_TONES[project.stamp.tone],
+          )}
+        >
+          {project.stamp.label}
+        </span>
+        <Badge
+          variant="outline"
+          className={cn(
+            "absolute bottom-2.5 left-2.5 rounded border-transparent px-2 py-0.5 font-mono text-[10px] font-bold",
+            TECH_TONES[project.tech.tone],
+          )}
+        >
+          {project.tech.label}
+        </Badge>
+      </div>
+
+      <div className="mb-1.5 flex items-center justify-between font-mono text-[11px] text-indigo-light">
+        <span className={cn("font-bold", project.meta.leftTone)}>
+          {project.meta.left}
+        </span>
+        <span className="font-bold text-coral">{project.meta.right}</span>
+      </div>
+
+      <h3 className="mb-2 text-[20px] font-black text-indigo-ink">
+        {project.title}
+      </h3>
+      <p className="mb-4 text-sm leading-relaxed text-indigo-light">
+        {project.body}
+      </p>
+
+      <div className="flex items-center justify-between border-t-2 border-dashed border-indigo-ink/20 pt-3">
+        <a
+          href="#contact-section"
+          className="group inline-flex items-center gap-1.5 text-xs font-extrabold text-coral hover:text-indigo-ink"
+        >
+          <span>{project.cta}</span>
+          <ArrowLeft className="size-[17px] transition-transform group-hover:-translate-x-0.5" />
+        </a>
+        <Badge
+          variant="outline"
+          className="rounded border-indigo-ink/30 bg-mustard/30 px-2 py-0.5 font-mono text-[11px] font-normal text-indigo-ink"
+        >
+          {project.badge}
+        </Badge>
+      </div>
+    </Card>
+  );
+}
+
+export function ProjectsSection() {
+  const [active, setActive] = useState<FilterValue>("all");
 
   return (
     <section
       id="projects-container"
       className="w-full border-b-[2.5px] border-indigo-ink bg-paper px-4 py-20 sm:px-8 lg:px-12"
     >
-      <div className="mx-auto flex max-w-7xl flex-col gap-10">
+      <Tabs
+        value={active}
+        onValueChange={(value) => setActive(value as FilterValue)}
+        className="mx-auto flex max-w-7xl flex-col gap-10"
+      >
         <div className="flex flex-col justify-between gap-4 border-b-[2px] border-indigo-ink pb-6 md:flex-row md:items-end">
           <div>
             <div className="mb-1.5 flex items-center gap-2">
@@ -204,77 +268,32 @@ export function ProjectsSection() {
             </h2>
           </div>
 
-          <div className="flex items-center gap-2 overflow-x-auto pb-1">
-            {FILTERS.map((filter) => {
-              const isActive = active === filter.value;
-              return (
-                <button
-                  key={filter.value}
-                  type="button"
-                  onClick={() => setActive(filter.value)}
-                  className={`craft-btn shrink-0 rounded-sm px-4 py-1.5 text-xs font-bold whitespace-nowrap ${
-                    isActive
-                      ? "bg-coral text-white"
-                      : "bg-paper-light text-indigo-ink transition-colors hover:bg-mustard/30"
-                  }`}
-                >
-                  {filter.label}
-                </button>
-              );
-            })}
-          </div>
+          <TabsList className="h-auto w-fit gap-2 overflow-x-auto rounded-none bg-transparent p-0">
+            {FILTERS.map((filter) => (
+              <TabsTrigger
+                key={filter.value}
+                value={filter.value}
+                className="h-auto flex-none shrink-0 rounded-sm border-[2.5px] border-indigo-ink bg-paper-light px-4 py-1.5 text-xs font-bold whitespace-nowrap text-indigo-ink shadow-craft-sm transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-craft data-[selected]:bg-coral data-[selected]:text-white data-[selected]:shadow-craft"
+              >
+                {filter.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
         </div>
 
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-          {visible.map((project) => (
-            <div
-              key={project.id}
-              className="craft-card relative flex flex-col justify-between rounded-sm bg-paper-light p-5"
-            >
-              <div className="relative mb-4 flex h-60 w-full items-center justify-center overflow-hidden rounded-sm border-[2px] border-indigo-ink bg-paper-dim p-3">
-                <project.thumbnail className="h-full w-full text-indigo-ink opacity-90" />
-                <div
-                  className={`absolute top-2.5 right-2.5 bg-paper-light shadow-sm text-[10px] ${STAMP_TONES[project.stamp.tone]}`}
-                >
-                  {project.stamp.label}
-                </div>
-                <div
-                  className={`absolute bottom-2.5 left-2.5 rounded px-2 py-0.5 font-mono text-[10px] font-bold ${TECH_TONES[project.tech.tone]}`}
-                >
-                  {project.tech.label}
-                </div>
-              </div>
-
-              <div className="mb-1.5 flex items-center justify-between font-mono text-[11px] text-indigo-light">
-                <span className={`font-bold ${project.meta.leftTone}`}>
-                  {project.meta.left}
-                </span>
-                <span className="font-bold text-coral">{project.meta.right}</span>
-              </div>
-
-              <h3 className="mb-2 text-[20px] font-black text-indigo-ink">
-                {project.title}
-              </h3>
-              <p className="mb-4 text-sm leading-relaxed text-indigo-light">
-                {project.body}
-              </p>
-
-              <div className="flex items-center justify-between border-t-2 border-dashed border-indigo-ink/20 pt-3">
-                <a
-                  href="#contact-section"
-                  className="group inline-flex items-center gap-1.5 text-xs font-extrabold text-coral hover:text-indigo-ink"
-                >
-                  <span>{project.cta}</span>
-                  <ArrowLeft className="size-[17px] transition-transform group-hover:-translate-x-0.5" />
-                </a>
-                <span className="rounded border border-indigo-ink/30 bg-mustard/30 px-2 py-0.5 font-mono text-[11px] text-indigo-ink">
-                  {project.badge}
-                </span>
-              </div>
+        {FILTERS.map((filter) => (
+          <TabsContent key={filter.value} value={filter.value}>
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+              {PROJECTS.filter(
+                (project) =>
+                  filter.value === "all" || project.category === filter.value,
+              ).map((project) => (
+                <ProjectCard key={project.id} project={project} />
+              ))}
             </div>
-          ))}
-        </div>
-      </div>
+          </TabsContent>
+        ))}
+      </Tabs>
     </section>
   );
 }

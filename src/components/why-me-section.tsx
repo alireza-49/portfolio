@@ -8,6 +8,8 @@ import {
   BadgeCheck,
   Sparkles,
 } from "lucide-react";
+import { cn } from "cn";
+import { Card } from "@/components/ui/card";
 
 const REASONS = [
   {
@@ -70,17 +72,23 @@ export function WhyMeSection() {
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
           {REASONS.map((reason) => (
-            <div
+            <Card
               key={reason.title}
-              className="craft-card relative flex flex-col justify-between overflow-hidden rounded-sm bg-paper-light p-6"
+              className="craft-card relative flex flex-col justify-between gap-0 overflow-hidden rounded-sm bg-paper-light p-6"
             >
               <div
                 aria-hidden
-                className={`absolute -top-6 -left-6 h-16 w-16 rounded-full ${reason.blob}`}
+                className={cn(
+                  "absolute -top-6 -left-6 h-16 w-16 rounded-full",
+                  reason.blob,
+                )}
               />
               <div>
                 <div
-                  className={`mb-4 flex h-12 w-12 items-center justify-center rounded-sm border-[2px] border-indigo-ink ${reason.iconBox}`}
+                  className={cn(
+                    "mb-4 flex h-12 w-12 items-center justify-center rounded-sm border-[2px] border-indigo-ink",
+                    reason.iconBox,
+                  )}
                 >
                   <reason.icon className="size-[26px]" />
                 </div>
@@ -92,12 +100,15 @@ export function WhyMeSection() {
                 </p>
               </div>
               <div
-                className={`mt-5 flex items-center justify-between border-t-2 border-dashed border-indigo-ink/20 pt-3 text-xs font-bold ${reason.footerTone}`}
+                className={cn(
+                  "mt-5 flex items-center justify-between border-t-2 border-dashed border-indigo-ink/20 pt-3 text-xs font-bold",
+                  reason.footerTone,
+                )}
               >
                 <span>{reason.footer}</span>
                 <reason.footerIcon className="size-4" />
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       </div>

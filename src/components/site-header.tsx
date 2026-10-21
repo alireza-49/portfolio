@@ -1,9 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { Coffee, Menu, X } from "lucide-react";
-import Logo from "@/assests/logo";
+import { Coffee, Menu } from "lucide-react";
 import Link from "next/link";
+import { cn } from "cn";
+import Logo from "@/assests/logo";
+import { buttonVariants } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 type NavLink = {
   href: string;
@@ -82,47 +92,54 @@ export function SiteHeader() {
 
           <a
             href='#contact-section'
-            className='craft-btn hidden items-center justify-center rounded-sm bg-coral px-3.5 py-1.5 text-xs font-bold whitespace-nowrap text-white sm:inline-flex sm:text-[13px]'
+            className={cn(
+              buttonVariants({ variant: "outline", size: "sm" }),
+              "craft-btn hidden h-auto items-center justify-center gap-1 rounded-sm border-[2.5px] border-indigo-ink bg-coral px-3.5 py-1.5 text-xs font-bold whitespace-nowrap text-white sm:inline-flex sm:text-[13px]",
+            )}
           >
-            <span className='flex items-center gap-1'>
-              <Coffee className='size-4' />
-              <span>مشاوره و سفارش</span>
-            </span>
+            <Coffee className='size-4' />
+            <span>مشاوره و سفارش</span>
           </a>
 
-          <button
-            type='button'
-            aria-label='منوی ناوبری'
-            aria-expanded={open}
-            onClick={() => setOpen((value) => !value)}
-            className='craft-btn flex size-9 items-center justify-center rounded-sm bg-paper-light text-indigo-ink lg:hidden'
-          >
-            {open ? <X className='size-4' /> : <Menu className='size-4' />}
-          </button>
+          <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger
+              aria-label='منوی ناوبری'
+              className='craft-btn flex size-9 items-center justify-center rounded-sm border-[2.5px] border-indigo-ink bg-paper-light text-indigo-ink lg:hidden'
+            >
+              <Menu className='size-4' />
+            </SheetTrigger>
+            <SheetContent side='left' className='border-indigo-ink bg-paper'>
+              <SheetHeader className='border-b-[2px] border-indigo-ink'>
+                <SheetTitle className='text-right text-base font-black text-indigo-ink'>
+                  منوی ناوبری
+                </SheetTitle>
+                <SheetDescription className='text-right text-xs text-indigo-light'>
+                  دسترسی سریع به بخش‌های استودیو کدولوژی
+                </SheetDescription>
+              </SheetHeader>
+              <nav className='px-4'>
+                <ul className='flex flex-col divide-y divide-dashed divide-indigo-ink/20'>
+                  {NAV_LINKS.map((link) => (
+                    <li key={link.href}>
+                      <a
+                        href={link.href}
+                        onClick={() => setOpen(false)}
+                        className={
+                          link.highlight
+                            ? "block py-3 text-sm font-black text-coral transition-colors hover:text-coral-dark"
+                            : "block py-3 text-sm font-bold text-indigo-ink transition-colors hover:text-coral"
+                        }
+                      >
+                        {link.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
-
-      {open ? (
-        <nav className='border-t-[2px] border-indigo-ink bg-paper-light px-4 pb-4 lg:hidden'>
-          <ul className='flex flex-col divide-y divide-dashed divide-indigo-ink/20'>
-            {NAV_LINKS.map((link) => (
-              <li key={link.href}>
-                <a
-                  href={link.href}
-                  onClick={() => setOpen(false)}
-                  className={
-                    link.highlight
-                      ? "block py-3 text-sm font-black text-coral transition-colors hover:text-coral-dark"
-                      : "block py-3 text-sm font-bold text-indigo-ink transition-colors hover:text-coral"
-                  }
-                >
-                  {link.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      ) : null}
     </header>
   );
 }
