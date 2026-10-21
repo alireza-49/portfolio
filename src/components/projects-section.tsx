@@ -252,7 +252,7 @@ export function ProjectsSection() {
   return (
     <section
       id="projects-container"
-      className="w-full border-b-[2.5px] border-indigo-ink bg-paper px-4 py-20 sm:px-8 lg:px-12"
+      className="w-full border-b-[2.5px] border-indigo-ink bg-paper px-4 py-12 sm:px-8 lg:px-12"
     >
       <Tabs
         value={active}

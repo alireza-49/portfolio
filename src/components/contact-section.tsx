@@ -56,7 +56,7 @@ export function ContactSection() {
   }, []);
 
   return (
-    <section id="contact-section" className="w-full bg-paper px-4 py-20 sm:px-8 lg:px-12">
+    <section id="contact-section" className="w-full bg-paper px-4 py-12 sm:px-8 lg:px-12">
       <div className="mx-auto flex max-w-7xl flex-col gap-10">
         <div className="flex flex-col justify-between gap-4 border-b-[2px] border-indigo-ink pb-6 sm:flex-row sm:items-end">
           <h2 className="text-[26px] font-black text-indigo-ink sm:text-[34px]">

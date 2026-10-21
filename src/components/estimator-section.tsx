@@ -96,7 +96,7 @@ export function EstimatorSection() {
   return (
     <section
       id="estimator-section"
-      className="w-full border-b-[2.5px] border-indigo-ink bg-paper-dim px-4 py-20 sm:px-8 lg:px-12"
+      className="w-full border-b-[2.5px] border-indigo-ink bg-paper-dim px-4 py-12 sm:px-8 lg:px-12"
     >
       <div className="mx-auto flex max-w-7xl flex-col gap-10">
         <div className="border-b-[2px] border-indigo-ink pb-6 text-right">

@@ -58,7 +58,7 @@ export function WhyMeSection() {
   return (
     <section
       id="why-me-section"
-      className="w-full border-b-[2.5px] border-indigo-ink bg-paper-dim px-4 py-20 sm:px-8 lg:px-12"
+      className="w-full border-b-[2.5px] border-indigo-ink bg-paper-dim px-4 py-12 sm:px-8 lg:px-12"
     >
       <div className="mx-auto flex max-w-7xl flex-col gap-10">
         <div className="flex flex-col justify-between gap-4 border-b-[2px] border-indigo-ink pb-6 md:flex-row md:items-end">
