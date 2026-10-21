@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import { cn } from "cn";
 import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 const HERO_BADGES = [
@@ -301,20 +300,14 @@ export function HeroSection() {
           <div className="flex flex-wrap items-center gap-4 pt-3">
             <Link
               href="#contact-section"
-              className={cn(
-                buttonVariants({ variant: "outline", size: "lg" }),
-                "craft-btn inline-flex h-auto items-center justify-center gap-2 rounded-sm border-[2.5px] border-indigo-ink bg-coral px-6 py-3.5 text-base font-bold text-white",
-              )}
+              className="craft-btn inline-flex h-auto items-center justify-center gap-2 rounded-sm border-[2.5px] border-indigo-ink bg-coral px-6 py-3.5 text-base font-bold text-white shadow-craft-sm transition-colors hover:bg-coral-dark"
             >
               <span>رزرو جلسه مشاوره رایگان (۳۰ دقیقه)</span>
               <Coffee className="size-5" />
             </Link>
             <Link
               href="#estimator-section"
-              className={cn(
-                buttonVariants({ variant: "outline", size: "lg" }),
-                "craft-btn inline-flex h-auto items-center justify-center gap-2 rounded-sm border-[2.5px] border-indigo-ink bg-mustard px-6 py-3.5 text-base font-bold text-indigo-ink",
-              )}
+              className="craft-btn inline-flex h-auto items-center justify-center gap-2 rounded-sm border-[2.5px] border-indigo-ink bg-mustard px-6 py-3.5 text-base font-bold text-indigo-ink shadow-craft-sm transition-colors hover:bg-mustard-deep"
             >
               <span>محاسبه آنلاین قیمت و زمان تحویل</span>
               <Calculator className="size-5" />
