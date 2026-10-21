@@ -207,7 +207,13 @@ export function ContactSection() {
                     <span className="text-[13px] font-black text-indigo-ink">
                       برآورد انتخابی شما
                     </span>
-                    <span className="riso-stamp text-[10px]">از برآوردگر</span>
+                    <button
+                      type="button"
+                      onClick={scrollToEstimator}
+                      className="text-[11px] font-black text-coral underline underline-offset-4 hover:text-coral-dark"
+                    >
+                      تغییر برآورد ←
+                    </button>
                   </div>
                   <div className="flex flex-col gap-1 text-xs text-indigo-light">
                     <div className="flex items-center justify-between">
@@ -231,9 +237,20 @@ export function ContactSection() {
                   </div>
                 </div>
               ) : (
-                <div className="rounded-sm border-[2px] border-dashed border-indigo-ink/40 bg-paper p-3 text-center text-xs font-medium text-indigo-light">
-                  هنوز برآوردی ثبت نشده است. با دکمه «برآورد هزینه پروژه» محدوده
-                  قیمت را مشخص کنید.
+                <div className="flex flex-col items-center gap-2 rounded-sm border-[2px] border-dashed border-indigo-ink/40 bg-paper p-3 text-center">
+                  <span className="text-xs font-medium text-indigo-light">
+                    هنوز برآوردی ثبت نشده است. برای مشخص شدن محدوده قیمت، از
+                    برآوردگر استفاده کنید.
+                  </span>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={scrollToEstimator}
+                    className="flex h-auto items-center justify-center gap-1.5 rounded-sm border-[2px] border-indigo-ink bg-paper px-3 py-1.5 text-xs font-black text-indigo-ink hover:bg-indigo-ink hover:text-paper"
+                  >
+                    <Calculator className="size-3.5" />
+                    <span>برآورد هزینه پروژه</span>
+                  </Button>
                 </div>
               )}
 
@@ -246,6 +263,13 @@ export function ContactSection() {
                 <span>ارسال پیام و هماهنگی گفتگوی رایگان</span>
                 <Send className="size-5" />
               </Button>
+
+              {!canSubmit ? (
+                <p className="text-center text-[11px] font-bold text-coral">
+                  برای فعال شدن دکمه ارسال، فیلدهای ستاره‌دار (نام و راه
+                  ارتباطی) را تکمیل کنید.
+                </p>
+              ) : null}
 
               {sent ? (
                 <div className="rounded-sm border-[2px] border-teal-craft bg-teal-light p-3 text-center text-sm font-bold text-teal-craft">
