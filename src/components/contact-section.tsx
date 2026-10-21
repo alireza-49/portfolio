@@ -20,6 +20,15 @@ const SOCIALS = [
 const FIELD_CLASS =
   "h-auto rounded-sm border-[2px] border-indigo-ink bg-paper p-3 text-sm text-indigo-ink placeholder:text-indigo-ink/50 focus-visible:border-coral focus-visible:ring-2 focus-visible:ring-coral/30";
 
+const PERSIAN_DIGITS = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
+
+/** Renders Latin digits as Persian ones, with the Persian decimal separator. */
+function toPersianDigits(value: string | number) {
+  return String(value)
+    .replace(/\d/g, (digit) => PERSIAN_DIGITS[Number(digit)])
+    .replace(/\./g, "٫");
+}
+
 export function ContactSection() {
   const [sent, setSent] = useState(false);
   const [name, setName] = useState("");
@@ -231,7 +240,8 @@ export function ContactSection() {
                     <div className="flex items-center justify-between">
                       <span>محدوده هزینه:</span>
                       <span className="font-bold text-coral">
-                        {estimate.min} تا {estimate.max} میلیون تومان
+                        {toPersianDigits(estimate.min)} تا{" "}
+                        {toPersianDigits(estimate.max)} میلیون تومان
                       </span>
                     </div>
                   </div>
