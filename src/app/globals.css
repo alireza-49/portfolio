@@ -33,13 +33,13 @@
   --color-riso-pink: #f237a1;
 
   /* Typography — expressive editorial voices */
-  --font-sans: var(--font-vazirmatn), "Vazirmatn", ui-sans-serif, system-ui,
-    sans-serif;
-  --font-display: var(--font-epilogue), var(--font-vazirmatn), ui-sans-serif,
-    sans-serif;
+  --font-sans:
+    var(--font-vazirmatn), "Vazirmatn", ui-sans-serif, system-ui, sans-serif;
+  --font-display:
+    var(--font-epilogue), var(--font-vazirmatn), ui-sans-serif, sans-serif;
   --font-serif: var(--font-newsreader), Georgia, "Times New Roman", serif;
-  --font-mono: var(--font-space-grotesk), ui-monospace, "Courier New",
-    monospace;
+  --font-mono:
+    var(--font-space-grotesk), ui-monospace, "Courier New", monospace;
 
   /* Shapes — strictly soft die-cut cardstock */
   --radius-sm: 0.125rem;
@@ -182,8 +182,9 @@
     @apply bg-mustard text-indigo-ink;
   }
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
+    border-radius: 12px;
   }
   ::-webkit-scrollbar-track {
     background: var(--color-paper-dim);
@@ -399,6 +400,6 @@
     transition: none !important;
   }
   html {
-    scroll-behavior: auto;
+    scroll-behavior: smooth;
   }
 }

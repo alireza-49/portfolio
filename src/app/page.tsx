@@ -11,7 +11,7 @@ export default function Home() {
   return (
     <>
       <SiteHeader />
-      <main className="flex w-full flex-1 flex-col bg-paper pt-20" dir="rtl">
+      <main className='flex w-full flex-1 flex-col bg-paper pt-15' dir='rtl'>
         <HeroSection />
         <WhyMeSection />
         <ProjectsSection />

@@ -72,20 +72,20 @@ export function CreateStudio() {
 
   return (
     <>
-      <section className="w-full shrink-0 border-b-[2.5px] border-indigo-ink bg-paper-dim px-4 py-2 sm:px-8">
-        <div className="mx-auto flex max-w-[1440px] flex-col items-start justify-between gap-3 md:flex-row md:items-center">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="inline-flex items-center gap-1 rounded-sm bg-indigo-ink px-2 py-0.5 font-mono text-xs font-bold text-paper shadow-craft-sm">
-              <BookOpen className="size-3.5" />
+      <section className='w-full shrink-0 border-b-[2.5px] border-indigo-ink bg-paper-dim px-4 py-2 sm:px-8'>
+        <div className='mx-auto flex  flex-col items-start justify-between gap-3 md:flex-row md:items-center'>
+          <div className='flex flex-wrap items-center gap-1.5'>
+            <span className='inline-flex items-center gap-1 rounded-sm px-2 py-0.5 font-medium text-xs font-bold  '>
+              <BookOpen className='size-3.5' />
               سناریوی بوم:
             </span>
-            <div className="inline-flex flex-wrap gap-0.5 rounded-sm border border-indigo-ink bg-paper-light p-0.5 text-xs font-bold shadow-craft-sm">
+            <div className='inline-flex flex-wrap gap-0.5 rounded-sm border border-indigo-ink bg-paper-light p-0.5 text-xs font-bold shadow-craft-sm'>
               {ARCHETYPES.map((item) => {
                 const active = archetype === item.id;
                 return (
                   <button
                     key={item.id}
-                    type="button"
+                    type='button'
                     onClick={() => setArchetype(item.id)}
                     aria-pressed={active}
                     className={`rounded-sm px-3 py-1 transition-all ${
@@ -101,16 +101,16 @@ export function CreateStudio() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 self-end md:self-auto">
-            <span className="flex items-center gap-1 rounded-sm border border-indigo-ink bg-paper-light px-2 py-0.5 font-mono text-[10px] font-bold text-indigo-ink shadow-craft-sm">
-              <span className="size-1.5 rounded-full bg-teal-craft" />
+          <div className='flex items-center gap-2 self-end md:self-auto'>
+            <span className='flex items-center gap-1 rounded-sm border border-indigo-ink bg-paper-light px-2 py-0.5 font-mono text-[10px] font-bold text-indigo-ink shadow-craft-sm'>
+              <span className='size-1.5 rounded-full bg-teal-craft' />
               STUDIO READY
             </span>
           </div>
         </div>
       </section>
 
-      <div className="flex min-h-0 w-full flex-1 flex-col items-stretch overflow-y-auto border-b-[2.5px] border-indigo-ink bg-paper-shade lg:flex-row lg:overflow-hidden">
+      <div className='flex min-h-0 w-full flex-1 flex-col items-stretch overflow-y-auto border-b-[2.5px] border-indigo-ink bg-paper-shade lg:flex-row lg:overflow-hidden '>
         <CreateStudioSidebar
           styleId={styleId}
           onStyleChange={setStyleId}
@@ -136,7 +136,7 @@ export function CreateStudio() {
         />
       </div>
 
-      <section className="z-40 w-full shrink-0 border-t-[2.5px] border-indigo-ink bg-paper/95 px-4 py-2 backdrop-blur-md sm:px-8">
+      {/* <section className="z-40 w-full shrink-0 border-t-[2.5px] border-indigo-ink bg-paper/95 px-4 py-2 backdrop-blur-md sm:px-8">
         <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-2 sm:flex-row">
           <div className="flex w-full items-center gap-2 overflow-x-auto py-1 sm:w-auto">
             <span className="flex items-center gap-1 whitespace-nowrap text-xs font-black text-indigo-ink">
@@ -166,45 +166,45 @@ export function CreateStudio() {
             ) : null}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {modalOpen ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-indigo-ink/60 p-4 backdrop-blur-sm">
-          <div className="flex max-h-[90vh] w-full max-w-2xl flex-col gap-4 overflow-y-auto rounded-sm border border-indigo-ink bg-paper-light p-6 shadow-craft-lg">
-            <div className="flex items-center justify-between border-b border-indigo-ink/20 pb-3">
-              <div className="flex items-center gap-2">
-                <Code2 className="size-[22px] text-coral" />
-                <h3 className="text-base font-black text-indigo-ink">
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-indigo-ink/60 p-4 backdrop-blur-sm'>
+          <div className='flex max-h-[90vh] w-full max-w-2xl flex-col gap-4 overflow-y-auto rounded-sm border border-indigo-ink bg-paper-light p-6 shadow-craft-lg'>
+            <div className='flex items-center justify-between border-b border-indigo-ink/20 pb-3'>
+              <div className='flex items-center gap-2'>
+                <Code2 className='size-[22px] text-coral' />
+                <h3 className='text-base font-black text-indigo-ink'>
                   کد تم و پیکربندی خروجی استودیو کُدولوژی
                 </h3>
               </div>
               <button
-                type="button"
+                type='button'
                 onClick={() => setModalOpen(false)}
-                aria-label="بستن"
-                className="rounded-sm border border-indigo-ink bg-paper-dim p-1 text-indigo-ink shadow-craft-sm hover:bg-paper-light"
+                aria-label='بستن'
+                className='rounded-sm border border-indigo-ink bg-paper-dim p-1 text-indigo-ink shadow-craft-sm hover:bg-paper-light'
               >
-                <X className="size-[18px]" />
+                <X className='size-[18px]' />
               </button>
             </div>
-            <p className="text-xs text-indigo-light">
+            <p className='text-xs text-indigo-light'>
               این قطعه کد را در فایل{" "}
-              <code className="font-mono">tailwind.config.js</code> یا شیوه
+              <code className='font-mono'>tailwind.config.js</code> یا شیوه
               پوشش‌دهی CSS متغیرهای پروژه خود کپی و جای‌گذاری نمایید.
             </p>
             <pre
-              dir="ltr"
-              className="overflow-x-auto rounded-sm border border-indigo-ink bg-indigo-ink p-4 text-left font-mono text-[12px] leading-relaxed text-paper select-all"
+              dir='ltr'
+              className='overflow-x-auto rounded-sm border border-indigo-ink bg-indigo-ink p-4 text-left font-mono text-[12px] leading-relaxed text-paper select-all'
             >
               <code>{snippet}</code>
             </pre>
-            <div className="flex items-center justify-end gap-2 border-t border-indigo-ink/20 pt-2">
+            <div className='flex items-center justify-end gap-2 border-t border-indigo-ink/20 pt-2'>
               <button
-                type="button"
+                type='button'
                 onClick={() => copy(snippet)}
-                className="flex items-center gap-1.5 rounded-sm border border-indigo-ink bg-coral px-4 py-2 text-xs font-bold text-white shadow-craft-sm transition-all hover:bg-coral-dark active:translate-x-0.5 active:translate-y-0.5"
+                className='flex items-center gap-1.5 rounded-sm border border-indigo-ink bg-coral px-4 py-2 text-xs font-bold text-white shadow-craft-sm transition-all hover:bg-coral-dark active:translate-x-0.5 active:translate-y-0.5'
               >
-                <Copy className="size-4" />
+                <Copy className='size-4' />
                 <span>کپی در کلیپ‌بورد</span>
               </button>
             </div>

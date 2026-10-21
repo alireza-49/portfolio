@@ -93,57 +93,57 @@ export function CreateStudioSidebar({
   };
 
   return (
-    <aside className="order-1 z-20 flex w-full shrink-0 flex-col gap-4 border-b-[2.5px] border-indigo-ink bg-paper-light p-4 lg:h-full lg:min-h-0 lg:w-80 lg:overflow-y-auto lg:border-b-0 lg:border-l-[2.5px]">
-      <div className="flex flex-col gap-3 border-b border-indigo-ink/20 pb-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="flex size-8 items-center justify-center rounded-sm border border-indigo-ink bg-paper-dim text-coral shadow-craft-sm">
-              <Palette className="size-4" />
+    <aside className='[direction:ltr] order-1 z-20 flex w-full shrink-0 flex-col gap-4 border-b-[2.5px] border-indigo-ink bg-paper-light p-4 lg:h-full lg:min-h-0 lg:w-80 lg:overflow-y-auto lg:border-b-0 lg:border-l-[2.5px]'>
+      <div className='[direction:rtl] flex flex-col gap-3 border-b border-indigo-ink/20 pb-3'>
+        <div className='flex items-center justify-between'>
+          <div className='flex items-center gap-2'>
+            <span className='flex size-8 items-center justify-center rounded-sm border border-indigo-ink bg-paper-dim text-coral shadow-craft-sm'>
+              <Palette className='size-4' />
             </span>
             <div>
-              <h2 className="text-xs font-black text-indigo-ink">
+              <h2 className='text-xs font-black text-indigo-ink'>
                 تنظیمات استودیو
               </h2>
-              <span className="text-[10px] font-normal text-indigo-light">
+              <span className='text-[10px] font-normal text-indigo-light'>
                 پوسته کارگاه Shadcn
               </span>
             </div>
           </div>
-          <span className="rounded-sm border border-indigo-ink bg-paper-dim px-2 py-0.5 font-mono text-[10px] font-bold text-indigo-ink shadow-craft-sm">
+          <span className='rounded-sm border border-indigo-ink bg-paper-dim px-2 py-0.5 font-mono text-[10px] font-bold text-indigo-ink shadow-craft-sm'>
             v2.8 LIVE
           </span>
         </div>
 
         <button
-          type="button"
+          type='button'
           onClick={onShuffle}
-          title="تولید تصادفی ترکیب استایل و رنگ"
-          className="craft-btn flex w-full items-center justify-center gap-2 rounded-sm bg-coral px-3 py-2.5 text-xs font-black text-white"
+          title='تولید تصادفی ترکیب استایل و رنگ'
+          className='craft-btn flex w-full items-center justify-center gap-2 rounded-sm bg-coral px-3 py-2.5 text-xs font-black text-white'
         >
-          <Dices className="size-[18px]" />
+          <Dices className='size-[18px]' />
           <span>بر زدن و ترکیب تصادفی تم</span>
         </button>
       </div>
 
-      <div className="flex flex-col gap-1.5">
-        <div className="flex items-center justify-between text-xs font-bold">
-          <span className="flex items-center gap-1 text-indigo-ink">
+      <div className='flex flex-col gap-1.5'>
+        <div className='flex items-center justify-between text-xs font-bold'>
+          <span className='flex items-center gap-1 text-indigo-ink'>
             <span>سبک‌های بصری</span>
-            <span className="text-[10px] font-normal text-indigo-light">
+            <span className='text-[10px] font-normal text-indigo-light'>
               (Style)
             </span>
           </span>
-          <span className="font-mono text-[11px] font-bold text-coral">
+          <span className='font-mono text-[11px] font-bold text-coral'>
             {currentStyleLabel}
           </span>
         </div>
-        <div className="grid grid-cols-2 gap-1.5">
+        <div className='grid grid-cols-2 gap-1.5'>
           {STYLES.map((option) => {
             const active = styleId === option.id;
             return (
               <button
                 key={option.id}
-                type="button"
+                type='button'
                 onClick={() => onStyleChange(option.id)}
                 aria-pressed={active}
                 className={`flex items-center justify-between rounded-sm border border-indigo-ink p-2 text-right text-[11px] transition-all ${
@@ -154,7 +154,7 @@ export function CreateStudioSidebar({
               >
                 <span>{option.label}</span>
                 {active ? (
-                  <span className="size-1.5 rounded-full bg-white" />
+                  <span className='size-1.5 rounded-full bg-white' />
                 ) : null}
               </button>
             );
@@ -162,20 +162,20 @@ export function CreateStudioSidebar({
         </div>
       </div>
 
-      <div className="flex flex-col gap-2 border-t border-indigo-ink/20 pt-1">
-        <div className="flex items-center justify-between text-xs font-bold">
-          <span className="flex items-center gap-1 text-indigo-ink">
-            <Palette className="size-[15px] text-coral" />
+      <div className='flex flex-col gap-2 border-t border-indigo-ink/20 pt-1'>
+        <div className='flex items-center justify-between text-xs font-bold'>
+          <span className='flex items-center gap-1 text-indigo-ink'>
+            <Palette className='size-[15px] text-coral' />
             <span>پالت و نقش رنگ‌ها</span>
           </span>
-          <span className="rounded-sm border border-indigo-ink bg-paper-dim px-1.5 py-0.5 font-mono text-[10px] text-indigo-ink">
+          <span className='rounded-sm border border-indigo-ink bg-paper-dim px-1.5 py-0.5 font-mono text-[10px] text-indigo-ink'>
             {colorName}
           </span>
         </div>
 
-        <div className="grid grid-cols-2 rounded-sm border border-indigo-ink bg-paper-dim p-0.5 text-[11px] font-bold shadow-craft-sm">
+        <div className='grid grid-cols-2 rounded-sm border border-indigo-ink bg-paper-dim p-0.5 text-[11px] font-bold shadow-craft-sm'>
           <button
-            type="button"
+            type='button'
             onClick={() => setColorMode("presets")}
             aria-pressed={colorMode === "presets"}
             className={`flex items-center justify-center gap-1 rounded-sm py-1 transition-all ${
@@ -184,11 +184,11 @@ export function CreateStudioSidebar({
                 : "text-indigo-light hover:bg-paper-light hover:text-indigo-ink"
             }`}
           >
-            <Sparkles className="size-[13px]" />
+            <Sparkles className='size-[13px]' />
             <span>پالت‌های آماده</span>
           </button>
           <button
-            type="button"
+            type='button'
             onClick={() => setColorMode("custom")}
             aria-pressed={colorMode === "custom"}
             className={`flex items-center justify-center gap-1 rounded-sm py-1 transition-all ${
@@ -197,7 +197,7 @@ export function CreateStudioSidebar({
                 : "text-indigo-light hover:bg-paper-light hover:text-indigo-ink"
             }`}
           >
-            <Pipette className="size-[13px]" />
+            <Pipette className='size-[13px]' />
             <span>پالت سفارشی</span>
           </button>
         </div>
@@ -207,14 +207,13 @@ export function CreateStudioSidebar({
             colorMode === "presets" ? "ring-2 ring-coral" : ""
           }`}
         >
-          <div className="flex flex-wrap gap-1 border-b border-indigo-ink/15 py-1">
+          <div className='flex flex-wrap gap-1 border-b border-indigo-ink/15 py-1'>
             {PRESET_PILLS.map((pill) => {
-              const active =
-                primary.toLowerCase() === pill.hex.toLowerCase();
+              const active = primary.toLowerCase() === pill.hex.toLowerCase();
               return (
                 <button
                   key={pill.hex}
-                  type="button"
+                  type='button'
                   onClick={() => {
                     onColorChange(pill.hex, pill.subtle, pill.name);
                     setColorMode("presets");
@@ -226,7 +225,7 @@ export function CreateStudioSidebar({
                   }`}
                 >
                   <span
-                    className="size-1.5 rounded-full border border-indigo-ink/40"
+                    className='size-1.5 rounded-full border border-indigo-ink/40'
                     style={{ backgroundColor: pill.hex }}
                   />
                   <span>{pill.name}</span>
@@ -235,14 +234,13 @@ export function CreateStudioSidebar({
             })}
           </div>
 
-          <div className="flex flex-col gap-1.5">
+          <div className='flex flex-col gap-1.5'>
             {SWATCHES.map((swatch) => {
-              const active =
-                primary.toLowerCase() === swatch.hex.toLowerCase();
+              const active = primary.toLowerCase() === swatch.hex.toLowerCase();
               return (
                 <button
                   key={swatch.hex}
-                  type="button"
+                  type='button'
                   onClick={() => {
                     onColorChange(swatch.hex, swatch.subtle, swatch.name);
                     setColorMode("presets");
@@ -254,24 +252,24 @@ export function CreateStudioSidebar({
                       : "bg-paper-dim hover:bg-paper-light"
                   }`}
                 >
-                  <div className="flex items-center gap-2">
+                  <div className='flex items-center gap-2'>
                     <span
-                      className="flex size-5 shrink-0 items-center justify-center rounded-sm border border-indigo-ink shadow-craft-sm"
+                      className='flex size-5 shrink-0 items-center justify-center rounded-sm border border-indigo-ink shadow-craft-sm'
                       style={{ backgroundColor: swatch.hex }}
                     >
-                      {active ? <Check className="size-3 text-white" /> : null}
+                      {active ? <Check className='size-3 text-white' /> : null}
                     </span>
-                    <div className="flex flex-col text-right">
-                      <span className="text-[11px] font-bold text-indigo-ink">
+                    <div className='flex flex-col text-right'>
+                      <span className='text-[11px] font-bold text-indigo-ink'>
                         {swatch.name}
                       </span>
-                      <span className="text-[9px] text-indigo-light">
+                      <span className='text-[9px] text-indigo-light'>
                         {swatch.role}
                       </span>
                     </div>
                   </div>
                   <span
-                    className="rounded-sm border border-indigo-ink bg-paper-dim px-1 py-0.5 font-mono text-[9px] font-bold"
+                    className='rounded-sm border border-indigo-ink bg-paper-dim px-1 py-0.5 font-mono text-[9px] font-bold'
                     style={{ color: swatch.hex }}
                   >
                     {swatch.tag}
@@ -287,81 +285,81 @@ export function CreateStudioSidebar({
             colorMode === "custom" ? "ring-2 ring-coral" : ""
           }`}
         >
-          <div className="flex items-center justify-between">
-            <span className="flex items-center gap-1 text-[10px] font-bold text-indigo-ink">
-              <SlidersHorizontal className="size-3 text-coral" />
+          <div className='flex items-center justify-between'>
+            <span className='flex items-center gap-1 text-[10px] font-bold text-indigo-ink'>
+              <SlidersHorizontal className='size-3 text-coral' />
               <span>تنظیم رنگ دلخواه (HEX Picker)</span>
             </span>
-            <span className="font-mono text-[9px] font-bold text-indigo-light">
+            <span className='font-mono text-[9px] font-bold text-indigo-light'>
               RGB / HEX
             </span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="relative size-8 shrink-0 overflow-hidden rounded-sm border border-indigo-ink shadow-craft-sm">
+          <div className='flex items-center gap-2'>
+            <div className='relative size-8 shrink-0 overflow-hidden rounded-sm border border-indigo-ink shadow-craft-sm'>
               <input
-                type="color"
+                type='color'
                 value={primary}
                 onChange={(event) => {
                   const hex = event.target.value;
                   onColorChange(hex, mixWithWhite(hex, 0.9), "رنگ سفارشی");
                   setColorMode("custom");
                 }}
-                aria-label="انتخاب رنگ"
-                className="absolute -inset-2 size-12 cursor-pointer border-0 p-0"
+                aria-label='انتخاب رنگ'
+                className='absolute -inset-2 size-12 cursor-pointer border-0 p-0'
               />
             </div>
             <input
-              type="text"
+              type='text'
               value={hexInput}
               onChange={(event) => setHexInput(event.target.value)}
-              dir="ltr"
-              placeholder="#HEX"
-              className="w-full rounded-sm border border-indigo-ink bg-paper-light p-1.5 text-left font-mono text-xs font-bold text-indigo-ink uppercase outline-none focus:ring-1 focus:ring-coral"
+              dir='ltr'
+              placeholder='#HEX'
+              className='w-full rounded-sm border border-indigo-ink bg-paper-light p-1.5 text-left font-mono text-xs font-bold text-indigo-ink uppercase outline-none focus:ring-1 focus:ring-coral'
             />
             <button
-              type="button"
+              type='button'
               onClick={applyHex}
-              className="shrink-0 rounded-sm border border-indigo-ink bg-paper-light px-2 py-1.5 text-[10px] font-bold text-indigo-ink shadow-craft-sm transition-all hover:bg-paper-dim"
+              className='shrink-0 rounded-sm border border-indigo-ink bg-paper-light px-2 py-1.5 text-[10px] font-bold text-indigo-ink shadow-craft-sm transition-all hover:bg-paper-dim'
             >
               اعمال
             </button>
           </div>
           <div
-            className="flex items-center gap-2 rounded-sm border border-indigo-ink/40 p-1.5"
+            className='flex items-center gap-2 rounded-sm border border-indigo-ink/40 p-1.5'
             style={{ backgroundColor: primarySubtle }}
           >
             <span
-              className="size-3 rounded-full border border-indigo-ink"
+              className='size-3 rounded-full border border-indigo-ink'
               style={{ backgroundColor: primary }}
             />
             <span
-              className="font-mono text-[10px] font-bold"
+              className='font-mono text-[10px] font-bold'
               style={{ color: primary }}
             >
               {primary.toUpperCase()}
             </span>
-            <span className="text-[10px] text-indigo-light">
+            <span className='text-[10px] text-indigo-light'>
               پیش‌نمایش رنگ فعال
             </span>
           </div>
         </div>
       </div>
 
-      <div className="flex flex-col gap-1.5 border-t border-indigo-ink/20 pt-1">
-        <div className="flex items-center justify-between text-xs font-bold">
-          <span className="flex items-center gap-1 text-indigo-ink">
-            <Shapes className="size-3.5 text-coral" />
+      <div className='flex flex-col gap-1.5 border-t border-indigo-ink/20 pt-1'>
+        <div className='flex items-center justify-between text-xs font-bold'>
+          <span className='flex items-center gap-1 text-indigo-ink'>
+            <Shapes className='size-3.5 text-coral' />
             <span>کتابخانه آیکون‌ها</span>
           </span>
-          <span className="font-mono text-[10px] text-indigo-light">Icons</span>
+          <span className='font-mono text-[10px] text-indigo-light'>Icons</span>
         </div>
-        <div className="grid grid-cols-3 gap-1">
+        <div className='grid grid-cols-3 gap-1'>
           {ICON_LIBRARIES.map((library) => {
             const active = iconLibrary === library.id;
             return (
               <button
                 key={library.id}
-                type="button"
+                type='button'
                 onClick={() => onIconLibraryChange(library.id)}
                 aria-pressed={active}
                 className={`flex flex-col items-center gap-0.5 rounded-sm border border-indigo-ink p-1.5 text-center transition-all ${
@@ -370,8 +368,8 @@ export function CreateStudioSidebar({
                     : "bg-paper-dim text-indigo-ink hover:bg-paper-light"
                 }`}
               >
-                <Shapes className="size-4" />
-                <span className="text-[10px] font-bold">{library.label}</span>
+                <Shapes className='size-4' />
+                <span className='text-[10px] font-bold'>{library.label}</span>
                 <span
                   className={`font-mono text-[8px] ${
                     active ? "opacity-80" : "text-indigo-light"
@@ -385,25 +383,25 @@ export function CreateStudioSidebar({
         </div>
       </div>
 
-      <div className="flex flex-col gap-1.5 border-t border-indigo-ink/20 pt-1">
-        <div className="flex items-center justify-between text-xs font-bold">
-          <span className="flex items-center gap-1 text-indigo-ink">
+      <div className='flex flex-col gap-1.5 border-t border-indigo-ink/20 pt-1'>
+        <div className='flex items-center justify-between text-xs font-bold'>
+          <span className='flex items-center gap-1 text-indigo-ink'>
             <span>گردی گوشه‌ها</span>
-            <span className="text-[10px] font-normal text-indigo-light">
+            <span className='text-[10px] font-normal text-indigo-light'>
               (Radius)
             </span>
           </span>
-          <span className="font-mono text-[10px] font-bold text-coral">
+          <span className='font-mono text-[10px] font-bold text-coral'>
             {radiusLabel}
           </span>
         </div>
-        <div className="grid grid-cols-5 gap-1">
+        <div className='grid grid-cols-5 gap-1'>
           {RADII.map((option) => {
             const active = radius === option.value;
             return (
               <button
                 key={option.value}
-                type="button"
+                type='button'
                 onClick={() => onRadiusChange(option.value)}
                 aria-pressed={active}
                 title={`${option.caption} (${option.label})`}
@@ -413,7 +411,7 @@ export function CreateStudioSidebar({
                     : "bg-paper-dim text-indigo-ink hover:bg-paper-light"
                 }`}
               >
-                <span className="font-mono text-xs">{option.label}</span>
+                <span className='font-mono text-xs'>{option.label}</span>
                 <span
                   className={`text-[8px] ${
                     active ? "text-white/90" : "text-indigo-light"
@@ -425,41 +423,41 @@ export function CreateStudioSidebar({
             );
           })}
         </div>
-        <div className="flex items-center gap-1.5 pt-1">
-          <div className="relative flex flex-1 items-center rounded-sm border border-indigo-ink bg-paper-dim p-1 shadow-craft-sm">
+        <div className='flex items-center gap-1.5 pt-1'>
+          <div className='relative flex flex-1 items-center rounded-sm border border-indigo-ink bg-paper-dim p-1 shadow-craft-sm'>
             <input
-              type="number"
+              type='number'
               min={0}
               max={48}
               value={customRadius}
               onChange={(event) => setCustomRadius(event.target.value)}
-              dir="ltr"
-              placeholder="عدد دلخواه"
-              className="w-full border-0 bg-transparent p-0 text-left font-mono text-xs font-bold text-indigo-ink outline-none"
+              dir='ltr'
+              placeholder='عدد دلخواه'
+              className='w-full border-0 bg-transparent p-0 text-left font-mono text-xs font-bold text-indigo-ink outline-none'
             />
-            <span className="shrink-0 px-1 font-mono text-[10px] text-indigo-light">
+            <span className='shrink-0 px-1 font-mono text-[10px] text-indigo-light'>
               px
             </span>
           </div>
           <button
-            type="button"
+            type='button'
             onClick={applyRadius}
-            className="shrink-0 rounded-sm border border-indigo-ink bg-paper-dim px-2.5 py-1 text-[11px] font-bold text-indigo-ink shadow-craft-sm transition-all hover:bg-paper-light active:translate-x-0.5 active:translate-y-0.5"
+            className='shrink-0 rounded-sm border border-indigo-ink bg-paper-dim px-2.5 py-1 text-[11px] font-bold text-indigo-ink shadow-craft-sm transition-all hover:bg-paper-light active:translate-x-0.5 active:translate-y-0.5'
           >
             اعمال
           </button>
         </div>
       </div>
 
-      <div className="flex flex-col gap-1.5 border-t border-indigo-ink/20 pt-1">
-        <div className="flex items-center justify-between text-xs font-bold">
-          <span className="flex items-center gap-1 text-indigo-ink">
-            <Type className="size-3.5 text-coral" />
+      <div className='flex flex-col gap-1.5 border-t border-indigo-ink/20 pt-1'>
+        <div className='flex items-center justify-between text-xs font-bold'>
+          <span className='flex items-center gap-1 text-indigo-ink'>
+            <Type className='size-3.5 text-coral' />
             <span>تایپوگرافی</span>
           </span>
-          <span className="text-[10px] text-indigo-light">Pairing</span>
+          <span className='text-[10px] text-indigo-light'>Pairing</span>
         </div>
-        <div className="flex flex-col gap-1 text-xs">
+        <div className='flex flex-col gap-1 text-xs'>
           {FONTS.map((option) => {
             const active = font === option.id;
             return (
@@ -471,16 +469,16 @@ export function CreateStudioSidebar({
                     : "bg-paper-dim hover:bg-paper-light"
                 }`}
               >
-                <div className="flex items-center gap-1.5">
+                <div className='flex items-center gap-1.5'>
                   <input
-                    type="radio"
-                    name="font_family_choice"
+                    type='radio'
+                    name='font_family_choice'
                     value={option.id}
                     checked={active}
                     onChange={() => onFontChange(option.id)}
-                    className="size-3 accent-coral"
+                    className='size-3 accent-coral'
                   />
-                  <span className="text-[11px] text-indigo-ink">
+                  <span className='text-[11px] text-indigo-ink'>
                     {option.label}
                   </span>
                 </div>
@@ -499,13 +497,13 @@ export function CreateStudioSidebar({
         </div>
       </div>
 
-      <div className="mt-auto flex flex-col gap-2 border-t border-indigo-ink/20 pt-2">
+      <div className='mt-auto flex flex-col gap-2 border-t border-indigo-ink/20 pt-2'>
         <button
-          type="button"
+          type='button'
           onClick={onExport}
-          className="craft-btn flex w-full items-center justify-center gap-1.5 rounded-sm bg-coral px-2.5 py-2 text-xs font-bold text-white"
+          className='craft-btn flex w-full items-center justify-center gap-1.5 rounded-sm bg-coral px-2.5 py-2 text-xs font-bold text-white'
         >
-          <Download className="size-[15px]" />
+          <Download className='size-[15px]' />
           <span>استخراج پیکربندی تم</span>
         </button>
       </div>

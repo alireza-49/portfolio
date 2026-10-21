@@ -14,8 +14,8 @@ export default function CreatePage() {
     <>
       <SiteHeader />
       <main
-        className="flex h-dvh w-full flex-col overflow-hidden bg-paper pt-20"
-        dir="rtl"
+        className='flex h-dvh w-full flex-col overflow-hidden bg-paper pt-15'
+        dir='rtl'
       >
         <CreateStudio />
       </main>

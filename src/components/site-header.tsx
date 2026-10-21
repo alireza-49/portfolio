@@ -24,7 +24,7 @@ export function SiteHeader() {
 
   return (
     <header className='fixed inset-x-0 top-0 z-50 border-b-[2.5px] border-indigo-ink bg-paper/90 backdrop-blur-md'>
-      <div className='mx-auto flex h-20 max-w-7xl flex-nowrap items-center justify-between gap-4 px-4 sm:px-8'>
+      <div className='mx-auto flex h-15 max-w-7xl flex-nowrap items-center justify-between gap-4 px-4 sm:px-8'>
         <div className='flex shrink-0 items-center gap-3'>
           <div className='relative flex items-center'>
             <span className='flex h-8 w-8 items-center justify-center rounded-sm border-[1.5px] border-indigo-ink bg-mustard/30 p-1 text-indigo-ink shadow-craft-inset'>
