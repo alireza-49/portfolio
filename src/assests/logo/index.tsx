@@ -226,12 +226,12 @@ const Logo = (props: Props) => {
   );
 };
 
-const SPARKLE_COUNT = 16;
+const SPARKLE_COUNT = 24;
 const SPARKLE_COLORS = ["#e64833", "#f59e0b"];
 /** Must match the duration in the `animate-[logo-sparkle_…]` class below. */
 const SPARKLE_DURATION = 0.8;
-const SPARKLE_DISTANCES = [36, 44, 52];
-const SPARKLE_SIZES = ["size-2.5", "size-3", "size-3.5"];
+const SPARKLE_DISTANCES = [40, 50, 60, 70];
+const SPARKLE_SIZES = ["size-2.5", "size-3", "size-3.5", "size-4"];
 
 type LogoButtonProps = ComponentProps<typeof Button> & {
   /** Extra classes applied to the inner SVG. */
@@ -244,8 +244,8 @@ type LogoButtonProps = ComponentProps<typeof Button> & {
  * The logo wrapped in `Button`, so it inherits the cursor-following
  * radial glow (`--btn-x` / `--btn-y`) from the button primitive.
  *
- * On hover the button grows noticeably and a dense ring of sparkles
- * bursts outward from its centre.
+ * On hover the button grows strongly and a dense, wide ring of
+ * sparkles bursts outward from its centre.
  */
 const LogoButton = ({
   className,
@@ -267,7 +267,7 @@ const LogoButton = ({
           // the SVG is opaque, so lift the glow above it
           "before:z-10",
           // grow on hover (base `transition-all` animates the scale)
-          "duration-300 ease-out hover:scale-125 motion-reduce:hover:scale-100",
+          "duration-300 ease-out hover:scale-150 motion-reduce:hover:scale-100",
           className,
         )}
         {...props}
