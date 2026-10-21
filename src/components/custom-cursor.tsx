@@ -17,6 +17,12 @@ const EMIT_THRESHOLD = 0.05; // normalized speed below which nothing is emitted
 const RING_SIZE = 34;
 const DOT_SIZE = 7;
 
+/** Dot appearance while hovering an interactive control. */
+const DOT_HOVER_SIZE = 9;
+const DOT_HOVER_RADIUS = 2;
+const DOT_COLOR = "#e76f51"; // --color-coral
+const DOT_HOVER_COLOR = "#264653"; // --color-secondary / --color-indigo-ink
+
 /** How much of the travel direction is turned into ring rotation. */
 const ROTATION_FACTOR = 0.12;
 /** Hard cap on the ring tilt, in radians (~8deg). */
@@ -51,6 +57,18 @@ const MORPH_SELECTOR = [
   "[data-slot='badge']",
   ".craft-card",
   ".craft-btn",
+].join(",");
+
+/**
+ * Elements that turn the centre dot from a coral circle into an indigo square.
+ * Deliberately narrower than MORPH_SELECTOR: cards and badges keep the dot
+ * round, only real controls get the square.
+ */
+const DOT_SQUARE_SELECTOR = [
+  "button",
+  "[role='button']",
+  ".craft-btn",
+  "a",
 ].join(",");
 
 /** Breathing room between the ring and the element it wraps. */
@@ -125,6 +143,28 @@ export function CustomCursor({
     let ringW = RING_SIZE;
     let ringH = RING_SIZE;
     let ringR = RING_SIZE / 2;
+
+    // ---- dot state -------------------------------------------------------
+    let dotHover = false;
+
+    /**
+     * Push the dot's shape/colour for the current hover state.
+     * Only called when the state flips — the CSS transition on the dot
+     * animates the circle → square morph, so the render loop stays cheap.
+     */
+    const applyDotState = () => {
+      const size = dotHover ? DOT_HOVER_SIZE : DOT_SIZE;
+      dot.style.width = `${size}px`;
+      dot.style.height = `${size}px`;
+      dot.style.borderRadius = dotHover ? `${DOT_HOVER_RADIUS}px` : "50%";
+      dot.style.backgroundColor = dotHover ? DOT_HOVER_COLOR : DOT_COLOR;
+    };
+
+    const setDotHover = (next: boolean) => {
+      if (next === dotHover) return;
+      dotHover = next;
+      applyDotState();
+    };
 
     const readMorph = (el: Element): MorphTarget | null => {
       const rect = el.getBoundingClientRect();
@@ -265,6 +305,9 @@ export function CustomCursor({
       const target = event.target;
       if (!(target instanceof Element)) return;
 
+      // centre dot: square + secondary ink over interactive controls
+      setDotHover(target.closest(DOT_SQUARE_SELECTOR) !== null);
+
       const el = target.closest(MORPH_SELECTOR);
       if (el === morphTarget?.el) return;
 
@@ -275,6 +318,7 @@ export function CustomCursor({
       dot.style.opacity = "0";
       ring.style.opacity = "0";
       morphTarget = null;
+      setDotHover(false);
     };
 
     const onPointerEnter = () => {
@@ -427,7 +471,10 @@ export function CustomCursor({
     const onPointerCapabilityChange = () => {
       enabled = finePointer.matches;
       container.style.display = enabled ? "" : "none";
-      if (!enabled) morphTarget = null;
+      if (!enabled) {
+        morphTarget = null;
+        setDotHover(false);
+      }
     };
     const onMotionChange = () => {
       still = reducedMotion.matches;
@@ -479,13 +526,15 @@ export function CustomCursor({
       />
       <div
         ref={dotRef}
-        className='absolute left-0 top-0 rounded-full will-change-transform'
+        className='absolute left-0 top-0 will-change-transform'
         style={{
           width: DOT_SIZE,
           height: DOT_SIZE,
-          backgroundColor: "#e76f51",
+          borderRadius: "50%",
+          backgroundColor: DOT_COLOR,
           opacity: 0,
-          transition: "opacity 200ms ease",
+          transition:
+            "opacity 200ms ease, width 180ms ease, height 180ms ease, border-radius 180ms ease, background-color 180ms ease",
         }}
       />
     </div>
