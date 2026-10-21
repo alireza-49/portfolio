@@ -17,6 +17,19 @@ const EMIT_THRESHOLD = 0.05; // normalized speed below which nothing is emitted
 const RING_SIZE = 34;
 const DOT_SIZE = 7;
 
+/** Elements the ring snaps around and grows to match. */
+const MORPH_SELECTOR = [
+  "a",
+  "button",
+  "[role='button']",
+  "[data-cursor-morph]",
+  ".craft-card",
+  ".craft-btn",
+].join(",");
+
+/** Breathing room between the ring and the element it wraps. */
+const MORPH_PADDING = 8;
+
 type Particle = {
   x: number;
   y: number;
@@ -29,6 +42,15 @@ type Particle = {
   square: boolean;
   rot: number;
   spin: number;
+};
+
+type MorphTarget = {
+  el: Element;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  r: number;
 };
 
 export function CustomCursor({
@@ -69,6 +91,40 @@ export function CustomCursor({
     let stretch = 0; // smoothed 0..1
     let emitAccumulator = 0;
 
+    // ---- morph state -----------------------------------------------------
+    let morphTarget: MorphTarget | null = null;
+    let morphAmount = 0; // smoothed 0..1, damps stretch + rotation
+    let ringW = RING_SIZE;
+    let ringH = RING_SIZE;
+    let ringR = RING_SIZE / 2;
+
+    const readMorph = (el: Element): MorphTarget | null => {
+      const rect = el.getBoundingClientRect();
+      if (rect.width < 1 || rect.height < 1) return null;
+
+      const radius = parseFloat(getComputedStyle(el).borderTopLeftRadius) || 0;
+      const w = rect.width + MORPH_PADDING * 2;
+      const h = rect.height + MORPH_PADDING * 2;
+
+      return {
+        el,
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2,
+        w,
+        h,
+        r: Math.min(radius + MORPH_PADDING, Math.min(w, h) / 2),
+      };
+    };
+
+    const refreshMorph = () => {
+      if (!morphTarget) return;
+      if (!morphTarget.el.isConnected) {
+        morphTarget = null;
+        return;
+      }
+      morphTarget = readMorph(morphTarget.el);
+    };
+
     // ---- canvas sizing ---------------------------------------------------
     let width = 0;
     let height = 0;
@@ -82,6 +138,7 @@ export function CustomCursor({
       canvas.style.width = `${width}px`;
       canvas.style.height = `${height}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      refreshMorph();
     };
     resize();
 
@@ -149,9 +206,22 @@ export function CustomCursor({
       }
     };
 
+    const onPointerOver = (event: PointerEvent) => {
+      if (!enabled) return;
+
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+
+      const el = target.closest(MORPH_SELECTOR);
+      if (el === morphTarget?.el) return;
+
+      morphTarget = el ? readMorph(el) : null;
+    };
+
     const onPointerLeave = () => {
       dot.style.opacity = "0";
       ring.style.opacity = "0";
+      morphTarget = null;
     };
 
     const onPointerEnter = () => {
@@ -174,13 +244,30 @@ export function CustomCursor({
       // let the velocity bleed off when the pointer stops moving
       speed *= Math.exp(-dt / 110);
 
-      // ring easing toward the pointer
+      // ---- morph easing --------------------------------------------------
+      const morphing = morphTarget !== null;
+      const morphEase = 1 - Math.pow(1 - 0.2, step);
+
+      morphAmount += ((morphing ? 1 : 0) - morphAmount) * morphEase;
+
+      const targetW = morphTarget ? morphTarget.w : RING_SIZE;
+      const targetH = morphTarget ? morphTarget.h : RING_SIZE;
+      const targetR = morphTarget ? morphTarget.r : RING_SIZE / 2;
+
+      ringW += (targetW - ringW) * morphEase;
+      ringH += (targetH - ringH) * morphEase;
+      ringR += (targetR - ringR) * morphEase;
+
+      // ring easing toward the pointer (or the hovered element)
       const follow = 1 - Math.pow(1 - 0.17, step);
-      ringPos.x += (pointer.x - ringPos.x) * follow;
-      ringPos.y += (pointer.y - ringPos.y) * follow;
+      const followX = morphTarget ? morphTarget.x : pointer.x;
+      const followY = morphTarget ? morphTarget.y : pointer.y;
+      ringPos.x += (followX - ringPos.x) * follow;
+      ringPos.y += (followY - ringPos.y) * follow;
 
       // stretch easing
-      const targetStretch = still ? 0 : Math.min(speed / MAX_SPEED, 1);
+      const targetStretch =
+        still || morphing ? 0 : Math.min(speed / MAX_SPEED, 1);
       stretch += (targetStretch - stretch) * (1 - Math.pow(1 - 0.22, step));
 
       // angle easing along the shortest path
@@ -197,9 +284,14 @@ export function CustomCursor({
       // ring: stretched along the travel axis, squashed across it
       const scaleX = (1 + stretch * 0.9) * (1 + stretch * 0.18);
       const scaleY = (1 - stretch * 0.32) * (1 + stretch * 0.18);
+      const rot = angle * (1 - morphAmount);
+
+      ring.style.width = `${ringW}px`;
+      ring.style.height = `${ringH}px`;
+      ring.style.borderRadius = `${ringR}px`;
       ring.style.transform =
         `translate3d(${ringPos.x}px, ${ringPos.y}px, 0) translate(-50%, -50%) ` +
-        `rotate(${angle}rad) scale(${scaleX}, ${scaleY})`;
+        `rotate(${rot}rad) scale(${scaleX}, ${scaleY})`;
 
       // emission
       if (sprinkles && !still && hasPointer) {
@@ -265,12 +357,18 @@ export function CustomCursor({
     // ---- wiring ----------------------------------------------------------
     window.addEventListener("pointermove", onPointerMove, { passive: true });
     window.addEventListener("resize", resize);
+    window.addEventListener("scroll", refreshMorph, {
+      passive: true,
+      capture: true,
+    });
+    document.addEventListener("pointerover", onPointerOver, { passive: true });
     document.addEventListener("pointerleave", onPointerLeave);
     document.addEventListener("pointerenter", onPointerEnter);
 
     const onPointerCapabilityChange = () => {
       enabled = finePointer.matches;
       container.style.display = enabled ? "" : "none";
+      if (!enabled) morphTarget = null;
     };
     const onMotionChange = () => {
       still = reducedMotion.matches;
@@ -293,6 +391,8 @@ export function CustomCursor({
       cancelAnimationFrame(raf);
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("resize", resize);
+      window.removeEventListener("scroll", refreshMorph, { capture: true });
+      document.removeEventListener("pointerover", onPointerOver);
       document.removeEventListener("pointerleave", onPointerLeave);
       document.removeEventListener("pointerenter", onPointerEnter);
       finePointer.removeEventListener("change", onPointerCapabilityChange);
@@ -310,10 +410,11 @@ export function CustomCursor({
       <canvas ref={canvasRef} className="absolute inset-0" />
       <div
         ref={ringRef}
-        className="absolute left-0 top-0 rounded-full border-2 will-change-transform"
+        className="absolute left-0 top-0 border-2 will-change-transform"
         style={{
           width: RING_SIZE,
           height: RING_SIZE,
+          borderRadius: RING_SIZE / 2,
           borderColor: "#2b2d42",
           opacity: 0,
           transition: "opacity 200ms ease",
