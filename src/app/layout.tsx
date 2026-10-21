@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Epilogue, Newsreader, Space_Grotesk, Vazirmatn } from "next/font/google";
+import { CustomCursor } from "@/components/custom-cursor";
 import "./globals.css";
 
 const vazirmatn = Vazirmatn({
@@ -47,6 +48,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${vazirmatn.variable} ${epilogue.variable} ${newsreader.variable} ${spaceGrotesk.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-paper font-sans text-indigo-ink">
+        <CustomCursor />
         {children}
       </body>
     </html>
