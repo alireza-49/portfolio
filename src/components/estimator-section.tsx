@@ -136,7 +136,7 @@ export function EstimatorSection() {
                       )}
                     >
                       <div className="flex items-center gap-2.5">
-                        <RadioGroupItem value={type.value} />
+                        <RadioGroupItem value={type.value} className="shrink-0" />
                         <span className="text-sm font-bold text-indigo-ink">
                           {type.label}
                         </span>
@@ -174,7 +174,7 @@ export function EstimatorSection() {
                           : "border-indigo-ink bg-paper hover:bg-mustard/20",
                       )}
                     >
-                      <RadioGroupItem value={option.value} />
+                      <RadioGroupItem value={option.value} className="shrink-0" />
                       <div className="text-sm font-bold text-indigo-ink">
                         {option.title}
                       </div>
