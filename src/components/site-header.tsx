@@ -37,13 +37,11 @@ export function SiteHeader() {
       <div className='mx-auto flex h-15 max-w-7xl flex-nowrap items-center justify-between gap-4 px-4 sm:px-8'>
         <div className='flex shrink-0 items-center gap-3'>
           <div className='relative flex items-center'>
-            <span className='flex h-8 w-8 items-center justify-center rounded-sm border-[1.5px] border-indigo-ink bg-mustard/30 p-1 text-indigo-ink shadow-craft-inset'>
-              <LogoButton
-                aria-label='استودیو کدولوژی'
-                logoClassName='size-full'
-                className='size-9 rounded-sm border-[1.5px] border-indigo-ink bg-mustard/30 p-1 text-indigo-ink shadow-craft-inset hover:bg-mustard/30 hover:text-indigo-ink'
-              />
-            </span>
+            <LogoButton
+              aria-label='استودیو کدولوژی'
+              logoClassName='size-full'
+              className='size-9 rounded-sm border-[1.5px] border-indigo-ink bg-mustard/30 p-1 text-indigo-ink shadow-craft-inset hover:bg-mustard/30 hover:text-indigo-ink'
+            />
             <span className='absolute -top-1 -right-1 flex h-2.5 w-2.5'>
               <span className='absolute inline-flex h-full w-full animate-ping rounded-full bg-teal-craft opacity-75' />
               <span className='relative inline-flex h-2.5 w-2.5 rounded-full bg-teal-craft' />
