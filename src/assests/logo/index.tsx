@@ -226,8 +226,12 @@ const Logo = (props: Props) => {
   );
 };
 
-const SPARKLE_COUNT = 8;
+const SPARKLE_COUNT = 16;
 const SPARKLE_COLORS = ["#e64833", "#f59e0b"];
+/** Must match the duration in the `animate-[logo-sparkle_…]` class below. */
+const SPARKLE_DURATION = 0.8;
+const SPARKLE_DISTANCES = [36, 44, 52];
+const SPARKLE_SIZES = ["size-2.5", "size-3", "size-3.5"];
 
 type LogoButtonProps = ComponentProps<typeof Button> & {
   /** Extra classes applied to the inner SVG. */
@@ -240,8 +244,8 @@ type LogoButtonProps = ComponentProps<typeof Button> & {
  * The logo wrapped in `Button`, so it inherits the cursor-following
  * radial glow (`--btn-x` / `--btn-y`) from the button primitive.
  *
- * On hover the button grows slightly and a ring of sparkles bursts
- * outward from its centre.
+ * On hover the button grows noticeably and a dense ring of sparkles
+ * bursts outward from its centre.
  */
 const LogoButton = ({
   className,
@@ -263,7 +267,7 @@ const LogoButton = ({
           // the SVG is opaque, so lift the glow above it
           "before:z-10",
           // grow on hover (base `transition-all` animates the scale)
-          "duration-300 ease-out hover:scale-110 motion-reduce:hover:scale-100",
+          "duration-300 ease-out hover:scale-125 motion-reduce:hover:scale-100",
           className,
         )}
         {...props}
@@ -298,16 +302,18 @@ const LogoButton = ({
               style={
                 {
                   "--sparkle-angle": `${(360 / SPARKLE_COUNT) * index}deg`,
-                  "--sparkle-distance": "32px",
-                  animationDelay: `-${(index * 0.1).toFixed(2)}s`,
+                  "--sparkle-distance": `${SPARKLE_DISTANCES[index % SPARKLE_DISTANCES.length]}px`,
+                  animationDelay: `-${(index * (SPARKLE_DURATION / SPARKLE_COUNT)).toFixed(3)}s`,
                   color: SPARKLE_COLORS[index % SPARKLE_COLORS.length],
                 } as CSSProperties
               }
             >
               <svg
                 viewBox='0 0 24 24'
-                className='size-2.5'
-                fill='currentColor'
+                className={cn(
+                  "fill-current",
+                  SPARKLE_SIZES[index % SPARKLE_SIZES.length],
+                )}
                 aria-hidden='true'
               >
                 <path d='M12 0 C12.5 6.5 17.5 11.5 24 12 C17.5 12.5 12.5 17.5 12 24 C11.5 17.5 6.5 12.5 0 12 C6.5 11.5 11.5 6.5 12 0 Z' />
