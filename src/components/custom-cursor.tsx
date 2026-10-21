@@ -11,7 +11,7 @@ type CustomCursorProps = {
 
 const PARTICLE_COLORS = ["#e76f51", "#2a9d8f", "#2b2d42", "#e9c46a", "#f4a261"];
 
-const MAX_PARTICLES = 180;
+const MAX_PARTICLES = 260;
 const MAX_SPEED = 3; // px per ms at which the ring is fully stretched
 const EMIT_THRESHOLD = 0.05; // normalized speed below which nothing is emitted
 const RING_SIZE = 34;
@@ -100,17 +100,17 @@ export function CustomCursor({
         if (particles.length >= MAX_PARTICLES) return;
 
         const spread = Math.random() * Math.PI * 2;
-        const push = (0.35 + Math.random() * 1.5) * (0.6 + intensity);
-        const back = 0.25 + Math.random() * 0.85;
+        const push = (0.45 + Math.random() * 1.9) * (0.65 + intensity);
+        const back = 0.3 + Math.random() * 1;
 
         particles.push({
-          x: pointer.x + (Math.random() - 0.5) * 12,
-          y: pointer.y + (Math.random() - 0.5) * 12,
+          x: pointer.x + (Math.random() - 0.5) * 14,
+          y: pointer.y + (Math.random() - 0.5) * 14,
           vx: Math.cos(spread) * push - dirX * back,
           vy: Math.sin(spread) * push - dirY * back,
-          size: 1.4 + Math.random() * 2.8,
+          size: 2 + Math.random() * 3.6,
           life: 0,
-          maxLife: 360 + Math.random() * 540,
+          maxLife: 700 + Math.random() * 900,
           color: pickColor(),
           square: Math.random() > 0.55,
           rot: Math.random() * Math.PI,
@@ -205,7 +205,7 @@ export function CustomCursor({
       if (sprinkles && !still && hasPointer) {
         const intensity = Math.min(speed / MAX_SPEED, 1);
         if (intensity > EMIT_THRESHOLD) {
-          emitAccumulator += intensity * 2.4 * step;
+          emitAccumulator += (0.25 + intensity * 3.2) * step;
           const count = Math.floor(emitAccumulator);
           if (count > 0) {
             emitAccumulator -= count;
@@ -229,7 +229,7 @@ export function CustomCursor({
         }
 
         const t = p.life / p.maxLife;
-        const drag = Math.pow(0.9, step);
+        const drag = Math.pow(0.92, step);
 
         p.vx *= drag;
         p.vy *= drag;
@@ -238,8 +238,8 @@ export function CustomCursor({
         p.y += p.vy * step;
         p.rot += p.spin * step;
 
-        const alpha = (1 - t) * (1 - t);
-        const size = p.size * (1 - t * 0.55);
+        const alpha = Math.pow(1 - t, 1.6);
+        const size = p.size * (1 - t * 0.4);
 
         ctx.globalAlpha = alpha;
         ctx.fillStyle = p.color;
