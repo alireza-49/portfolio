@@ -1,14 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { BookOpen, Code2, Copy, Terminal, X } from "lucide-react";
+import { BookOpen, Code2, Copy, X } from "lucide-react";
 import { CreateStudioCanvas } from "@/components/create-studio-canvas";
 import { CreateStudioSidebar } from "@/components/create-studio-sidebar";
 import {
   ARCHETYPES,
   SHUFFLE_PRESETS,
   buildThemeSnippet,
-  buildTokenLine,
   type ArchetypeId,
   type FontId,
   type IconLibraryId,
@@ -37,11 +36,6 @@ export function CreateStudio() {
         font,
       }),
     [primary, primarySubtle, radius, styleId, font],
-  );
-
-  const tokenLine = useMemo(
-    () => buildTokenLine({ primary, radius, style: styleId }),
-    [primary, radius, styleId],
   );
 
   const selectColor = (hex: string, subtle: string, name: string) => {
@@ -73,9 +67,9 @@ export function CreateStudio() {
   return (
     <>
       <section className='w-full shrink-0 border-b-[2.5px] border-indigo-ink bg-paper-dim px-4 py-2 sm:px-8'>
-        <div className='mx-auto flex  flex-col items-start justify-between gap-3 md:flex-row md:items-center'>
+        <div className='mx-auto flex max-w-7xl flex-col items-start justify-between gap-3 md:flex-row md:items-center'>
           <div className='flex flex-wrap items-center gap-1.5'>
-            <span className='inline-flex items-center gap-1 rounded-sm px-2 py-0.5 font-medium text-xs font-bold  '>
+            <span className='inline-flex items-center gap-1 rounded-sm px-2 py-0.5 text-xs font-bold'>
               <BookOpen className='size-3.5' />
               سناریوی بوم:
             </span>
@@ -110,7 +104,7 @@ export function CreateStudio() {
         </div>
       </section>
 
-      <div className='flex min-h-0 w-full flex-1 flex-col items-stretch overflow-y-auto border-b-[2.5px] border-indigo-ink bg-paper-shade lg:flex-row lg:overflow-hidden '>
+      <div className='flex min-h-0 w-full flex-1 flex-col items-stretch overflow-y-auto border-b-[2.5px] border-indigo-ink bg-paper-shade lg:flex-row lg:overflow-hidden'>
         <CreateStudioSidebar
           styleId={styleId}
           onStyleChange={setStyleId}
@@ -133,40 +127,10 @@ export function CreateStudio() {
           primarySubtle={primarySubtle}
           radius={radius}
           styleId={styleId}
+          font={font}
+          iconLibrary={iconLibrary}
         />
       </div>
-
-      {/* <section className="z-40 w-full shrink-0 border-t-[2.5px] border-indigo-ink bg-paper/95 px-4 py-2 backdrop-blur-md sm:px-8">
-        <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-2 sm:flex-row">
-          <div className="flex w-full items-center gap-2 overflow-x-auto py-1 sm:w-auto">
-            <span className="flex items-center gap-1 whitespace-nowrap text-xs font-black text-indigo-ink">
-              <Terminal className="size-4 text-coral" />
-              خروجی فعال توکن‌ها:
-            </span>
-            <code
-              dir="ltr"
-              className="whitespace-nowrap rounded-sm border border-indigo-ink bg-paper-light px-3 py-1 font-mono text-[11px] font-bold text-coral shadow-craft-sm"
-            >
-              {tokenLine}
-            </code>
-          </div>
-          <div className="flex items-center gap-2 self-end sm:self-auto">
-            <button
-              type="button"
-              onClick={() => copy(tokenLine)}
-              className="flex items-center gap-1 rounded-sm border border-indigo-ink bg-paper-light px-3 py-1 text-xs font-bold text-indigo-ink shadow-craft-sm transition-all hover:bg-paper-dim active:translate-x-0.5 active:translate-y-0.5"
-            >
-              <Copy className="size-3.5" />
-              <span>کپی سریع</span>
-            </button>
-            {copied ? (
-              <span className="rounded-sm border border-indigo-ink bg-coral px-2 py-0.5 text-xs font-bold text-white">
-                کپی شد!
-              </span>
-            ) : null}
-          </div>
-        </div>
-      </section> */}
 
       {modalOpen ? (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-indigo-ink/60 p-4 backdrop-blur-sm'>
@@ -189,8 +153,8 @@ export function CreateStudio() {
             </div>
             <p className='text-xs text-indigo-light'>
               این قطعه کد را در فایل{" "}
-              <code className='font-mono'>tailwind.config.js</code> یا شیوه
-              پوشش‌دهی CSS متغیرهای پروژه خود کپی و جای‌گذاری نمایید.
+              <code className='font-mono'>globals.css</code> پروژه خود (Tailwind
+              CSS v4) کپی و جای‌گذاری نمایید.
             </p>
             <pre
               dir='ltr'
@@ -205,7 +169,7 @@ export function CreateStudio() {
                 className='flex items-center gap-1.5 rounded-sm border border-indigo-ink bg-coral px-4 py-2 text-xs font-bold text-white shadow-craft-sm transition-all hover:bg-coral-dark active:translate-x-0.5 active:translate-y-0.5'
               >
                 <Copy className='size-4' />
-                <span>کپی در کلیپ‌بورد</span>
+                <span>{copied ? "کپی شد!" : "کپی در کلیپ‌بورد"}</span>
               </button>
             </div>
           </div>

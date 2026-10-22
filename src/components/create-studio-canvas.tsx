@@ -14,11 +14,19 @@ import {
   Croissant,
   Handshake,
   LayoutDashboard,
+  LayoutGrid,
+  PanelsTopLeft,
   ShieldCheck,
   SlidersHorizontal,
   Stethoscope,
 } from "lucide-react";
-import type { ArchetypeId, StyleId } from "@/components/create-studio-config";
+import {
+  FONT_STACKS,
+  type ArchetypeId,
+  type FontId,
+  type IconLibraryId,
+  type StyleId,
+} from "@/components/create-studio-config";
 
 type CanvasProps = {
   archetype: ArchetypeId;
@@ -26,6 +34,8 @@ type CanvasProps = {
   primarySubtle: string;
   radius: number;
   styleId: StyleId;
+  font: FontId;
+  iconLibrary: IconLibraryId;
 };
 
 type ViewProps = {
@@ -35,6 +45,61 @@ type ViewProps = {
   itemStyle: CSSProperties;
   accentStyle: CSSProperties;
   accentText: CSSProperties;
+  subtleStyle: CSSProperties;
+  headingClass: string;
+};
+
+type StyleToken = {
+  borderWidth: number;
+  shadow: string;
+  /** null = honour the user-selected radius */
+  radius: number | null;
+  heading: string;
+};
+
+const STYLE_TOKENS: Record<StyleId, StyleToken> = {
+  nova: {
+    borderWidth: 2,
+    shadow: "4px 4px 0 0 #264653",
+    radius: null,
+    heading: "font-black",
+  },
+  riso: {
+    borderWidth: 2,
+    shadow: "5px 5px 0 0 #e76f51",
+    radius: null,
+    heading: "font-black",
+  },
+  brutalist: {
+    borderWidth: 3,
+    shadow: "8px 8px 0 0 #264653",
+    radius: 0,
+    heading: "font-black uppercase tracking-tight",
+  },
+  editorial: {
+    borderWidth: 1,
+    shadow: "2px 2px 0 0 #264653",
+    radius: null,
+    heading: "font-serif font-bold",
+  },
+  swiss: {
+    borderWidth: 2,
+    shadow: "3px 3px 0 0 #264653",
+    radius: 0,
+    heading: "font-bold tracking-tight",
+  },
+  terminal: {
+    borderWidth: 2,
+    shadow: "4px 4px 0 0 #2a9d8f",
+    radius: 0,
+    heading: "font-mono font-bold",
+  },
+};
+
+const LIBRARY_ICONS: Record<IconLibraryId, typeof LayoutDashboard> = {
+  google: LayoutDashboard,
+  lucide: LayoutGrid,
+  tabler: PanelsTopLeft,
 };
 
 const LANDING_FEATURES = [
@@ -116,35 +181,53 @@ export function CreateStudioCanvas({
   primarySubtle,
   radius,
   styleId,
+  font,
+  iconLibrary,
 }: CanvasProps) {
-  const itemStyle: CSSProperties = { borderRadius: radius };
+  const token = STYLE_TOKENS[styleId];
+  const effectiveRadius = token.radius ?? radius;
+
+  const itemStyle: CSSProperties = { borderRadius: effectiveRadius };
   const accentStyle: CSSProperties = {
     backgroundColor: primary,
     color: "#ffffff",
-    borderRadius: radius,
+    borderRadius: effectiveRadius,
   };
   const accentText: CSSProperties = { color: primary };
-  const artboardShadow =
-    styleId === "brutalist"
-      ? "6px 6px 0 0 #264653"
-      : "4px 4px 0 0 #264653";
+  const subtleStyle: CSSProperties = {
+    backgroundColor: primarySubtle,
+    borderRadius: effectiveRadius,
+  };
+
+  const ChromeIcon = LIBRARY_ICONS[iconLibrary];
 
   const viewProps: ViewProps = {
     primary,
     primarySubtle,
-    radius,
+    radius: effectiveRadius,
     itemStyle,
     accentStyle,
     accentText,
+    subtleStyle,
+    headingClass: token.heading,
   };
 
   return (
     <section className="dot-grid order-2 flex w-full flex-col gap-4 overflow-x-hidden bg-paper-shade p-4 sm:p-6 lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:p-8">
       <div
-        className="paper-pattern relative min-h-[640px] w-full overflow-hidden rounded-sm border-2 border-indigo-ink bg-paper transition-all"
-        style={{ boxShadow: artboardShadow }}
+        className="paper-pattern relative min-h-[640px] w-full overflow-hidden rounded-sm bg-paper transition-all"
+        style={{
+          borderStyle: "solid",
+          borderWidth: token.borderWidth,
+          borderColor: "#264653",
+          boxShadow: token.shadow,
+          fontFamily: FONT_STACKS[font],
+        }}
       >
-        <div className="flex w-full select-none items-center justify-between border-b-2 border-indigo-ink bg-paper-dim px-4 py-2.5">
+        <div
+          className="flex w-full select-none items-center justify-between border-b-2 border-indigo-ink px-4 py-2.5"
+          style={{ backgroundColor: primarySubtle }}
+        >
           <div className="flex items-center gap-2.5">
             <div className="flex items-center gap-1.5">
               <span className="size-3 rounded-full border border-indigo-ink bg-coral" />
@@ -153,7 +236,7 @@ export function CreateStudioCanvas({
             </div>
             <span className="mx-1 h-4 w-px bg-indigo-ink/20" />
             <div className="flex items-center gap-1.5 text-xs font-black text-indigo-ink">
-              <LayoutDashboard className="size-4 text-coral" />
+              <ChromeIcon className="size-4 text-coral" />
               <span>میز کارگاه زنده // Live Artboard Canvas</span>
             </div>
           </div>
@@ -188,10 +271,11 @@ export function CreateStudioCanvas({
 
 function ComponentsView({
   primary,
-  radius,
   itemStyle,
   accentStyle,
   accentText,
+  subtleStyle,
+  headingClass,
 }: ViewProps) {
   const [threshold, setThreshold] = useState(2500);
 
@@ -209,7 +293,7 @@ function ComponentsView({
             >
               METRICS &amp; REVENUE // 2025
             </span>
-            <h3 className="text-base font-black text-indigo-ink">
+            <h3 className={`text-base text-indigo-ink ${headingClass}`}>
               رشد ماهانه و درآمد کارگاه
             </h3>
             <p className="mt-0.5 text-xs text-indigo-light">
@@ -295,7 +379,7 @@ function ComponentsView({
       >
         <div>
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-black text-indigo-ink">
+            <h3 className={`text-base text-indigo-ink ${headingClass}`}>
               آستانه تسویه حساب
             </h3>
             <SlidersHorizontal className="size-[18px] text-indigo-light" />
@@ -357,7 +441,7 @@ function ComponentsView({
         style={itemStyle}
       >
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-black text-indigo-ink">
+          <h3 className={`text-sm text-indigo-ink ${headingClass}`}>
             فرم و کنترل‌های تعاملی Shadcn
           </h3>
           <span className="rounded-sm border border-indigo-ink bg-paper-dim px-2 py-0.5 font-mono text-[10px] font-bold text-indigo-ink">
@@ -415,7 +499,7 @@ function ComponentsView({
         style={itemStyle}
       >
         <div>
-          <h3 className="text-sm font-black text-indigo-ink">
+          <h3 className={`text-sm text-indigo-ink ${headingClass}`}>
             بج‌ها و هشدارهای ادیتوریال
           </h3>
           <p className="mt-0.5 text-xs text-indigo-light">
@@ -436,8 +520,8 @@ function ComponentsView({
             در حال پردازش
           </span>
           <span
-            className="border border-indigo-ink bg-paper-dim px-2.5 py-1 text-xs font-bold text-indigo-ink"
-            style={itemStyle}
+            className="border border-indigo-ink px-2.5 py-1 text-xs font-bold text-indigo-ink"
+            style={subtleStyle}
           >
             بایگانی شده
           </span>
@@ -449,8 +533,8 @@ function ComponentsView({
           </span>
         </div>
         <div
-          className="flex items-start gap-2.5 rounded-sm border border-indigo-ink bg-paper-dim p-3 text-xs"
-          style={itemStyle}
+          className="flex items-start gap-2.5 rounded-sm border border-indigo-ink p-3 text-xs"
+          style={subtleStyle}
         >
           <BadgeCheck className="size-[18px]" style={accentText} />
           <div>
@@ -471,6 +555,8 @@ function LandingView({
   primary,
   itemStyle,
   accentStyle,
+  subtleStyle,
+  headingClass,
 }: ViewProps) {
   return (
     <div className="flex flex-col gap-6">
@@ -489,7 +575,9 @@ function LandingView({
             />
             ARCHETYPE: SAAS &amp; STARTUP LANDING
           </div>
-          <h2 className="text-xl leading-tight font-black text-indigo-ink sm:text-2xl">
+          <h2
+            className={`text-xl leading-tight text-indigo-ink sm:text-2xl ${headingClass}`}
+          >
             زیرساخت مدرن برای تیم‌های توسعه محصول دیجیتال با رویکرد بدون کالبد
           </h2>
           <p className="text-xs leading-relaxed text-indigo-light sm:text-sm">
@@ -515,8 +603,8 @@ function LandingView({
         </div>
 
         <div
-          className="flex w-full flex-col gap-3 rounded-sm border border-indigo-ink bg-paper-dim p-4 shadow-craft md:w-64"
-          style={itemStyle}
+          className="flex w-full flex-col gap-3 rounded-sm border border-indigo-ink p-4 shadow-craft md:w-64"
+          style={subtleStyle}
         >
           <div className="flex items-center justify-between text-xs font-bold text-indigo-ink">
             <span>امتیاز عملکرد لایت‌هاوس</span>
@@ -546,7 +634,7 @@ function LandingView({
             >
               <feature.icon className={`size-[18px] ${feature.tone}`} />
             </div>
-            <h4 className="text-sm font-bold text-indigo-ink">
+            <h4 className={`text-sm text-indigo-ink ${headingClass}`}>
               {feature.title}
             </h4>
             <p className="text-xs text-indigo-light">{feature.body}</p>
@@ -557,7 +645,12 @@ function LandingView({
   );
 }
 
-function EcommerceView({ itemStyle, accentStyle }: ViewProps) {
+function EcommerceView({
+  itemStyle,
+  accentStyle,
+  subtleStyle,
+  headingClass,
+}: ViewProps) {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between border-b border-indigo-ink/20 pb-2">
@@ -565,7 +658,7 @@ function EcommerceView({ itemStyle, accentStyle }: ViewProps) {
           <span className="font-mono text-xs font-bold text-coral">
             ARCHETYPE: ARTISANAL BAKERY &amp; COFFEE
           </span>
-          <h3 className="text-base font-black text-indigo-ink">
+          <h3 className={`text-base text-indigo-ink ${headingClass}`}>
             فروشگاه آنلاین کارگاهی نان تخمیر طبیعی و قهوه تخصصی
           </h3>
         </div>
@@ -582,8 +675,8 @@ function EcommerceView({ itemStyle, accentStyle }: ViewProps) {
             style={itemStyle}
           >
             <div
-              className="relative flex h-36 w-full flex-col items-center justify-center overflow-hidden rounded-sm border border-indigo-ink bg-paper-dim text-indigo-light"
-              style={itemStyle}
+              className="relative flex h-36 w-full flex-col items-center justify-center overflow-hidden rounded-sm border border-indigo-ink text-indigo-light"
+              style={subtleStyle}
             >
               <product.icon className={`size-[42px] ${product.tone}`} />
               <span className="mt-1 font-mono text-[11px] font-bold">
@@ -596,7 +689,7 @@ function EcommerceView({ itemStyle, accentStyle }: ViewProps) {
               ) : null}
             </div>
             <div>
-              <h4 className="text-sm font-black text-indigo-ink">
+              <h4 className={`text-sm text-indigo-ink ${headingClass}`}>
                 {product.title}
               </h4>
               <p className="mt-0.5 text-xs text-indigo-light">
@@ -622,7 +715,12 @@ function EcommerceView({ itemStyle, accentStyle }: ViewProps) {
   );
 }
 
-function ClinicView({ itemStyle, accentStyle }: ViewProps) {
+function ClinicView({
+  itemStyle,
+  accentStyle,
+  subtleStyle,
+  headingClass,
+}: ViewProps) {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between border-b border-indigo-ink/20 pb-2">
@@ -630,7 +728,7 @@ function ClinicView({ itemStyle, accentStyle }: ViewProps) {
           <span className="font-mono text-xs font-bold text-coral">
             ARCHETYPE: MEDICAL CLINIC &amp; BOOKING
           </span>
-          <h3 className="text-base font-black text-indigo-ink">
+          <h3 className={`text-base text-indigo-ink ${headingClass}`}>
             سامانه نوبت‌دهی آنلاین درمانگاه تخصصی حکیم
           </h3>
         </div>
@@ -652,7 +750,7 @@ function ClinicView({ itemStyle, accentStyle }: ViewProps) {
               <Stethoscope className="size-[26px]" />
             </div>
             <div>
-              <h4 className="text-sm font-black text-indigo-ink">
+              <h4 className={`text-sm text-indigo-ink ${headingClass}`}>
                 دکتر سهراب دیبا
               </h4>
               <span className="text-xs text-indigo-light">
@@ -747,7 +845,7 @@ function ClinicView({ itemStyle, accentStyle }: ViewProps) {
           style={itemStyle}
         >
           <div>
-            <h4 className="text-sm font-black text-indigo-ink">
+            <h4 className={`text-sm text-indigo-ink ${headingClass}`}>
               مدارک و الزامات مراجعه
             </h4>
             <p className="mt-0.5 text-xs text-indigo-light">
@@ -771,8 +869,8 @@ function ClinicView({ itemStyle, accentStyle }: ViewProps) {
             </div>
           </div>
           <div
-            className="rounded-sm border border-indigo-ink bg-paper-dim p-3 text-xs"
-            style={itemStyle}
+            className="rounded-sm border border-indigo-ink p-3 text-xs"
+            style={subtleStyle}
           >
             <span className="mb-0.5 block font-bold text-indigo-ink">
               نشانی درمانگاه:
@@ -787,7 +885,14 @@ function ClinicView({ itemStyle, accentStyle }: ViewProps) {
   );
 }
 
-function DashboardView({ itemStyle }: ViewProps) {
+function DashboardView({
+  primary,
+  itemStyle,
+  accentStyle,
+  accentText,
+  subtleStyle,
+  headingClass,
+}: ViewProps) {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between border-b border-indigo-ink/20 pb-2">
@@ -795,7 +900,7 @@ function DashboardView({ itemStyle }: ViewProps) {
           <span className="font-mono text-xs font-bold text-coral">
             ARCHETYPE: DATA MONITORING &amp; TELEMETRY
           </span>
-          <h3 className="text-base font-black text-indigo-ink">
+          <h3 className={`text-base text-indigo-ink ${headingClass}`}>
             میز کار پایش داده‌های سرور و ترافیک لحظه‌ای
           </h3>
         </div>
@@ -814,7 +919,10 @@ function DashboardView({ itemStyle }: ViewProps) {
             <span className="block text-xs text-indigo-light">
               {stat.label}
             </span>
-            <span className="mt-1 block font-mono text-xl font-black text-indigo-ink">
+            <span
+              className="mt-1 block font-mono text-xl font-black"
+              style={accentText}
+            >
               {stat.value}
             </span>
             <span className="text-[10px] font-bold text-emerald-700">
@@ -828,24 +936,34 @@ function DashboardView({ itemStyle }: ViewProps) {
         className="flex flex-col gap-3 border border-indigo-ink bg-paper-light p-5 shadow-craft"
         style={itemStyle}
       >
-        <h4 className="text-sm font-black text-indigo-ink">
+        <h4 className={`text-sm text-indigo-ink ${headingClass}`}>
           وضعیت نودهای توزیع‌شده استودیو
         </h4>
         <div className="flex flex-col gap-2 text-xs">
           {NODES.map((node) => (
             <div
               key={node.name}
-              className="flex items-center justify-between rounded-sm border border-indigo-ink bg-paper-dim p-2.5"
-              style={itemStyle}
+              className="flex items-center justify-between rounded-sm border border-indigo-ink p-2.5"
+              style={subtleStyle}
             >
               <div className="flex items-center gap-2">
-                <span className="size-2 rounded-full bg-emerald-600" />
+                <span
+                  className="size-2 rounded-full"
+                  style={{ backgroundColor: primary }}
+                />
                 <span className="font-bold text-indigo-ink">{node.name}</span>
               </div>
               <span className="font-mono text-indigo-light">{node.load}</span>
             </div>
           ))}
         </div>
+        <button
+          type="button"
+          className="self-start border border-indigo-ink px-3 py-1.5 text-xs font-bold shadow-craft-sm transition-all active:translate-x-0.5 active:translate-y-0.5"
+          style={accentStyle}
+        >
+          بروزرسانی داده‌های زنده
+        </button>
       </div>
     </div>
   );

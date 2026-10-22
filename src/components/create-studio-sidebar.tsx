@@ -93,8 +93,8 @@ export function CreateStudioSidebar({
   };
 
   return (
-    <aside className='[direction:ltr] order-1 z-20 flex w-full shrink-0 flex-col gap-4 border-b-[2.5px] border-indigo-ink bg-paper-light p-4 lg:h-full lg:min-h-0 lg:w-80 lg:overflow-y-auto lg:border-b-0 lg:border-l-[2.5px]'>
-      <div className='[direction:rtl] flex flex-col gap-3 border-b border-indigo-ink/20 pb-3'>
+    <aside className='order-1 z-20 flex w-full shrink-0 flex-col gap-4 border-b-[2.5px] border-indigo-ink bg-paper-light p-4 lg:h-full lg:min-h-0 lg:w-80 lg:overflow-y-auto lg:border-b-0 lg:border-l-[2.5px]'>
+      <div className='flex flex-col gap-3 border-b border-indigo-ink/20 pb-3'>
         <div className='flex items-center justify-between'>
           <div className='flex items-center gap-2'>
             <span className='flex size-8 items-center justify-center rounded-sm border border-indigo-ink bg-paper-dim text-coral shadow-craft-sm'>

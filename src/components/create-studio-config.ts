@@ -160,7 +160,7 @@ export const SHUFFLE_PRESETS: ShufflePreset[] = [
   },
 ];
 
-const FONT_STACKS: Record<FontId, string> = {
+export const FONT_STACKS: Record<FontId, string> = {
   vazir: "'Vazirmatn', sans-serif",
   editorial: "'Newsreader', 'Vazirmatn', serif",
   sahel: "'Sahel', 'Inter', sans-serif",
@@ -201,7 +201,17 @@ export function buildThemeSnippet(input: {
       ? "4px 4px 0px #264653"
       : "2px 2px 0px #264653";
 
-  return `/* استودیو کُدولوژی // Warm Risograph Tailored CSS */
+  return `/* استودیو کُدولوژی // Warm Risograph Tailored Theme (Tailwind CSS v4) */
+@import "tailwindcss";
+
+@theme {
+  --color-primary: ${input.primary};
+  --color-primary-subtle: ${input.primarySubtle};
+  --radius-craft: ${input.radius}px;
+  --font-craft: ${FONT_STACKS[input.font]};
+  --shadow-craft: ${shadow};
+}
+
 :root {
   --primary: ${input.primary};
   --primary-subtle: ${input.primarySubtle};
@@ -209,19 +219,5 @@ export function buildThemeSnippet(input: {
   --preset-style: "${input.style}";
   --font-family: ${FONT_STACKS[input.font]};
   --box-shadow-offset: ${shadow};
-}
-
-/* Tailwind CSS v3 Config */
-module.exports = {
-  theme: {
-    extend: {
-      colors: {
-        primary: "${input.primary}",
-      },
-      borderRadius: {
-        craft: "${input.radius}px",
-      }
-    }
-  }
-};`;
+}`;
 }
