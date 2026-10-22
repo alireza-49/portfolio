@@ -28,7 +28,7 @@ const REASONS = [
     blob: "bg-mustard/20",
     title: "تعرفه منصفانه و اقتصادی",
     body: "بودجه شما صرف کیفیت کد و زیبایی بصری می‌شود؛ نه اجاره دفترهای لوکس آژانس‌ها یا حقوق مدیران واسطه و کارشناسان فروش.",
-    footer: "💰 تا ۵۰٪ صرفه‌جویی بودجه",
+    footer: "💰 تا ۹۰٪ صرفه‌جویی بودجه",
     footerTone: "text-indigo-ink",
     footerIcon: BadgeCheck,
   },

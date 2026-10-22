@@ -49,9 +49,10 @@ const SPEEDS = [
 ] as const;
 
 const ADDONS = [
-  { value: "cms", label: "پنل مدیریت محتوای (+۱ م.ت)" },
+  { value: "cms", label: "پنل مدیریت محتوای (وبلاگ اختصاصی) (+۲ م.ت)" },
   { value: "support", label: "پشتیبانی و مراقبت ۶ ماهه (+۲ م.ت)" },
   { value: "motion", label: "انیمیشن‌های اضافه (۰.۵ م.ت)" },
+  { value: "payportal", label: "پرتال پرداخت (رایگان)" },
 ] as const;
 
 type ProjectType = (typeof PROJECT_TYPES)[number]["value"];
@@ -74,9 +75,10 @@ const SPEED_FACTORS: Record<Speed, { factor: number; title: string }> = {
 };
 
 const ADDON_PRICES: Record<Addon, number> = {
-  cms: 1,
+  cms: 2,
   support: 2,
   motion: 0.5,
+  payportal: 0,
 };
 
 const PERSIAN_DIGITS = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
