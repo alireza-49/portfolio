@@ -2,31 +2,43 @@
 
 import { useState, type CSSProperties } from "react";
 import {
-  ArrowLeft,
-  BadgeCheck,
   Bolt,
-  Check,
   CheckCircle2,
-  ChevronDown,
   Clock,
   Coffee,
   Cookie,
   Croissant,
   Handshake,
+  Info,
   LayoutDashboard,
   LayoutGrid,
   PanelsTopLeft,
   ShieldCheck,
-  SlidersHorizontal,
   Stethoscope,
 } from "lucide-react";
 import {
   FONT_STACKS,
+  mixWithWhite,
   type ArchetypeId,
   type FontId,
   type IconLibraryId,
   type StyleId,
 } from "@/components/create-studio-config";
+import {
+  createComponentTheme,
+  themeToCssVars,
+} from "@/components/create-components/theme";
+import { Alert } from "@/components/create-components/alert";
+import { Badge } from "@/components/create-components/badge";
+import { CheckboxField } from "@/components/create-components/checkbox";
+import { Progress } from "@/components/create-components/progress";
+import {
+  RadioGroup,
+  RadioGroupField,
+} from "@/components/create-components/radio-group";
+import { Select } from "@/components/create-components/select";
+import { Separator } from "@/components/create-components/separator";
+import { Slider } from "@/components/create-components/slider";
 
 type CanvasProps = {
   archetype: ArchetypeId;
@@ -166,13 +178,17 @@ const NODES = [
   { name: "نود تهران (IR-Tehran IXP)", load: "لود مصرفی: ۵۵٪ | ۴.۸ GB" },
 ];
 
-const CHART_BARS = [
-  { x: 25, height: 55, y: 55, label: "آذر", accent: false },
-  { x: 95, height: 75, y: 35, label: "دی", accent: false },
-  { x: 165, height: 95, y: 15, label: "بهمن", accent: true },
-  { x: 235, height: 70, y: 40, label: "اسفند", accent: false },
-  { x: 305, height: 102, y: 8, label: "فروردین", accent: true },
-  { x: 375, height: 60, y: 50, label: "اردیبهشت", accent: false },
+const PROJECT_TYPES = [
+  { value: "landing", label: "لندینگ پیج" },
+  { value: "ecommerce", label: "فروشگاه آنلاین" },
+  { value: "dashboard", label: "داشبورد داده" },
+  { value: "blog", label: "وبلاگ و محتوا" },
+];
+
+const PRIORITIES = [
+  { value: "low", label: "کم", description: "بدون عجله" },
+  { value: "normal", label: "معمولی", description: "زمان‌بندی استاندارد" },
+  { value: "high", label: "فوری", description: "تحویل سریع" },
 ];
 
 export function CreateStudioCanvas({
@@ -200,6 +216,31 @@ export function CreateStudioCanvas({
   };
 
   const ChromeIcon = LIBRARY_ICONS[iconLibrary];
+
+  const theme = createComponentTheme({
+    primary,
+    primaryForeground: "#ffffff",
+    primaryHover: primary,
+    secondary: primarySubtle,
+    secondaryForeground: primary,
+    secondaryHover: mixWithWhite(primarySubtle, 0.1),
+    accent: "#dda15e",
+    accentForeground: "#1f2937",
+    background: "#fdfaf5",
+    surface: "#ffffff",
+    surfaceForeground: "#264653",
+    muted: "#f3f4f6",
+    mutedForeground: "#6b7280",
+    border: "#264653",
+    ring: primary,
+    radius: effectiveRadius,
+    borderWidth: token.borderWidth,
+    shadow: token.shadow,
+    fontFamily: FONT_STACKS[font],
+    fontSize: 14,
+    density: 1,
+    duration: "150ms",
+  });
 
   const viewProps: ViewProps = {
     primary,
@@ -251,10 +292,11 @@ export function CreateStudioCanvas({
           </div>
         </div>
 
-        <div className="flex flex-col gap-6 p-5 sm:p-7">
-          {archetype === "components" ? (
-            <ComponentsView {...viewProps} />
-          ) : null}
+        <div
+          className="flex flex-col gap-6 p-5 sm:p-7"
+          style={themeToCssVars(theme)}
+        >
+          {archetype === "components" ? <ComponentsView /> : null}
           {archetype === "landing" ? <LandingView {...viewProps} /> : null}
           {archetype === "ecommerce" ? (
             <EcommerceView {...viewProps} />
@@ -269,283 +311,132 @@ export function CreateStudioCanvas({
   );
 }
 
-function ComponentsView({
-  primary,
-  itemStyle,
-  accentStyle,
-  accentText,
-  subtleStyle,
-  headingClass,
-}: ViewProps) {
-  const [threshold, setThreshold] = useState(2500);
+function ComponentsView() {
+  const [projectType, setProjectType] = useState("landing");
+  const [budget, setBudget] = useState(40);
+  const [priority, setPriority] = useState("normal");
+  const [newsletter, setNewsletter] = useState(true);
+  const [support, setSupport] = useState(false);
+  const [progress, setProgress] = useState(65);
 
   return (
-    <div className="grid grid-cols-1 gap-5 md:grid-cols-12">
-      <div
-        className="flex flex-col justify-between gap-4 border border-indigo-ink bg-paper-light p-5 shadow-craft md:col-span-7"
-        style={itemStyle}
-      >
-        <div className="flex items-start justify-between">
-          <div>
-            <span
-              className="mb-1 block font-mono text-xs font-bold"
-              style={accentText}
-            >
-              METRICS &amp; REVENUE // 2025
-            </span>
-            <h3 className={`text-base text-indigo-ink ${headingClass}`}>
-              رشد ماهانه و درآمد کارگاه
-            </h3>
-            <p className="mt-0.5 text-xs text-indigo-light">
-              شاخص تراکنش‌های ثبت‌شده از طراحی وب‌سایت‌های سفارشی
-            </p>
-          </div>
-          <span className="rounded-sm border border-indigo-ink bg-paper-dim px-2 py-1 font-mono text-xs font-bold text-indigo-ink">
-            +۲۴.۸٪ YoY
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="flex flex-col gap-1">
+          <h2 className="text-lg font-black text-[color:var(--cc-surface-foreground)]">
+            کامپوننت‌های پایه
+          </h2>
+          <p className="text-sm text-[color:var(--cc-muted-foreground)]">
+            پیش‌نمایش زنده با تم انتخابی شما
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          <Badge variant="solid">نسخه ۱.۰</Badge>
+          <Badge variant="soft">ریسپانسیو</Badge>
+          <Badge variant="outline">دسترس‌پذیر</Badge>
+        </div>
+      </div>
+
+      <Alert variant="info" title="راهنما" icon={<Info className="size-4" />}>
+        این کامپوننت‌ها از تم انتخابی شما استفاده می‌کنند. رنگ، شعاع و فونت را از
+        پنل کنار تغییر دهید.
+      </Alert>
+
+      <Separator label="فرم نمونه" />
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="flex flex-col gap-1.5">
+          <label className="text-sm font-medium text-[color:var(--cc-surface-foreground)]">
+            نوع پروژه
+          </label>
+          <Select
+            options={PROJECT_TYPES}
+            value={projectType}
+            onValueChange={setProjectType}
+          />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <label className="text-sm font-medium text-[color:var(--cc-surface-foreground)]">
+            بودجه (میلیون تومان)
+          </label>
+          <Slider
+            min={0}
+            max={100}
+            step={5}
+            value={budget}
+            onChange={(event) => setBudget(Number(event.target.value))}
+          />
+          <span className="text-xs text-[color:var(--cc-muted-foreground)]">
+            {budget} میلیون تومان
           </span>
         </div>
+      </div>
 
-        <div
-          className="w-full rounded-sm border border-indigo-ink bg-paper-dim p-3"
-          style={itemStyle}
-        >
-          <svg className="h-32 w-full" fill="none" viewBox="0 0 420 130">
-            <line
-              stroke="rgba(38,70,83,0.12)"
-              strokeDasharray="2,2"
-              x1="0"
-              x2="420"
-              y1="25"
-              y2="25"
-            />
-            <line
-              stroke="rgba(38,70,83,0.12)"
-              strokeDasharray="2,2"
-              x1="0"
-              x2="420"
-              y1="65"
-              y2="65"
-            />
-            <line
-              stroke="rgba(38,70,83,0.12)"
-              strokeDasharray="2,2"
-              x1="0"
-              x2="420"
-              y1="105"
-              y2="105"
-            />
-            {CHART_BARS.map((bar) => (
-              <g key={bar.label}>
-                <rect
-                  fill={bar.accent ? primary : "#264653"}
-                  height={bar.height}
-                  rx="2"
-                  width="36"
-                  x={bar.x}
-                  y={bar.y}
-                />
-                <text
-                  className="fill-indigo-light font-mono text-[11px]"
-                  textAnchor="middle"
-                  x={bar.x + 18}
-                  y="124"
-                >
-                  {bar.label}
-                </text>
-              </g>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="flex flex-col gap-2">
+          <span className="text-sm font-medium text-[color:var(--cc-surface-foreground)]">
+            اولویت
+          </span>
+          <RadioGroup value={priority} onValueChange={setPriority}>
+            {PRIORITIES.map((item) => (
+              <RadioGroupField
+                key={item.value}
+                value={item.value}
+                label={item.label}
+                description={item.description}
+              />
             ))}
-          </svg>
+          </RadioGroup>
         </div>
-
-        <div className="flex items-center justify-between border-t border-indigo-ink/15 pt-2 text-xs">
-          <span className="text-indigo-light">
-            میانگین سفارش هر پروژه:{" "}
-            <b className="font-mono text-indigo-ink">$3,850</b>
+        <div className="flex flex-col gap-2">
+          <span className="text-sm font-medium text-[color:var(--cc-surface-foreground)]">
+            گزینه‌ها
           </span>
-          <button
-            type="button"
-            className="flex items-center gap-1 font-bold"
-            style={accentText}
-          >
-            مشاهده ریز گزارشات
-            <ArrowLeft className="size-3.5" />
-          </button>
+          <CheckboxField
+            label="ارسال خبرنامه"
+            description="جدیدترین مقالات و آموزش‌ها"
+            checked={newsletter}
+            onCheckedChange={setNewsletter}
+          />
+          <CheckboxField
+            label="پشتیبانی ۲۴ ساعته"
+            description="دسترسی به تیم پشتیبانی در تمام ساعات"
+            checked={support}
+            onCheckedChange={setSupport}
+          />
         </div>
       </div>
 
-      <div
-        className="flex flex-col justify-between gap-4 border border-indigo-ink bg-paper-light p-5 shadow-craft md:col-span-5"
-        style={itemStyle}
-      >
-        <div>
-          <div className="flex items-center justify-between">
-            <h3 className={`text-base text-indigo-ink ${headingClass}`}>
-              آستانه تسویه حساب
-            </h3>
-            <SlidersHorizontal className="size-[18px] text-indigo-light" />
-          </div>
-          <p className="mt-0.5 text-xs text-indigo-light">
-            تعیین حداقل موجودی جهت واریز خودکار هفتگی
-          </p>
+      <Separator label="وضعیت پیشرفت" />
+
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center justify-between text-sm text-[color:var(--cc-surface-foreground)]">
+          <span>تکمیل پروژه</span>
+          <span className="text-[color:var(--cc-muted-foreground)]">
+            {progress}%
+          </span>
         </div>
-
-        <div className="flex flex-col gap-3">
-          <div className="flex flex-col gap-1">
-            <label className="text-xs font-bold text-indigo-ink">
-              ارز انتخابی تسویه
-            </label>
-            <div
-              className="flex items-center justify-between rounded-sm border border-indigo-ink bg-paper-dim p-2 text-xs font-semibold text-indigo-ink"
-              style={itemStyle}
-            >
-              <span>USD — دلار ایالات متحده</span>
-              <ChevronDown className="size-4" />
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-indigo-light">مبلغ آستانه واریز:</span>
-              <span className="font-mono text-sm font-black" style={accentText}>
-                ${threshold.toLocaleString("en-US")}.00
-              </span>
-            </div>
-            <input
-              type="range"
-              min={500}
-              max={10000}
-              step={100}
-              value={threshold}
-              onChange={(event) => setThreshold(Number(event.target.value))}
-              className="h-2 w-full cursor-pointer rounded-lg border border-indigo-ink bg-paper-dim"
-              style={{ accentColor: primary }}
-            />
-            <div className="flex justify-between font-mono text-[10px] text-indigo-light">
-              <span>$500</span>
-              <span>$10,000</span>
-            </div>
-          </div>
-        </div>
-
-        <button
-          type="button"
-          className="w-full border border-indigo-ink py-2 text-center text-xs font-bold shadow-craft-sm transition-all active:translate-x-0.5 active:translate-y-0.5"
-          style={accentStyle}
-        >
-          ذخیره تنظیمات تسویه
-        </button>
+        <Progress value={progress} showValue />
+        <Slider
+          min={0}
+          max={100}
+          step={5}
+          value={progress}
+          onChange={(event) => setProgress(Number(event.target.value))}
+        />
       </div>
 
-      <div
-        className="flex flex-col gap-4 border border-indigo-ink bg-paper-light p-5 shadow-craft md:col-span-6"
-        style={itemStyle}
-      >
-        <div className="flex items-center justify-between">
-          <h3 className={`text-sm text-indigo-ink ${headingClass}`}>
-            فرم و کنترل‌های تعاملی Shadcn
-          </h3>
-          <span className="rounded-sm border border-indigo-ink bg-paper-dim px-2 py-0.5 font-mono text-[10px] font-bold text-indigo-ink">
-            ATOMIC UI
-          </span>
-        </div>
-        <div className="flex flex-col gap-3">
-          <div className="flex flex-col gap-1">
-            <label className="text-xs font-bold text-indigo-ink">
-              نام مشتری یا سازمان
-            </label>
-            <input
-              type="text"
-              placeholder="مثال: شرکت راهکارهای ابری پیشرو"
-              className="w-full rounded-sm border border-indigo-ink bg-paper-dim p-2.5 text-xs text-indigo-ink outline-none focus:ring-1 focus:ring-coral"
-              style={itemStyle}
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              className="flex items-center justify-center gap-1.5 border border-indigo-ink px-3 py-2 text-xs font-bold shadow-craft-sm"
-              style={accentStyle}
-            >
-              <Check className="size-4" />
-              دکمه اولیه (Primary)
-            </button>
-            <button
-              type="button"
-              className="flex items-center justify-center gap-1.5 border border-indigo-ink bg-paper-dim px-3 py-2 text-xs font-bold text-indigo-ink shadow-craft-sm hover:bg-paper-light"
-              style={itemStyle}
-            >
-              دکمه ثانویه (Outline)
-            </button>
-          </div>
-          <div
-            className="flex items-center justify-between rounded-sm border border-indigo-ink bg-paper-dim p-2.5 text-xs"
-            style={itemStyle}
-          >
-            <span className="font-bold text-indigo-ink">
-              فعال‌سازی اطلاع‌رسانی پیامکی
-            </span>
-            <input
-              type="checkbox"
-              defaultChecked
-              className="size-4"
-              style={{ accentColor: primary }}
-            />
-          </div>
-        </div>
-      </div>
+      <Separator />
 
-      <div
-        className="flex flex-col justify-between gap-4 border border-indigo-ink bg-paper-light p-5 shadow-craft md:col-span-6"
-        style={itemStyle}
-      >
-        <div>
-          <h3 className={`text-sm text-indigo-ink ${headingClass}`}>
-            بج‌ها و هشدارهای ادیتوریال
-          </h3>
-          <p className="mt-0.5 text-xs text-indigo-light">
-            وضعیت‌های مختلف سیستم همراه با استروک و بردر خطی
-          </p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap gap-1.5">
+          <Badge variant="success">فعال</Badge>
+          <Badge variant="warning">در انتظار</Badge>
+          <Badge variant="danger">خطا</Badge>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <span
-            className="border border-indigo-ink px-2.5 py-1 text-xs font-bold shadow-craft-sm"
-            style={accentStyle}
-          >
-            تکمیل شده
-          </span>
-          <span
-            className="border border-indigo-ink bg-indigo-ink px-2.5 py-1 text-xs font-bold text-paper shadow-craft-sm"
-            style={itemStyle}
-          >
-            در حال پردازش
-          </span>
-          <span
-            className="border border-indigo-ink px-2.5 py-1 text-xs font-bold text-indigo-ink"
-            style={subtleStyle}
-          >
-            بایگانی شده
-          </span>
-          <span
-            className="border border-indigo-ink bg-teal-craft px-2.5 py-1 font-mono text-xs font-bold text-white"
-            style={itemStyle}
-          >
-            v3.4.1 LIVE
-          </span>
-        </div>
-        <div
-          className="flex items-start gap-2.5 rounded-sm border border-indigo-ink p-3 text-xs"
-          style={subtleStyle}
-        >
-          <BadgeCheck className="size-[18px]" style={accentText} />
-          <div>
-            <span className="block font-bold text-indigo-ink">
-              گارانتی تطابق ۱۰۰٪ ریسوگراف
-            </span>
-            <p className="mt-0.5 text-indigo-light">
-              تمام مولفه‌های وب استاندارد با متغیرهای تم هماهنگ هستند.
-            </p>
-          </div>
-        </div>
+        <span className="text-xs text-[color:var(--cc-muted-foreground)]">
+          آخرین به‌روزرسانی: همین حالا
+        </span>
       </div>
     </div>
   );
