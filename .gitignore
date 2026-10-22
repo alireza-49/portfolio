@@ -43,3 +43,6 @@ next-env.d.ts
 
 #design
 design/
+
+# Aider Studio (auto-added)
+REPO_MAP.md
