@@ -1,11 +1,14 @@
 import type { ComponentProps } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
+import { borderChrome, labelType } from "./styles";
 
 export const badgeVariants = cva(
   [
-    "inline-flex items-center gap-1 whitespace-nowrap font-medium",
-    "rounded-[var(--cc-radius)] border-[length:var(--cc-border-width)]",
+    "inline-flex items-center gap-1 whitespace-nowrap",
+    labelType,
+    borderChrome,
+    "rounded-[var(--cc-badge-radius)] border-[length:var(--cc-border-width)]",
     "px-[calc(0.5rem*var(--cc-density))] py-[calc(0.125rem*var(--cc-density))]",
     "text-[length:calc(var(--cc-font-size)*0.75)]",
   ],

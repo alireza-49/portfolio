@@ -35,7 +35,7 @@ export function Avatar({
       data-cc-avatar=""
       className={cn(
         "inline-flex shrink-0 items-center justify-center overflow-hidden",
-        "rounded-full",
+        "rounded-[var(--cc-avatar-radius)]",
         "border-[length:var(--cc-border-width)] border-[color:var(--cc-border)]",
         "bg-[var(--cc-muted)] font-semibold text-[color:var(--cc-muted-foreground)]",
         SIZES[size],

@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { BookOpen, Code2, Copy, X } from "lucide-react";
 import { CreateStudioCanvas } from "@/components/create-studio-canvas";
 import { CreateStudioSidebar } from "@/components/create-studio-sidebar";
+import { createThemePresets } from "@/components/create-components/style-presets";
 import {
   ARCHETYPES,
   SHUFFLE_PRESETS,
@@ -42,6 +43,11 @@ export function CreateStudio() {
     setPrimary(hex);
     setPrimarySubtle(subtle);
     setColorName(name);
+  };
+
+  const selectStyle = (id: StyleId) => {
+    setStyleId(id);
+    setRadius(createThemePresets[id].tokens.radius ?? radius);
   };
 
   const shuffle = () => {
@@ -107,7 +113,7 @@ export function CreateStudio() {
       <div className='flex min-h-0 w-full flex-1 flex-col items-stretch overflow-y-auto border-b-[2.5px] border-indigo-ink bg-paper-shade lg:flex-row lg:overflow-hidden'>
         <CreateStudioSidebar
           styleId={styleId}
-          onStyleChange={setStyleId}
+          onStyleChange={selectStyle}
           primary={primary}
           primarySubtle={primarySubtle}
           colorName={colorName}

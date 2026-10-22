@@ -10,6 +10,7 @@ import {
 } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { borderChrome, labelType, motion } from "./styles";
 
 type AccordionContextValue = {
   openValues: string[];
@@ -90,8 +91,9 @@ export function Accordion({
         data-cc-accordion=""
         className={cn(
           "flex flex-col overflow-hidden",
+          borderChrome,
           "rounded-[var(--cc-radius)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)]",
-          "bg-[var(--cc-surface)]",
+          "bg-[var(--cc-surface)] [box-shadow:var(--cc-shadow)]",
           className,
         )}
       >
@@ -123,6 +125,7 @@ export function AccordionItem({
         data-cc-accordion-item=""
         className={cn(
           "border-b-[length:var(--cc-border-width)] border-[color:var(--cc-border)] last:border-b-0",
+          borderChrome,
           className,
         )}
         {...props}
@@ -149,11 +152,13 @@ export function AccordionTrigger({
       data-cc-accordion-trigger=""
       className={cn(
         "flex w-full items-center justify-between gap-2",
+        labelType,
+        motion,
         "px-[calc(0.875rem*var(--cc-density))] py-[calc(0.625rem*var(--cc-density))]",
-        "text-left text-[length:var(--cc-font-size)] font-medium",
+        "text-left text-[length:var(--cc-font-size)]",
         "text-[color:var(--cc-surface-foreground)]",
-        "transition-colors duration-[var(--cc-duration)] hover:bg-[var(--cc-muted)]",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--cc-ring)] focus-visible:ring-inset",
+        "hover:bg-[var(--cc-muted)]",
+        "focus-visible:outline-none focus-visible:ring-[length:var(--cc-focus-ring-width)] focus-visible:ring-[color:var(--cc-ring)] focus-visible:ring-inset",
         className,
       )}
       {...props}
@@ -183,6 +188,7 @@ export function AccordionContent({
       className={cn(
         "px-[calc(0.875rem*var(--cc-density))] pb-[calc(0.75rem*var(--cc-density))]",
         "text-[length:calc(var(--cc-font-size)*0.9)] text-[color:var(--cc-muted-foreground)]",
+        "[line-height:var(--cc-line-height)]",
         className,
       )}
       {...props}

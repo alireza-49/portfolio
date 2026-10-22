@@ -2,6 +2,7 @@
 
 import { useState, type ComponentProps } from "react";
 import { cn } from "@/lib/utils";
+import { borderChrome } from "./styles";
 
 export type SwitchProps = Omit<
   ComponentProps<"button">,
@@ -41,10 +42,11 @@ export function Switch({
       data-cc-switch=""
       className={cn(
         "relative inline-flex shrink-0 items-center",
+        borderChrome,
         "h-6 w-11 rounded-[var(--cc-radius)]",
         "border-[length:var(--cc-border-width)] border-[color:var(--cc-border)]",
         "transition-colors duration-[var(--cc-duration)]",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--cc-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--cc-background)]",
+        "focus-visible:outline-none focus-visible:ring-[length:var(--cc-focus-ring-width)] focus-visible:ring-[color:var(--cc-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--cc-background)]",
         "disabled:cursor-not-allowed disabled:opacity-50",
         isOn ? "bg-[var(--cc-primary)]" : "bg-[var(--cc-muted)]",
         className,

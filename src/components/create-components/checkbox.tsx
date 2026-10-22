@@ -3,6 +3,7 @@
 import { useState, type ComponentProps } from "react";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { borderChrome, labelType } from "./styles";
 
 export type CheckboxProps = Omit<
   ComponentProps<"button">,
@@ -42,10 +43,11 @@ export function Checkbox({
       data-cc-checkbox=""
       className={cn(
         "inline-flex size-4 shrink-0 items-center justify-center",
+        borderChrome,
         "rounded-[var(--cc-radius-sm)]",
         "border-[length:var(--cc-border-width)] border-[color:var(--cc-border)]",
         "transition-colors duration-[var(--cc-duration)]",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--cc-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--cc-background)]",
+        "focus-visible:outline-none focus-visible:ring-[length:var(--cc-focus-ring-width)] focus-visible:ring-[color:var(--cc-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--cc-background)]",
         "disabled:cursor-not-allowed disabled:opacity-50",
         isOn
           ? "bg-[var(--cc-primary)] text-[color:var(--cc-primary-foreground)]"
@@ -92,7 +94,7 @@ export function CheckboxField({
         className="mt-0.5"
       />
       <span className="flex flex-col gap-0.5">
-        <span className="text-[length:var(--cc-font-size)] font-medium text-[color:var(--cc-surface-foreground)]">
+        <span className={cn("text-[length:var(--cc-font-size)]", labelType, "text-[color:var(--cc-surface-foreground)]")}>
           {label}
         </span>
         {description ? (

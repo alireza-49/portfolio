@@ -1,16 +1,34 @@
 export {
   createComponentTheme,
   defaultCreateComponentTheme,
+  getLuminance,
+  mixHex,
+  readableForeground,
   themeToCssVars,
   type CreateComponentTheme,
   type ThemeCssVars,
 } from "./theme";
 
 export {
+  bodyType,
+  borderChrome,
+  headingType,
+  labelType,
+  motion,
+} from "./styles";
+
+export {
   CreateComponentsThemeProvider,
   useCreateComponentTheme,
   type CreateComponentsThemeProviderProps,
 } from "./theme-provider";
+
+export {
+  createThemePresets,
+  resolveTheme,
+  type CreateThemePreset,
+  type ThemedProps,
+} from "./style-presets";
 
 export { Button, buttonVariants, type ButtonProps } from "./button";
 

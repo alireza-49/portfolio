@@ -1,3 +1,10 @@
+import {
+  mixHex,
+  readableForeground,
+  themeToCssVars,
+} from "./create-components/theme";
+import { createThemePresets, resolveTheme } from "./create-components/style-presets";
+
 export type ArchetypeId =
   | "components"
   | "landing"
@@ -196,12 +203,31 @@ export function buildThemeSnippet(input: {
   style: StyleId;
   font: FontId;
 }): string {
-  const shadow =
-    input.style === "brutalist"
-      ? "4px 4px 0px #264653"
-      : "2px 2px 0px #264653";
+  const preset = createThemePresets[input.style];
+  const dark = preset.tone === "dark";
+  const surface = preset.tokens.surface ?? "#ffffff";
+  const shadow = preset.tokens.shadow ?? "none";
 
-  return `/* استودیو کُدولوژی // Warm Risograph Tailored Theme (Tailwind CSS v4) */
+  const theme = resolveTheme(input.style, {
+    primary: input.primary,
+    primaryForeground: readableForeground(input.primary),
+    primaryHover: mixHex(input.primary, dark ? "#ffffff" : "#000000", 0.14),
+    secondary: dark
+      ? `color-mix(in srgb, ${input.primary} 22%, ${surface})`
+      : input.primarySubtle,
+    secondaryForeground: dark
+      ? mixHex(input.primary, "#ffffff", 0.4)
+      : input.primary,
+    ring: input.primary,
+    radius: input.radius,
+    fontFamily: FONT_STACKS[input.font],
+  });
+
+  const vars = Object.entries(themeToCssVars(theme))
+    .map(([token, value]) => `  ${token}: ${value};`)
+    .join("\n");
+
+  return `/* استودیو کُدولوژی // ${input.style} theme (Tailwind CSS v4) */
 @import "tailwindcss";
 
 @theme {
@@ -219,5 +245,8 @@ export function buildThemeSnippet(input: {
   --preset-style: "${input.style}";
   --font-family: ${FONT_STACKS[input.font]};
   --box-shadow-offset: ${shadow};
+
+  /* create-components design language */
+${vars}
 }`;
 }

@@ -1,0 +1,71 @@
+/*
+ * Structural signature hooks for the design-language presets.
+ *
+ * Colours, geometry, typography and motion all flow through --cc-* custom
+ * properties. This file only covers the few things a custom property cannot
+ * express: page textures and structural variants of a primitive.
+ */
+
+[data-cc-theme] {
+  background-image: var(--cc-page-pattern);
+  background-size: var(--cc-page-pattern-size);
+}
+
+/* Swiss / terminal: navigation reads as a rule, not a pill. */
+[data-cc-style="swiss"] [data-cc-tabs-list],
+[data-cc-style="terminal"] [data-cc-tabs-list] {
+  gap: 1.25rem;
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid var(--cc-border);
+  border-radius: 0;
+  background: transparent;
+}
+
+[data-cc-style="swiss"] [data-cc-tabs-trigger][aria-selected="true"],
+[data-cc-style="terminal"] [data-cc-tabs-trigger][aria-selected="true"] {
+  border-radius: 0;
+  border-bottom: 2px solid var(--cc-primary);
+  background: transparent;
+  box-shadow: none;
+}
+
+/* Swiss: cards are opened by a heavy top rule instead of a floating shadow. */
+[data-cc-style="swiss"] [data-cc-card] {
+  border-width: 0;
+  border-top-width: 4px;
+  box-shadow: none;
+}
+
+/* Editorial: hairline rule under card headers. */
+[data-cc-style="editorial"] [data-cc-card-header] {
+  padding-bottom: calc(0.75rem * var(--cc-density));
+  border-bottom: 1px solid var(--cc-border);
+}
+
+/* Riso: halftone grain on every card surface. */
+[data-cc-style="riso"] [data-cc-card] {
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgb(28 25 23 / 0.08) 1px,
+    transparent 0
+  );
+  background-size: 8px 8px;
+}
+
+/* Terminal: scanlines over card and accordion surfaces. */
+[data-cc-style="terminal"] [data-cc-card],
+[data-cc-style="terminal"] [data-cc-accordion] {
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgb(42 157 143 / 0.06) 0 1px,
+    transparent 1px 3px
+  );
+}
+
+/* Terminal: a prompt mark on headings and disclosure triggers. */
+[data-cc-style="terminal"] [data-cc-card-title]::before,
+[data-cc-style="terminal"] [data-cc-accordion-trigger] > span::before {
+  content: "> ";
+  color: var(--cc-primary);
+}

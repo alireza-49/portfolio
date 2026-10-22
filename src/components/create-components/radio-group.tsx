@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import { cn } from "@/lib/utils";
+import { borderChrome, labelType } from "./styles";
 
 type RadioGroupContextValue = {
   value: string;
@@ -99,9 +100,10 @@ export function RadioGroupItem({
       data-cc-radio=""
       className={cn(
         "inline-flex size-4 shrink-0 items-center justify-center rounded-full",
+        borderChrome,
         "border-[length:var(--cc-border-width)] border-[color:var(--cc-border)]",
         "transition-colors duration-[var(--cc-duration)]",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--cc-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--cc-background)]",
+        "focus-visible:outline-none focus-visible:ring-[length:var(--cc-focus-ring-width)] focus-visible:ring-[color:var(--cc-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--cc-background)]",
         "disabled:cursor-not-allowed disabled:opacity-50",
         isChecked ? "border-[color:var(--cc-primary)]" : "bg-[var(--cc-surface)]",
         className,
@@ -141,8 +143,9 @@ export function RadioGroupField({
         <span
           className={cn(
             "text-[length:var(--cc-font-size)]",
+            labelType,
             isChecked
-              ? "font-medium text-[color:var(--cc-primary)]"
+              ? "text-[color:var(--cc-primary)]"
               : "text-[color:var(--cc-surface-foreground)]",
           )}
         >

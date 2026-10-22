@@ -1,5 +1,6 @@
 import type { ComponentProps } from "react";
 import { cn } from "@/lib/utils";
+import { bodyType, borderChrome, labelType } from "./styles";
 
 export function Table({ className, ...props }: ComponentProps<"table">) {
   return (
@@ -8,6 +9,7 @@ export function Table({ className, ...props }: ComponentProps<"table">) {
         data-cc-table=""
         className={cn(
           "w-full border-collapse text-left text-[length:calc(var(--cc-font-size)*0.9)]",
+          bodyType,
           className,
         )}
         {...props}
@@ -22,6 +24,8 @@ export function TableHeader({ className, ...props }: ComponentProps<"thead">) {
       data-cc-table-header=""
       className={cn(
         "border-b-[length:var(--cc-border-width)] border-[color:var(--cc-border)]",
+        borderChrome,
+        "bg-[var(--cc-muted)]",
         className,
       )}
       {...props}
@@ -39,6 +43,7 @@ export function TableRow({ className, ...props }: ComponentProps<"tr">) {
       data-cc-table-row=""
       className={cn(
         "border-b-[length:var(--cc-border-width)] border-[color:var(--cc-border)] last:border-b-0",
+        borderChrome,
         "transition-colors duration-[var(--cc-duration)] hover:bg-[var(--cc-muted)]",
         className,
       )}
@@ -53,7 +58,8 @@ export function TableHead({ className, ...props }: ComponentProps<"th">) {
       data-cc-table-head=""
       className={cn(
         "px-[calc(0.75rem*var(--cc-density))] py-[calc(0.5rem*var(--cc-density))]",
-        "font-semibold text-[color:var(--cc-muted-foreground)]",
+        labelType,
+        "text-[color:var(--cc-muted-foreground)]",
         className,
       )}
       {...props}

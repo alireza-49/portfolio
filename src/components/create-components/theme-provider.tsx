@@ -8,7 +8,8 @@ import {
   type ReactNode,
 } from "react";
 import { cn } from "@/lib/utils";
-import { resolveTheme, type ThemedProps } from "./style-presets";
+import "./styles.css";
+import { createThemePresets, resolveTheme, type ThemedProps } from "./style-presets";
 import {
   defaultCreateComponentTheme,
   themeToCssVars,
@@ -56,12 +57,14 @@ export function CreateComponentsThemeProvider({
   );
 
   const vars = useMemo(() => themeToCssVars(value), [value]);
+  const tone = createThemePresets[preset]?.tone ?? "light";
 
   return (
     <CreateComponentThemeContext.Provider value={value}>
       <div
         data-cc-theme=""
-        data-cc-style={value.style}
+        data-cc-style={preset}
+        data-cc-tone={tone}
         className={cn(
           "font-[family-name:var(--cc-font-family)] text-[color:var(--cc-surface-foreground)] antialiased",
           className,
@@ -69,7 +72,11 @@ export function CreateComponentsThemeProvider({
         style={{
           ...vars,
           fontSize: "var(--cc-font-size)",
+          fontWeight: "var(--cc-font-weight)",
+          lineHeight: "var(--cc-line-height)",
+          letterSpacing: "var(--cc-letter-spacing)",
           backgroundColor: "var(--cc-background)",
+          color: "var(--cc-surface-foreground)",
           ...style,
         }}
       >

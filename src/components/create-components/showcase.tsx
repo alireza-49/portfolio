@@ -49,6 +49,7 @@ import {
   TabsTrigger,
   Textarea,
   type CreateComponentTheme,
+  type CreateThemePreset,
 } from "./index";
 
 const CURRENCIES = [
@@ -96,6 +97,7 @@ function Section({
 }
 
 export type CreateComponentsShowcaseProps = {
+  preset?: CreateThemePreset;
   theme?: Partial<CreateComponentTheme>;
   className?: string;
 };
@@ -105,6 +107,7 @@ export type CreateComponentsShowcaseProps = {
  * Drop it into the studio canvas and drive it with a single theme object.
  */
 export function CreateComponentsShowcase({
+  preset,
   theme,
   className,
 }: CreateComponentsShowcaseProps) {
@@ -117,6 +120,7 @@ export function CreateComponentsShowcase({
 
   return (
     <CreateComponentsThemeProvider
+      preset={preset}
       theme={theme}
       className={cn("w-full p-6", className)}
     >

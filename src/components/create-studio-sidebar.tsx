@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Check,
   Dices,
@@ -24,6 +24,7 @@ import {
   type IconLibraryId,
   type StyleId,
 } from "@/components/create-studio-config";
+import { createThemePresets } from "@/components/create-components/style-presets";
 
 type SidebarProps = {
   styleId: StyleId;
@@ -58,17 +59,27 @@ export function CreateStudioSidebar({
   onShuffle,
   onExport,
 }: SidebarProps) {
-  const [hexInput, setHexInput] = useState(primary.toUpperCase());
-  const [customRadius, setCustomRadius] = useState(String(radius));
+  const [hexDraft, setHexDraft] = useState({
+    source: primary,
+    value: primary.toUpperCase(),
+  });
+  const [radiusDraft, setRadiusDraft] = useState({
+    source: radius,
+    value: String(radius),
+  });
   const [colorMode, setColorMode] = useState<"presets" | "custom">("presets");
 
-  useEffect(() => {
-    setHexInput(primary.toUpperCase());
-  }, [primary]);
+  // Derive the editable values during render: when the studio pushes a new
+  // colour/radius (swatch, shuffle, custom input) the draft is stale, so the
+  // incoming prop wins. No effect, no cascading renders.
+  const hexInput =
+    hexDraft.source === primary ? hexDraft.value : primary.toUpperCase();
+  const customRadius =
+    radiusDraft.source === radius ? radiusDraft.value : String(radius);
 
-  useEffect(() => {
-    setCustomRadius(String(radius));
-  }, [radius]);
+  const setHexInput = (value: string) => setHexDraft({ source: primary, value });
+  const setCustomRadius = (value: string) =>
+    setRadiusDraft({ source: radius, value });
 
   const currentStyleLabel =
     STYLES.find((item) => item.id === styleId)?.label ?? "";
@@ -140,26 +151,58 @@ export function CreateStudioSidebar({
         <div className='grid grid-cols-2 gap-1.5'>
           {STYLES.map((option) => {
             const active = styleId === option.id;
+            const preset = createThemePresets[option.id];
+            const tokens = preset.tokens;
             return (
               <button
                 key={option.id}
                 type='button'
                 onClick={() => onStyleChange(option.id)}
                 aria-pressed={active}
-                className={`flex items-center justify-between rounded-sm border border-indigo-ink p-2 text-right text-[11px] transition-all ${
+                className={`flex flex-col gap-1.5 rounded-sm border border-indigo-ink p-2 text-right text-[11px] transition-all ${
                   active
                     ? "bg-coral font-bold text-white shadow-craft-sm"
                     : "bg-paper-dim font-medium text-indigo-ink hover:bg-paper-light"
                 }`}
               >
-                <span>{option.label}</span>
-                {active ? (
-                  <span className='size-1.5 rounded-full bg-white' />
-                ) : null}
+                <span className='flex items-center justify-between gap-1'>
+                  <span
+                    aria-hidden='true'
+                    className='flex size-5 shrink-0 items-center justify-center font-mono text-[8px] font-black'
+                    style={{
+                      borderRadius: tokens.radius ?? 0,
+                      borderStyle: tokens.borderStyle ?? "solid",
+                      borderWidth: tokens.borderWidth ?? 1,
+                      borderColor: tokens.border ?? "#264653",
+                      backgroundColor: tokens.background ?? "#ffffff",
+                      color: tokens.surfaceForeground ?? "#264653",
+                      boxShadow:
+                        tokens.shadow && tokens.shadow !== "none"
+                          ? tokens.shadow
+                          : undefined,
+                    }}
+                  >
+                    Aa
+                  </span>
+                  {active ? (
+                    <span className='size-1.5 rounded-full bg-white' />
+                  ) : null}
+                </span>
+                <span className='flex flex-col'>
+                  <span>{option.label}</span>
+                  <span className='font-mono text-[9px] opacity-70'>
+                    {preset.tone === "dark" ? "DARK" : "LIGHT"} ·{" "}
+                    {tokens.radius ?? 0}px
+                  </span>
+                </span>
               </button>
             );
           })}
         </div>
+        <p className='text-[10px] leading-relaxed text-indigo-light'>
+          هر سبک پالت، تایپوگرافی، بافت و فرم کنترل‌ها را عوض می‌کند و شعاع گوشه
+          را با خودش همگام می‌سازد.
+        </p>
       </div>
 
       <div className='flex flex-col gap-2 border-t border-indigo-ink/20 pt-1'>

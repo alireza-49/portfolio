@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { borderChrome } from "./styles";
 
 export type ProgressProps = {
   value?: number;
@@ -27,7 +28,8 @@ export function Progress({
         aria-valuenow={value}
         data-cc-progress=""
         className={cn(
-          "h-2 w-full overflow-hidden",
+          "[height:var(--cc-progress-height)] w-full overflow-hidden",
+          borderChrome,
           "rounded-[var(--cc-radius)]",
           "border-[length:var(--cc-border-width)] border-[color:var(--cc-border)]",
           "bg-[var(--cc-muted)]",

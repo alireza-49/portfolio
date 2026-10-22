@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import { cn } from "@/lib/utils";
+import { borderChrome, labelType, motion } from "./styles";
 
 type TabsContextValue = {
   value: string;
@@ -70,6 +71,7 @@ export function TabsList({ className, ...props }: ComponentProps<"div">) {
       data-cc-tabs-list=""
       className={cn(
         "inline-flex items-center gap-1 self-start",
+        borderChrome,
         "rounded-[var(--cc-radius)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)]",
         "bg-[var(--cc-muted)] p-1",
         className,
@@ -94,11 +96,12 @@ export function TabsTrigger({ value, className, ...props }: TabsTriggerProps) {
       data-cc-tabs-trigger=""
       className={cn(
         "inline-flex items-center justify-center gap-1.5",
+        labelType,
+        motion,
         "rounded-[var(--cc-radius-sm)]",
         "px-[calc(0.75rem*var(--cc-density))] py-[calc(0.25rem*var(--cc-density))]",
-        "text-[length:calc(var(--cc-font-size)*0.9)] font-medium",
-        "transition-colors duration-[var(--cc-duration)]",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--cc-ring)]",
+        "text-[length:calc(var(--cc-font-size)*0.9)]",
+        "focus-visible:outline-none focus-visible:ring-[length:var(--cc-focus-ring-width)] focus-visible:ring-[color:var(--cc-ring)]",
         isActive
           ? "bg-[var(--cc-surface)] text-[color:var(--cc-primary)] [box-shadow:var(--cc-shadow)]"
           : "text-[color:var(--cc-muted-foreground)] hover:text-[color:var(--cc-surface-foreground)]",

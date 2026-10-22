@@ -11,6 +11,7 @@ import {
 } from "react";
 import { Check, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { borderChrome, labelType, motion } from "./styles";
 
 export type SelectOption = {
   value: string;
@@ -52,6 +53,12 @@ export function Select({
     [current, options],
   );
 
+  const openList = useCallback(() => {
+    const index = options.findIndex((option) => option.value === current);
+    setActiveIndex(index >= 0 ? index : 0);
+    setOpen(true);
+  }, [current, options]);
+
   const commit = useCallback(
     (next: string) => {
       if (value === undefined) setInternal(next);
@@ -69,12 +76,6 @@ export function Select({
     document.addEventListener("mousedown", handlePointerDown);
     return () => document.removeEventListener("mousedown", handlePointerDown);
   }, [open]);
-
-  useEffect(() => {
-    if (!open) return;
-    const index = options.findIndex((option) => option.value === current);
-    setActiveIndex(index >= 0 ? index : 0);
-  }, [current, open, options]);
 
   const move = (direction: 1 | -1) => {
     setActiveIndex((previous) => {
@@ -94,7 +95,7 @@ export function Select({
     if (event.key === "ArrowDown" || event.key === "ArrowUp") {
       event.preventDefault();
       if (!open) {
-        setOpen(true);
+        openList();
         return;
       }
       move(event.key === "ArrowDown" ? 1 : -1);
@@ -104,10 +105,10 @@ export function Select({
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       if (!open) {
-        setOpen(true);
+        openList();
         return;
       }
-      const option = options[activeIndex];
+      const option = options[activeIndex] ?? options[0];
       if (option && !option.disabled) commit(option.value);
       return;
     }
@@ -127,18 +128,20 @@ export function Select({
         aria-controls={listId}
         aria-haspopup="listbox"
         disabled={disabled}
-        onClick={() => setOpen((previous) => !previous)}
+        onClick={() => (open ? setOpen(false) : openList())}
         onKeyDown={handleKeyDown}
         data-cc-select-trigger=""
         className={cn(
           "flex w-full items-center justify-between gap-2",
+          labelType,
+          borderChrome,
           "rounded-[var(--cc-radius)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)]",
           "bg-[var(--cc-surface)] text-[color:var(--cc-surface-foreground)]",
           "px-[calc(0.75rem*var(--cc-density))] py-[calc(0.5rem*var(--cc-density))]",
           "text-[length:var(--cc-font-size)]",
           "[box-shadow:var(--cc-shadow)]",
-          "transition-colors duration-[var(--cc-duration)]",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--cc-ring)]",
+          motion,
+          "focus-visible:outline-none focus-visible:ring-[length:var(--cc-focus-ring-width)] focus-visible:ring-[color:var(--cc-ring)]",
           "disabled:cursor-not-allowed disabled:opacity-50",
         )}
       >
@@ -165,6 +168,7 @@ export function Select({
           data-cc-select-content=""
           className={cn(
             "absolute z-50 mt-1 max-h-60 w-full overflow-auto p-1",
+            borderChrome,
             "rounded-[var(--cc-radius)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)]",
             "bg-[var(--cc-surface)] [box-shadow:var(--cc-shadow)]",
           )}
@@ -184,10 +188,10 @@ export function Select({
                     "flex w-full items-center justify-between gap-2",
                     "rounded-[var(--cc-radius-sm)] px-2 py-1.5 text-left",
                     "text-[length:var(--cc-font-size)]",
-                    "transition-colors duration-[var(--cc-duration)]",
+                    motion,
                     index === activeIndex && "bg-[var(--cc-muted)]",
                     isSelected
-                      ? "font-medium text-[color:var(--cc-primary)]"
+                      ? "text-[color:var(--cc-primary)]"
                       : "text-[color:var(--cc-surface-foreground)]",
                     option.disabled && "cursor-not-allowed opacity-50",
                   )}
