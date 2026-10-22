@@ -45,6 +45,17 @@ export type CreateComponentTheme = {
   warning: string;
   warningForeground: string;
 
+  // ------------------------------------------------------------------ charts
+  /** Data-series palette, in order. Charts and gauges cycle through these. */
+  chart1: string;
+  chart2: string;
+  chart3: string;
+  chart4: string;
+  chart5: string;
+  chart6: string;
+  /** Colour of chart grid lines and tick marks. */
+  chartGrid: string;
+
   // ---------------------------------------------------------------- geometry
   /** Default corner radius in px. */
   radius: number;
@@ -137,6 +148,14 @@ export const defaultCreateComponentTheme: CreateComponentTheme = {
   successForeground: "#ffffff",
   warning: "#f59e0b",
   warningForeground: "#1f2937",
+
+  chart1: "#4f46e5",
+  chart2: "#0ea5e9",
+  chart3: "#f59e0b",
+  chart4: "#10b981",
+  chart5: "#ef4444",
+  chart6: "#8b5cf6",
+  chartGrid: "#e5e7eb",
 
   radius: 8,
   radiusSm: 6,
@@ -281,6 +300,14 @@ export function themeToCssVars(theme: CreateComponentTheme): ThemeCssVars {
     "--cc-success-foreground": theme.successForeground,
     "--cc-warning": theme.warning,
     "--cc-warning-foreground": theme.warningForeground,
+
+    "--cc-chart-1": theme.chart1,
+    "--cc-chart-2": theme.chart2,
+    "--cc-chart-3": theme.chart3,
+    "--cc-chart-4": theme.chart4,
+    "--cc-chart-5": theme.chart5,
+    "--cc-chart-6": theme.chart6,
+    "--cc-chart-grid": theme.chartGrid,
 
     "--cc-radius": px(theme.radius),
     "--cc-radius-sm": px(theme.radiusSm),

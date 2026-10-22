@@ -69,3 +69,110 @@
   content: "> ";
   color: var(--cc-primary);
 }
+
+/* ------------------------------------------------------------- data visuals */
+
+@keyframes cc-chart-draw {
+  from {
+    stroke-dashoffset: var(--sc-dash, 240);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes cc-chart-grow {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes cc-gauge-sweep {
+  from {
+    stroke-dashoffset: var(--sc-dash, 0);
+  }
+}
+
+@keyframes cc-heat-cell {
+  from {
+    opacity: 0;
+    transform: scale(0.88);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.sc-chart-draw {
+  animation: cc-chart-draw 900ms var(--cc-ease) both;
+}
+
+.sc-chart-grow {
+  transform-origin: bottom;
+  animation: cc-chart-grow 520ms var(--cc-ease) both;
+}
+
+.sc-gauge-arc {
+  animation: cc-gauge-sweep 900ms var(--cc-ease) both;
+}
+
+.sc-heat-cell {
+  animation: cc-heat-cell 420ms var(--cc-ease) both;
+}
+
+/* Chart frames speak the same structural language as cards. */
+[data-cc-style="brutalist"] [data-cc-chart-frame] {
+  box-shadow: 6px 6px 0 0 var(--cc-surface-foreground);
+}
+
+[data-cc-style="terminal"] [data-cc-chart-frame] {
+  box-shadow:
+    0 0 0 1px rgb(52 211 153 / 0.18),
+    0 0 26px -14px rgb(52 211 153 / 0.55);
+}
+
+[data-cc-style="swiss"] [data-cc-chart-frame] {
+  border-width: 0;
+  border-top-width: 3px;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+[data-cc-style="editorial"] [data-cc-chart-frame] {
+  border-radius: calc(var(--cc-radius-lg) * 0.4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sc-chart-draw,
+  .sc-chart-grow,
+  .sc-gauge-arc,
+  .sc-heat-cell {
+    animation: none !important;
+    stroke-dashoffset: 0 !important;
+  }
+}
+
+@keyframes cc-chart-fade {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.sc-chart-fade {
+  animation: cc-chart-fade 420ms var(--cc-ease) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sc-chart-fade {
+    animation: none !important;
+  }
+}

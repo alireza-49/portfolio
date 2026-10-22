@@ -7,3 +7,52 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+# Project
+
+A Persian (RTL) portfolio site with a live **theme studio** at `/create` ("استودیو کدولوژی").
+Stack: Next.js 16 App Router, React 19, TypeScript, Tailwind CSS v4, `@base-ui/react`, `lucide-react`.
+
+`/create` is a preview canvas: the left sidebar picks an **archetype** (`components`, `landing`,
+`ecommerce`, `clinic`, `dashboard`), a **style preset** (`nova`, `riso`, `brutalist`, `editorial`,
+`swiss`, `terminal`), palette, radius, font and icon library; the canvas re-skins instantly and can
+export CSS/Tailwind tokens.
+
+Everything is built on `src/components/create-components/` — one token-themed component library.
+Tokens come from `theme.ts` (+ per-preset palettes in `style-presets.ts`) and are consumed as
+`var(--cc-*)` CSS variables, so adding a token automatically re-themes every preset and scenario.
+
+## What was done in this conversation
+
+Rebuilt the two canvas scenarios and added the primitives they needed:
+
+- **New primitives** (all exported from `create-components/index.ts`): `chart.tsx` (`ChartFrame`,
+  `ChartLegend`, `Sparkline`, `MiniBars`, `RadialGauge`, `Heatmap`, `FunnelChart`, `useChartTheme`),
+  `chart-recharts.tsx` (themed `AreaTrend`, `LineTrend`, `BarSeries`, `DonutBreakdown`), `calendar.tsx`
+  (Jalali month picker with availability), `jalali.ts`, `stepper.tsx`, `stat.tsx`, `timeline.tsx`.
+- **Theme**: 7 new chart tokens (`chart1…chart6`, `chartGrid`) plus a `chartPalettes` entry per style
+  preset; CSS for chart animations in `create-components/styles.css`.
+- **`clinic-reservation.tsx`**: hero + illustrated scene, and a 4-step booking wizard (specialty/doctor →
+  Jalali calendar + slot + visit mode → validated patient form → review, payment, tracking code).
+  Data in `create-scenarios/data/clinic.ts`, art in `create-scenarios/art/clinic-art.tsx`.
+- **`analytics-dashboard.tsx`**: KPI stats, area/line/donut/bar charts, gauges, heatmap, funnel,
+  sortable + selectable + paginated orders table, alerts, activity timeline, system health.
+  Data in `create-scenarios/data/dashboard.ts`.
+- Added a "نمودارها و زمان‌بندی" gallery section to the `components` archetype.
+- Added `recharts` + `react-is`; wired both views into `create-studio-canvas.tsx`.
+
+## Rules for this codebase
+
+- Style only through tokens (`var(--cc-*)`); never hardcode colours, so all six presets keep working.
+- Keep scenario data deterministic (hash-based noise, fixed demo dates) — the page is statically
+  prerendered, so `Math.random()`/`Date.now()` cause hydration mismatches.
+- Disable recharts JS animations (`isAnimationActive={false}`); they render empty paths in prerender.
+  Use the CSS fade/draw classes from `styles.css` instead.
+- Persian text and Jalali dates throughout; numbers stay inside `dir="ltr"` spans where needed.
+
+## Verify
+
+```bash
+npx tsc --noEmit && npx eslint src && npm run build
+```
+

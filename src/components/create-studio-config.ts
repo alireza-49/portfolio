@@ -53,8 +53,8 @@ export type ShufflePreset = {
 
 export const ARCHETYPES: Archetype[] = [
   { id: "components", label: "کامپوننت‌ها و ویجت‌ها" },
-  { id: "landing", label: "لندینگ پیج SaaS" },
-  { id: "ecommerce", label: "فروشگاه آنلاین (نان و قهوه)" },
+  { id: "landing", label: "لندینگ تدریس آنلاین" },
+  { id: "ecommerce", label: "فروشگاه پوشاک" },
   { id: "clinic", label: "سامانه نوبت‌دهی کلینیک" },
   { id: "dashboard", label: "داشبورد داده و آمار" },
 ];

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import "@/components/create-scenarios/scenes.css";
 import { CreateStudio } from "@/components/create-studio";
 import { SiteHeader } from "@/components/site-header";
 

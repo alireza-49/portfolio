@@ -1,0 +1,406 @@
+/*
+ * Illustration layer for the /create demo scenarios.
+ *
+ * A prefixed global stylesheet (class prefix `sc-`) because the studio's
+ * Turbopack config routes every CSS file through the Tailwind loader, so CSS
+ * Modules are not available here. Inline SVG is painted with the `--cc-*`
+ * theme tokens, so every preset (including dark terminal) recolours it.
+ * Animations only touch transform / opacity / dash offset and are disabled
+ * for users who prefer reduced motion.
+ */
+
+.sc-art {
+  display: block;
+  overflow: visible;
+}
+
+/* ------------------------------------------------------------------ paint */
+
+.sc-surface {
+  fill: var(--cc-surface);
+}
+
+.sc-paper {
+  fill: var(--cc-background);
+}
+
+.sc-muted {
+  fill: var(--cc-muted);
+}
+
+.sc-ink {
+  fill: var(--cc-surface-foreground);
+}
+
+.sc-inkSoft {
+  fill: var(--cc-muted-foreground);
+}
+
+.sc-brand {
+  fill: var(--cc-primary);
+}
+
+.sc-brandSoft {
+  fill: color-mix(in srgb, var(--cc-primary) 18%, var(--cc-surface));
+}
+
+.sc-brandFaint {
+  fill: color-mix(in srgb, var(--cc-primary) 8%, var(--cc-surface));
+}
+
+.sc-accent {
+  fill: var(--cc-accent);
+}
+
+.sc-accentSoft {
+  fill: color-mix(in srgb, var(--cc-accent) 24%, var(--cc-surface));
+}
+
+.sc-success {
+  fill: var(--cc-success);
+}
+
+.sc-warning {
+  fill: var(--cc-warning);
+}
+
+.sc-danger {
+  fill: var(--cc-danger);
+}
+
+/* A garment's fabric colour is injected per card via `--sc-garment`. */
+.sc-garment {
+  fill: var(--sc-garment, var(--cc-primary));
+  transition: fill 260ms var(--cc-ease, ease);
+}
+
+.sc-garmentSoft {
+  fill: color-mix(in srgb, var(--sc-garment, var(--cc-primary)) 26%, var(--cc-surface));
+  transition: fill 260ms var(--cc-ease, ease);
+}
+
+.sc-garmentDeep {
+  fill: color-mix(
+    in srgb,
+    var(--sc-garment, var(--cc-primary)) 68%,
+    var(--cc-surface-foreground)
+  );
+  transition: fill 260ms var(--cc-ease, ease);
+}
+
+/* ----------------------------------------------------------------- strokes */
+
+.sc-line,
+.sc-inkLine,
+.sc-brandLine,
+.sc-hairline,
+.sc-stitch,
+.sc-brandStitch {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.sc-line {
+  stroke: var(--cc-border);
+  stroke-width: 1.5;
+}
+
+.sc-hairline {
+  stroke: var(--cc-border);
+  stroke-width: 1;
+  opacity: 0.7;
+}
+
+.sc-inkLine {
+  stroke: var(--cc-surface-foreground);
+  stroke-width: 2;
+}
+
+.sc-brandLine {
+  stroke: var(--cc-primary);
+  stroke-width: 2.5;
+}
+
+.sc-stitch {
+  stroke: var(--cc-surface-foreground);
+  stroke-width: 1.3;
+  stroke-dasharray: 5 6;
+  opacity: 0.45;
+}
+
+.sc-brandStitch {
+  stroke: var(--cc-primary);
+  stroke-width: 1.6;
+  stroke-dasharray: 4 7;
+  opacity: 0.75;
+}
+
+/* ---------------------------------------------------------------- motion */
+
+.sc-sway,
+.sc-swaySlow,
+.sc-float,
+.sc-floatSlow,
+.sc-pulse,
+.sc-blink,
+.sc-spin,
+.sc-spinSlow,
+.sc-orbit,
+.sc-shimmer {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.sc-sway {
+  animation: sc-sway var(--sc-duration, 6s) ease-in-out infinite alternate;
+  animation-delay: var(--sc-delay, 0s);
+}
+
+.sc-swaySlow {
+  animation: sc-sway var(--sc-duration, 9s) ease-in-out infinite alternate;
+  animation-delay: var(--sc-delay, 0s);
+}
+
+.sc-float {
+  animation: sc-float var(--sc-duration, 6s) ease-in-out infinite;
+  animation-delay: var(--sc-delay, 0s);
+}
+
+.sc-floatSlow {
+  animation: sc-float var(--sc-duration, 9s) ease-in-out infinite;
+  animation-delay: var(--sc-delay, 0s);
+}
+
+.sc-pulse {
+  animation: sc-pulse var(--sc-duration, 2.8s) ease-in-out infinite;
+  animation-delay: var(--sc-delay, 0s);
+}
+
+.sc-blink {
+  animation: sc-blink var(--sc-duration, 5.5s) ease-in-out infinite;
+  animation-delay: var(--sc-delay, 0s);
+}
+
+.sc-spin {
+  animation: sc-spin var(--sc-duration, 9s) linear infinite;
+}
+
+.sc-spinSlow {
+  animation: sc-spin var(--sc-duration, 34s) linear infinite;
+}
+
+.sc-orbit {
+  animation: sc-orbit var(--sc-duration, 26s) linear infinite;
+  animation-delay: var(--sc-delay, 0s);
+}
+
+.sc-shimmer {
+  animation: sc-shimmer var(--sc-duration, 5s) ease-in-out infinite;
+  animation-delay: var(--sc-delay, 0s);
+}
+
+.sc-draw {
+  stroke-dasharray: var(--sc-dash, 1200);
+  stroke-dashoffset: var(--sc-dash, 1200);
+  animation: sc-draw var(--sc-duration, 2.8s) var(--cc-ease, ease) forwards;
+  animation-delay: var(--sc-delay, 0s);
+}
+
+.sc-drawSlow {
+  stroke-dasharray: var(--sc-dash, 1200);
+  stroke-dashoffset: var(--sc-dash, 1200);
+  animation: sc-draw var(--sc-duration, 5s) var(--cc-ease, ease) forwards;
+  animation-delay: var(--sc-delay, 0s);
+}
+
+.sc-typing span {
+  animation: sc-typing 1.4s ease-in-out infinite;
+}
+
+.sc-typing span:nth-child(2) {
+  animation-delay: 0.18s;
+}
+
+.sc-typing span:nth-child(3) {
+  animation-delay: 0.36s;
+}
+
+.sc-strokeDash {
+  stroke-dasharray: 5 7;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sc-sway,
+  .sc-swaySlow,
+  .sc-float,
+  .sc-floatSlow,
+  .sc-pulse,
+  .sc-blink,
+  .sc-spin,
+  .sc-spinSlow,
+  .sc-orbit,
+  .sc-shimmer,
+  .sc-draw,
+  .sc-drawSlow,
+  .sc-typing span,
+  .sc-tickerTrack {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .sc-draw,
+  .sc-drawSlow {
+    stroke-dashoffset: 0 !important;
+  }
+}
+
+
+@keyframes sc-sway {
+  from {
+    transform: rotate(-1.6deg);
+  }
+  to {
+    transform: rotate(1.6deg);
+  }
+}
+
+@keyframes sc-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+@keyframes sc-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(0.92);
+  }
+}
+
+@keyframes sc-blink {
+  0%,
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+  95% {
+    transform: scaleY(0.12);
+  }
+}
+
+@keyframes sc-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes sc-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes sc-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes sc-shimmer {
+  0% {
+    opacity: 0;
+    transform: translateX(-40px) skewX(-18deg);
+  }
+  35% {
+    opacity: 0.5;
+  }
+  70%,
+  100% {
+    opacity: 0;
+    transform: translateX(120px) skewX(-18deg);
+  }
+}
+
+@keyframes sc-typing {
+  0%,
+  60%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
+/* --------------------------------------------------------------- marquee */
+
+.sc-ticker {
+  overflow: hidden;
+}
+
+.sc-tickerTrack {
+  display: flex;
+  width: max-content;
+  direction: ltr;
+  animation: sc-marquee var(--sc-duration, 32s) linear infinite;
+}
+
+.sc-ticker:hover .sc-tickerTrack {
+  animation-play-state: paused;
+}
+
+@keyframes sc-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+
+/* Soft outline keeps light fabrics readable on light surfaces. */
+.sc-outlined {
+  stroke: var(--cc-border);
+  stroke-width: 1.4;
+  stroke-linejoin: round;
+}
+
+
+/* Hanging pieces pivot from the hanger, not their own centre. */
+.sc-hang,
+.sc-hangSlow {
+  transform-box: fill-box;
+  transform-origin: 50% 0%;
+}
+
+.sc-hang {
+  animation: sc-sway var(--sc-duration, 6s) ease-in-out infinite alternate;
+  animation-delay: var(--sc-delay, 0s);
+}
+
+.sc-hangSlow {
+  animation: sc-sway var(--sc-duration, 9s) ease-in-out infinite alternate;
+  animation-delay: var(--sc-delay, 0s);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sc-hang,
+  .sc-hangSlow {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+

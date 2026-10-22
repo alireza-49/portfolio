@@ -29,6 +29,90 @@ export type ThemedProps = {
   theme?: Partial<CreateComponentTheme>;
 };
 
+type ChartPalette = Pick<
+  CreateComponentTheme,
+  | "chart1"
+  | "chart2"
+  | "chart3"
+  | "chart4"
+  | "chart5"
+  | "chart6"
+  | "chartGrid"
+>;
+
+/**
+ * Data-series palettes, one identity per design language.
+ *
+ * Presets intentionally do *not* live inside `tokens` because the canvas keeps
+ * injecting the brand colour afterwards: charts must stay readable when the
+ * brand swatch changes, so each style ships its own series ramp.
+ */
+const chartPalettes: Record<CreateThemePreset, ChartPalette> = {
+  modern: {
+    chart1: "#4f46e5",
+    chart2: "#0ea5e9",
+    chart3: "#f59e0b",
+    chart4: "#10b981",
+    chart5: "#ef4444",
+    chart6: "#8b5cf6",
+    chartGrid: "#e5e7eb",
+  },
+  nova: {
+    chart1: "#e76f51",
+    chart2: "#264653",
+    chart3: "#e9c46a",
+    chart4: "#2a9d8f",
+    chart5: "#8d6e63",
+    chart6: "#a3b18a",
+    chartGrid: "rgba(38, 70, 83, 0.22)",
+  },
+  riso: {
+    chart1: "#e94f8a",
+    chart2: "#00a6c0",
+    chart3: "#1c1917",
+    chart4: "#f0b429",
+    chart5: "#7bbf6a",
+    chart6: "#9b8bd0",
+    chartGrid: "rgba(28, 25, 23, 0.24)",
+  },
+  brutalist: {
+    chart1: "#0a0a0a",
+    chart2: "#facc15",
+    chart3: "#ef4444",
+    chart4: "#2563eb",
+    chart5: "#16a34a",
+    chart6: "#9ca3af",
+    chartGrid: "#0a0a0a",
+  },
+  editorial: {
+    chart1: "#8c6a3f",
+    chart2: "#5b6e4f",
+    chart3: "#a4553f",
+    chart4: "#3f5a6b",
+    chart5: "#c2a878",
+    chart6: "#7a7d85",
+    chartGrid: "#e0d8c8",
+  },
+  swiss: {
+    chart1: "#111111",
+    chart2: "#d7263d",
+    chart3: "#4b5563",
+    chart4: "#6b7280",
+    chart5: "#9ca3af",
+    chart6: "#d1d5db",
+    chartGrid: "#d4d4d4",
+  },
+  terminal: {
+    chart1: "#34d399",
+    chart2: "#10b981",
+    chart3: "#2dd4bf",
+    chart4: "#84cc16",
+    chart5: "#fbbf24",
+    chart6: "#7ea99a",
+    chartGrid: "rgba(31, 111, 87, 0.55)",
+  },
+};
+
 export const createThemePresets: Record<CreateThemePreset, ThemePresetDefinition> = {
   modern: {
     tone: "light",
@@ -348,5 +432,6 @@ export function resolveTheme(
   overrides: Partial<CreateComponentTheme> = {},
 ): CreateComponentTheme {
   const definition = createThemePresets[preset] ?? createThemePresets.modern;
-  return createComponentTheme({ ...definition.tokens, ...overrides });
+  const palette = chartPalettes[preset] ?? chartPalettes.modern;
+  return createComponentTheme({ ...definition.tokens, ...palette, ...overrides });
 }
