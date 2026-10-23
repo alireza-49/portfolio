@@ -212,14 +212,14 @@ export function CreateStudioCanvas({
       id='studio-canvas'
       role='tabpanel'
       aria-labelledby={`scenario-tab-${archetype}`}
-      className={`dot-grid order-1 flex w-full shrink-0 flex-col gap-4 overflow-x-hidden bg-paper-shade p-3 sm:p-5 lg:order-2 lg:min-h-0 lg:shrink lg:flex-1 lg:overflow-y-auto lg:p-5 xl:p-6 ${
+      className={`studio-desk order-1 flex w-full shrink-0 flex-col gap-4 overflow-x-clip p-3 sm:p-5 lg:order-2 lg:min-h-0 lg:shrink lg:flex-1 lg:overflow-y-auto lg:p-8 xl:p-10 ${
         expanded ? "fixed inset-0 z-[60] overflow-y-auto" : ""
       }`}
     >
       <CreateComponentsThemeProvider
         preset={styleId}
         theme={theme}
-        className={`paper-pattern relative flex w-full flex-col overflow-auto rounded-sm transition-all ${
+        className={`paper-pattern relative flex w-full flex-col overflow-x-clip overflow-y-visible scroll-pt-14 rounded-sm transition-all lg:overflow-auto ${
           expanded
             ? "min-h-[calc(100dvh-1.5rem)] sm:min-h-[calc(100dvh-2.5rem)] lg:min-h-0 lg:flex-1"
             : "min-h-[560px] sm:min-h-[660px] lg:min-h-0 lg:flex-1"
@@ -232,10 +232,12 @@ export function CreateStudioCanvas({
         }}
       >
         <div
-          className='flex w-full flex-wrap select-none items-center justify-between gap-2 border-b-[length:var(--cc-border-width)] border-[color:var(--cc-border)] px-3 py-2.5 sm:px-5 sm:py-3'
+          className='sticky top-0 z-20 flex w-full flex-wrap select-none items-center justify-between gap-2 rounded-t-[2px] border-b-[length:var(--cc-border-width)] border-[color:var(--cc-border)] px-3 py-2.5 sm:px-5 sm:py-3'
           style={{
             backgroundColor:
-              "color-mix(in srgb, var(--cc-muted) 72%, var(--cc-background))",
+              "color-mix(in srgb, var(--cc-muted) 82%, var(--cc-background))",
+            boxShadow:
+              "0 8px 16px -16px color-mix(in srgb, var(--cc-surface-foreground) 55%, transparent)",
           }}
         >
           <div className='flex min-w-0 items-center gap-2.5'>

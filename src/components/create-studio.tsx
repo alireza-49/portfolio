@@ -237,7 +237,7 @@ export function CreateStudio() {
         </div>
       </header>
 
-      <div className='flex min-h-0 w-full flex-1 flex-col items-stretch overflow-y-auto border-b-[2.5px] border-indigo-ink bg-paper-shade lg:flex-row lg:overflow-hidden'>
+      <div className='flex min-h-0 w-full flex-1 scroll-pt-14 flex-col items-stretch overflow-y-auto border-b-[2.5px] border-indigo-ink bg-paper-shade lg:flex-row lg:overflow-hidden'>
         <CreateStudioSidebar
           styleId={styleId}
           onStyleChange={selectStyle}

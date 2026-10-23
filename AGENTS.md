@@ -51,6 +51,12 @@ Rebuilt the two canvas scenarios and added the primitives they needed:
   coral reserved for the CTA) and the "مشاوره و سفارش" CTA (`/#contact-section`) — no nav links,
   language toggle or mobile sheet. The artboard chrome keeps only the scenario name, the style
   chip and the zoom toggle.
+- The artboard is presented as a window on a workbench: the stage uses the token-only
+  `studio-desk` utility (ink-mixed bed + paper dots, `globals.css`) with a wide `lg:p-8 xl:p-10`
+  frame, and its chrome is `sticky top-0` so it stays visible while the preview scrolls. Below
+  `lg` the **page** container scrolls, so the stage and window use `overflow-x-clip` (not
+  `hidden`/`auto`) to avoid becoming sticky scroll containers; do not add a scroll container
+  between the chrome and the page scroller.
 - Wired the real Persian typefaces in `public/fonts` into the studio: `src/app/create/fonts.css`
   declares 12 `@font-face` rules (Vazir, Samim, Gandom, Dirooz, Maktab Rita, A Ordibehesht,
   A Ghasem, A Google, Parvaz), `FONT_STACKS` maps the ten picker ids onto them, and the

@@ -253,6 +253,32 @@
   background-position: 0 0;
 }
 
+/* Studio canvas bed — a dark ink workbench that makes the preview read as a
+   separate window. Token-only, so every style preset keeps its own frame. */
+@utility studio-desk {
+  background-color: color-mix(
+    in srgb,
+    var(--color-indigo-ink) 70%,
+    var(--color-paper-shade)
+  );
+  background-image:
+    radial-gradient(
+      ellipse 90% 70% at 50% 0%,
+      color-mix(in srgb, var(--color-paper) 12%, transparent),
+      transparent 62%
+    ),
+    radial-gradient(
+      color-mix(in srgb, var(--color-paper) 18%, transparent) 1px,
+      transparent 1px
+    );
+  background-size:
+    auto,
+    22px 22px;
+  background-position:
+    0 0,
+    0 0;
+}
+
 @utility grid-lines-overlay {
   background-size: 24px 24px;
   background-image:
