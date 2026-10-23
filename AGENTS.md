@@ -128,18 +128,59 @@ Rebuilt the two canvas scenarios and added the primitives they needed:
   centre, weight sets the stroke for line sets (Material is filled and ignores it), and tone picks
   `currentColor` / `--cc-primary` / `--cc-accent` / `--cc-muted-foreground`. `buildThemeSnippet`
   exports those tokens too.
+- **Box-shadow control.** A «سایهٔ جعبه‌ها» section sits between radius and typography (above the
+  font picker) and pins `theme.shadow` / `theme.shadowHover` from five token-only presets —
+  بدون سایه، نرم، برجسته، چاپی (hard offset) و هاله (brand glow) — plus «پیرو سبک», which keeps the
+  active preset's own signature. `SHADOWS` / `shadowOverrides()` live in `create-studio-config.ts`;
+  picking a style (or shuffling) resets the choice to «پیرو سبک». The swatches resolve the
+  `var(--cc-*)` references with `resolveShadowCss()` because the sidebar sits outside the preset
+  scope. `create-studio-canvas.tsx` writes `data-cc-shadow` on the content wrapper only for an
+  explicit choice, and `styles.css` uses that hook so the pinned elevation outranks per-style card
+  and chart-frame signatures (Swiss flat cards, EdTech inset rule, …). `buildThemeSnippet` consumes
+  the resolved shadow, so the exported CSS matches the canvas.
 
 ## Studio defaults on first paint
 
 `create-studio.tsx` starts with `landing` + `nova`, `DEFAULT_PALETTE`
-(«سفال کهربایی» — primary `#e76f51`), radius `4`, body face `vazir`, the
-`google` icon set and `DEFAULT_ICON_STYLE` (`size: md`, `weight: regular`,
-`tone: inherit`). Picking a style overwrites radius and body font from
-`STYLE_FONTS`; palette, radius, font and icon library stay user-controlled
-afterwards. Studio settings are in-memory only (no URL or localStorage
-persistence), while uploaded fonts persist in IndexedDB. `buildThemeSnippet`
-always exports the resolved theme, so a copied snippet reflects the current
-style + palette + radius + font + icon combination.
+(«سفال کهربایی» — primary `#e76f51`), radius `4`, shadow «پیرو سبک»
+(`DEFAULT_SHADOW`), body face `vazir`, the `google` icon set and
+`DEFAULT_ICON_STYLE` (`size: md`, `weight: regular`, `tone: inherit`). Picking a
+style overwrites radius and body font from `STYLE_FONTS` and puts the shadow
+back on «پیرو سبک»; palette, radius, shadow, font and icon library stay
+user-controlled afterwards. `buildThemeSnippet` always exports the resolved
+theme, so a copied snippet reflects the current style + palette + radius +
+shadow + font + icon combination.
+
+Studio settings persist in `localStorage` through `create-studio-store.ts`
+(`cc-studio-config-v1`): scenario, style, palette, radius, shadow, font id,
+icon library and icon style are written on every edit and restored after
+hydration, so returning visitors keep their combination. Uploaded fonts still
+live in IndexedDB. The store returns `null` until storage has been read (and on
+the server), so `create-studio.tsx` renders `DEFAULT_STUDIO_CONFIG` for the
+prerender and hydration never mismatches — same contract as the font store.
+Reads are defensive: unknown ids fall back, radius clamps to 0–48, palette
+roles are re-validated, and invalid JSON is ignored.
+
+### First-visit guide and the contact hand-off
+
+- `create-studio-tour.tsx` renders a `driver.js` tour (12 steps: welcome →
+  scenarios → style → palette → icons → radius → shadow → typography → canvas
+  chrome → canvas scrolling → submit CTA → closing). It auto-opens once per
+  browser (`cc-studio-tour-v1`) and the «راهنما» button in the studio bar
+  replays it. `driver.css` is imported in `src/app/create/page.tsx` before
+  `tour.css`, which re-skins the popover with the frame tokens only.
+- Every guide target is a `data-tour='…'` attribute, never a structural CSS
+  path: `scenarios` in the studio bar, `styles`/`palette`/`icons`/`radius`/
+  `shadow`/`typography` on the sidebar sections, `canvas-chrome` and
+  `canvas-status` on the preview window, `submit-config` on the sidebar CTA.
+  Adding or reordering a scenario/section only needs its `data-tour` to stay
+  put (or the step list in `create-studio-tour.tsx` updated).
+- The bottom sidebar CTA persists the current configuration and navigates to
+  `/#contact-section`. `ContactSection` reads the same store, shows the saved
+  combination as chips, attaches it as a hidden `studio-config` field (toggle
+  on by default) and offers «انتخاب ظاهر را به شما می‌سپارم» (`design-choice`
+  = `delegated`) for visitors who do not want to pick a theme themselves. The
+  CSS export stayed as a secondary button under it.
 
 ## Rules for this codebase
 

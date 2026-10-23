@@ -288,3 +288,17 @@
     transform: none;
   }
 }
+
+/* ------------------------------------------------------ studio elevation pin */
+
+/*
+ * `data-cc-shadow` is only written when the studio pins an explicit elevation
+ * (anything but the style's own). It outranks the preset's card and chart
+ * signature so the sidebar choice is visible everywhere — the preset keeps its
+ * signature while the visitor leaves the section on «پیرو سبک».
+ */
+[data-cc-shadow] [data-cc-card],
+[data-cc-shadow] [data-cc-chart-frame] {
+  box-shadow: var(--cc-shadow);
+}
+

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
-import { Calculator, Mail, Send } from "lucide-react";
+import { Calculator, Check, Mail, Palette, Send, Sparkles } from "lucide-react";
 import { cn } from "cn";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -10,6 +10,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useEstimate } from "@/components/estimate-store";
+import {
+  describeStudioConfig,
+  useStudioConfig,
+} from "@/components/create-studio-store";
 
 const SOCIALS = [
   { href: "https://github.com", label: "GitHub" },
@@ -33,9 +37,35 @@ export function ContactSection() {
   const [sent, setSent] = useState(false);
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
+  const [attachStudioConfig, setAttachStudioConfig] = useState(true);
+  const [delegateDesign, setDelegateDesign] = useState(false);
   const estimate = useEstimate();
 
+  // The studio persists its configuration in localStorage; this hook paints
+  // the summary after hydration and stays `null` when nobody used it yet.
+  const studioConfig = useStudioConfig();
+  const studioSummary = studioConfig ? describeStudioConfig(studioConfig) : [];
+  const attachSummary = Boolean(
+    studioConfig && attachStudioConfig && !delegateDesign,
+  );
+  const attachedStyle =
+    studioSummary.find((item) => item.label === "سبک")?.value ?? "";
+  const attachedPalette =
+    studioSummary.find((item) => item.label === "پالت")?.value ?? "";
+
   const canSubmit = name.trim().length > 0 && contact.trim().length > 0;
+
+  // The studio CTA navigates to `/#contact-section`; scroll once the home page
+  // has painted so the visitor lands on the form, not the hero.
+  useEffect(() => {
+    if (window.location.hash !== "#contact-section") return;
+    const timer = window.setTimeout(() => {
+      document
+        .getElementById("contact-section")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 120);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   const scrollToEstimator = () => {
     document
@@ -55,7 +85,10 @@ export function ContactSection() {
   };
 
   return (
-    <section id="contact-section" className="w-full bg-paper px-4 py-12 sm:px-8 lg:px-12">
+    <section
+      id="contact-section"
+      className="w-full scroll-mt-16 bg-paper px-4 py-12 sm:px-8 lg:px-12"
+    >
       <div className="mx-auto flex max-w-7xl flex-col gap-10">
         <div className="flex flex-col justify-between gap-4 border-b-[2px] border-indigo-ink pb-6 sm:flex-row sm:items-end">
           <h2 className="text-[26px] font-black text-indigo-ink sm:text-[34px]">
@@ -210,6 +243,102 @@ export function ContactSection() {
                 />
               </div>
 
+              {/* Studio hand-off: the exact theme the visitor built, or a
+                  request to pick the visual direction on their behalf. */}
+              <div className="rounded-sm border-[2px] border-indigo-ink bg-paper p-3">
+                <div className="mb-2 flex flex-wrap items-center justify-between gap-1.5 border-b border-indigo-ink/20 pb-1.5">
+                  <span className="flex items-center gap-1.5 text-[13px] font-black text-indigo-ink">
+                    <Palette className="size-4 text-coral" />
+                    ظاهر و تم سایت
+                  </span>
+                  <span className="rounded-sm border border-indigo-ink bg-paper-dim px-1.5 py-0.5 text-[10px] font-bold text-indigo-light">
+                    {studioConfig ? "ساخته‌شده در استودیو" : "انتخاب با شما یا من"}
+                  </span>
+                </div>
+
+                {studioConfig ? (
+                  <>
+                    <div className="mb-2 flex flex-wrap gap-1">
+                      {studioSummary.map((item) => (
+                        <span
+                          key={item.label}
+                          className="rounded-sm border border-indigo-ink/30 bg-paper-light px-1.5 py-0.5 text-[10px] font-bold text-indigo-ink"
+                        >
+                          <span className="text-indigo-light">{item.label}:</span>{" "}
+                          {toPersianDigits(item.value)}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                      <label className="flex cursor-pointer items-center gap-1.5 text-[11px] font-bold text-indigo-ink">
+                        <input
+                          type="checkbox"
+                          checked={attachStudioConfig}
+                          onChange={(event) =>
+                            setAttachStudioConfig(event.target.checked)
+                          }
+                          className="size-3.5 accent-coral"
+                        />
+                        این ترکیب همراه پیام ارسال شود
+                      </label>
+                      <Link
+                        href="/create"
+                        className="text-[11px] font-black text-coral underline underline-offset-4 hover:text-coral-dark"
+                      >
+                        ویرایش در استودیو ←
+                      </Link>
+                    </div>
+                  </>
+                ) : (
+                  <p className="mb-2 text-[11px] leading-relaxed font-medium text-indigo-light">
+                    هنوز تمی نساخته‌اید. می‌توانید خودتان در استودیو ترکیب
+                    دلخواه را بسازید یا انتخاب ظاهر را به من بسپارید.
+                  </p>
+                )}
+
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  <Link
+                    href="/create"
+                    className="flex items-center justify-center gap-1.5 rounded-sm border-[2px] border-indigo-ink bg-paper px-2 py-2 text-[11px] font-black text-indigo-ink transition-colors hover:bg-mustard/30"
+                  >
+                    <Sparkles className="size-3.5 text-coral" />
+                    خودم در استودیو می‌سازم
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => setDelegateDesign((value) => !value)}
+                    aria-pressed={delegateDesign}
+                    className={cn(
+                      "flex items-center justify-center gap-1.5 rounded-sm border-[2px] border-indigo-ink px-2 py-2 text-[11px] font-black transition-colors",
+                      delegateDesign
+                        ? "bg-teal-craft text-white"
+                        : "bg-paper text-indigo-ink hover:bg-teal-light",
+                    )}
+                  >
+                    <Check className="size-3.5" />
+                    انتخاب ظاهر را به شما می‌سپارم
+                  </button>
+                </div>
+
+                {delegateDesign ? (
+                  <p className="mt-2 rounded-sm border border-dashed border-teal-craft bg-teal-light px-2 py-1.5 text-[10px] font-bold text-teal-craft">
+                    عالی؛ پیکربندی استودیو ارسال نمی‌شود و ظاهر را بر اساس ایده و
+                    برند شما انتخاب می‌کنم.
+                  </p>
+                ) : null}
+              </div>
+
+              <input
+                type="hidden"
+                name="studio-config"
+                value={attachSummary && studioConfig ? JSON.stringify(studioConfig) : ""}
+              />
+              <input
+                type="hidden"
+                name="design-choice"
+                value={delegateDesign ? "delegated" : studioConfig ? "studio" : ""}
+              />
+
               {estimate ? (
                 <div className="rounded-sm border-[2px] border-indigo-ink bg-mustard/20 p-3">
                   <div className="mb-2 flex items-center justify-between border-b border-indigo-ink/20 pb-1.5">
@@ -285,6 +414,18 @@ export function ContactSection() {
                 <div className="rounded-sm border-[2px] border-teal-craft bg-teal-light p-3 text-center text-sm font-bold text-teal-craft">
                   ✓ پیام شما با مهر کارگاه دریافت شد! ظرف ۲ ساعت آینده جهت
                   هماهنگی جلسه با شما تماس می‌گیرم.
+                  {attachSummary ? (
+                    <span className="mt-1 block text-[11px] font-black">
+                      پیکربندی استودیو «{attachedStyle}» با پالت «{attachedPalette}»
+                      هم ضمیمه شد.
+                    </span>
+                  ) : null}
+                  {delegateDesign ? (
+                    <span className="mt-1 block text-[11px] font-black">
+                      درخواست «انتخاب ظاهر با شما» ثبت شد؛ پیشنهاد بصری را من
+                      آماده می‌کنم.
+                    </span>
+                  ) : null}
                 </div>
               ) : null}
             </form>

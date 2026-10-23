@@ -6,12 +6,9 @@ import {
   Stethoscope,
   type LucideIcon,
 } from "lucide-react";
-import { themeToCssVars } from "./create-components/theme";
+import { themeToCssVars, type CreateComponentTheme } from "./create-components/theme";
 import type { IconLibraryId } from "./create-components/icon-set";
-import {
-  createThemePresets,
-  resolveTheme,
-} from "./create-components/style-presets";
+import { resolveTheme } from "./create-components/style-presets";
 import {
   paletteThemeOverrides,
   type StudioPalette,
@@ -100,6 +97,20 @@ export type StyleGroup = {
   caption: string;
 };
 export type RadiusOption = { value: number; label: string; caption: string };
+
+/** Elevation presets the sidebar can pin over the active style. */
+export type ShadowId = "none" | "soft" | "raised" | "hard" | "glow";
+/** `style` keeps the active preset's own shadow signature. */
+export type ShadowChoice = ShadowId | "style";
+
+export type ShadowOption = {
+  id: ShadowId;
+  label: string;
+  caption: string;
+  /** Resting shadow, written against `--cc-*` tokens so every preset re-skins. */
+  shadow: string;
+  shadowHover: string;
+};
 export type FontOption = {
   id: FontId;
   label: string;
@@ -288,6 +299,89 @@ export const RADII: RadiusOption[] = [
   { value: 16, label: "16px", caption: "کپسولی" },
 ];
 
+/**
+ * Shadow ink: the text colour pulled toward the page tone, so one elevation
+ * list works on paper-light and dark presets alike. Never a raw hex — the
+ * palette editor repaints it with the rest of the theme.
+ */
+const SHADOW_INK =
+  "color-mix(in srgb, var(--cc-surface-foreground) 55%, var(--cc-background))";
+
+/**
+ * Box-shadow presets. Every value stays inside the token layer, which means
+ * the exported snippet and the canvas always agree and a palette edit
+ * re-tints the elevation instead of leaving a stale black.
+ */
+export const SHADOWS: ShadowOption[] = [
+  {
+    id: "none",
+    label: "بدون سایه",
+    caption: "صاف",
+    shadow: "none",
+    shadowHover: "none",
+  },
+  {
+    id: "soft",
+    label: "نرم",
+    caption: "ملایم",
+    shadow: `0 1px 2px 0 color-mix(in srgb, ${SHADOW_INK} 22%, transparent)`,
+    shadowHover: `0 8px 18px -8px color-mix(in srgb, ${SHADOW_INK} 40%, transparent)`,
+  },
+  {
+    id: "raised",
+    label: "برجسته",
+    caption: "شناور",
+    shadow: `0 12px 28px -18px color-mix(in srgb, ${SHADOW_INK} 55%, transparent)`,
+    shadowHover: `0 18px 34px -16px color-mix(in srgb, ${SHADOW_INK} 65%, transparent)`,
+  },
+  {
+    id: "hard",
+    label: "چاپی",
+    caption: "آفست سخت",
+    shadow: `4px 4px 0 0 ${SHADOW_INK}`,
+    shadowHover: `2px 2px 0 0 ${SHADOW_INK}`,
+  },
+  {
+    id: "glow",
+    label: "هاله",
+    caption: "رنگ برند",
+    shadow:
+      "0 0 0 1px color-mix(in srgb, var(--cc-primary) 32%, transparent), 0 0 24px -6px color-mix(in srgb, var(--cc-primary) 55%, transparent)",
+    shadowHover:
+      "0 0 0 1px color-mix(in srgb, var(--cc-primary) 45%, transparent), 0 0 30px -4px color-mix(in srgb, var(--cc-primary) 68%, transparent)",
+  },
+];
+
+export const DEFAULT_SHADOW: ShadowChoice = "style";
+
+/**
+ * Theme overrides for the chosen elevation. `style` returns an empty object so
+ * the preset keeps owning its own shadow signature.
+ */
+export function shadowOverrides(
+  choice: ShadowChoice,
+): Partial<Pick<CreateComponentTheme, "shadow" | "shadowHover">> {
+  const option = SHADOWS.find((item) => item.id === choice);
+  return option ? { shadow: option.shadow, shadowHover: option.shadowHover } : {};
+}
+
+/**
+ * Sidebar swatches sit outside the preset's `--cc-*` scope, so they swap the
+ * token references for the colours resolved from the active palette.
+ */
+export function resolveShadowCss(
+  value: string,
+  tokens: { ink: string; background: string; primary: string },
+): string {
+  return value
+    .split("var(--cc-surface-foreground)")
+    .join(tokens.ink)
+    .split("var(--cc-background)")
+    .join(tokens.background)
+    .split("var(--cc-primary)")
+    .join(tokens.primary);
+}
+
 export const FONTS: FontOption[] = [
   { id: "vazirmatn", label: "وزیرمتن", note: "پیش‌فرض سایت", kind: "text" },
   { id: "vazir", label: "وزیر", note: "کلاسیک", kind: "text" },
@@ -386,9 +480,9 @@ export function buildThemeSnippet(input: {
   style: StyleId;
   fontStack: string;
   iconStyle?: IconStyle;
+  /** Elevation override; `style` keeps the preset's own shadow. */
+  shadow?: ShadowChoice;
 }): string {
-  const preset = createThemePresets[input.style];
-  const shadow = preset.tokens.shadow ?? "none";
   const icons = resolveIconStyle(input.iconStyle ?? DEFAULT_ICON_STYLE);
 
   // Same layering as the canvas: roles always apply, neutrals and chart
@@ -400,9 +494,11 @@ export function buildThemeSnippet(input: {
     iconScale: icons.scale,
     iconStroke: icons.stroke,
     iconColor: icons.color,
+    ...shadowOverrides(input.shadow ?? DEFAULT_SHADOW),
   });
   const primary = theme.primary;
   const primarySubtle = theme.secondary;
+  const shadow = theme.shadow || "none";
 
   const vars = Object.entries(themeToCssVars(theme))
     .map(([token, value]) => `  ${token}: ${value};`)

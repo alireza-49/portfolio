@@ -1,0 +1,175 @@
+/* ==========================================================================
+   Studio guide // driver.js theme
+   The popover belongs to the studio frame (never to the preview viewport), so
+   it is painted with the page tokens: paper, indigo ink, coral and the hard
+   craft elevation. Loaded after driver.css, which resets the popover with
+   `all: unset`; these rules therefore rebuild it from scratch.
+   ========================================================================== */
+
+.driver-popover.cc-tour-popover {
+  direction: rtl;
+  text-align: right;
+  box-sizing: border-box;
+  width: auto;
+  min-width: 16rem;
+  max-width: min(22rem, calc(100vw - 2rem));
+  padding: 1rem 1.1rem 0.9rem;
+  border: 2.5px solid var(--color-indigo-ink);
+  border-radius: 2px;
+  background-color: var(--color-paper-light);
+  color: var(--color-indigo-ink);
+  box-shadow: 4px 4px 0 0 var(--color-indigo-ink);
+  font-family:
+    var(--font-vazirmatn), "Vazirmatn", ui-sans-serif, system-ui, sans-serif;
+}
+
+.driver-popover.cc-tour-popover .driver-popover-title {
+  margin: 0;
+  padding-inline-end: 1.4rem;
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1.8;
+  color: var(--color-indigo-ink);
+  text-align: right;
+}
+
+.driver-popover.cc-tour-popover .driver-popover-description {
+  margin: 6px 0 0;
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 2;
+  color: var(--color-indigo-light);
+  text-align: right;
+}
+
+.driver-popover.cc-tour-popover .driver-popover-close-btn {
+  top: -4px;
+  right: auto;
+  left: 0;
+  width: 28px;
+  height: 26px;
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--color-indigo-light);
+  transition: color 0.18s ease;
+}
+
+.driver-popover.cc-tour-popover .driver-popover-close-btn:hover,
+.driver-popover.cc-tour-popover .driver-popover-close-btn:focus-visible {
+  color: var(--color-coral);
+}
+
+.driver-popover.cc-tour-popover .driver-popover-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid
+    color-mix(in srgb, var(--color-indigo-ink) 22%, transparent);
+  text-align: right;
+}
+
+.driver-popover.cc-tour-popover .driver-popover-progress-text {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--color-indigo-light);
+  white-space: nowrap;
+}
+
+.driver-popover.cc-tour-popover .driver-popover-navigation-btns {
+  display: flex;
+  flex: 1;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.driver-popover.cc-tour-popover .driver-popover-navigation-btns button + button {
+  margin-left: 0;
+}
+
+.driver-popover.cc-tour-popover .driver-popover-footer-btn {
+  box-sizing: border-box;
+  padding: 4px 12px;
+  border: 2px solid var(--color-indigo-ink);
+  border-radius: 2px;
+  background-color: var(--color-paper-dim);
+  color: var(--color-indigo-ink);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1.6;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 0 var(--color-indigo-ink);
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background-color 0.18s ease,
+    color 0.18s ease;
+}
+
+.driver-popover.cc-tour-popover .driver-popover-footer-btn:hover,
+.driver-popover.cc-tour-popover .driver-popover-footer-btn:focus-visible {
+  background-color: var(--color-paper-light);
+  color: var(--color-indigo-ink);
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 0 var(--color-indigo-ink);
+}
+
+.driver-popover.cc-tour-popover .driver-popover-footer-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 0 var(--color-indigo-ink);
+}
+
+.driver-popover.cc-tour-popover .driver-popover-next-btn {
+  background-color: var(--color-coral);
+  color: var(--color-paper-light);
+}
+
+.driver-popover.cc-tour-popover .driver-popover-next-btn:hover,
+.driver-popover.cc-tour-popover .driver-popover-next-btn:focus-visible {
+  background-color: var(--color-coral-dark);
+  color: var(--color-paper-light);
+}
+
+.driver-popover.cc-tour-popover .driver-popover-footer-btn.driver-popover-btn-disabled {
+  opacity: 0.45;
+}
+
+/* The arrow must keep pointing at the cut-out while wearing the paper tone. */
+.driver-popover.cc-tour-popover .driver-popover-arrow {
+  border-width: 7px;
+  border-color: var(--color-paper-light);
+}
+
+.driver-popover.cc-tour-popover .driver-popover-arrow-side-left {
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+  border-right-color: transparent;
+  border-left-color: var(--color-paper-light);
+}
+
+.driver-popover.cc-tour-popover .driver-popover-arrow-side-right {
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+  border-left-color: transparent;
+  border-right-color: var(--color-paper-light);
+}
+
+.driver-popover.cc-tour-popover .driver-popover-arrow-side-top {
+  border-bottom-color: transparent;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  border-top-color: var(--color-paper-light);
+}
+
+.driver-popover.cc-tour-popover .driver-popover-arrow-side-bottom {
+  border-top-color: transparent;
+  border-left-color: transparent;
+  border-right-color: transparent;
+  border-bottom-color: var(--color-paper-light);
+}

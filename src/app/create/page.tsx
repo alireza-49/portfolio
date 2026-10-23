@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import "driver.js/dist/driver.css";
 import "@/components/create-scenarios/scenes.css";
 import "./fonts.css";
+import "./tour.css";
 import { CreateStudio } from "@/components/create-studio";
 
 export const metadata: Metadata = {

@@ -16,9 +16,11 @@ import {
   ICON_LIBRARIES,
   STYLES,
   resolveIconStyle,
+  shadowOverrides,
   type ArchetypeId,
   type IconLibraryId,
   type IconStyle,
+  type ShadowChoice,
   type StyleId,
 } from "@/components/create-studio-config";
 import {
@@ -87,6 +89,8 @@ type CanvasProps = {
   /** Studio palette: roles plus optional neutral/chart overrides. */
   palette: StudioPalette;
   radius: number;
+  /** Elevation pinned from the sidebar; `style` follows the preset. */
+  shadow: ShadowChoice;
   styleId: StyleId;
   /** Fully resolved CSS stack, built-ins and uploaded fonts alike. */
   fontFamily: string;
@@ -170,6 +174,7 @@ export function CreateStudioCanvas({
   archetype,
   palette,
   radius,
+  shadow,
   styleId,
   fontFamily,
   iconLibrary,
@@ -194,9 +199,9 @@ export function CreateStudioCanvas({
   }, [expanded]);
 
   // The sidebar owns the colour layer (roles always, neutrals/charts when the
-  // visitor edited them), radius and body font; the rest of the visual
-  // identity — geometry, typography voice, texture — still comes from the
-  // preset through the provider.
+  // visitor edited them), radius, body font and, when pinned, the elevation;
+  // the rest of the visual identity — geometry, typography voice, texture —
+  // still comes from the preset through the provider.
   const theme: Partial<CreateComponentTheme> = {
     ...paletteThemeOverrides(palette, styleId),
     radius: effectiveRadius,
@@ -204,6 +209,7 @@ export function CreateStudioCanvas({
     iconScale: icons.scale,
     iconStroke: icons.stroke,
     iconColor: icons.color,
+    ...shadowOverrides(shadow),
   };
 
   return (
@@ -244,6 +250,7 @@ export function CreateStudioCanvas({
             never be confused with the preset's own page background inside. */}
         <div
           data-preview-chrome=''
+          data-tour='canvas-chrome'
           className='relative z-10 flex w-full shrink-0 flex-nowrap items-center gap-1.5 border-b-[2.5px] border-indigo-ink bg-mustard px-2 py-1.5 select-none sm:gap-2 sm:px-3'
         >
           <button
@@ -323,7 +330,11 @@ export function CreateStudioCanvas({
             className='flex w-full flex-1 flex-col overflow-x-clip'
           >
             <IconSetProvider library={iconLibrary}>
-              <div dir='rtl' className='flex flex-col gap-6 p-5 sm:p-7'>
+              <div
+                dir='rtl'
+                data-cc-shadow={shadow === "style" ? undefined : shadow}
+                className='flex flex-col gap-6 p-5 sm:p-7'
+              >
                 {archetype === "components" ? <ComponentsView /> : null}
                 {archetype === "landing" ? <TutoringLandingView /> : null}
                 {archetype === "ecommerce" ? <ClothingShopView /> : null}
@@ -337,7 +348,10 @@ export function CreateStudioCanvas({
         </div>
 
         {/* Browser status bar: repeats the "separate site" contract. */}
-        <div className='flex shrink-0 items-center justify-between gap-2 border-t-[2.5px] border-indigo-ink bg-paper px-2.5 py-1 text-[9px] font-bold text-indigo-ink/65 sm:text-[10px]'>
+        <div
+          data-tour='canvas-status'
+          className='flex shrink-0 items-center justify-between gap-2 border-t-[2.5px] border-indigo-ink bg-paper px-2.5 py-1 text-[9px] font-bold text-indigo-ink/65 sm:text-[10px]'
+        >
           <span className='flex min-w-0 items-center gap-1.5'>
             <ExternalLink
               aria-hidden='true'

@@ -509,7 +509,9 @@ export function CustomCursor({
     <div
       ref={containerRef}
       aria-hidden='true'
-      className='pointer-events-none fixed inset-0 z-[9999] overflow-hidden'
+      // Above every dialog/overlay, including driver.js' tour layer (z-index
+      // 1e9): the custom pointer must stay visible while a guide is open.
+      className='pointer-events-none fixed inset-0 z-[2147483647] overflow-hidden'
     >
       <canvas ref={canvasRef} className='absolute inset-0' />
       <div

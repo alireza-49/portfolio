@@ -7,19 +7,21 @@ import {
   type KeyboardEvent,
 } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Coffee,
   Code2,
   Copy,
+  HelpCircle,
   MousePointerClick,
   X,
 } from "lucide-react";
 import { LogoButton } from "@/assests/logo";
 import { CreateStudioCanvas } from "@/components/create-studio-canvas";
 import { CreateStudioSidebar } from "@/components/create-studio-sidebar";
+import { CreateStudioTour } from "@/components/create-studio-tour";
 import { createThemePresets } from "@/components/create-components/style-presets";
 import {
-  DEFAULT_PALETTE,
   PALETTE_PRESETS,
   resetPaletteGroup,
   resetPaletteToken,
@@ -27,20 +29,24 @@ import {
   withPaletteToken,
   type PalettePreset,
   type PaletteTokenId,
-  type StudioPalette,
 } from "@/components/create-studio-palette";
 import {
   ARCHETYPE_ICONS,
   ARCHETYPES,
-  DEFAULT_ICON_STYLE,
+  DEFAULT_SHADOW,
   STYLE_FONTS,
   STYLES,
   buildThemeSnippet,
   type ArchetypeId,
-  type IconLibraryId,
-  type IconStyle,
   type StyleId,
 } from "@/components/create-studio-config";
+import {
+  DEFAULT_STUDIO_CONFIG,
+  materializeStudioConfig,
+  updateStudioConfig,
+  useStudioConfig,
+  type StudioConfig,
+} from "@/components/create-studio-store";
 import {
   addCustomFont,
   getCustomFontsServerSnapshot,
@@ -54,15 +60,19 @@ import {
 const scenarioTabId = (id: ArchetypeId) => `scenario-tab-${id}`;
 
 export function CreateStudio() {
-  const [archetype, setArchetype] = useState<ArchetypeId>("landing");
-  const [styleId, setStyleId] = useState<StyleId>("nova");
-  const [palette, setPalette] = useState<StudioPalette>(DEFAULT_PALETTE);
-  const [radius, setRadius] = useState(4);
-  const [font, setFont] = useState<string>("vazir");
-  const [iconLibrary, setIconLibrary] = useState<IconLibraryId>("google");
-  const [iconStyle, setIconStyle] = useState<IconStyle>(DEFAULT_ICON_STYLE);
+  const router = useRouter();
+
+  // The sidebar configuration lives in localStorage; until the saved snapshot
+  // arrives (and for every server render) the canvas uses the documented
+  // defaults, so hydration always matches the prerendered HTML.
+  const savedConfig = useStudioConfig();
+  const config = savedConfig ?? DEFAULT_STUDIO_CONFIG;
+  const { archetype, styleId, palette, radius, shadow, font, iconLibrary, iconStyle } =
+    config;
+
   const [modalOpen, setModalOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [tourRun, setTourRun] = useState(0);
 
   // Uploaded fonts come from IndexedDB through the store; the server snapshot
   // is empty, so hydration starts from the same list the prerender produced.
@@ -78,37 +88,45 @@ export function CreateStudio() {
       buildThemeSnippet({
         palette,
         radius,
+        shadow,
         style: styleId,
         fontStack,
         iconStyle,
       }),
-    [palette, radius, styleId, fontStack, iconStyle],
+    [palette, radius, shadow, styleId, fontStack, iconStyle],
   );
 
+  const patchConfig = (patch: Partial<StudioConfig>) => {
+    updateStudioConfig(patch);
+  };
+
   const selectPalette = (preset: PalettePreset) => {
-    setPalette(studioPaletteFromPreset(preset));
+    patchConfig({ palette: studioPaletteFromPreset(preset) });
   };
 
   const setPaletteColor = (token: PaletteTokenId, hex: string) => {
-    setPalette((current) => withPaletteToken(current, token, hex));
+    patchConfig({ palette: withPaletteToken(palette, token, hex) });
   };
 
   const selectStyle = (id: StyleId) => {
-    setStyleId(id);
-    setRadius(createThemePresets[id].tokens.radius ?? radius);
-    // Each style names the voice it was drawn for; the picker can still
-    // override the body face afterwards.
-    setFont(STYLE_FONTS[id]);
+    // Each style names the voice it was drawn for and owns its elevation and
+    // geometry; the picker can override radius, font and shadow afterwards.
+    patchConfig({
+      styleId: id,
+      radius: createThemePresets[id].tokens.radius ?? radius,
+      font: STYLE_FONTS[id],
+      shadow: DEFAULT_SHADOW,
+    });
   };
 
   const addFont = async (name: string, file: File) => {
     const customFont = await addCustomFont({ name, file });
-    setFont(customFont.id);
+    patchConfig({ font: customFont.id });
   };
 
   const deleteFont = async (id: string) => {
     await removeCustomFont(id);
-    if (font === id) setFont("vazirmatn");
+    if (font === id) patchConfig({ font: "vazirmatn" });
   };
 
   const shuffle = () => {
@@ -118,17 +136,30 @@ export function CreateStudio() {
     const nextStyle = STYLES[Math.floor(Math.random() * STYLES.length)];
     const nextPalette =
       PALETTE_PRESETS[Math.floor(Math.random() * PALETTE_PRESETS.length)];
-    setPalette(studioPaletteFromPreset(nextPalette));
-    setRadius(createThemePresets[nextStyle.id].tokens.radius ?? 8);
-    setStyleId(nextStyle.id);
-    setFont(STYLE_FONTS[nextStyle.id]);
+    patchConfig({
+      palette: studioPaletteFromPreset(nextPalette),
+      radius: createThemePresets[nextStyle.id].tokens.radius ?? 8,
+      styleId: nextStyle.id,
+      font: STYLE_FONTS[nextStyle.id],
+      shadow: DEFAULT_SHADOW,
+    });
   };
 
   const selectScenario = (id: ArchetypeId, moveFocus = false) => {
-    setArchetype(id);
+    patchConfig({ archetype: id });
     if (moveFocus) {
       document.getElementById(scenarioTabId(id))?.focus();
     }
+  };
+
+  /**
+   * Hand the current configuration to the home-page contact form: localStorage
+   * already holds every edit, and this write also covers a visitor who liked
+   * the untouched defaults.
+   */
+  const sendConfig = () => {
+    materializeStudioConfig();
+    router.push("/#contact-section");
   };
 
   // RTL tablist: ArrowLeft walks to the next scenario, ArrowRight to the previous.
@@ -197,6 +228,7 @@ export function CreateStudio() {
             <div
               role='tablist'
               aria-label='انتخاب سناریوی بوم'
+              data-tour='scenarios'
               className='flex min-w-0 items-center gap-0.5 overflow-x-auto rounded-sm border-[1.5px] border-indigo-ink bg-paper-dim p-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
             >
               {ARCHETYPES.map((item, index) => {
@@ -234,6 +266,17 @@ export function CreateStudio() {
 
           <span className='mx-1 hidden h-6 w-px shrink-0 bg-indigo-ink/20 lg:block' />
 
+          <button
+            type='button'
+            onClick={() => setTourRun((run) => run + 1)}
+            aria-label='نمایش دوبارهٔ راهنمای استودیو'
+            title='راهنمای استفاده از استودیو'
+            className='craft-btn inline-flex h-auto shrink-0 items-center justify-center gap-1 rounded-sm bg-paper px-2 py-1.5 text-xs font-bold whitespace-nowrap text-indigo-ink transition-colors hover:bg-mustard/40 sm:px-2.5'
+          >
+            <HelpCircle className='size-4 text-coral' />
+            <span className='hidden sm:inline'>راهنما</span>
+          </button>
+
           <Link
             href='/#contact-section'
             aria-label='مشاوره و سفارش'
@@ -253,35 +296,41 @@ export function CreateStudio() {
           onPalettePreset={selectPalette}
           onPaletteToken={setPaletteColor}
           onResetPaletteToken={(token) =>
-            setPalette((current) => resetPaletteToken(current, token))
+            patchConfig({ palette: resetPaletteToken(palette, token) })
           }
           onResetPaletteGroup={(group) =>
-            setPalette((current) => resetPaletteGroup(current, group))
+            patchConfig({ palette: resetPaletteGroup(palette, group) })
           }
           radius={radius}
-          onRadiusChange={setRadius}
+          onRadiusChange={(value) => patchConfig({ radius: value })}
+          shadow={shadow}
+          onShadowChange={(value) => patchConfig({ shadow: value })}
           font={font}
-          onFontChange={setFont}
+          onFontChange={(id) => patchConfig({ font: id })}
           customFonts={customFonts}
           onAddCustomFont={addFont}
           onRemoveCustomFont={deleteFont}
           iconLibrary={iconLibrary}
-          onIconLibraryChange={setIconLibrary}
+          onIconLibraryChange={(id) => patchConfig({ iconLibrary: id })}
           iconStyle={iconStyle}
-          onIconStyleChange={setIconStyle}
+          onIconStyleChange={(style) => patchConfig({ iconStyle: style })}
           onShuffle={shuffle}
           onExport={() => setModalOpen(true)}
+          onSendConfig={sendConfig}
         />
         <CreateStudioCanvas
           archetype={archetype}
           palette={palette}
           radius={radius}
+          shadow={shadow}
           styleId={styleId}
           fontFamily={fontStack}
           iconLibrary={iconLibrary}
           iconStyle={iconStyle}
         />
       </div>
+
+      <CreateStudioTour run={tourRun} />
 
       {modalOpen ? (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-indigo-ink/60 p-4 backdrop-blur-sm'>

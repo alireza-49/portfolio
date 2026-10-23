@@ -6,10 +6,12 @@ import {
   Check,
   Dices,
   Download,
+  Layers,
   Palette,
   Pipette,
   Plus,
   RotateCcw,
+  Send,
   Shapes,
   SlidersHorizontal,
   Sparkles,
@@ -21,6 +23,7 @@ import {
 import { toPersianDigits } from "@/components/create-components/jalali";
 import {
   DEFAULT_ICON_STYLE,
+  DEFAULT_SHADOW,
   FONTS,
   FONT_STACKS,
   ICON_LIBRARIES,
@@ -28,14 +31,17 @@ import {
   ICON_TONES,
   ICON_WEIGHTS,
   RADII,
+  SHADOWS,
   STYLE_GROUPS,
   STYLES,
   resolveIconStyle,
+  resolveShadowCss,
   type IconLibraryId,
   type IconSizeId,
   type IconStyle,
   type IconToneId,
   type IconWeightId,
+  type ShadowChoice,
   type StyleId,
 } from "@/components/create-studio-config";
 import { Icon, ICON_PREVIEW_NAMES } from "@/components/create-components";
@@ -91,6 +97,8 @@ type SidebarProps = {
   onResetPaletteGroup: (group: PaletteGroupId) => void;
   radius: number;
   onRadiusChange: (value: number) => void;
+  shadow: ShadowChoice;
+  onShadowChange: (value: ShadowChoice) => void;
   font: string;
   onFontChange: (id: string) => void;
   iconLibrary: IconLibraryId;
@@ -99,6 +107,8 @@ type SidebarProps = {
   onIconStyleChange: (style: IconStyle) => void;
   onShuffle: () => void;
   onExport: () => void;
+  /** Persist the current configuration and open the contact form with it. */
+  onSendConfig: () => void;
   customFonts: CustomFont[];
   onAddCustomFont: (name: string, file: File) => Promise<void>;
   onRemoveCustomFont: (id: string) => Promise<void>;
@@ -114,6 +124,8 @@ export function CreateStudioSidebar({
   onResetPaletteGroup,
   radius,
   onRadiusChange,
+  shadow,
+  onShadowChange,
   font,
   onFontChange,
   iconLibrary,
@@ -122,6 +134,7 @@ export function CreateStudioSidebar({
   onIconStyleChange,
   onShuffle,
   onExport,
+  onSendConfig,
   customFonts,
   onAddCustomFont,
   onRemoveCustomFont,
@@ -163,6 +176,35 @@ export function CreateStudioSidebar({
     if (Number.isFinite(value) && value >= 0 && value <= 48) {
       onRadiusChange(value);
     }
+  };
+
+  // Elevation: `style` shows the active preset's own shadow, the rest are
+  // explicit token-only overrides. Swatches resolve the --cc-* references
+  // because this panel lives outside the preset scope.
+  const activeShadowOption = SHADOWS.find((item) => item.id === shadow);
+  const shadowLabel = activeShadowOption
+    ? `${activeShadowOption.label} (${activeShadowOption.caption})`
+    : "پیرو سبک";
+  const presetShadow = createThemePresets[styleId].tokens;
+  const shadowChoices: Array<{
+    id: ShadowChoice;
+    label: string;
+    caption: string;
+    shadow: string;
+  }> = [
+    {
+      id: "style",
+      label: "پیرو سبک",
+      caption: "امضای سبک",
+      shadow: presetShadow.shadow ?? "none",
+    },
+    ...SHADOWS,
+  ];
+  const shadowSwatch = {
+    ink: resolvePaletteToken("surfaceForeground", palette, styleId),
+    background: resolvePaletteToken("background", palette, styleId),
+    primary: resolvePaletteToken("primary", palette, styleId),
+    surface: resolvePaletteToken("surface", palette, styleId),
   };
 
   const activePreset = activePalettePresetId(palette);
@@ -216,7 +258,7 @@ export function CreateStudioSidebar({
         </button>
       </div>
 
-      <div className='flex flex-col gap-1.5'>
+      <div data-tour='styles' className='flex flex-col gap-1.5'>
         <div className='flex items-center justify-between text-xs font-bold'>
           <span className='flex items-center gap-1 text-indigo-ink'>
             <span>سبک‌های بصری</span>
@@ -321,7 +363,10 @@ export function CreateStudioSidebar({
         </p>
       </div>
 
-      <div className='flex flex-col gap-2 border-t border-indigo-ink/20 pt-1'>
+      <div
+        data-tour='palette'
+        className='flex flex-col gap-2 border-t border-indigo-ink/20 pt-1'
+      >
         <div className='flex items-center justify-between text-xs font-bold'>
           <span className='flex items-center gap-1 text-indigo-ink'>
             <Palette className='size-[15px] text-coral' />
@@ -615,7 +660,10 @@ export function CreateStudioSidebar({
         ) : null}
       </div>
 
-      <div className='flex flex-col gap-1.5 border-t border-indigo-ink/20 pt-1'>
+      <div
+        data-tour='icons'
+        className='flex flex-col gap-1.5 border-t border-indigo-ink/20 pt-1'
+      >
         <div className='flex items-center justify-between text-xs font-bold'>
           <span className='flex items-center gap-1 text-indigo-ink'>
             <Shapes className='size-3.5 text-coral' />
@@ -747,7 +795,10 @@ export function CreateStudioSidebar({
         </div>
       </div>
 
-      <div className='flex flex-col gap-1.5 border-t border-indigo-ink/20 pt-1'>
+      <div
+        data-tour='radius'
+        className='flex flex-col gap-1.5 border-t border-indigo-ink/20 pt-1'
+      >
         <div className='flex items-center justify-between text-xs font-bold'>
           <span className='flex items-center gap-1 text-indigo-ink'>
             <span>گردی گوشه‌ها</span>
@@ -813,7 +864,86 @@ export function CreateStudioSidebar({
         </div>
       </div>
 
-      <div className='flex flex-col gap-1.5 border-t border-indigo-ink/20 pt-1'>
+      <div
+        data-tour='shadow'
+        className='flex flex-col gap-1.5 border-t border-indigo-ink/20 pt-1'
+      >
+        <div className='flex items-center justify-between gap-1 text-xs font-bold'>
+          <span className='flex items-center gap-1 text-indigo-ink'>
+            <Layers className='size-3.5 text-coral' />
+            <span>سایهٔ جعبه‌ها</span>
+            <span className='text-[10px] font-normal text-indigo-light'>
+              (Shadow)
+            </span>
+          </span>
+          <span className='flex items-center gap-1'>
+            <span className='font-mono text-[10px] font-bold text-coral'>
+              {shadowLabel}
+            </span>
+            {shadow !== DEFAULT_SHADOW ? (
+              <button
+                type='button'
+                onClick={() => onShadowChange(DEFAULT_SHADOW)}
+                aria-label='بازگشت به سایهٔ سبک'
+                title='بازگشت به سایهٔ سبک'
+                className='rounded-sm border border-indigo-ink/40 bg-paper-light p-0.5 text-indigo-ink transition-colors hover:bg-paper-dim'
+              >
+                <RotateCcw className='size-2.5' />
+              </button>
+            ) : null}
+          </span>
+        </div>
+
+        <div className='grid grid-cols-3 gap-1.5'>
+          {shadowChoices.map((option) => {
+            const active = shadow === option.id;
+            return (
+              <button
+                key={option.id}
+                type='button'
+                onClick={() => onShadowChange(option.id)}
+                aria-pressed={active}
+                title={`${option.label} (${option.caption})`}
+                className={`flex flex-col items-center gap-1 rounded-sm border border-indigo-ink px-1 py-1.5 transition-all ${
+                  active
+                    ? "bg-coral text-white shadow-craft-sm"
+                    : "bg-paper-dim text-indigo-ink hover:bg-paper-light"
+                }`}
+              >
+                <span
+                  aria-hidden='true'
+                  className='my-0.5 block h-5 w-8 border border-indigo-ink/25'
+                  style={{
+                    borderRadius: Math.min(Math.max(radius, 0), 10),
+                    backgroundColor: shadowSwatch.surface,
+                    boxShadow: resolveShadowCss(option.shadow, shadowSwatch),
+                  }}
+                />
+                <span className='text-[10px] leading-tight font-bold'>
+                  {option.label}
+                </span>
+                <span
+                  className={`text-[8px] leading-tight ${
+                    active ? "text-white/90" : "text-indigo-light"
+                  }`}
+                >
+                  {option.caption}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        <p className='text-[10px] leading-relaxed text-indigo-light'>
+          سایه روی کارت‌ها، دکمه‌ها، ورودی‌ها و پنل نمودارها می‌نشیند. «پیرو سبک»
+          امضای سایهٔ سبک فعال را نگه می‌دارد.
+        </p>
+      </div>
+
+      <div
+        data-tour='typography'
+        className='flex flex-col gap-1.5 border-t border-indigo-ink/20 pt-1'
+      >
         <div className='flex items-center justify-between text-xs font-bold'>
           <span className='flex items-center gap-1 text-indigo-ink'>
             <Type className='size-3.5 text-coral' />
@@ -1028,15 +1158,30 @@ export function CreateStudioSidebar({
         </div>
       </div>
 
-      <div className='mt-auto flex flex-col gap-2 border-t border-indigo-ink/20 pt-2'>
+      <div
+        data-tour='submit-config'
+        className='mt-auto flex flex-col gap-2 border-t border-indigo-ink/20 pt-2'
+      >
+        <button
+          type='button'
+          onClick={onSendConfig}
+          className='craft-btn flex w-full items-center justify-center gap-1.5 rounded-sm bg-indigo-ink px-2.5 py-2 text-xs font-bold text-paper'
+        >
+          <Send className='size-[15px]' />
+          <span>ثبت پیکربندی و ارسال در فرم سفارش</span>
+        </button>
         <button
           type='button'
           onClick={onExport}
-          className='craft-btn flex w-full items-center justify-center gap-1.5 rounded-sm bg-coral px-2.5 py-2 text-xs font-bold text-white'
+          className='flex w-full items-center justify-center gap-1.5 rounded-sm border border-indigo-ink bg-paper-dim px-2.5 py-1.5 text-[11px] font-bold text-indigo-ink shadow-craft-sm transition-all hover:bg-paper-light active:translate-x-0.5 active:translate-y-0.5'
         >
-          <Download className='size-[15px]' />
-          <span>استخراج پیکربندی تم</span>
+          <Download className='size-[14px]' />
+          <span>استخراج کد تم (CSS)</span>
         </button>
+        <p className='text-center text-[9px] leading-relaxed text-indigo-light'>
+          تنظیمات این پنل در همین مرورگر ذخیره می‌شود؛ فرم تماس آن را به پیام
+          شما پیوست می‌کند.
+        </p>
       </div>
     </aside>
   );
