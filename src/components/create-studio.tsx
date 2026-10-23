@@ -1,18 +1,26 @@
 "use client";
 
-import { useMemo, useState, useSyncExternalStore } from "react";
 import {
-  BookOpen,
+  useMemo,
+  useState,
+  useSyncExternalStore,
+  type KeyboardEvent,
+} from "react";
+import Link from "next/link";
+import {
   ChartLine,
+  Coffee,
   Code2,
   Copy,
   LayoutGrid,
+  MousePointerClick,
   PanelsTopLeft,
   ShoppingBag,
   Stethoscope,
   X,
   type LucideIcon,
 } from "lucide-react";
+import { LogoButton } from "@/assests/logo";
 import { CreateStudioCanvas } from "@/components/create-studio-canvas";
 import { CreateStudioSidebar } from "@/components/create-studio-sidebar";
 import { createThemePresets } from "@/components/create-components/style-presets";
@@ -40,6 +48,9 @@ const ARCHETYPE_ICONS: Record<ArchetypeId, LucideIcon> = {
   clinic: Stethoscope,
   dashboard: ChartLine,
 };
+
+/** Shared between the header tab and the canvas panel it controls. */
+const scenarioTabId = (id: ArchetypeId) => `scenario-tab-${id}`;
 
 export function CreateStudio() {
   const [archetype, setArchetype] = useState<ArchetypeId>("components");
@@ -105,6 +116,31 @@ export function CreateStudio() {
     setStyleId(preset.style);
   };
 
+  const selectScenario = (id: ArchetypeId, moveFocus = false) => {
+    setArchetype(id);
+    if (moveFocus) {
+      document.getElementById(scenarioTabId(id))?.focus();
+    }
+  };
+
+  // RTL tablist: ArrowLeft walks to the next scenario, ArrowRight to the previous.
+  const handleScenarioKeyDown = (
+    event: KeyboardEvent<HTMLButtonElement>,
+    index: number,
+  ) => {
+    const last = ARCHETYPES.length - 1;
+    let next: number | null = null;
+
+    if (event.key === "ArrowLeft") next = index === last ? 0 : index + 1;
+    else if (event.key === "ArrowRight") next = index === 0 ? last : index - 1;
+    else if (event.key === "Home") next = 0;
+    else if (event.key === "End") next = last;
+
+    if (next === null) return;
+    event.preventDefault();
+    selectScenario(ARCHETYPES[next].id, true);
+  };
+
   const copy = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -115,86 +151,91 @@ export function CreateStudio() {
     }
   };
 
-  const activeArchetype =
-    ARCHETYPES.find((item) => item.id === archetype) ?? ARCHETYPES[0];
-
   return (
     <>
-      <section className='w-full shrink-0 border-b-[2.5px] border-indigo-ink bg-paper-dim px-4 py-3 sm:px-8'>
-        <div className='mx-auto flex max-w-7xl flex-col gap-2.5'>
-          <div className='flex items-center gap-3'>
-            <div className='flex items-center gap-3'>
-              <span className='flex size-11 shrink-0 items-center justify-center rounded-sm border-[1.5px] border-indigo-ink bg-mustard/30 text-indigo-ink shadow-craft-sm'>
-                <BookOpen className='size-5' />
-              </span>
-              <div className='flex flex-col gap-0.5'>
-                <span className='flex flex-wrap items-center gap-2 font-mono text-[9px] font-bold tracking-[0.18em] text-indigo-light uppercase'>
-                  Scenario canvas
-                  <span className='inline-flex items-center gap-1 rounded-sm border border-indigo-ink/40 bg-paper-light px-1.5 py-px text-[8px] font-bold tracking-normal text-indigo-ink normal-case'>
-                    <span className='size-1 rounded-full bg-teal-craft' />
-                    Studio ready
-                  </span>
-                </span>
-                <h2 className='flex flex-wrap items-center gap-2 text-sm leading-tight font-black text-indigo-ink sm:text-base'>
-                  <span>سناریوی بوم</span>
-                  <span className='rounded-sm bg-indigo-ink px-1.5 py-0.5 text-[10px] font-bold text-paper'>
-                    {activeArchetype.label}
-                  </span>
-                </h2>
-                <p className='hidden max-w-md text-[11px] leading-relaxed text-indigo-light sm:block'>
-                  صحنهٔ پیش‌نمایش را عوض کنید؛ همهٔ سناریوها با همان توکن‌های تم
-                  رنگ می‌گیرند.
-                </p>
-              </div>
+      <header className='relative z-20 w-full shrink-0 border-b-[2.5px] border-indigo-ink bg-paper'>
+        <div className='flex h-15 w-full items-center gap-2 px-3 sm:gap-3 sm:px-6 lg:px-8'>
+          <div className='relative flex shrink-0 items-center'>
+            <LogoButton
+              aria-label='استودیو کدولوژی'
+              logoClassName='size-full'
+              className='size-8 rounded-sm border-[1.5px] border-indigo-ink bg-mustard/30 p-1 text-indigo-ink shadow-craft-inset hover:bg-mustard/30 hover:text-indigo-ink sm:size-9'
+            />
+            <span className='absolute -top-1 -right-1 flex h-2.5 w-2.5'>
+              <span className='absolute inline-flex h-full w-full animate-ping rounded-full bg-teal-craft opacity-75' />
+              <span className='relative inline-flex h-2.5 w-2.5 rounded-full bg-teal-craft' />
+            </span>
+          </div>
+
+          <Link
+            href='/'
+            className='hidden shrink-0 font-display text-sm leading-tight font-black tracking-tight text-indigo-ink transition-colors hover:text-coral md:block lg:text-base'
+          >
+            استودیو کدولوژی
+          </Link>
+
+          <span className='mx-1 hidden h-6 w-px shrink-0 bg-indigo-ink/20 lg:block' />
+
+          <div className='flex min-w-0 flex-1 items-center gap-2 lg:justify-center'>
+            <span className='flex shrink-0 items-center gap-1 text-[10px] font-bold whitespace-nowrap text-indigo-light'>
+              <MousePointerClick
+                aria-hidden='true'
+                className='size-3.5 text-coral'
+              />
+              <span className='sm:hidden'>سناریو</span>
+              <span className='hidden sm:inline'>انتخاب سناریو</span>
+            </span>
+
+            <div
+              role='tablist'
+              aria-label='انتخاب سناریوی بوم'
+              className='flex min-w-0 items-center gap-0.5 overflow-x-auto rounded-sm border-[1.5px] border-indigo-ink bg-paper-dim p-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
+            >
+              {ARCHETYPES.map((item, index) => {
+                const active = archetype === item.id;
+                const Icon = ARCHETYPE_ICONS[item.id];
+                return (
+                  <button
+                    key={item.id}
+                    id={scenarioTabId(item.id)}
+                    type='button'
+                    role='tab'
+                    aria-selected={active}
+                    aria-controls='studio-canvas'
+                    aria-label={item.label}
+                    title={item.description}
+                    tabIndex={active ? 0 : -1}
+                    onClick={() => selectScenario(item.id)}
+                    onKeyDown={(event) => handleScenarioKeyDown(event, index)}
+                    className={`flex h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-[2px] px-3 text-[11px] font-black whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-coral focus-visible:ring-offset-1 focus-visible:outline-none ${
+                      active
+                        ? "bg-indigo-ink text-paper"
+                        : "text-indigo-ink/75 hover:bg-paper hover:text-indigo-ink"
+                    }`}
+                  >
+                    <Icon
+                      aria-hidden='true'
+                      className={`size-3.5 ${active ? "text-mustard" : "text-coral"}`}
+                    />
+                    <span>{item.shortLabel}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          <div className='-mx-1 grid grid-flow-col auto-cols-[minmax(10.5rem,1fr)] gap-2 overflow-x-auto px-1 pb-1 xl:mx-0 xl:grid-flow-row xl:grid-cols-5 xl:overflow-visible xl:px-0 xl:pb-0'>
-            {ARCHETYPES.map((item) => {
-              const active = archetype === item.id;
-              const Icon = ARCHETYPE_ICONS[item.id];
-              return (
-                <button
-                  key={item.id}
-                  type='button'
-                  onClick={() => setArchetype(item.id)}
-                  aria-pressed={active}
-                  title={item.description}
-                  className={`flex items-center gap-2 rounded-sm border-[1.5px] border-indigo-ink px-2.5 py-2 text-right transition-all ${
-                    active
-                      ? "bg-coral text-white shadow-craft"
-                      : "bg-paper-light text-indigo-ink shadow-craft-sm hover:-translate-y-0.5 hover:bg-paper hover:shadow-craft"
-                  }`}
-                >
-                  <span
-                    aria-hidden='true'
-                    className={`flex size-8 shrink-0 items-center justify-center rounded-sm border-[1.5px] ${
-                      active
-                        ? "border-white/40 bg-white/15 text-white"
-                        : "border-indigo-ink bg-paper-dim text-coral"
-                    }`}
-                  >
-                    <Icon className='size-4' />
-                  </span>
-                  <span className='flex min-w-0 flex-col gap-0.5'>
-                    <span className='text-xs leading-tight font-black whitespace-nowrap'>
-                      {item.label}
-                    </span>
-                    <span
-                      dir='ltr'
-                      className={`text-left font-mono text-[9px] leading-tight font-bold tracking-[0.14em] ${
-                        active ? "text-white/80" : "text-indigo-light"
-                      }`}
-                    >
-                      {item.tagline}
-                    </span>
-                  </span>
-                </button>
-              );
-            })}
-          </div>
+          <span className='mx-1 hidden h-6 w-px shrink-0 bg-indigo-ink/20 lg:block' />
+
+          <Link
+            href='/#contact-section'
+            aria-label='مشاوره و سفارش'
+            className='craft-btn inline-flex h-auto shrink-0 items-center justify-center gap-1 rounded-sm border-[2.5px] border-indigo-ink bg-coral px-2.5 py-1.5 text-xs font-bold whitespace-nowrap text-white shadow-craft-sm transition-colors hover:bg-coral-dark sm:px-3.5 sm:text-[13px]'
+          >
+            <Coffee className='size-4' />
+            <span className='hidden sm:inline'>مشاوره و سفارش</span>
+          </Link>
         </div>
-      </section>
+      </header>
 
       <div className='flex min-h-0 w-full flex-1 flex-col items-stretch overflow-y-auto border-b-[2.5px] border-indigo-ink bg-paper-shade lg:flex-row lg:overflow-hidden'>
         <CreateStudioSidebar

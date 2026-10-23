@@ -209,6 +209,9 @@ export function CreateStudioCanvas({
 
   return (
     <section
+      id='studio-canvas'
+      role='tabpanel'
+      aria-labelledby={`scenario-tab-${archetype}`}
       className={`dot-grid order-1 flex w-full shrink-0 flex-col gap-4 overflow-x-hidden bg-paper-shade p-3 sm:p-5 lg:order-2 lg:min-h-0 lg:shrink lg:flex-1 lg:overflow-y-auto lg:p-5 xl:p-6 ${
         expanded ? "fixed inset-0 z-[60] overflow-y-auto" : ""
       }`}
@@ -218,8 +221,8 @@ export function CreateStudioCanvas({
         theme={theme}
         className={`paper-pattern relative flex w-full flex-col overflow-auto rounded-sm transition-all ${
           expanded
-            ? "min-h-[calc(100dvh-1.5rem)] sm:min-h-[calc(100dvh-2.5rem)]"
-            : "min-h-[560px] sm:min-h-[660px] lg:min-h-[calc(100dvh-13rem)]"
+            ? "min-h-[calc(100dvh-1.5rem)] sm:min-h-[calc(100dvh-2.5rem)] lg:min-h-0 lg:flex-1"
+            : "min-h-[560px] sm:min-h-[660px] lg:min-h-0 lg:flex-1"
         }`}
         style={{
           borderStyle: "var(--cc-border-style)",
@@ -245,21 +248,11 @@ export function CreateStudioCanvas({
             <div className='flex min-w-0 items-center gap-1.5 text-xs font-black text-[color:var(--cc-surface-foreground)] sm:text-[13px]'>
               <ChromeIcon className='size-4 shrink-0 text-[color:var(--cc-primary)]' />
               <span className='truncate'>{activeScenario.label}</span>
-              <span className='hidden font-mono text-[10px] font-bold text-[color:var(--cc-muted-foreground)] sm:inline'>
-                {"// LIVE ARTBOARD"}
-              </span>
             </div>
           </div>
           <div className='flex items-center gap-1.5 sm:gap-2'>
             <span className='hidden items-center gap-1 rounded-[var(--cc-radius-sm)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-surface)] px-2 py-0.5 font-mono text-[10px] font-bold text-[color:var(--cc-surface-foreground)] [box-shadow:var(--cc-shadow)] lg:inline-flex'>
               STYLE: <span dir='ltr'>{styleId.toUpperCase()}</span>
-            </span>
-            <span className='hidden items-center rounded-[var(--cc-radius-sm)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-surface)] px-2 py-0.5 font-mono text-[10px] font-bold text-[color:var(--cc-surface-foreground)] [box-shadow:var(--cc-shadow)] md:inline-flex'>
-              VIEWPORT: 100%
-            </span>
-            <span className='flex items-center gap-1 rounded-[var(--cc-radius-sm)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-surface-foreground)] px-2 py-0.5 font-mono text-[10px] font-bold text-[color:var(--cc-surface)]'>
-              <span className='size-1.5 rounded-full bg-[var(--cc-success)]' />
-              CANVAS OK
             </span>
             <button
               type='button'

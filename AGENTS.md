@@ -41,10 +41,16 @@ Rebuilt the two canvas scenarios and added the primitives they needed:
 - Added a "نمودارها و زمان‌بندی" gallery section to the `components` archetype.
 - Added `recharts` + `react-is`; wired both views into `create-studio-canvas.tsx`.
 - Made the artboard the hero of `/create`: the scenario picker is now a prominent
-  icon-tile strip (`ARCHETYPES` gained `tagline`/`description`), the canvas fills the
+  icon-tile strip (`ARCHETYPES` gained `description`, later `shortLabel`), the canvas fills the
   viewport height with slimmer padding, shows the active scenario + preset in its
   chrome, has a "بزرگ‌نمایی" full-screen toggle (Esc closes), and comes before the
   sidebar on small screens (`order-1`/`lg:order-2`).
+- `/create` no longer renders `SiteHeader`: the global `main` is a `h-dvh` flex column whose
+  first child is the studio's own full-width 60px bar (`create-studio.tsx`), combining the logo,
+  a labelled scenario switcher (`role='tablist'`, ink-filled active tab, RTL arrow-key navigation,
+  coral reserved for the CTA) and the "مشاوره و سفارش" CTA (`/#contact-section`) — no nav links,
+  language toggle or mobile sheet. The artboard chrome keeps only the scenario name, the style
+  chip and the zoom toggle.
 - Wired the real Persian typefaces in `public/fonts` into the studio: `src/app/create/fonts.css`
   declares 12 `@font-face` rules (Vazir, Samim, Gandom, Dirooz, Maktab Rita, A Ordibehesht,
   A Ghasem, A Google, Parvaz), `FONT_STACKS` maps the ten picker ids onto them, and the

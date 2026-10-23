@@ -37,7 +37,8 @@ export type IconLibraryId = "google" | "lucide" | "tabler";
 export type Archetype = {
   id: ArchetypeId;
   label: string;
-  tagline: string;
+  /** Compact name for the studio header tabs. */
+  shortLabel: string;
   description: string;
 };
 export type StyleOption = { id: StyleId; label: string };
@@ -70,31 +71,31 @@ export const ARCHETYPES: Archetype[] = [
   {
     id: "components",
     label: "کامپوننت‌ها و ویجت‌ها",
-    tagline: "UI KIT",
+    shortLabel: "کامپوننت",
     description: "گالری فرم‌ها، بازخورد، جدول و نمودارها",
   },
   {
     id: "landing",
     label: "لندینگ تدریس آنلاین",
-    tagline: "LANDING",
+    shortLabel: "لندینگ",
     description: "صفحهٔ فرود آکادمی با ثبت‌نام و برنامهٔ کلاس‌ها",
   },
   {
     id: "ecommerce",
     label: "فروشگاه پوشاک",
-    tagline: "SHOP",
+    shortLabel: "فروشگاه",
     description: "ویترین پوشاک با فیلتر، سبد خرید و پیشنهادها",
   },
   {
     id: "clinic",
     label: "سامانه نوبت‌دهی کلینیک",
-    tagline: "CLINIC",
+    shortLabel: "کلینیک",
     description: "رزرو نوبت چهار مرحله‌ای با تقویم شمسی",
   },
   {
     id: "dashboard",
     label: "داشبورد داده و آمار",
-    tagline: "DASHBOARD",
+    shortLabel: "داشبورد",
     description: "شاخص‌ها، نمودارها، جدول سفارش و سلامت سیستم",
   },
 ];

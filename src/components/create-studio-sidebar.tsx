@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import {
   Check,
   Dices,
@@ -94,6 +94,7 @@ export function CreateStudioSidebar({
   const [fontFile, setFontFile] = useState<File | null>(null);
   const [fontError, setFontError] = useState<string | null>(null);
   const [fontBusy, setFontBusy] = useState(false);
+  const fontInputRef = useRef<HTMLInputElement>(null);
 
   // Derive the editable values during render: when the studio pushes a new
   // colour/radius (swatch, shuffle, custom input) the draft is stale, so the
@@ -685,7 +686,11 @@ export function CreateStudioSidebar({
                 placeholder='مثلاً: فونت برند من'
                 className='w-full rounded-sm border border-indigo-ink bg-paper-light px-1.5 py-1 text-[11px] font-bold text-indigo-ink outline-none focus:ring-1 focus:ring-coral'
               />
-              <label className='flex cursor-pointer items-center justify-between gap-1.5 rounded-sm border border-dashed border-indigo-ink bg-paper-light px-1.5 py-1 text-[10px] font-bold text-indigo-ink hover:bg-paper-dim'>
+              <button
+                type='button'
+                onClick={() => fontInputRef.current?.click()}
+                className='flex w-full cursor-pointer items-center justify-between gap-1.5 rounded-sm border border-dashed border-indigo-ink bg-paper-light px-1.5 py-1 text-[10px] font-bold text-indigo-ink hover:bg-paper-dim'
+              >
                 <span className='flex min-w-0 items-center gap-1'>
                   <Upload className='size-3 shrink-0 text-coral' />
                   <span className='truncate' dir='ltr'>
@@ -695,16 +700,19 @@ export function CreateStudioSidebar({
                 <span className='shrink-0 rounded-sm border border-indigo-ink bg-paper-dim px-1.5 py-0.5 text-[9px]'>
                   انتخاب فایل
                 </span>
-                <input
-                  type='file'
-                  accept={CUSTOM_FONT_ACCEPT}
-                  onChange={(event) => {
-                    setFontFile(event.target.files?.[0] ?? null);
-                    setFontError(null);
-                  }}
-                  className='sr-only'
-                />
-              </label>
+              </button>
+              {/* Hidden file input: display:none keeps it out of layout, so the
+                  browser cannot scroll the page to "reveal" it on focus. */}
+              <input
+                ref={fontInputRef}
+                type='file'
+                accept={CUSTOM_FONT_ACCEPT}
+                onChange={(event) => {
+                  setFontFile(event.target.files?.[0] ?? null);
+                  setFontError(null);
+                }}
+                className='hidden'
+              />
               {fontError ? (
                 <span
                   role='alert'
