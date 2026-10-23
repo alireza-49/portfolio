@@ -7,7 +7,7 @@ import {
   type ReactNode,
 } from "react";
 import { cn } from "@/lib/utils";
-import { bodyType, borderChrome, headingType, labelType } from "./styles";
+import { bodyType, borderChrome, headingType, labelType, monoType } from "./styles";
 import { useCreateComponentTheme } from "./theme-provider";
 
 /* ------------------------------------------------------------------ shared */
@@ -103,8 +103,9 @@ export function ChartFrame({
       data-cc-chart-frame=''
       className={cn(
         "flex flex-col gap-[calc(0.75rem*var(--cc-density))] bg-[var(--cc-surface)]",
-        "rounded-[var(--cc-radius-lg)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)]",
+        "rounded-[var(--cc-card-radius)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)]",
         borderChrome,
+        "[background-image:var(--cc-surface-pattern)] [background-size:var(--cc-surface-pattern-size)]",
         "[box-shadow:var(--cc-shadow)]",
         "p-[calc(1rem*var(--cc-density))]",
         className,
@@ -399,7 +400,8 @@ export function RadialGauge({
         <div className='absolute inset-0 flex flex-col items-center justify-center gap-0.5 text-center'>
           <span
             className={cn(
-              "font-mono text-[length:calc(var(--cc-font-size)*1.25)] font-black text-[color:var(--cc-surface-foreground)]",
+              "text-[length:calc(var(--cc-font-size)*1.25)] font-black text-[color:var(--cc-surface-foreground)]",
+              monoType,
               headingType,
             )}
           >
@@ -471,7 +473,7 @@ export function Heatmap({
         {columns.map((column) => (
           <span
             key={column}
-            className='flex-1 text-center font-mono text-[length:calc(var(--cc-font-size)*0.58)] text-[color:var(--cc-muted-foreground)]'
+            className={`flex-1 text-center ${monoType} text-[length:calc(var(--cc-font-size)*0.58)] text-[color:var(--cc-muted-foreground)]`}
           >
             {column}
           </span>
@@ -573,7 +575,7 @@ export function FunnelChart({
               >
                 {stage.label}
               </span>
-              <span className='flex items-baseline gap-1.5 font-mono text-[length:calc(var(--cc-font-size)*0.72)] text-[color:var(--cc-surface-foreground)]'>
+              <span className={`flex items-baseline gap-1.5 ${monoType} text-[length:calc(var(--cc-font-size)*0.72)] text-[color:var(--cc-surface-foreground)]`}>
                 {formatValue(stage.value)}
                 {drop > 0 ? (
                   <span className='text-[color:var(--cc-danger)]'>−{drop}٪</span>
@@ -590,7 +592,7 @@ export function FunnelChart({
               }}
             >
               {stage.note ? (
-                <span className='font-mono text-[length:calc(var(--cc-font-size)*0.58)] text-[color:var(--cc-surface)] opacity-90'>
+                <span className={`${monoType} text-[length:calc(var(--cc-font-size)*0.58)] text-[color:var(--cc-surface)] opacity-90`}>
                   {stage.note}
                 </span>
               ) : null}

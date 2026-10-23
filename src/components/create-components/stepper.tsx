@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { borderChrome, labelType, motion } from "./styles";
+import { borderChrome, labelType, monoType, motion } from "./styles";
 
 export type StepperStep = {
   id: string;
@@ -61,7 +61,8 @@ export function Stepper({
                 disabled={!clickable}
                 onClick={clickable ? () => onStepClick?.(index) : undefined}
                 className={cn(
-                  "flex size-7 shrink-0 items-center justify-center rounded-full border-[length:var(--cc-border-width)] font-mono text-[length:calc(var(--cc-font-size)*0.7)] font-bold",
+                  "flex size-7 shrink-0 items-center justify-center rounded-full border-[length:var(--cc-border-width)] text-[length:calc(var(--cc-font-size)*0.7)] font-bold",
+                  monoType,
                   borderChrome,
                   motion,
                   done || active
@@ -112,7 +113,7 @@ export function Stepper({
               {step.label}
             </span>
             {step.hint ? (
-              <span className='text-center font-mono text-[length:calc(var(--cc-font-size)*0.58)] text-[color:var(--cc-muted-foreground)]'>
+              <span className={`text-center ${monoType} text-[length:calc(var(--cc-font-size)*0.58)] text-[color:var(--cc-muted-foreground)]`}>
                 {step.hint}
               </span>
             ) : null}

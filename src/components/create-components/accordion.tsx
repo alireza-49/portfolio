@@ -8,7 +8,7 @@ import {
   type ComponentProps,
   type ReactNode,
 } from "react";
-import { ChevronDown } from "lucide-react";
+import { Icon } from "./icon-set";
 import { cn } from "@/lib/utils";
 import { borderChrome, labelType, motion } from "./styles";
 
@@ -92,8 +92,9 @@ export function Accordion({
         className={cn(
           "flex flex-col overflow-hidden",
           borderChrome,
-          "rounded-[var(--cc-radius)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)]",
+          "rounded-[var(--cc-card-radius)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)]",
           "bg-[var(--cc-surface)] [box-shadow:var(--cc-shadow)]",
+          "[background-image:var(--cc-surface-pattern)] [background-size:var(--cc-surface-pattern-size)]",
           className,
         )}
       >
@@ -164,7 +165,8 @@ export function AccordionTrigger({
       {...props}
     >
       <span>{children}</span>
-      <ChevronDown
+      <Icon
+        name='chevron-down'
         className={cn(
           "size-4 shrink-0 text-[color:var(--cc-muted-foreground)] transition-transform duration-[var(--cc-duration)]",
           item.open && "rotate-180",

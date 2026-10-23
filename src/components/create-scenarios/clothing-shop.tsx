@@ -3,23 +3,9 @@
 import {
   useMemo,
   useState,
-  type ComponentType,
   type CSSProperties,
   type FormEvent,
 } from "react";
-import {
-  ArrowLeft,
-  Check,
-  CheckCircle2,
-  Heart,
-  Menu,
-  Minus,
-  Plus,
-  Search,
-  ShoppingBag,
-  Trash2,
-  X,
-} from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -34,6 +20,7 @@ import {
   CardHeader,
   CardTitle,
   CheckboxField,
+  Icon,
   Input,
   Progress,
   Select,
@@ -42,7 +29,6 @@ import {
   Switch,
   headingType,
 } from "@/components/create-components";
-import type { IconLibraryId } from "@/components/create-studio-config";
 import { cn } from "@/lib/utils";
 import {
   AtelierScene,
@@ -67,7 +53,6 @@ import {
   type ShopProduct,
 } from "./data/shop";
 import { formatNumber, formatToman } from "./format";
-import { LIBRARY_ICONS } from "./icons";
 import { sc as styles } from "./scenes";
 import { ShopProductCard } from "./shop-product-card";
 
@@ -106,7 +91,7 @@ const discountPercent = (product: ShopProduct) =>
     ? Math.round((1 - product.price / product.oldPrice) * 100)
     : 0;
 
-export function ClothingShopView({ iconLibrary }: { iconLibrary: IconLibraryId }) {
+export function ClothingShopView() {
   const [category, setCategory] = useState<string>("all");
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState("featured");
@@ -128,7 +113,6 @@ export function ClothingShopView({ iconLibrary }: { iconLibrary: IconLibraryId }
   const [checkoutDone, setCheckoutDone] = useState(false);
   const [newsletterSent, setNewsletterSent] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const BrandIcon = LIBRARY_ICONS[iconLibrary];
 
   const visibleProducts = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -313,7 +297,6 @@ export function ClothingShopView({ iconLibrary }: { iconLibrary: IconLibraryId }
       <TickerCard />
 
       <ShopHeader
-        BrandIcon={BrandIcon}
         cartCount={cartCount}
         likedCount={liked.length}
         query={query}
@@ -432,7 +415,6 @@ function TickerCard() {
 }
 
 function ShopHeader({
-  BrandIcon,
   cartCount,
   likedCount,
   query,
@@ -443,7 +425,6 @@ function ShopHeader({
   onToggleMenu,
   onPickCategory,
 }: {
-  BrandIcon: ComponentType<{ className?: string }>;
   cartCount: number;
   likedCount: number;
   query: string;
@@ -459,7 +440,7 @@ function ShopHeader({
       <div className='flex flex-wrap items-center gap-3'>
         <div className='flex items-center gap-2.5'>
           <span className='flex size-9 items-center justify-center rounded-[var(--cc-radius)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-primary)] text-[color:var(--cc-primary-foreground)] [box-shadow:var(--cc-shadow)]'>
-            <BrandIcon className='size-5' />
+            <Icon name='brand' className='size-5' />
           </span>
           <div className='flex flex-col'>
             <span className='text-sm font-bold text-[color:var(--cc-surface-foreground)]'>
@@ -486,7 +467,7 @@ function ShopHeader({
 
         <div className='ms-auto flex flex-1 items-center justify-end gap-2'>
           <div className='relative w-full max-w-56'>
-            <Search className='pointer-events-none absolute start-2.5 top-1/2 size-3.5 -translate-y-1/2 text-[color:var(--cc-muted-foreground)]' />
+            <Icon name='search' className='pointer-events-none absolute start-2.5 top-1/2 size-3.5 -translate-y-1/2 text-[color:var(--cc-muted-foreground)]' />
             <Input
               value={query}
               onChange={(event) => onQueryChange(event.target.value)}
@@ -504,7 +485,8 @@ function ShopHeader({
               aria-pressed={wishlistOnly}
               onClick={onToggleWishlist}
             >
-              <Heart
+              <Icon
+                name='heart'
                 className={cn("size-4", wishlistOnly && "fill-current")}
               />
             </Button>
@@ -518,7 +500,7 @@ function ShopHeader({
 
           <div className='relative'>
             <Button size='icon' aria-label='سبد خرید'>
-              <ShoppingBag className='size-4' />
+              <Icon name='shopping-bag' className='size-4' />
             </Button>
             <Badge
               variant='solid'
@@ -536,7 +518,11 @@ function ShopHeader({
             aria-expanded={menuOpen}
             onClick={onToggleMenu}
           >
-            {menuOpen ? <X className='size-4' /> : <Menu className='size-4' />}
+            {menuOpen ? (
+              <Icon name='close' className='size-4' />
+            ) : (
+              <Icon name='menu' className='size-4' />
+            )}
           </Button>
         </div>
       </div>
@@ -613,7 +599,7 @@ function ShopHero({
 
           <div className='flex flex-wrap items-center gap-2'>
             <Button size='lg'>
-              <ShoppingBag className='size-4' />
+              <Icon name='shopping-bag' className='size-4' />
               خرید کالکشن
             </Button>
             <Button size='lg' variant='outline'>
@@ -670,7 +656,7 @@ function ShopHero({
             )}
             style={{ "--sc-delay": "-2.4s" } as CSSProperties}
           >
-            <CheckCircle2 className='size-3 text-[color:var(--cc-success)]' />
+            <Icon name='check-circle' className='size-3 text-[color:var(--cc-success)]' />
             ارسال رایگان
           </div>
 
@@ -708,7 +694,7 @@ function ShopHero({
                 )
               }
             >
-              <Plus className='size-3.5' />
+              <Icon name='plus' className='size-3.5' />
               افزودن
             </Button>
           </div>
@@ -748,7 +734,7 @@ function CategoryTiles({ onPick }: { onPick: (value: string) => void }) {
                   </span>
                 </div>
                 <span className='flex size-7 items-center justify-center rounded-full border-[length:var(--cc-border-width)] border-[color:var(--cc-border)]'>
-                  <ArrowLeft className='size-3.5 transition-transform group-hover:-translate-x-0.5' />
+                  <Icon name='arrow-left' className='size-3.5 transition-transform group-hover:-translate-x-0.5' />
                 </span>
               </div>
             </button>
@@ -820,7 +806,7 @@ function LookbookSection({
                 className='mt-auto self-start'
               >
                 داستان کالکشن
-                <ArrowLeft className='size-3.5' />
+                <Icon name='arrow-left' className='size-3.5' />
               </Button>
             </div>
           </div>
@@ -852,7 +838,7 @@ function LookbookSection({
                     className='mt-auto'
                     onClick={() => onAddLook(look.items)}
                   >
-                    <ShoppingBag className='size-3.5' />
+                    <Icon name='shopping-bag' className='size-3.5' />
                     خرید استایل
                   </Button>
                 </div>
@@ -1111,7 +1097,7 @@ function CatalogSection({
           </div>
 
           <div className='relative'>
-            <Search className='pointer-events-none absolute start-2.5 top-1/2 size-3.5 -translate-y-1/2 text-[color:var(--cc-muted-foreground)]' />
+            <Icon name='search' className='pointer-events-none absolute start-2.5 top-1/2 size-3.5 -translate-y-1/2 text-[color:var(--cc-muted-foreground)]' />
             <Input
               value={query}
               onChange={(event) => onQueryChange(event.target.value)}
@@ -1159,7 +1145,7 @@ function CatalogSection({
                   onClick={filter.clear}
                 >
                   {filter.label}
-                  <X className='size-3' />
+                  <Icon name='close' className='size-3' />
                 </Button>
               ))}
               <Button variant='ghost' size='sm' onClick={onReset}>
@@ -1289,7 +1275,7 @@ function CartSection({
                           aria-label={`حذف ${item.product.name}`}
                           onClick={() => onChangeQty(item.product.id, -item.qty)}
                         >
-                          <Trash2 className='size-3.5' />
+                          <Icon name='trash' className='size-3.5' />
                         </Button>
                       </div>
                       <span className='text-[10px] text-[color:var(--cc-muted-foreground)]'>
@@ -1305,7 +1291,7 @@ function CartSection({
                             aria-label={`کاهش ${item.product.name}`}
                             onClick={() => onChangeQty(item.product.id, -1)}
                           >
-                            <Minus className='size-3' />
+                            <Icon name='minus' className='size-3' />
                           </Button>
                           <span className='w-6 text-center font-mono text-xs'>
                             {formatNumber(item.qty)}
@@ -1317,7 +1303,7 @@ function CartSection({
                             aria-label={`افزایش ${item.product.name}`}
                             onClick={() => onChangeQty(item.product.id, 1)}
                           >
-                            <Plus className='size-3' />
+                            <Icon name='plus' className='size-3' />
                           </Button>
                         </div>
                         <span className='font-mono text-xs font-bold'>
@@ -1334,7 +1320,7 @@ function CartSection({
                 className='self-start'
                 onClick={onClearCart}
               >
-                <Trash2 className='size-3.5' />
+                <Icon name='trash' className='size-3.5' />
                 خالی کردن سبد
               </Button>
             </div>
@@ -1414,7 +1400,7 @@ function CartSection({
               </div>
 
               <Button fullWidth onClick={onCheckout}>
-                <ShoppingBag className='size-4' />
+                <Icon name='shopping-bag' className='size-4' />
                 تکمیل خرید
               </Button>
 
@@ -1485,7 +1471,7 @@ function ReviewsSection() {
                   {review.city} · خرید تأییدشده
                 </span>
               </div>
-              <CheckCircle2 className='ms-auto size-4 shrink-0 text-[color:var(--cc-success)]' />
+              <Icon name='check-circle' className='ms-auto size-4 shrink-0 text-[color:var(--cc-success)]' />
             </div>
             <StarRating value={review.rating} />
             <p className='text-xs leading-relaxed text-[color:var(--cc-surface-foreground)]'>
@@ -1610,7 +1596,7 @@ function FaqSection() {
               key={item}
               className='flex items-center gap-1.5 text-[10px] text-[color:var(--cc-muted-foreground)]'
             >
-              <Check className='size-3 text-[color:var(--cc-primary)]' />
+              <Icon name='check' className='size-3 text-[color:var(--cc-primary)]' />
               {item}
             </span>
           ))}
@@ -1618,7 +1604,7 @@ function FaqSection() {
 
         <Button variant='outline' fullWidth>
           گفتگو با پشتیبانی
-          <ArrowLeft className='size-3.5' />
+          <Icon name='arrow-left' className='size-3.5' />
         </Button>
       </Card>
     </div>

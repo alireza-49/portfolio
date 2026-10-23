@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { borderChrome, labelType, motion } from "./styles";
+import { borderChrome, labelType, monoType, motion } from "./styles";
 import {
   JALALI_MONTHS,
   PERSIAN_WEEKDAYS,
@@ -155,7 +155,7 @@ export function Calendar({
         {PERSIAN_WEEKDAYS.map((weekday) => (
           <span
             key={weekday}
-            className='text-center font-mono text-[length:calc(var(--cc-font-size)*0.6)] text-[color:var(--cc-muted-foreground)]'
+            className={`text-center ${monoType} text-[length:calc(var(--cc-font-size)*0.6)] text-[color:var(--cc-muted-foreground)]`}
           >
             {weekday}
           </span>
@@ -182,7 +182,8 @@ export function Calendar({
               disabled={unavailable}
               onClick={() => onValueChange?.(day.iso)}
               className={cn(
-                "relative flex aspect-square flex-col items-center justify-center gap-0.5 rounded-[var(--cc-radius-sm)] border-[length:var(--cc-border-width)] font-mono text-[length:calc(var(--cc-font-size)*0.72)]",
+                "relative flex aspect-square flex-col items-center justify-center gap-0.5 rounded-[var(--cc-radius-sm)] border-[length:var(--cc-border-width)] text-[length:calc(var(--cc-font-size)*0.72)]",
+                monoType,
                 motion,
                 selected
                   ? "border-[color:var(--cc-primary)] bg-[var(--cc-primary)] font-bold text-[color:var(--cc-primary-foreground)] [box-shadow:var(--cc-shadow)]"

@@ -19,12 +19,26 @@ import { CreateStudioCanvas } from "@/components/create-studio-canvas";
 import { CreateStudioSidebar } from "@/components/create-studio-sidebar";
 import { createThemePresets } from "@/components/create-components/style-presets";
 import {
+  DEFAULT_PALETTE,
+  PALETTE_PRESETS,
+  resetPaletteGroup,
+  resetPaletteToken,
+  studioPaletteFromPreset,
+  withPaletteToken,
+  type PalettePreset,
+  type PaletteTokenId,
+  type StudioPalette,
+} from "@/components/create-studio-palette";
+import {
   ARCHETYPE_ICONS,
   ARCHETYPES,
-  SHUFFLE_PRESETS,
+  DEFAULT_ICON_STYLE,
+  STYLE_FONTS,
+  STYLES,
   buildThemeSnippet,
   type ArchetypeId,
   type IconLibraryId,
+  type IconStyle,
   type StyleId,
 } from "@/components/create-studio-config";
 import {
@@ -40,14 +54,13 @@ import {
 const scenarioTabId = (id: ArchetypeId) => `scenario-tab-${id}`;
 
 export function CreateStudio() {
-  const [archetype, setArchetype] = useState<ArchetypeId>("components");
+  const [archetype, setArchetype] = useState<ArchetypeId>("landing");
   const [styleId, setStyleId] = useState<StyleId>("nova");
-  const [primary, setPrimary] = useState("#e76f51");
-  const [primarySubtle, setPrimarySubtle] = useState("#fbeee9");
-  const [colorName, setColorName] = useState("سفال کهربایی");
+  const [palette, setPalette] = useState<StudioPalette>(DEFAULT_PALETTE);
   const [radius, setRadius] = useState(4);
-  const [font, setFont] = useState<string>("vazirmatn");
+  const [font, setFont] = useState<string>("vazir");
   const [iconLibrary, setIconLibrary] = useState<IconLibraryId>("google");
+  const [iconStyle, setIconStyle] = useState<IconStyle>(DEFAULT_ICON_STYLE);
   const [modalOpen, setModalOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -63,24 +76,29 @@ export function CreateStudio() {
   const snippet = useMemo(
     () =>
       buildThemeSnippet({
-        primary,
-        primarySubtle,
+        palette,
         radius,
         style: styleId,
         fontStack,
+        iconStyle,
       }),
-    [primary, primarySubtle, radius, styleId, fontStack],
+    [palette, radius, styleId, fontStack, iconStyle],
   );
 
-  const selectColor = (hex: string, subtle: string, name: string) => {
-    setPrimary(hex);
-    setPrimarySubtle(subtle);
-    setColorName(name);
+  const selectPalette = (preset: PalettePreset) => {
+    setPalette(studioPaletteFromPreset(preset));
+  };
+
+  const setPaletteColor = (token: PaletteTokenId, hex: string) => {
+    setPalette((current) => withPaletteToken(current, token, hex));
   };
 
   const selectStyle = (id: StyleId) => {
     setStyleId(id);
     setRadius(createThemePresets[id].tokens.radius ?? radius);
+    // Each style names the voice it was drawn for; the picker can still
+    // override the body face afterwards.
+    setFont(STYLE_FONTS[id]);
   };
 
   const addFont = async (name: string, file: File) => {
@@ -94,13 +112,16 @@ export function CreateStudio() {
   };
 
   const shuffle = () => {
-    const preset =
-      SHUFFLE_PRESETS[Math.floor(Math.random() * SHUFFLE_PRESETS.length)];
-    setPrimary(preset.hex);
-    setPrimarySubtle(preset.subtle);
-    setColorName(preset.name);
-    setRadius(preset.radius);
-    setStyleId(preset.style);
+    // Random style + random ready palette: the preset already owns geometry
+    // and typography, so a hand-maintained combination list would only go
+    // stale.
+    const nextStyle = STYLES[Math.floor(Math.random() * STYLES.length)];
+    const nextPalette =
+      PALETTE_PRESETS[Math.floor(Math.random() * PALETTE_PRESETS.length)];
+    setPalette(studioPaletteFromPreset(nextPalette));
+    setRadius(createThemePresets[nextStyle.id].tokens.radius ?? 8);
+    setStyleId(nextStyle.id);
+    setFont(STYLE_FONTS[nextStyle.id]);
   };
 
   const selectScenario = (id: ArchetypeId, moveFocus = false) => {
@@ -228,10 +249,15 @@ export function CreateStudio() {
         <CreateStudioSidebar
           styleId={styleId}
           onStyleChange={selectStyle}
-          primary={primary}
-          primarySubtle={primarySubtle}
-          colorName={colorName}
-          onColorChange={selectColor}
+          palette={palette}
+          onPalettePreset={selectPalette}
+          onPaletteToken={setPaletteColor}
+          onResetPaletteToken={(token) =>
+            setPalette((current) => resetPaletteToken(current, token))
+          }
+          onResetPaletteGroup={(group) =>
+            setPalette((current) => resetPaletteGroup(current, group))
+          }
           radius={radius}
           onRadiusChange={setRadius}
           font={font}
@@ -241,17 +267,19 @@ export function CreateStudio() {
           onRemoveCustomFont={deleteFont}
           iconLibrary={iconLibrary}
           onIconLibraryChange={setIconLibrary}
+          iconStyle={iconStyle}
+          onIconStyleChange={setIconStyle}
           onShuffle={shuffle}
           onExport={() => setModalOpen(true)}
         />
         <CreateStudioCanvas
           archetype={archetype}
-          primary={primary}
-          primarySubtle={primarySubtle}
+          palette={palette}
           radius={radius}
           styleId={styleId}
           fontFamily={fontStack}
           iconLibrary={iconLibrary}
+          iconStyle={iconStyle}
         />
       </div>
 

@@ -1,27 +1,6 @@
 "use client";
 
-import { useMemo, useState, type ComponentType } from "react";
-import {
-  Activity,
-  ArrowDown,
-  ArrowUp,
-  Bell,
-  Boxes,
-  ChartArea,
-  ChevronLeft,
-  ChevronRight,
-  CreditCard,
-  Download,
-  Filter,
-  Gauge,
-  LayoutDashboard,
-  RefreshCw,
-  Search,
-  Settings2,
-  ShieldCheck,
-  ShoppingBag,
-  Users,
-} from "lucide-react";
+import { useMemo, useState } from "react";
 import {
   Alert,
   AreaTrend,
@@ -40,6 +19,7 @@ import {
   DonutBreakdown,
   FunnelChart,
   Heatmap,
+  Icon,
   Input,
   LineTrend,
   MiniBars,
@@ -62,8 +42,8 @@ import {
   Timeline,
   TimelineItem,
   useChartTheme,
+  type IconName,
 } from "@/components/create-components";
-import type { IconLibraryId } from "@/components/create-studio-config";
 import { cn } from "@/lib/utils";
 import {
   ACTIVITY,
@@ -89,36 +69,36 @@ import {
   type RangeId,
 } from "./data/dashboard";
 import { formatNumber, formatToman } from "./format";
-import { LIBRARY_ICONS } from "./icons";
 
 type SortKey = "amount" | "customer" | "date";
 type Metric = "revenue" | "orders";
 
 const PAGE_SIZE = 5;
 
-const NAV = [
-  { id: "overview", label: "نمای کلی", icon: LayoutDashboard },
-  { id: "sales", label: "فروش", icon: ShoppingBag },
-  { id: "customers", label: "مشتریان", icon: Users },
-  { id: "billing", label: "پرداخت‌ها", icon: CreditCard },
-  { id: "infra", label: "زیرساخت", icon: Boxes },
-  { id: "settings", label: "تنظیمات", icon: Settings2 },
+const NAV: { id: string; label: string; icon: IconName }[] = [
+  { id: "overview", label: "نمای کلی", icon: "dashboard" },
+  { id: "sales", label: "فروش", icon: "shopping-bag" },
+  { id: "customers", label: "مشتریان", icon: "users" },
+  { id: "billing", label: "پرداخت‌ها", icon: "credit-card" },
+  { id: "infra", label: "زیرساخت", icon: "boxes" },
+  { id: "settings", label: "تنظیمات", icon: "settings" },
 ];
 
 function SortIndicator({ active, asc }: { active: boolean; asc: boolean }) {
   return asc ? (
-    <ArrowUp className={cn("size-3", !active && "opacity-30")} />
+    <Icon
+      name='arrow-up'
+      className={cn("size-3", !active && "opacity-30")}
+    />
   ) : (
-    <ArrowDown className={cn("size-3", !active && "opacity-30")} />
+    <Icon
+      name='arrow-down'
+      className={cn("size-3", !active && "opacity-30")}
+    />
   );
 }
 
-export type AnalyticsDashboardViewProps = { iconLibrary: IconLibraryId };
-
-export function AnalyticsDashboardView({
-  iconLibrary,
-}: AnalyticsDashboardViewProps) {
-  const BrandIcon: ComponentType<{ className?: string }> = LIBRARY_ICONS[iconLibrary];
+export function AnalyticsDashboardView() {
   const theme = useChartTheme();
 
   const [nav, setNav] = useState("overview");
@@ -213,7 +193,7 @@ export function AnalyticsDashboardView({
         <div className='flex flex-wrap items-center justify-between gap-3 p-3'>
           <div className='flex items-center gap-2.5'>
             <span className='flex size-9 items-center justify-center rounded-[var(--cc-radius)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-primary)] text-[color:var(--cc-primary-foreground)] [box-shadow:var(--cc-shadow)]'>
-              <BrandIcon className='size-5' />
+              <Icon name='brand' className='size-5' />
             </span>
             <div className='flex flex-col'>
               <span className='text-sm font-bold text-[color:var(--cc-surface-foreground)]'>
@@ -227,7 +207,7 @@ export function AnalyticsDashboardView({
 
           <div className='flex flex-wrap items-center gap-2'>
             <div className='relative'>
-              <Search className='pointer-events-none absolute end-2 top-1/2 size-3.5 -translate-y-1/2 text-[color:var(--cc-muted-foreground)]' />
+              <Icon name='search' className='pointer-events-none absolute end-2 top-1/2 size-3.5 -translate-y-1/2 text-[color:var(--cc-muted-foreground)]' />
               <Input
                 value={query}
                 onChange={(event) => {
@@ -276,7 +256,7 @@ export function AnalyticsDashboardView({
               aria-label='بروزرسانی داده‌ها'
               onClick={() => setTick((previous) => previous + 1)}
             >
-              <RefreshCw className='size-3.5' />
+              <Icon name='refresh' className='size-3.5' />
             </Button>
 
             <Avatar alt='کاربر' size='sm' />
@@ -285,7 +265,6 @@ export function AnalyticsDashboardView({
 
         <div className='flex items-center gap-1 overflow-x-auto border-t-[length:var(--cc-border-width)] border-[color:var(--cc-border)] px-2 py-1.5'>
           {NAV.map((item) => {
-            const Icon = item.icon;
             const active = nav === item.id;
             return (
               <button
@@ -300,13 +279,13 @@ export function AnalyticsDashboardView({
                     : "border-transparent text-[color:var(--cc-muted-foreground)] hover:bg-[var(--cc-muted)]",
                 )}
               >
-                <Icon className='size-3.5' />
+                <Icon name={item.icon} className='size-3.5' />
                 {item.label}
               </button>
             );
           })}
           <span className='ms-auto hidden items-center gap-1 ps-2 text-[10px] text-[color:var(--cc-muted-foreground)] @xl:flex'>
-            <ShieldCheck className='size-3' />
+            <Icon name='shield-check' className='size-3' />
             داده‌ها تا {formatNumber(5)} دقیقه پیش
           </span>
         </div>
@@ -319,7 +298,7 @@ export function AnalyticsDashboardView({
           value={`${formatNumber(totals.revenue)} م`}
           delta={{ value: "۱۲٪", direction: "up" }}
           hint={`دورهٔ قبل: ${formatNumber(totals.previous)} میلیون`}
-          icon={<ChartArea className='size-3.5' />}
+          icon={<Icon name='chart-area' className='size-3.5' />}
         >
           <Sparkline points={KPI_SERIES.revenue} />
         </Stat>
@@ -328,7 +307,7 @@ export function AnalyticsDashboardView({
           value={formatNumber(totals.orders)}
           delta={{ value: "۸٪", direction: "up" }}
           hint='۲۴٪ از کانال ارگانیک'
-          icon={<ShoppingBag className='size-3.5' />}
+          icon={<Icon name='shopping-bag' className='size-3.5' />}
         >
           <MiniBars points={KPI_SERIES.users} />
         </Stat>
@@ -337,7 +316,7 @@ export function AnalyticsDashboardView({
           value={`${dataset.summary.conversion}٪`}
           delta={{ value: "۰.۳", direction: "up" }}
           hint={`${formatNumber(dataset.summary.visitors)} بازدید یکتا`}
-          icon={<Gauge className='size-3.5' />}
+          icon={<Icon name='gauge' className='size-3.5' />}
         >
           <MiniBars points={KPI_SERIES.conversion} />
         </Stat>
@@ -346,7 +325,7 @@ export function AnalyticsDashboardView({
           value='۳.۸٪'
           delta={{ value: "۰.۴", direction: "down" }}
           hint='بهترین ماه در ۶ ماه گذشته'
-          icon={<Activity className='size-3.5' />}
+          icon={<Icon name='activity' className='size-3.5' />}
         >
           <Sparkline points={KPI_SERIES.churn} tone='success' />
         </Stat>
@@ -590,7 +569,7 @@ export function AnalyticsDashboardView({
                 className='h-8 w-32 text-[10px]'
               />
               <Button size='sm' variant='outline'>
-                <Download className='size-3.5' />
+                <Icon name='download' className='size-3.5' />
                 CSV
               </Button>
             </div>
@@ -605,7 +584,7 @@ export function AnalyticsDashboardView({
               </span>
               <div className='flex items-center gap-1'>
                 <Button size='sm' variant='outline'>
-                  <Filter className='size-3' />
+                  <Icon name='filter' className='size-3' />
                   برچسب‌گذاری
                 </Button>
                 <Button size='sm' onClick={() => setSelected([])}>
@@ -726,7 +705,7 @@ export function AnalyticsDashboardView({
                   setPage((previous) => Math.max(0, previous - 1))
                 }
               >
-                <ChevronRight className='size-3.5' />
+                <Icon name='chevron-right' className='size-3.5' />
               </Button>
               {Array.from({ length: pageCount }).map((_, index) => (
                 <Button
@@ -748,7 +727,7 @@ export function AnalyticsDashboardView({
                   setPage((previous) => Math.min(pageCount - 1, previous + 1))
                 }
               >
-                <ChevronLeft className='size-3.5' />
+                <Icon name='chevron-left' className='size-3.5' />
               </Button>
             </div>
           </div>
@@ -776,7 +755,7 @@ export function AnalyticsDashboardView({
               </Alert>
             ))}
             <Button size='sm' variant='outline' fullWidth>
-              <Bell className='size-3.5' />
+              <Icon name='bell' className='size-3.5' />
               تنظیم قاعدهٔ هشدار
             </Button>
           </CardContent>
@@ -857,7 +836,7 @@ export function AnalyticsDashboardView({
         description='مدل پیش‌بینی ساده بر پایهٔ میانگین متحرک ۷ روزه'
         actions={
           <Badge variant='soft' className='gap-1'>
-            <Activity className='size-3' />
+            <Icon name='activity' className='size-3' />
             دقت مدل: ۸۶٪
           </Badge>
         }
@@ -877,7 +856,7 @@ export function AnalyticsDashboardView({
               variant='outline'
               onClick={() => setTick((previous) => previous + 1)}
             >
-              <RefreshCw className='size-3' />
+              <Icon name='refresh' className='size-3' />
               بازخوانی
             </Button>
           </>
@@ -909,7 +888,7 @@ export function AnalyticsDashboardView({
 
       <footer className='flex flex-wrap items-center justify-between gap-2 border-t-[length:var(--cc-border-width)] border-[color:var(--cc-border)] pt-2'>
         <span className='flex items-center gap-1.5 text-[10px] text-[color:var(--cc-muted-foreground)]'>
-          <BrandIcon className='size-3.5 text-[color:var(--cc-primary)]' />
+          <Icon name='brand' className='size-3.5 text-[color:var(--cc-primary)]' />
           آترین آنالیتیکس · نسخهٔ ۲.۱۴.۰
         </span>
         <div className='flex flex-wrap items-center gap-1'>

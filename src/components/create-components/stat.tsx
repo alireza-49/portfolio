@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import { borderChrome, headingType, labelType, motion } from "./styles";
+import { borderChrome, headingType, labelType, monoType, motion } from "./styles";
 
 export type StatDelta = {
   value: string;
@@ -46,8 +46,9 @@ export function Stat({
       data-cc-stat=''
       className={cn(
         "flex flex-col gap-1.5 bg-[var(--cc-surface)] p-[calc(0.75rem*var(--cc-density))]",
-        "rounded-[var(--cc-radius)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)]",
+        "rounded-[var(--cc-card-radius)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)]",
         borderChrome,
+        "[background-image:var(--cc-surface-pattern)] [background-size:var(--cc-surface-pattern-size)]",
         "[box-shadow:var(--cc-shadow)]",
         motion,
         className,
@@ -72,7 +73,8 @@ export function Stat({
       <div className='flex flex-wrap items-baseline gap-2'>
         <span
           className={cn(
-            "font-mono text-[length:calc(var(--cc-font-size)*1.35)] font-black text-[color:var(--cc-surface-foreground)]",
+            "text-[length:calc(var(--cc-font-size)*1.35)] font-black text-[color:var(--cc-surface-foreground)]",
+            monoType,
             headingType,
           )}
         >
@@ -81,7 +83,8 @@ export function Stat({
         {delta ? (
           <span
             className={cn(
-              "inline-flex items-center gap-0.5 rounded-[var(--cc-badge-radius)] px-1.5 py-0.5 font-mono text-[length:calc(var(--cc-font-size)*0.62)] font-bold",
+              "inline-flex items-center gap-0.5 rounded-[var(--cc-badge-radius)] px-1.5 py-0.5 text-[length:calc(var(--cc-font-size)*0.62)] font-bold",
+              monoType,
               deltaTone,
             )}
           >

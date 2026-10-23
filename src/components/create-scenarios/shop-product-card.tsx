@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Heart, Plus } from "lucide-react";
 import {
   Badge,
   Button,
@@ -9,6 +8,7 @@ import {
   CardContent,
   CardDescription,
   CardTitle,
+  Icon,
 } from "@/components/create-components";
 import { cn } from "@/lib/utils";
 import { formatNumber, formatToman } from "./format";
@@ -68,7 +68,10 @@ export function ShopProductCard({
           aria-pressed={liked}
           onClick={() => onToggleLike(product.id)}
         >
-          <Heart className={liked ? "size-4 fill-current" : "size-4"} />
+          <Icon
+            name='heart'
+            className={liked ? "size-4 fill-current" : "size-4"}
+          />
         </Button>
 
         {product.inStock ? null : (
@@ -174,7 +177,7 @@ export function ShopProductCard({
           disabled={!product.inStock}
           onClick={() => onAdd(product.id, color, size)}
         >
-          <Plus className='size-3.5' />
+          <Icon name='plus' className='size-3.5' />
           {product.inStock ? "افزودن به سبد" : "ناموجود"}
         </Button>
       </CardContent>

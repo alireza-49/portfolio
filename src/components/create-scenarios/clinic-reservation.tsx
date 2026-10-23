@@ -1,25 +1,6 @@
 "use client";
 
-import { useMemo, useState, type ComponentType } from "react";
-import {
-  ArrowLeft,
-  BadgeCheck,
-  CalendarCheck2,
-  CalendarDays,
-  Check,
-  ChevronLeft,
-  ChevronRight,
-  Clock,
-  CreditCard,
-  HeartPulse,
-  MapPin,
-  Phone,
-  ShieldCheck,
-  Sparkles,
-  Stethoscope,
-  Video,
-  Wallet,
-} from "lucide-react";
+import { useMemo, useState } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -36,6 +17,7 @@ import {
   CardTitle,
   CheckboxField,
   Field,
+  Icon,
   Input,
   Progress,
   RadioGroup,
@@ -57,7 +39,6 @@ import {
   labelType,
   toPersianDigits,
 } from "@/components/create-components";
-import type { IconLibraryId } from "@/components/create-studio-config";
 import { cn } from "@/lib/utils";
 import { BookingSlip, ClinicMap, ClinicScene } from "./art/clinic-art";
 import { Portrait } from "./art/portraits";
@@ -80,7 +61,6 @@ import {
   type SpecialtyId,
 } from "./data/clinic";
 import { formatNumber, formatToman } from "./format";
-import { LIBRARY_ICONS } from "./icons";
 
 const STEPS = [
   { id: "doctor", label: "پزشک", hint: "تخصص" },
@@ -117,14 +97,7 @@ const EMPTY_PATIENT: PatientForm = {
   reminder: true,
 };
 
-export type ClinicReservationViewProps = { iconLibrary: IconLibraryId };
-
-export function ClinicReservationView({
-  iconLibrary,
-}: ClinicReservationViewProps) {
-  const BrandIcon: ComponentType<{ className?: string }> =
-    LIBRARY_ICONS[iconLibrary];
-
+export function ClinicReservationView() {
   const [specialty, setSpecialty] = useState<SpecialtyId>("cardio");
   const [doctorId, setDoctorId] = useState(DOCTORS[0].id);
   const [date, setDate] = useState(CLINIC_TODAY);
@@ -228,7 +201,7 @@ export function ClinicReservationView({
           <div className='flex flex-wrap items-center justify-between gap-3'>
             <div className='flex items-center gap-2.5'>
               <span className='flex size-9 items-center justify-center rounded-[var(--cc-radius)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-primary)] text-[color:var(--cc-primary-foreground)] [box-shadow:var(--cc-shadow)]'>
-                <BrandIcon className='size-5' />
+                <Icon name='brand' className='size-5' />
               </span>
               <div className='flex flex-col'>
                 <span className='text-sm font-bold text-[color:var(--cc-surface-foreground)]'>
@@ -254,7 +227,7 @@ export function ClinicReservationView({
                 باز است تا ۲۱:۰۰
               </Badge>
               <Button variant='outline' size='sm'>
-                <Phone className='size-3.5' />
+                <Icon name='phone' className='size-3.5' />
                 ۰۲۱-۸۸۷۷
               </Button>
               <Button size='sm'>رزرو نوبت</Button>
@@ -269,7 +242,7 @@ export function ClinicReservationView({
           <div className='flex flex-col gap-4 p-5 @2xl:p-7'>
             <div className='flex flex-wrap items-center gap-2'>
               <Badge variant='soft' className='gap-1'>
-                <Sparkles className='size-3' />
+                <Icon name='sparkles' className='size-3' />
                 نوبت‌دهی هوشمند
               </Badge>
               <Ornament />
@@ -290,25 +263,25 @@ export function ClinicReservationView({
             <div className='flex flex-wrap items-center gap-2'>
               <Button size='lg' onClick={() => setStep(0)}>
                 شروع رزرو نوبت
-                <ArrowLeft className='size-4' />
+                <Icon name='arrow-left' className='size-4' />
               </Button>
               <Button size='lg' variant='outline'>
-                <Video className='size-4' />
+                <Icon name='video' className='size-4' />
                 ویزیت آنلاین
               </Button>
             </div>
 
             <div className='flex flex-wrap items-center gap-3 rounded-[var(--cc-radius)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-muted)] p-2.5'>
               <span className='flex items-center gap-1.5 text-[10px] text-[color:var(--cc-surface-foreground)]'>
-                <ShieldCheck className='size-3.5 text-[color:var(--cc-primary)]' />
+                <Icon name='shield-check' className='size-3.5 text-[color:var(--cc-primary)]' />
                 بیمهٔ تأمین اجتماعی و سلامت
               </span>
               <span className='flex items-center gap-1.5 text-[10px] text-[color:var(--cc-surface-foreground)]'>
-                <Clock className='size-3.5 text-[color:var(--cc-primary)]' />
+                <Icon name='clock' className='size-3.5 text-[color:var(--cc-primary)]' />
                 لغو رایگان تا ۱۲ ساعت قبل
               </span>
               <span className='flex items-center gap-1.5 text-[10px] text-[color:var(--cc-surface-foreground)]'>
-                <Wallet className='size-3.5 text-[color:var(--cc-primary)]' />
+                <Icon name='wallet' className='size-3.5 text-[color:var(--cc-primary)]' />
                 پرداخت در محل یا آنلاین
               </span>
             </div>
@@ -406,11 +379,11 @@ export function ClinicReservationView({
                 <div className='flex flex-wrap gap-2'>
                   <Button onClick={resetBooking}>رزرو نوبت دیگر</Button>
                   <Button variant='outline'>
-                    <CalendarDays className='size-3.5' />
+                    <Icon name='calendar' className='size-3.5' />
                     افزودن به تقویم
                   </Button>
                   <Button variant='outline'>
-                    <Phone className='size-3.5' />
+                    <Icon name='phone' className='size-3.5' />
                     تماس با پذیرش
                   </Button>
                 </div>
@@ -488,7 +461,7 @@ export function ClinicReservationView({
                               </div>
                               {selected ? (
                                 <span className='flex size-5 shrink-0 items-center justify-center rounded-full bg-[var(--cc-primary)] text-[color:var(--cc-primary-foreground)]'>
-                                  <Check className='size-3' />
+                                  <Icon name='check' className='size-3' />
                                 </span>
                               ) : null}
                             </div>
@@ -501,7 +474,7 @@ export function ClinicReservationView({
                               ))}
                               {entry.online ? (
                                 <Badge variant='soft' className='gap-1'>
-                                  <Video className='size-2.5' />
+                                  <Icon name='video' className='size-2.5' />
                                   آنلاین
                                 </Badge>
                               ) : null}
@@ -905,7 +878,7 @@ export function ClinicReservationView({
                       setStep((previous) => Math.max(0, previous - 1))
                     }
                   >
-                    <ChevronRight className='size-3.5' />
+                    <Icon name='chevron-right' className='size-3.5' />
                     مرحلهٔ قبل
                   </Button>
 
@@ -924,11 +897,11 @@ export function ClinicReservationView({
                       disabled={step === 1 && !selectedSlot}
                     >
                       ادامه
-                      <ChevronLeft className='size-3.5' />
+                      <Icon name='chevron-left' className='size-3.5' />
                     </Button>
                   ) : (
                     <Button size='sm' onClick={confirmBooking}>
-                      <CreditCard className='size-3.5' />
+                      <Icon name='credit-card' className='size-3.5' />
                       تأیید و پرداخت {formatToman(total)}
                     </Button>
                   )}
@@ -974,19 +947,19 @@ export function ClinicReservationView({
               <div className='flex flex-col gap-1.5'>
                 {[
                   {
-                    icon: <CalendarCheck2 className='size-3.5' />,
+                    icon: <Icon name='calendar-check' className='size-3.5' />,
                     label: dayLabel,
                   },
                   {
-                    icon: <Clock className='size-3.5' />,
+                    icon: <Icon name='clock' className='size-3.5' />,
                     label: selectedSlot ? selectedSlot.time : "ساعت انتخاب نشده",
                   },
                   {
                     icon:
                       mode === "online" ? (
-                        <Video className='size-3.5' />
+                        <Icon name='video' className='size-3.5' />
                       ) : (
-                        <Stethoscope className='size-3.5' />
+                        <Icon name='stethoscope' className='size-3.5' />
                       ),
                     label: mode === "online" ? "ویزیت آنلاین" : "ویزیت حضوری",
                   },
@@ -1042,7 +1015,7 @@ export function ClinicReservationView({
             <Card className='gap-2'>
               <div className='flex items-center gap-2'>
                 <span className='flex size-8 items-center justify-center rounded-full bg-[var(--cc-muted)] text-[color:var(--cc-primary)]'>
-                  <BadgeCheck className='size-4' />
+                  <Icon name='badge-check' className='size-4' />
                 </span>
                 <div className='flex flex-col'>
                   <span className='text-xs font-bold text-[color:var(--cc-surface-foreground)]'>
@@ -1058,7 +1031,7 @@ export function ClinicReservationView({
                 می‌شود.
               </p>
               <Button variant='outline' size='sm' fullWidth>
-                <Phone className='size-3.5' />
+                <Icon name='phone' className='size-3.5' />
                 پشتیبانی ۲۴ ساعته
               </Button>
             </Card>
@@ -1133,11 +1106,11 @@ export function ClinicReservationView({
                   }}
                 >
                   رزرو نوبت
-                  <CalendarDays className='size-3.5' />
+                  <Icon name='calendar' className='size-3.5' />
                 </Button>
                 {entry.online ? (
                   <Button size='sm' variant='outline' aria-label='ویزیت آنلاین'>
-                    <Video className='size-3.5' />
+                    <Icon name='video' className='size-3.5' />
                   </Button>
                 ) : null}
               </div>
@@ -1247,7 +1220,7 @@ export function ClinicReservationView({
                   )
                 }
               >
-                <ChevronRight className='size-4' />
+                <Icon name='chevron-right' className='size-4' />
               </Button>
               <Button
                 size='icon'
@@ -1259,7 +1232,7 @@ export function ClinicReservationView({
                   )
                 }
               >
-                <ChevronLeft className='size-4' />
+                <Icon name='chevron-left' className='size-4' />
               </Button>
               <span className='ms-1 text-[10px] text-[color:var(--cc-muted-foreground)]'>
                 {toPersianDigits(testimonial + 1)} از{" "}
@@ -1273,22 +1246,22 @@ export function ClinicReservationView({
               {
                 value: "۹ دقیقه",
                 label: "میانگین انتظار",
-                icon: <Clock className='size-3.5' />,
+                icon: <Icon name='clock' className='size-3.5' />,
               },
               {
                 value: "۴.۹/۵",
                 label: "امتیاز مراجعان",
-                icon: <Sparkles className='size-3.5' />,
+                icon: <Icon name='sparkles' className='size-3.5' />,
               },
               {
                 value: "۲۴",
                 label: "پزشک متخصص",
-                icon: <Stethoscope className='size-3.5' />,
+                icon: <Icon name='stethoscope' className='size-3.5' />,
               },
               {
                 value: "۹۸٪",
                 label: "رزرو بدون لغو",
-                icon: <BadgeCheck className='size-3.5' />,
+                icon: <Icon name='badge-check' className='size-3.5' />,
               },
             ].map((item) => (
               <div
@@ -1407,7 +1380,7 @@ export function ClinicReservationView({
             </span>
             <div className='flex items-start gap-2'>
               <span className='mt-0.5 text-[color:var(--cc-primary)]'>
-                <MapPin className='size-4' />
+                <Icon name='map-pin' className='size-4' />
               </span>
               <p className='text-xs leading-relaxed text-[color:var(--cc-surface-foreground)]'>
                 تهران، خیابان ولیعصر، نرسیده به میدان ونک، مجتمع پزشکی حکیم، طبقهٔ
@@ -1433,11 +1406,11 @@ export function ClinicReservationView({
 
             <div className='flex flex-wrap gap-2'>
               <Button size='sm' variant='outline'>
-                <MapPin className='size-3.5' />
+                <Icon name='map-pin' className='size-3.5' />
                 مسیریابی
               </Button>
               <Button size='sm' variant='outline'>
-                <Phone className='size-3.5' />
+                <Icon name='phone' className='size-3.5' />
                 ۰۲۱-۸۸۷۷۰۰۰۰
               </Button>
             </div>
@@ -1460,7 +1433,7 @@ export function ClinicReservationView({
           <div className='flex flex-col gap-1.5'>
             <div className='flex items-center gap-2'>
               <span className='flex size-7 items-center justify-center rounded-[var(--cc-radius-sm)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-primary)] text-[color:var(--cc-primary-foreground)]'>
-                <HeartPulse className='size-4' />
+                <Icon name='heart-pulse' className='size-4' />
               </span>
               <span className='text-sm font-black text-[color:var(--cc-surface-foreground)]'>
                 درمانگاه حکیم

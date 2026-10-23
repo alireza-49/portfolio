@@ -1,6 +1,7 @@
 export {
   createComponentTheme,
   defaultCreateComponentTheme,
+  getContrastRatio,
   getLuminance,
   mixHex,
   readableForeground,
@@ -24,8 +25,10 @@ export {
 } from "./theme-provider";
 
 export {
+  chartPalettes,
   createThemePresets,
   resolveTheme,
+  type ChartPalette,
   type CreateThemePreset,
   type ThemedProps,
 } from "./style-presets";
@@ -101,6 +104,18 @@ export { Separator, type SeparatorProps } from "./separator";
 export { Skeleton } from "./skeleton";
 
 export { CreateComponentsShowcase } from "./showcase";
+
+export {
+  ICON_PREVIEW_NAMES,
+  ICON_SETS,
+  Icon,
+  IconSetProvider,
+  useIconLibrary,
+  type GlyphProps,
+  type IconLibraryId,
+  type IconName,
+  type IconProps,
+} from "./icon-set";
 
 export {
   ChartFrame,

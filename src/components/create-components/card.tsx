@@ -1,6 +1,6 @@
 import type { ComponentProps } from "react";
 import { cn } from "@/lib/utils";
-import { borderChrome, headingType } from "./styles";
+import { borderChrome, headingType, motion } from "./styles";
 
 export function Card({ className, ...props }: ComponentProps<"div">) {
   return (
@@ -9,9 +9,12 @@ export function Card({ className, ...props }: ComponentProps<"div">) {
       className={cn(
         "flex flex-col gap-4",
         borderChrome,
-        "rounded-[var(--cc-radius-lg)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)]",
+        "rounded-[var(--cc-card-radius)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)]",
         "bg-[var(--cc-surface)] text-[color:var(--cc-surface-foreground)]",
+        "[background-image:var(--cc-surface-pattern)] [background-size:var(--cc-surface-pattern-size)]",
         "[box-shadow:var(--cc-shadow)]",
+        motion,
+        "hover:[box-shadow:var(--cc-shadow-hover)] hover:[rotate:var(--cc-hover-rotate)]",
         "p-[calc(1.25rem*var(--cc-density))]",
         className,
       )}

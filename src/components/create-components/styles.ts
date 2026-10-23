@@ -26,12 +26,18 @@ export const bodyType = [
   "[line-height:var(--cc-line-height)]",
 ].join(" ");
 
+/**
+ * Figures, dates, ticks and tabular labels. Bound to a preset token instead of
+ * Tailwind's `font-mono`, so a technical style can bring its own face.
+ */
+export const monoType = "[font-family:var(--cc-mono-font-family)]";
+
 /** Applied to every outlined element so `borderStyle` is honoured. */
 export const borderChrome = "[border-style:var(--cc-border-style)]";
 
 /** Shared transition so presets can tune speed and easing. */
 export const motion = [
-  "transition-[color,background-color,border-color,box-shadow,translate]",
+  "transition-[color,background-color,border-color,box-shadow,translate,rotate,transform]",
   "duration-[var(--cc-duration)]",
   "[transition-timing-function:var(--cc-ease)]",
 ].join(" ");

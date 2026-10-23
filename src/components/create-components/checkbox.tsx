@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type ComponentProps } from "react";
-import { Check } from "lucide-react";
+import { Icon } from "./icon-set";
 import { cn } from "@/lib/utils";
 import { borderChrome, labelType } from "./styles";
 
@@ -56,7 +56,7 @@ export function Checkbox({
       )}
       {...props}
     >
-      {isOn ? <Check className="size-3" strokeWidth={3} /> : null}
+      {isOn ? <Icon name='check' className="size-3" strokeWidth={3} /> : null}
     </button>
   );
 }

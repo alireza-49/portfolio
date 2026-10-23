@@ -63,6 +63,12 @@ export type CreateComponentTheme = {
   radiusSm: number;
   /** Large radius (cards, dialogs, popovers). */
   radiusLg: number;
+  /**
+   * Any valid `border-radius` for card-like surfaces. Defaults to
+   * `var(--cc-radius-lg)`, so presets only set it when the card silhouette
+   * itself is the signature (arches, alternating corners).
+   */
+  cardRadius: string;
   /** Border thickness in px. Set to 0 for a borderless look. */
   borderWidth: number;
   /** Border style shared by every outlined control. */
@@ -71,8 +77,10 @@ export type CreateComponentTheme = {
   shadow: string;
   /** Shadow on hover / pressed controls. */
   shadowHover: string;
-  /** Translation applied on hover (paper / brutalist press moves). */
+  /** Translation applied on hover (print / press-in moves). */
   hoverTranslate: string;
+  /** Rotation applied on hover (playful collage / Memphis tilts). */
+  hoverRotate: string;
   /** Badge corner radius in px (999 = pill). */
   badgeRadius: number;
   /** Avatar corner radius in px (999 = circle, 0 = square). */
@@ -83,6 +91,14 @@ export type CreateComponentTheme = {
   alertRuleWidth: number;
   /** Focus ring width in px. */
   focusRingWidth: number;
+
+  // ------------------------------------------------------------------- icons
+  /** Scale applied to every icon glyph (1 = the call site's own size). */
+  iconScale: number;
+  /** Stroke weight for line icons; filled sets simply ignore it. */
+  iconStroke: number;
+  /** Any CSS colour for icons; `currentColor` inherits from the label. */
+  iconColor: string;
 
   // -------------------------------------------------------------- typography
   /** Any valid CSS `font-family` stack for body copy. */
@@ -106,6 +122,12 @@ export type CreateComponentTheme = {
   labelLetterSpacing: string;
   labelTransform: "none" | "uppercase" | "lowercase" | "capitalize";
 
+  /**
+   * Figures, dates, chart ticks and any tabular numeral. Presets can swap it
+   * for a technical face without touching the body/heading voices.
+   */
+  monoFontFamily: string;
+
   // ------------------------------------------------------- rhythm + texture
   /** Padding / gap multiplier. 0.75 = compact, 1 = default, 1.25 = roomy. */
   density: number;
@@ -117,6 +139,13 @@ export type CreateComponentTheme = {
   pagePattern: string;
   /** `background-size` for `pagePattern`. */
   pagePatternSize: string;
+  /**
+   * Pattern painted on card-like surfaces (screentone, graph paper, scanlines).
+   * Kept separate from `pagePattern` so the page and the panels never fight.
+   */
+  surfacePattern: string;
+  /** `background-size` for `surfacePattern`. */
+  surfacePatternSize: string;
 };
 
 
@@ -160,16 +189,22 @@ export const defaultCreateComponentTheme: CreateComponentTheme = {
   radius: 8,
   radiusSm: 6,
   radiusLg: 12,
+  cardRadius: "var(--cc-radius-lg, 12px)",
   borderWidth: 1,
   borderStyle: "solid",
   shadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
   shadowHover: "0 6px 16px -6px rgb(0 0 0 / 0.18)",
   hoverTranslate: "0px",
+  hoverRotate: "0deg",
   badgeRadius: 8,
   avatarRadius: 999,
   progressHeight: 8,
   alertRuleWidth: 0,
   focusRingWidth: 2,
+
+  iconScale: 1,
+  iconStroke: 2,
+  iconColor: "currentColor",
 
   fontFamily: "inherit",
   fontSize: 14,
@@ -188,11 +223,15 @@ export const defaultCreateComponentTheme: CreateComponentTheme = {
   labelLetterSpacing: "0em",
   labelTransform: "none",
 
+  monoFontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+
   density: 1,
   duration: "150ms",
   ease: "cubic-bezier(0.2, 0.8, 0.2, 1)",
   pagePattern: "none",
   pagePatternSize: "auto",
+  surfacePattern: "none",
+  surfacePatternSize: "auto",
 };
 
 /** Merge partial overrides onto the defaults. */
@@ -261,6 +300,15 @@ export function readableForeground(hex: string): "#111827" | "#ffffff" {
   return getLuminance(hex) > 0.55 ? "#111827" : "#ffffff";
 }
 
+/** WCAG contrast ratio (1..21) between two hex colours. */
+export function getContrastRatio(hexA: string, hexB: string): number {
+  const a = getLuminance(hexA);
+  const b = getLuminance(hexB);
+  const lighter = Math.max(a, b);
+  const darker = Math.min(a, b);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
 export type ThemeCssVars = CSSProperties & Record<`--cc-${string}`, string>;
 
 
@@ -312,16 +360,22 @@ export function themeToCssVars(theme: CreateComponentTheme): ThemeCssVars {
     "--cc-radius": px(theme.radius),
     "--cc-radius-sm": px(theme.radiusSm),
     "--cc-radius-lg": px(theme.radiusLg),
+    "--cc-card-radius": theme.cardRadius,
     "--cc-border-width": px(theme.borderWidth),
     "--cc-border-style": theme.borderStyle,
     "--cc-shadow": theme.shadow,
     "--cc-shadow-hover": theme.shadowHover,
     "--cc-hover-translate": theme.hoverTranslate,
+    "--cc-hover-rotate": theme.hoverRotate,
     "--cc-badge-radius": px(theme.badgeRadius),
     "--cc-avatar-radius": px(theme.avatarRadius),
     "--cc-progress-height": px(theme.progressHeight),
     "--cc-alert-rule-width": px(theme.alertRuleWidth),
     "--cc-focus-ring-width": px(theme.focusRingWidth),
+
+    "--cc-icon-scale": String(theme.iconScale),
+    "--cc-icon-stroke": String(theme.iconStroke),
+    "--cc-icon-color": theme.iconColor,
 
     "--cc-font-family": theme.fontFamily,
     "--cc-font-size": px(theme.fontSize),
@@ -340,10 +394,14 @@ export function themeToCssVars(theme: CreateComponentTheme): ThemeCssVars {
     "--cc-label-letter-spacing": theme.labelLetterSpacing,
     "--cc-label-transform": theme.labelTransform,
 
+    "--cc-mono-font-family": theme.monoFontFamily,
+
     "--cc-density": String(theme.density),
     "--cc-duration": theme.duration,
     "--cc-ease": theme.ease,
     "--cc-page-pattern": theme.pagePattern,
     "--cc-page-pattern-size": theme.pagePatternSize,
+    "--cc-surface-pattern": theme.surfacePattern,
+    "--cc-surface-pattern-size": theme.surfacePatternSize,
   } as ThemeCssVars;
 }

@@ -9,7 +9,7 @@ import {
   useState,
   type KeyboardEvent,
 } from "react";
-import { Check, ChevronDown } from "lucide-react";
+import { Icon } from "./icon-set";
 import { cn } from "@/lib/utils";
 import { borderChrome, labelType, motion } from "./styles";
 
@@ -153,7 +153,8 @@ export function Select({
         >
           {selected?.label ?? placeholder}
         </span>
-        <ChevronDown
+        <Icon
+          name='chevron-down'
           className={cn(
             "size-4 shrink-0 transition-transform duration-[var(--cc-duration)]",
             open && "rotate-180",
@@ -197,7 +198,9 @@ export function Select({
                   )}
                 >
                   <span className="truncate">{option.label}</span>
-                  {isSelected ? <Check className="size-4 shrink-0" /> : null}
+                  {isSelected ? (
+                    <Icon name='check' className="size-4 shrink-0" />
+                  ) : null}
                 </button>
               </li>
             );

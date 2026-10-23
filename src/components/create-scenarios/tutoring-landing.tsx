@@ -1,16 +1,6 @@
 "use client";
 
-import { useState, type ComponentType } from "react";
-import {
-  ArrowLeft,
-  CalendarDays,
-  Check,
-  CheckCircle2,
-  ChevronLeft,
-  ChevronRight,
-  Clock,
-  Video,
-} from "lucide-react";
+import { useState } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -26,6 +16,7 @@ import {
   CardHeader,
   CardTitle,
   Field,
+  Icon,
   Input,
   Progress,
   RadioGroup,
@@ -45,7 +36,6 @@ import {
   headingType,
   labelType,
 } from "@/components/create-components";
-import type { IconLibraryId } from "@/components/create-studio-config";
 import { cn } from "@/lib/utils";
 import { Portrait } from "./art/portraits";
 import { Ornament, StarRating } from "./art/shared";
@@ -72,22 +62,15 @@ import {
   type SubjectId,
 } from "./data/tutoring";
 import { formatNumber, formatToman } from "./format";
-import { LIBRARY_ICONS } from "./icons";
 import { sc as styles } from "./scenes";
 
-export function TutoringLandingView({
-  iconLibrary,
-}: {
-  iconLibrary: IconLibraryId;
-}) {
+export function TutoringLandingView() {
   const [subject, setSubject] = useState<SubjectId>("math");
   const [annual, setAnnual] = useState(false);
   const [weekday, setWeekday] = useState(WEEKDAYS[0].id);
   const [goal, setGoal] = useState("konkur");
   const [testimonial, setTestimonial] = useState(0);
   const [subscribed, setSubscribed] = useState(false);
-  const BrandIcon: ComponentType<{ className?: string }> =
-    LIBRARY_ICONS[iconLibrary];
 
   const day = WEEKDAYS.find((entry) => entry.id === weekday) ?? WEEKDAYS[0];
   const story = TESTIMONIALS[testimonial];
@@ -106,7 +89,7 @@ export function TutoringLandingView({
           <div className='flex flex-wrap items-center justify-between gap-3'>
             <div className='flex items-center gap-2.5'>
               <span className='flex size-9 items-center justify-center rounded-[var(--cc-radius)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-primary)] text-[color:var(--cc-primary-foreground)] [box-shadow:var(--cc-shadow)]'>
-                <BrandIcon className='size-5' />
+                <Icon name='brand' className='size-5' />
               </span>
               <div className='flex flex-col'>
                 <span className='text-sm font-bold text-[color:var(--cc-surface-foreground)]'>
@@ -178,7 +161,7 @@ export function TutoringLandingView({
             <div className='flex flex-wrap items-center gap-2'>
               <Button size='lg'>
                 شروع کلاس آزمایشی
-                <ArrowLeft className='size-4' />
+                <Icon name='arrow-left' className='size-4' />
               </Button>
               <Button size='lg' variant='outline'>
                 مشاهدهٔ دوره‌ها
@@ -268,7 +251,7 @@ export function TutoringLandingView({
             <div className='flex items-center justify-between gap-2'>
               <Badge variant='success'>{day.label}</Badge>
               <span className='inline-flex items-center gap-1 font-mono text-xs text-[color:var(--cc-muted-foreground)]'>
-                <Clock className='size-3' />
+                <Icon name='clock' className='size-3' />
                 {day.time}
               </span>
             </div>
@@ -297,7 +280,7 @@ export function TutoringLandingView({
             </div>
             <Progress value={((12 - day.seatsLeft) / 12) * 100} showValue />
             <Button size='sm' fullWidth>
-              <Video className='size-3.5' />
+              <Icon name='video' className='size-3.5' />
               رزرو جایگاه
             </Button>
           </div>
@@ -506,7 +489,7 @@ export function TutoringLandingView({
               </div>
               <Button variant='outline' size='sm' fullWidth className='mt-auto'>
                 رزرو جلسه
-                <CalendarDays className='size-3.5' />
+                <Icon name='calendar' className='size-3.5' />
               </Button>
             </Card>
           ))}
@@ -554,7 +537,7 @@ export function TutoringLandingView({
                 aria-label='روایت قبلی'
                 onClick={() => moveTestimonial(-1)}
               >
-                <ChevronRight className='size-4' />
+                <Icon name='chevron-right' className='size-4' />
               </Button>
               <Button
                 size='icon'
@@ -562,7 +545,7 @@ export function TutoringLandingView({
                 aria-label='روایت بعدی'
                 onClick={() => moveTestimonial(1)}
               >
-                <ChevronLeft className='size-4' />
+                <Icon name='chevron-left' className='size-4' />
               </Button>
               <span className='ms-1 text-[10px] text-[color:var(--cc-muted-foreground)]'>
                 {formatNumber(testimonial + 1)} از{" "}
@@ -596,7 +579,7 @@ export function TutoringLandingView({
             <ScoreChart className='h-40 w-full' />
             <div className='flex items-center justify-between'>
               <Badge variant='outline'>نمرهٔ {story.scores[0]}</Badge>
-              <ArrowLeft className='size-4 text-[color:var(--cc-muted-foreground)]' />
+              <Icon name='arrow-left' className='size-4 text-[color:var(--cc-muted-foreground)]' />
               <Badge variant='success'>نمرهٔ {story.scores[1]}</Badge>
             </div>
           </div>
@@ -700,7 +683,7 @@ export function TutoringLandingView({
                       key={feature}
                       className='flex items-start gap-1.5 text-xs text-[color:var(--cc-surface-foreground)]'
                     >
-                      <Check className='mt-0.5 size-3.5 shrink-0 text-[color:var(--cc-primary)]' />
+                      <Icon name='check' className='mt-0.5 size-3.5 shrink-0 text-[color:var(--cc-primary)]' />
                       {feature}
                     </li>
                   ))}
@@ -813,7 +796,7 @@ export function TutoringLandingView({
                 key={item}
                 className='flex items-center gap-1.5 text-[10px] text-[color:var(--cc-muted-foreground)]'
               >
-                <CheckCircle2 className='size-3 text-[color:var(--cc-primary)]' />
+                <Icon name='check-circle' className='size-3 text-[color:var(--cc-primary)]' />
                 {item}
               </span>
             ))}
@@ -821,7 +804,7 @@ export function TutoringLandingView({
 
           <Button variant='outline' fullWidth>
             گفتگو با پشتیبانی
-            <ArrowLeft className='size-3.5' />
+            <Icon name='arrow-left' className='size-3.5' />
           </Button>
         </Card>
       </div>
@@ -853,7 +836,7 @@ export function TutoringLandingView({
                   className='flex items-center gap-1.5 text-xs text-[color:var(--cc-surface-foreground)]'
                 >
                   <span className='flex size-4 items-center justify-center rounded-full bg-[var(--cc-primary)] text-[color:var(--cc-primary-foreground)]'>
-                    <Check className='size-2.5' />
+                    <Icon name='check' className='size-2.5' />
                   </span>
                   {item}
                 </span>
@@ -916,7 +899,7 @@ export function TutoringLandingView({
           <div className='flex flex-col gap-1.5'>
             <div className='flex items-center gap-2'>
               <span className='flex size-7 items-center justify-center rounded-[var(--cc-radius-sm)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-primary)] text-[color:var(--cc-primary-foreground)]'>
-                <BrandIcon className='size-4' />
+                <Icon name='brand' className='size-4' />
               </span>
               <span className='text-sm font-black text-[color:var(--cc-surface-foreground)]'>
                 آکادمی روشنا

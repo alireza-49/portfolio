@@ -8,22 +8,26 @@ import {
   Minimize2,
   MonitorPlay,
   ShieldCheck,
-  Sparkles,
   TriangleAlert,
 } from "lucide-react";
 import {
   ARCHETYPE_ICONS,
   ARCHETYPES,
   ICON_LIBRARIES,
-  mixWithWhite,
+  STYLES,
+  resolveIconStyle,
   type ArchetypeId,
   type IconLibraryId,
+  type IconStyle,
   type StyleId,
 } from "@/components/create-studio-config";
+import {
+  paletteThemeOverrides,
+  type StudioPalette,
+} from "@/components/create-studio-palette";
 import { AnalyticsDashboardView } from "@/components/create-scenarios/analytics-dashboard";
 import { ClinicReservationView } from "@/components/create-scenarios/clinic-reservation";
 import { ClothingShopView } from "@/components/create-scenarios/clothing-shop";
-import { LIBRARY_ICONS } from "@/components/create-scenarios/icons";
 import { TutoringLandingView } from "@/components/create-scenarios/tutoring-landing";
 import {
   Accordion,
@@ -46,6 +50,8 @@ import {
   CheckboxField,
   CreateComponentsThemeProvider,
   Field,
+  Icon,
+  IconSetProvider,
   Input,
   Progress,
   RadioGroup,
@@ -71,22 +77,22 @@ import {
   Textarea,
   Timeline,
   TimelineItem,
+  useIconLibrary,
   type CreateComponentTheme,
-  createThemePresets,
   headingType,
-  mixHex,
-  readableForeground,
 } from "@/components/create-components";
 
 type CanvasProps = {
   archetype: ArchetypeId;
-  primary: string;
-  primarySubtle: string;
+  /** Studio palette: roles plus optional neutral/chart overrides. */
+  palette: StudioPalette;
   radius: number;
   styleId: StyleId;
   /** Fully resolved CSS stack, built-ins and uploaded fonts alike. */
   fontFamily: string;
   iconLibrary: IconLibraryId;
+  /** Size / weight / tone tokens shared by every glyph on the canvas. */
+  iconStyle: IconStyle;
 };
 
 const PROJECT_TYPES = [
@@ -160,23 +166,17 @@ const COMPONENT_FAQ = [
   },
 ] as const;
 
-type ComponentsViewProps = {
-  iconLibrary: IconLibraryId;
-};
-
 export function CreateStudioCanvas({
   archetype,
-  primary,
-  primarySubtle,
+  palette,
   radius,
   styleId,
   fontFamily,
   iconLibrary,
+  iconStyle,
 }: CanvasProps) {
-  const presetDefinition = createThemePresets[styleId];
-  const isDark = presetDefinition.tone === "dark";
-  const presetSurface = presetDefinition.tokens.surface ?? "#ffffff";
   const effectiveRadius = radius;
+  const icons = resolveIconStyle(iconStyle);
 
   const ChromeIcon = ARCHETYPE_ICONS[archetype];
   const [expanded, setExpanded] = useState(false);
@@ -193,22 +193,17 @@ export function CreateStudioCanvas({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [expanded]);
 
-  // The sidebar owns the brand colour, radius and body font; everything else
-  // (palette, geometry, typography voice, texture) comes from the preset.
+  // The sidebar owns the colour layer (roles always, neutrals/charts when the
+  // visitor edited them), radius and body font; the rest of the visual
+  // identity — geometry, typography voice, texture — still comes from the
+  // preset through the provider.
   const theme: Partial<CreateComponentTheme> = {
-    primary,
-    primaryForeground: readableForeground(primary),
-    primaryHover: mixHex(primary, isDark ? "#ffffff" : "#000000", 0.14),
-    secondary: isDark
-      ? `color-mix(in srgb, ${primary} 22%, ${presetSurface})`
-      : primarySubtle,
-    secondaryForeground: isDark ? mixHex(primary, "#ffffff", 0.4) : primary,
-    secondaryHover: isDark
-      ? `color-mix(in srgb, ${primary} 32%, ${presetSurface})`
-      : mixWithWhite(primarySubtle, 0.1),
-    ring: primary,
+    ...paletteThemeOverrides(palette, styleId),
     radius: effectiveRadius,
     fontFamily,
+    iconScale: icons.scale,
+    iconStroke: icons.stroke,
+    iconColor: icons.color,
   };
 
   return (
@@ -307,10 +302,10 @@ export function CreateStudioCanvas({
               پیش‌نمایش زنده
             </span>
             <span
-              dir='ltr'
-              className='hidden items-center gap-1 rounded-sm border-[1.5px] border-indigo-ink bg-paper-light px-2 py-0.5 font-mono text-[10px] font-bold whitespace-nowrap text-indigo-ink shadow-craft-sm lg:inline-flex'
+              title='سبک فعال استودیو'
+              className='hidden items-center gap-1 rounded-sm border-[1.5px] border-indigo-ink bg-paper-light px-2 py-0.5 text-[10px] font-bold whitespace-nowrap text-indigo-ink shadow-craft-sm lg:inline-flex'
             >
-              STYLE: {styleId.toUpperCase()}
+              سبک: {STYLES.find((style) => style.id === styleId)?.label ?? styleId}
             </span>
           </div>
         </div>
@@ -327,23 +322,17 @@ export function CreateStudioCanvas({
             theme={theme}
             className='flex w-full flex-1 flex-col overflow-x-clip'
           >
-            <div dir='rtl' className='flex flex-col gap-6 p-5 sm:p-7'>
-              {archetype === "components" ? (
-                <ComponentsView iconLibrary={iconLibrary} />
-              ) : null}
-              {archetype === "landing" ? (
-                <TutoringLandingView iconLibrary={iconLibrary} />
-              ) : null}
-              {archetype === "ecommerce" ? (
-                <ClothingShopView iconLibrary={iconLibrary} />
-              ) : null}
-              {archetype === "clinic" ? (
-                <ClinicReservationView iconLibrary={iconLibrary} />
-              ) : null}
-              {archetype === "dashboard" ? (
-                <AnalyticsDashboardView iconLibrary={iconLibrary} />
-              ) : null}
-            </div>
+            <IconSetProvider library={iconLibrary}>
+              <div dir='rtl' className='flex flex-col gap-6 p-5 sm:p-7'>
+                {archetype === "components" ? <ComponentsView /> : null}
+                {archetype === "landing" ? <TutoringLandingView /> : null}
+                {archetype === "ecommerce" ? <ClothingShopView /> : null}
+                {archetype === "clinic" ? <ClinicReservationView /> : null}
+                {archetype === "dashboard" ? (
+                  <AnalyticsDashboardView />
+                ) : null}
+              </div>
+            </IconSetProvider>
           </CreateComponentsThemeProvider>
         </div>
 
@@ -370,7 +359,7 @@ export function CreateStudioCanvas({
   );
 }
 
-function ComponentsView({ iconLibrary }: ComponentsViewProps) {
+function ComponentsView() {
   const [projectType, setProjectType] = useState("landing");
   const [budget, setBudget] = useState(40);
   const [priority, setPriority] = useState("normal");
@@ -403,7 +392,7 @@ function ComponentsView({ iconLibrary }: ComponentsViewProps) {
     "2026-10-15": 8,
   };
 
-  const Icon = LIBRARY_ICONS[iconLibrary];
+  const iconLibrary = useIconLibrary();
   const iconLibraryLabel =
     ICON_LIBRARIES.find((library) => library.id === iconLibrary)?.label ?? "";
 
@@ -421,8 +410,8 @@ function ComponentsView({ iconLibrary }: ComponentsViewProps) {
             کتابخانهٔ کامپوننت‌های پایه
           </h2>
           <p className='max-w-xl text-sm leading-relaxed text-[color:var(--cc-muted-foreground)]'>
-            چیدمان منطقی همهٔ کامپوننت‌ها روی بوم؛ رنگ، شعاع گوشه، سبک، فونت و
-            کتابخانهٔ آیکون از پنل تنظیمات استودیو اعمال می‌شود.
+            چیدمان منطقی همهٔ کامپوننت‌ها روی بوم؛ رنگ، شعاع گوشه، سبک، فونت،
+            کتابخانه و استایل آیکون از پنل تنظیمات استودیو اعمال می‌شود.
           </p>
         </div>
         <div className='flex items-center gap-2'>
@@ -459,10 +448,10 @@ function ComponentsView({ iconLibrary }: ComponentsViewProps) {
             <Button size='md'>متوسط</Button>
             <Button size='lg'>بزرگ</Button>
             <Button size='icon' aria-label='افزودن آیتم'>
-              <Icon className='size-4' />
+              <Icon name='brand' className='size-4' />
             </Button>
             <Button size='icon' variant='outline' aria-label='جلوهٔ ویژه'>
-              <Sparkles className='size-4' />
+              <Icon name='sparkles' className='size-4' />
             </Button>
             <Button disabled>غیرفعال</Button>
           </div>
@@ -843,7 +832,7 @@ function ComponentsView({ iconLibrary }: ComponentsViewProps) {
             بازنشانی
           </Button>
           <Button variant='outline' size='sm'>
-            <Icon className='size-4' />
+            <Icon name='brand' className='size-4' />
             پیش‌نمایش
           </Button>
           <Button size='sm'>ذخیرهٔ ترکیب</Button>

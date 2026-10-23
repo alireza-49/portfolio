@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import { labelType } from "./styles";
+import { labelType, monoType } from "./styles";
 
 export type TimelineTone = "primary" | "success" | "warning" | "danger" | "muted";
 
@@ -64,7 +64,8 @@ export function TimelineItem({
         {meta ? (
           <span
             className={cn(
-              "font-mono text-[length:calc(var(--cc-font-size)*0.62)] text-[color:var(--cc-muted-foreground)]",
+              "text-[length:calc(var(--cc-font-size)*0.62)] text-[color:var(--cc-muted-foreground)]",
+              monoType,
               labelType,
             )}
           >

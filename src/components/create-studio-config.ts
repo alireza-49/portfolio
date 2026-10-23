@@ -6,12 +6,16 @@ import {
   Stethoscope,
   type LucideIcon,
 } from "lucide-react";
+import { themeToCssVars } from "./create-components/theme";
+import type { IconLibraryId } from "./create-components/icon-set";
 import {
-  mixHex,
-  readableForeground,
-  themeToCssVars,
-} from "./create-components/theme";
-import { createThemePresets, resolveTheme } from "./create-components/style-presets";
+  createThemePresets,
+  resolveTheme,
+} from "./create-components/style-presets";
+import {
+  paletteThemeOverrides,
+  type StudioPalette,
+} from "./create-studio-palette";
 
 export type ArchetypeId =
   | "components"
@@ -22,11 +26,20 @@ export type ArchetypeId =
 
 export type StyleId =
   | "nova"
-  | "riso"
-  | "brutalist"
+  | "corporate"
   | "editorial"
   | "swiss"
-  | "terminal";
+  | "edtech"
+  | "terracotta"
+  | "zine"
+  | "memphis"
+  | "manga"
+  | "blueprint"
+  | "terminal"
+  | "glass"
+  | "steampunk";
+
+export type StyleGroupId = "modern" | "technical" | "expressive";
 
 export type FontId =
   | "vazirmatn"
@@ -40,7 +53,28 @@ export type FontId =
   | "google"
   | "parvaz";
 
-export type IconLibraryId = "google" | "lucide" | "tabler";
+export type { IconLibraryId };
+
+/** How large every canvas glyph renders relative to its call site. */
+export type IconSizeId = "sm" | "md" | "lg";
+/** Stroke weight for line icons (Lucide and Tabler). */
+export type IconWeightId = "light" | "regular" | "bold";
+/** Which token paints the glyphs; `inherit` keeps the surrounding text. */
+export type IconToneId = "inherit" | "primary" | "accent" | "muted";
+
+export type IconStyle = {
+  size: IconSizeId;
+  weight: IconWeightId;
+  tone: IconToneId;
+};
+
+export type IconSizeOption = { id: IconSizeId; label: string; scale: number };
+export type IconWeightOption = {
+  id: IconWeightId;
+  label: string;
+  stroke: number;
+};
+export type IconToneOption = { id: IconToneId; label: string; color: string };
 
 export type Archetype = {
   id: ArchetypeId;
@@ -51,15 +85,20 @@ export type Archetype = {
   /** Demo address shown in the preview window's browser bar. */
   demoHost: string;
 };
-export type StyleOption = { id: StyleId; label: string };
-export type Swatch = {
-  hex: string;
-  subtle: string;
-  name: string;
-  role: string;
-  tag: string;
+export type StyleOption = {
+  id: StyleId;
+  label: string;
+  /** One line explaining what the style promises visually. */
+  description: string;
+  /** Built-in body face applied when the style is selected. */
+  font: FontId;
+  group: StyleGroupId;
 };
-export type PresetPill = { hex: string; subtle: string; name: string };
+export type StyleGroup = {
+  id: StyleGroupId;
+  label: string;
+  caption: string;
+};
 export type RadiusOption = { value: number; label: string; caption: string };
 export type FontOption = {
   id: FontId;
@@ -69,22 +108,8 @@ export type FontOption = {
   kind: "text" | "display";
 };
 export type IconLibrary = { id: IconLibraryId; label: string; note: string };
-export type ShufflePreset = {
-  hex: string;
-  subtle: string;
-  name: string;
-  radius: number;
-  style: StyleId;
-};
 
 export const ARCHETYPES: Archetype[] = [
-  {
-    id: "components",
-    label: "کامپوننت‌ها و ویجت‌ها",
-    shortLabel: "کامپوننت",
-    description: "گالری فرم‌ها، بازخورد، جدول و نمودارها",
-    demoHost: "ui.demo-kodology.ir",
-  },
   {
     id: "landing",
     label: "لندینگ تدریس آنلاین",
@@ -113,6 +138,13 @@ export const ARCHETYPES: Archetype[] = [
     description: "شاخص‌ها، نمودارها، جدول سفارش و سلامت سیستم",
     demoHost: "insight.demo-kodology.ir",
   },
+  {
+    id: "components",
+    label: "کامپوننت‌ها و ویجت‌ها",
+    shortLabel: "کامپوننت",
+    description: "گالری فرم‌ها، بازخورد، جدول و نمودارها",
+    demoHost: "ui.demo-kodology.ir",
+  },
 ];
 
 /**
@@ -127,52 +159,126 @@ export const ARCHETYPE_ICONS: Record<ArchetypeId, LucideIcon> = {
   dashboard: ChartLine,
 };
 
+export const STYLE_GROUPS: StyleGroup[] = [
+  {
+    id: "modern",
+    label: "مدرن و شرکتی",
+    caption: "خوانا، منظم، قابل اعتماد",
+  },
+  {
+    id: "technical",
+    label: "دیجیتال و تکنیکال",
+    caption: "داده، خط، مونو",
+  },
+  {
+    id: "expressive",
+    label: "بیان‌گرا و آزمایشی",
+    caption: "رنگ، بافت، شخصیت",
+  },
+];
+
 export const STYLES: StyleOption[] = [
-  { id: "nova", label: "نووا مدرن" },
-  { id: "riso", label: "چاپ دستی ریزو" },
-  { id: "brutalist", label: "نئوبروتال جسور" },
-  { id: "editorial", label: "ادیتوریال مینیمال" },
-  { id: "swiss", label: "سازمانی سوییسی" },
-  { id: "terminal", label: "ترمینال تکنیکال" },
+  {
+    id: "nova",
+    label: "نووا مدرن",
+    description: "چاپ گرم، خط مرکب و سایهٔ آفست",
+    font: "vazir",
+    group: "modern",
+  },
+  {
+    id: "corporate",
+    label: "شرکتی رادیال",
+    description: "سطح روشن، قوس فیروزه‌ای، گوشهٔ نرم",
+    font: "samim",
+    group: "modern",
+  },
+  {
+    id: "editorial",
+    label: "ادیتوریال مینیمال",
+    description: "کاغذ گرم، خط مو و فاصلهٔ زیاد",
+    font: "samim",
+    group: "modern",
+  },
+  {
+    id: "swiss",
+    label: "سازمانی سوییسی",
+    description: "شبکهٔ دقیق، صفر گردی، یک لهجهٔ رنگی",
+    font: "samim",
+    group: "modern",
+  },
+  {
+    id: "blueprint",
+    label: "نقشهٔ مهندسی",
+    description: "کاغذ آبی، خط سفید، برچسب مونو",
+    font: "vazir",
+    group: "technical",
+  },
+  {
+    id: "terminal",
+    label: "ترمینال تکنیکال",
+    description: "CRT سبز، اسکن‌لاین، اعداد مونو",
+    font: "vazir",
+    group: "technical",
+  },
+  {
+    id: "glass",
+    label: "گلَس نئونی",
+    description: "پنل شفاف، هالهٔ فیروزه‌ای، گوشهٔ بزرگ",
+    font: "dirooz",
+    group: "technical",
+  },
+  {
+    id: "edtech",
+    label: "آموزشی بازی‌وار",
+    description: "نارنجی و بنفش، گوشهٔ بزرگ، نشان پیشرفت",
+    font: "gandom",
+    group: "expressive",
+  },
+  {
+    id: "terracotta",
+    label: "سفال مدیترانه",
+    description: "خاک رس، قوس معماری، بافت گچ",
+    font: "gandom",
+    group: "expressive",
+  },
+  {
+    id: "zine",
+    label: "کلاژ کاغذی",
+    description: "کاغذ کرم، برش خط‌چین، تیتر دست‌نویس",
+    font: "vazir",
+    group: "expressive",
+  },
+  {
+    id: "memphis",
+    label: "ممفیس",
+    description: "رنگ متضاد، خط سه‌پیکسلی، چرخش بازیگوش",
+    font: "dirooz",
+    group: "expressive",
+  },
+  {
+    id: "manga",
+    label: "کمیک مانگا",
+    description: "سیاه‌وسفید، پنل مورب، اسکرین‌تون",
+    font: "vazir",
+    group: "expressive",
+  },
+  {
+    id: "steampunk",
+    label: "استیم‌پانک نجومی",
+    description: "برنج و مس، قاب دوتایی، آسمان ستاره‌ای",
+    font: "vazir",
+    group: "expressive",
+  },
 ];
 
-export const SWATCHES: Swatch[] = [
-  {
-    hex: "#e76f51",
-    subtle: "#fbeee9",
-    name: "سفال کهربایی",
-    role: "رنگ اصلی اکشن‌ها و دکمه‌های تاکیدی",
-    tag: "Primary",
+/** Body face each style wants when it is picked (still overridable). */
+export const STYLE_FONTS: Record<StyleId, FontId> = STYLES.reduce(
+  (accumulator, style) => {
+    accumulator[style.id] = style.font;
+    return accumulator;
   },
-  {
-    hex: "#264653",
-    subtle: "#e6eef1",
-    name: "سرمه‌ای مرکب",
-    role: "رنگ متن، عنوان و استروک‌های رسمی",
-    tag: "Secondary",
-  },
-  {
-    hex: "#2a9d8f",
-    subtle: "#e0f2f1",
-    name: "سبز زیتونی پایدار",
-    role: "شاخص رشد، وضعیت موفقیت و پایداری",
-    tag: "Success",
-  },
-  {
-    hex: "#dda15e",
-    subtle: "#fdf7e7",
-    name: "خردلی طلایی",
-    role: "رنگ هشدار، هایلایت و توجه کارگاهی",
-    tag: "Warning",
-  },
-];
-
-export const PRESET_PILLS: PresetPill[] = [
-  { hex: "#e76f51", subtle: "#fbeee9", name: "سفال کهربایی" },
-  { hex: "#244234", subtle: "#e7f0ec", name: "جوهر سبز جنگلی" },
-  { hex: "#1e284a", subtle: "#edf1fa", name: "مرجانی و سرمه‌ای" },
-  { hex: "#18181b", subtle: "#f4f4f5", name: "مونوکروم صنعتی" },
-];
+  {} as Record<StyleId, FontId>,
+);
 
 export const RADII: RadiusOption[] = [
   { value: 0, label: "0", caption: "تیز" },
@@ -201,48 +307,59 @@ export const FONTS: FontOption[] = [
 ];
 
 export const ICON_LIBRARIES: IconLibrary[] = [
-  { id: "google", label: "نمادهای گوگل", note: "Google" },
+  { id: "google", label: "نمادهای گوگل", note: "Material" },
   { id: "lucide", label: "لوسید آیکون", note: "Lucide" },
   { id: "tabler", label: "تب‌لر آیکون", note: "Tabler" },
 ];
 
-export const SHUFFLE_PRESETS: ShufflePreset[] = [
-  {
-    hex: "#e76f51",
-    subtle: "#fbeee9",
-    name: "سفال کهربایی",
-    radius: 4,
-    style: "nova",
-  },
-  {
-    hex: "#244234",
-    subtle: "#e7f0ec",
-    name: "سبز زیتونی پایدار",
-    radius: 0,
-    style: "riso",
-  },
-  {
-    hex: "#1e284a",
-    subtle: "#edf1fa",
-    name: "سرمه‌ای مرکب",
-    radius: 8,
-    style: "editorial",
-  },
-  {
-    hex: "#dda15e",
-    subtle: "#fdf7e7",
-    name: "خردلی گرم",
-    radius: 12,
-    style: "nova",
-  },
-  {
-    hex: "#18181b",
-    subtle: "#f4f4f5",
-    name: "زغالی مونوکروم",
-    radius: 16,
-    style: "brutalist",
-  },
+/** Icon size steps; the value is a multiplier on top of each call site's size. */
+export const ICON_SIZES: IconSizeOption[] = [
+  { id: "sm", label: "کوچک", scale: 0.85 },
+  { id: "md", label: "معمولی", scale: 1 },
+  { id: "lg", label: "بزرگ", scale: 1.25 },
 ];
+
+/** Stroke weight for line icons; filled Material glyphs ignore it. */
+export const ICON_WEIGHTS: IconWeightOption[] = [
+  { id: "light", label: "نازک", stroke: 1.5 },
+  { id: "regular", label: "معمولی", stroke: 2 },
+  { id: "bold", label: "ضخیم", stroke: 2.75 },
+];
+
+/** Colour roles for icons, all routed through the active style's tokens. */
+export const ICON_TONES: IconToneOption[] = [
+  { id: "inherit", label: "متن", color: "currentColor" },
+  { id: "primary", label: "برند", color: "var(--cc-primary)" },
+  { id: "accent", label: "تأکید", color: "var(--cc-accent)" },
+  { id: "muted", label: "ملایم", color: "var(--cc-muted-foreground)" },
+];
+
+export const DEFAULT_ICON_STYLE: IconStyle = {
+  size: "md",
+  weight: "regular",
+  tone: "inherit",
+};
+
+/** Flatten the three picker ids into the theme tokens the canvas consumes. */
+export function resolveIconStyle(style: IconStyle): {
+  scale: number;
+  stroke: number;
+  color: string;
+} {
+  return {
+    scale:
+      (ICON_SIZES.find((option) => option.id === style.size) ?? ICON_SIZES[1])
+        .scale,
+    stroke:
+      (
+        ICON_WEIGHTS.find((option) => option.id === style.weight) ??
+        ICON_WEIGHTS[1]
+      ).stroke,
+    color:
+      (ICON_TONES.find((option) => option.id === style.tone) ?? ICON_TONES[0])
+        .color,
+  };
+}
 
 /**
  * Font ids resolved to CSS stacks. Every local face is followed by Vazir and
@@ -263,52 +380,29 @@ export const FONT_STACKS: Record<FontId, string> = {
   parvaz: "'Parvaz', 'Vazir', 'Vazirmatn', sans-serif",
 };
 
-export function mixWithWhite(hex: string, amount: number): string {
-  const clean = hex.replace("#", "");
-  if (!/^[0-9a-fA-F]{6}$/.test(clean)) return hex;
-  const channels = [0, 2, 4].map((offset) =>
-    parseInt(clean.slice(offset, offset + 2), 16),
-  );
-  const mixed = channels.map((channel) =>
-    Math.round(channel + (255 - channel) * amount),
-  );
-  return `#${mixed.map((value) => value.toString(16).padStart(2, "0")).join("")}`;
-}
-
-export function buildTokenLine(input: {
-  primary: string;
-  radius: number;
-  style: StyleId;
-}): string {
-  return `--primary: ${input.primary}; --radius: ${input.radius}px; --font-family: ${FONT_STACKS.vazirmatn}; --style: ${input.style};`;
-}
-
 export function buildThemeSnippet(input: {
-  primary: string;
-  primarySubtle: string;
+  palette: StudioPalette;
   radius: number;
   style: StyleId;
   fontStack: string;
+  iconStyle?: IconStyle;
 }): string {
   const preset = createThemePresets[input.style];
-  const dark = preset.tone === "dark";
-  const surface = preset.tokens.surface ?? "#ffffff";
   const shadow = preset.tokens.shadow ?? "none";
+  const icons = resolveIconStyle(input.iconStyle ?? DEFAULT_ICON_STYLE);
 
+  // Same layering as the canvas: roles always apply, neutrals and chart
+  // overrides only when the visitor edited them.
   const theme = resolveTheme(input.style, {
-    primary: input.primary,
-    primaryForeground: readableForeground(input.primary),
-    primaryHover: mixHex(input.primary, dark ? "#ffffff" : "#000000", 0.14),
-    secondary: dark
-      ? `color-mix(in srgb, ${input.primary} 22%, ${surface})`
-      : input.primarySubtle,
-    secondaryForeground: dark
-      ? mixHex(input.primary, "#ffffff", 0.4)
-      : input.primary,
-    ring: input.primary,
+    ...paletteThemeOverrides(input.palette, input.style),
     radius: input.radius,
     fontFamily: input.fontStack,
+    iconScale: icons.scale,
+    iconStroke: icons.stroke,
+    iconColor: icons.color,
   });
+  const primary = theme.primary;
+  const primarySubtle = theme.secondary;
 
   const vars = Object.entries(themeToCssVars(theme))
     .map(([token, value]) => `  ${token}: ${value};`)
@@ -318,16 +412,20 @@ export function buildThemeSnippet(input: {
 @import "tailwindcss";
 
 @theme {
-  --color-primary: ${input.primary};
-  --color-primary-subtle: ${input.primarySubtle};
+  --color-primary: ${primary};
+  --color-primary-subtle: ${primarySubtle};
+  --color-accent: ${theme.accent};
+  --color-success: ${theme.success};
+  --color-warning: ${theme.warning};
+  --color-danger: ${theme.danger};
   --radius-craft: ${input.radius}px;
   --font-craft: ${input.fontStack};
   --shadow-craft: ${shadow};
 }
 
 :root {
-  --primary: ${input.primary};
-  --primary-subtle: ${input.primarySubtle};
+  --primary: ${primary};
+  --primary-subtle: ${primarySubtle};
   --radius: ${input.radius}px;
   --preset-style: "${input.style}";
   --font-family: ${input.fontStack};
