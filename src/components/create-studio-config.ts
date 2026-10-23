@@ -30,7 +30,12 @@ export type FontId =
 
 export type IconLibraryId = "google" | "lucide" | "tabler";
 
-export type Archetype = { id: ArchetypeId; label: string };
+export type Archetype = {
+  id: ArchetypeId;
+  label: string;
+  tagline: string;
+  description: string;
+};
 export type StyleOption = { id: StyleId; label: string };
 export type Swatch = {
   hex: string;
@@ -52,11 +57,36 @@ export type ShufflePreset = {
 };
 
 export const ARCHETYPES: Archetype[] = [
-  { id: "components", label: "کامپوننت‌ها و ویجت‌ها" },
-  { id: "landing", label: "لندینگ تدریس آنلاین" },
-  { id: "ecommerce", label: "فروشگاه پوشاک" },
-  { id: "clinic", label: "سامانه نوبت‌دهی کلینیک" },
-  { id: "dashboard", label: "داشبورد داده و آمار" },
+  {
+    id: "components",
+    label: "کامپوننت‌ها و ویجت‌ها",
+    tagline: "UI KIT",
+    description: "گالری فرم‌ها، بازخورد، جدول و نمودارها",
+  },
+  {
+    id: "landing",
+    label: "لندینگ تدریس آنلاین",
+    tagline: "LANDING",
+    description: "صفحهٔ فرود آکادمی با ثبت‌نام و برنامهٔ کلاس‌ها",
+  },
+  {
+    id: "ecommerce",
+    label: "فروشگاه پوشاک",
+    tagline: "SHOP",
+    description: "ویترین پوشاک با فیلتر، سبد خرید و پیشنهادها",
+  },
+  {
+    id: "clinic",
+    label: "سامانه نوبت‌دهی کلینیک",
+    tagline: "CLINIC",
+    description: "رزرو نوبت چهار مرحله‌ای با تقویم شمسی",
+  },
+  {
+    id: "dashboard",
+    label: "داشبورد داده و آمار",
+    tagline: "DASHBOARD",
+    description: "شاخص‌ها، نمودارها، جدول سفارش و سلامت سیستم",
+  },
 ];
 
 export const STYLES: StyleOption[] = [

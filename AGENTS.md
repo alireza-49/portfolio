@@ -40,6 +40,11 @@ Rebuilt the two canvas scenarios and added the primitives they needed:
   Data in `create-scenarios/data/dashboard.ts`.
 - Added a "نمودارها و زمان‌بندی" gallery section to the `components` archetype.
 - Added `recharts` + `react-is`; wired both views into `create-studio-canvas.tsx`.
+- Made the artboard the hero of `/create`: the scenario picker is now a prominent
+  icon-tile strip (`ARCHETYPES` gained `tagline`/`description`), the canvas fills the
+  viewport height with slimmer padding, shows the active scenario + preset in its
+  chrome, has a "بزرگ‌نمایی" full-screen toggle (Esc closes), and comes before the
+  sidebar on small screens (`order-1`/`lg:order-2`).
 
 ## Rules for this codebase
 

@@ -1,7 +1,18 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { BookOpen, Code2, Copy, X } from "lucide-react";
+import {
+  BookOpen,
+  ChartLine,
+  Code2,
+  Copy,
+  LayoutGrid,
+  PanelsTopLeft,
+  ShoppingBag,
+  Stethoscope,
+  X,
+  type LucideIcon,
+} from "lucide-react";
 import { CreateStudioCanvas } from "@/components/create-studio-canvas";
 import { CreateStudioSidebar } from "@/components/create-studio-sidebar";
 import { createThemePresets } from "@/components/create-components/style-presets";
@@ -14,6 +25,14 @@ import {
   type IconLibraryId,
   type StyleId,
 } from "@/components/create-studio-config";
+
+const ARCHETYPE_ICONS: Record<ArchetypeId, LucideIcon> = {
+  components: LayoutGrid,
+  landing: PanelsTopLeft,
+  ecommerce: ShoppingBag,
+  clinic: Stethoscope,
+  dashboard: ChartLine,
+};
 
 export function CreateStudio() {
   const [archetype, setArchetype] = useState<ArchetypeId>("components");
@@ -70,42 +89,83 @@ export function CreateStudio() {
     }
   };
 
+  const activeArchetype =
+    ARCHETYPES.find((item) => item.id === archetype) ?? ARCHETYPES[0];
+
   return (
     <>
-      <section className='w-full shrink-0 border-b-[2.5px] border-indigo-ink bg-paper-dim px-4 py-2 sm:px-8'>
-        <div className='mx-auto flex max-w-7xl flex-col items-start justify-between gap-3 md:flex-row md:items-center'>
-          <div className='flex flex-wrap items-center gap-1.5'>
-            <span className='inline-flex items-center gap-1 rounded-sm px-2 py-0.5 text-xs font-bold'>
-              <BookOpen className='size-3.5' />
-              سناریوی بوم:
-            </span>
-            <div className='inline-flex flex-wrap gap-0.5 rounded-sm border border-indigo-ink bg-paper-light p-0.5 text-xs font-bold shadow-craft-sm'>
-              {ARCHETYPES.map((item) => {
-                const active = archetype === item.id;
-                return (
-                  <button
-                    key={item.id}
-                    type='button'
-                    onClick={() => setArchetype(item.id)}
-                    aria-pressed={active}
-                    className={`rounded-sm px-3 py-1 transition-all ${
-                      active
-                        ? "bg-coral text-white shadow-craft-sm"
-                        : "text-indigo-light hover:text-indigo-ink"
-                    }`}
-                  >
-                    {item.label}
-                  </button>
-                );
-              })}
+      <section className='w-full shrink-0 border-b-[2.5px] border-indigo-ink bg-paper-dim px-4 py-3 sm:px-8'>
+        <div className='mx-auto flex max-w-7xl flex-col gap-2.5'>
+          <div className='flex items-center gap-3'>
+            <div className='flex items-center gap-3'>
+              <span className='flex size-11 shrink-0 items-center justify-center rounded-sm border-[1.5px] border-indigo-ink bg-mustard/30 text-indigo-ink shadow-craft-sm'>
+                <BookOpen className='size-5' />
+              </span>
+              <div className='flex flex-col gap-0.5'>
+                <span className='flex flex-wrap items-center gap-2 font-mono text-[9px] font-bold tracking-[0.18em] text-indigo-light uppercase'>
+                  Scenario canvas
+                  <span className='inline-flex items-center gap-1 rounded-sm border border-indigo-ink/40 bg-paper-light px-1.5 py-px text-[8px] font-bold tracking-normal text-indigo-ink normal-case'>
+                    <span className='size-1 rounded-full bg-teal-craft' />
+                    Studio ready
+                  </span>
+                </span>
+                <h2 className='flex flex-wrap items-center gap-2 text-sm leading-tight font-black text-indigo-ink sm:text-base'>
+                  <span>سناریوی بوم</span>
+                  <span className='rounded-sm bg-indigo-ink px-1.5 py-0.5 text-[10px] font-bold text-paper'>
+                    {activeArchetype.label}
+                  </span>
+                </h2>
+                <p className='hidden max-w-md text-[11px] leading-relaxed text-indigo-light sm:block'>
+                  صحنهٔ پیش‌نمایش را عوض کنید؛ همهٔ سناریوها با همان توکن‌های تم
+                  رنگ می‌گیرند.
+                </p>
+              </div>
             </div>
           </div>
 
-          <div className='flex items-center gap-2 self-end md:self-auto'>
-            <span className='flex items-center gap-1 rounded-sm border border-indigo-ink bg-paper-light px-2 py-0.5 font-mono text-[10px] font-bold text-indigo-ink shadow-craft-sm'>
-              <span className='size-1.5 rounded-full bg-teal-craft' />
-              STUDIO READY
-            </span>
+          <div className='-mx-1 grid grid-flow-col auto-cols-[minmax(10.5rem,1fr)] gap-2 overflow-x-auto px-1 pb-1 xl:mx-0 xl:grid-flow-row xl:grid-cols-5 xl:overflow-visible xl:px-0 xl:pb-0'>
+            {ARCHETYPES.map((item) => {
+              const active = archetype === item.id;
+              const Icon = ARCHETYPE_ICONS[item.id];
+              return (
+                <button
+                  key={item.id}
+                  type='button'
+                  onClick={() => setArchetype(item.id)}
+                  aria-pressed={active}
+                  title={item.description}
+                  className={`flex items-center gap-2 rounded-sm border-[1.5px] border-indigo-ink px-2.5 py-2 text-right transition-all ${
+                    active
+                      ? "bg-coral text-white shadow-craft"
+                      : "bg-paper-light text-indigo-ink shadow-craft-sm hover:-translate-y-0.5 hover:bg-paper hover:shadow-craft"
+                  }`}
+                >
+                  <span
+                    aria-hidden='true'
+                    className={`flex size-8 shrink-0 items-center justify-center rounded-sm border-[1.5px] ${
+                      active
+                        ? "border-white/40 bg-white/15 text-white"
+                        : "border-indigo-ink bg-paper-dim text-coral"
+                    }`}
+                  >
+                    <Icon className='size-4' />
+                  </span>
+                  <span className='flex min-w-0 flex-col gap-0.5'>
+                    <span className='text-xs leading-tight font-black whitespace-nowrap'>
+                      {item.label}
+                    </span>
+                    <span
+                      dir='ltr'
+                      className={`text-left font-mono text-[9px] leading-tight font-bold tracking-[0.14em] ${
+                        active ? "text-white/80" : "text-indigo-light"
+                      }`}
+                    >
+                      {item.tagline}
+                    </span>
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </div>
       </section>

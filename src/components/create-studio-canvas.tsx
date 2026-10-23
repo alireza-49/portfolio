@@ -1,12 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   CheckCircle2,
+  Maximize2,
+  Minimize2,
   Sparkles,
   TriangleAlert,
 } from "lucide-react";
 import {
+  ARCHETYPES,
   FONT_STACKS,
   ICON_LIBRARIES,
   mixWithWhite,
@@ -173,6 +176,19 @@ export function CreateStudioCanvas({
   const effectiveRadius = radius;
 
   const ChromeIcon = LIBRARY_ICONS[iconLibrary];
+  const [expanded, setExpanded] = useState(false);
+  const activeScenario =
+    ARCHETYPES.find((item) => item.id === archetype) ?? ARCHETYPES[0];
+
+  // Full-screen preview: Escape leaves the stage without hunting for the button.
+  useEffect(() => {
+    if (!expanded) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setExpanded(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [expanded]);
 
   // The sidebar owns the brand colour, radius and body font; everything else
   // (palette, geometry, typography voice, texture) comes from the preset.
@@ -193,11 +209,19 @@ export function CreateStudioCanvas({
   };
 
   return (
-    <section className='dot-grid order-2 flex w-full flex-col gap-4 overflow-x-hidden bg-paper-shade p-4 sm:p-6 lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:p-8'>
+    <section
+      className={`dot-grid order-1 flex w-full shrink-0 flex-col gap-4 overflow-x-hidden bg-paper-shade p-3 sm:p-5 lg:order-2 lg:min-h-0 lg:shrink lg:flex-1 lg:overflow-y-auto lg:p-5 xl:p-6 ${
+        expanded ? "fixed inset-0 z-[60] overflow-y-auto" : ""
+      }`}
+    >
       <CreateComponentsThemeProvider
         preset={styleId}
         theme={theme}
-        className='paper-pattern relative flex min-h-[640px] w-full flex-col overflow-auto rounded-sm transition-all'
+        className={`paper-pattern relative flex w-full flex-col overflow-auto rounded-sm transition-all ${
+          expanded
+            ? "min-h-[calc(100dvh-1.5rem)] sm:min-h-[calc(100dvh-2.5rem)]"
+            : "min-h-[560px] sm:min-h-[660px] lg:min-h-[calc(100dvh-13rem)]"
+        }`}
         style={{
           borderStyle: "var(--cc-border-style)",
           borderWidth: "var(--cc-border-width)",
@@ -206,32 +230,55 @@ export function CreateStudioCanvas({
         }}
       >
         <div
-          className='flex w-full select-none items-center justify-between border-b-[length:var(--cc-border-width)] border-[color:var(--cc-border)] px-4 py-2.5'
+          className='flex w-full flex-wrap select-none items-center justify-between gap-2 border-b-[length:var(--cc-border-width)] border-[color:var(--cc-border)] px-3 py-2.5 sm:px-5 sm:py-3'
           style={{
             backgroundColor:
               "color-mix(in srgb, var(--cc-muted) 72%, var(--cc-background))",
           }}
         >
-          <div className='flex items-center gap-2.5'>
+          <div className='flex min-w-0 items-center gap-2.5'>
             <div className='flex items-center gap-1.5'>
               <span className='size-3 rounded-full border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-primary)]' />
               <span className='size-3 rounded-full border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-accent)]' />
               <span className='size-3 rounded-full border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-success)]' />
             </div>
-            <span className='mx-1 h-4 w-px bg-[var(--cc-border)]' />
-            <div className='flex items-center gap-1.5 text-xs font-black text-[color:var(--cc-surface-foreground)]'>
-              <ChromeIcon className='size-4 text-[color:var(--cc-primary)]' />
-              <span>میز کارگاه زنده // Live Artboard Canvas</span>
+            <span className='mx-0.5 h-4 w-px bg-[var(--cc-border)]' />
+            <div className='flex min-w-0 items-center gap-1.5 text-xs font-black text-[color:var(--cc-surface-foreground)] sm:text-[13px]'>
+              <ChromeIcon className='size-4 shrink-0 text-[color:var(--cc-primary)]' />
+              <span className='truncate'>{activeScenario.label}</span>
+              <span className='hidden font-mono text-[10px] font-bold text-[color:var(--cc-muted-foreground)] sm:inline'>
+                {"// LIVE ARTBOARD"}
+              </span>
             </div>
           </div>
-          <div className='flex items-center gap-2'>
-            <span className='rounded-[var(--cc-radius-sm)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-surface)] px-2 py-0.5 font-mono text-[10px] font-bold text-[color:var(--cc-surface-foreground)] [box-shadow:var(--cc-shadow)]'>
+          <div className='flex items-center gap-1.5 sm:gap-2'>
+            <span className='hidden items-center gap-1 rounded-[var(--cc-radius-sm)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-surface)] px-2 py-0.5 font-mono text-[10px] font-bold text-[color:var(--cc-surface-foreground)] [box-shadow:var(--cc-shadow)] lg:inline-flex'>
+              STYLE: <span dir='ltr'>{styleId.toUpperCase()}</span>
+            </span>
+            <span className='hidden items-center rounded-[var(--cc-radius-sm)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-surface)] px-2 py-0.5 font-mono text-[10px] font-bold text-[color:var(--cc-surface-foreground)] [box-shadow:var(--cc-shadow)] md:inline-flex'>
               VIEWPORT: 100%
             </span>
             <span className='flex items-center gap-1 rounded-[var(--cc-radius-sm)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-surface-foreground)] px-2 py-0.5 font-mono text-[10px] font-bold text-[color:var(--cc-surface)]'>
               <span className='size-1.5 rounded-full bg-[var(--cc-success)]' />
               CANVAS OK
             </span>
+            <button
+              type='button'
+              onClick={() => setExpanded((value) => !value)}
+              aria-pressed={expanded}
+              aria-label={expanded ? "بستن بزرگ‌نمایی بوم" : "بزرگ‌نمایی بوم"}
+              title={expanded ? "بستن بزرگ‌نمایی بوم" : "بزرگ‌نمایی بوم"}
+              className='flex items-center gap-1 rounded-[var(--cc-radius-sm)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-primary)] px-2 py-0.5 font-mono text-[10px] font-bold text-[color:var(--cc-primary-foreground)] transition-transform [box-shadow:var(--cc-shadow)] hover:-translate-y-px'
+            >
+              {expanded ? (
+                <Minimize2 className='size-3.5' />
+              ) : (
+                <Maximize2 className='size-3.5' />
+              )}
+              <span className='hidden sm:inline'>
+                {expanded ? "بستن" : "بزرگ‌نمایی"}
+              </span>
+            </button>
           </div>
         </div>
 
