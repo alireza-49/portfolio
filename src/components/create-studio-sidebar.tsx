@@ -1,6 +1,11 @@
 "use client";
 
-import { useRef, useState, type FormEvent, type PointerEvent as ReactPointerEvent } from "react";
+import {
+  useRef,
+  useState,
+  type FormEvent,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 import { Popover } from "@base-ui/react/popover";
 import {
   Check,
@@ -245,7 +250,7 @@ export function CreateStudioSidebar({
   };
 
   return (
-    <aside className='order-2 z-20 flex w-full shrink-0 flex-col gap-4 border-b-[2.5px] border-indigo-ink bg-paper-light p-4 lg:order-1 lg:h-full lg:min-h-0 lg:w-80 lg:overflow-y-auto lg:border-b-0 lg:border-l-[2.5px]'>
+    <aside className='order-2 z-20 flex w-full shrink-0 flex-col gap-4 border-b-[2.5px] border-indigo-ink bg-paper-light p-4 lg:order-1 lg:h-full lg:min-h-0 lg:w-80 lg:overflow-y-auto lg:border-b-0 lg:border-l-[2.5px] scroll-smooth'>
       <div className='border-b border-indigo-ink/20 pb-3'>
         <button
           type='button'
@@ -289,7 +294,8 @@ export function CreateStudioSidebar({
                     const preset = createThemePresets[option.id];
                     const tokens = preset.tokens;
                     const fontLabel =
-                      FONTS.find((item) => item.id === option.font)?.label ?? "";
+                      FONTS.find((item) => item.id === option.font)?.label ??
+                      "";
                     return (
                       <button
                         key={option.id}
@@ -323,17 +329,20 @@ export function CreateStudioSidebar({
                             <span
                               className='size-2 rounded-full border border-indigo-ink/30'
                               style={{
-                                backgroundColor:
-                                  tokens.background ?? "#ffffff",
+                                backgroundColor: tokens.background ?? "#ffffff",
                               }}
                             />
                             <span
                               className='size-2 rounded-full border border-indigo-ink/30'
-                              style={{ backgroundColor: tokens.accent ?? "#e9c46a" }}
+                              style={{
+                                backgroundColor: tokens.accent ?? "#e9c46a",
+                              }}
                             />
                             <span
                               className='size-2 rounded-full border border-indigo-ink/30'
-                              style={{ backgroundColor: tokens.border ?? "#264653" }}
+                              style={{
+                                backgroundColor: tokens.border ?? "#264653",
+                              }}
                             />
                           </span>
                         </span>
@@ -345,7 +354,8 @@ export function CreateStudioSidebar({
                             {option.description}
                           </span>
                           <span className='truncate font-mono text-[8px] opacity-60'>
-                            {fontLabel} · {preset.tone === "dark" ? "DARK" : "LIGHT"} ·{" "}
+                            {fontLabel} ·{" "}
+                            {preset.tone === "dark" ? "DARK" : "LIGHT"} ·{" "}
                             {tokens.radius ?? 0}px
                           </span>
                         </span>
@@ -358,8 +368,8 @@ export function CreateStudioSidebar({
           })}
         </div>
         <p className='text-[10px] leading-relaxed text-indigo-light'>
-          هر سبک پالت، تایپوگرافی، بافت و فرم کنترل‌ها را عوض می‌کند و شعاع گوشه و
-          فونت را با خودش همگام می‌سازد.
+          هر سبک پالت، تایپوگرافی، بافت و فرم کنترل‌ها را عوض می‌کند و شعاع گوشه
+          و فونت را با خودش همگام می‌سازد.
         </p>
       </div>
 
@@ -521,7 +531,11 @@ export function CreateStudioSidebar({
                       palette,
                       styleId,
                     ),
-                    borderColor: resolvePaletteToken("border", palette, styleId),
+                    borderColor: resolvePaletteToken(
+                      "border",
+                      palette,
+                      styleId,
+                    ),
                     color: resolvePaletteToken(
                       "surfaceForeground",
                       palette,
@@ -935,8 +949,8 @@ export function CreateStudioSidebar({
         </div>
 
         <p className='text-[10px] leading-relaxed text-indigo-light'>
-          سایه روی کارت‌ها، دکمه‌ها، ورودی‌ها و پنل نمودارها می‌نشیند. «پیرو سبک»
-          امضای سایهٔ سبک فعال را نگه می‌دارد.
+          سایه روی کارت‌ها، دکمه‌ها، ورودی‌ها و پنل نمودارها می‌نشیند. «پیرو
+          سبک» امضای سایهٔ سبک فعال را نگه می‌دارد.
         </p>
       </div>
 
@@ -1137,7 +1151,8 @@ export function CreateStudioSidebar({
               </div>
               <span className='text-[9px] leading-relaxed text-indigo-light'>
                 فایل فقط روی همین دستگاه ذخیره می‌شود؛ حداکثر{" "}
-                {toPersianDigits(CUSTOM_FONT_MAX_BYTES / (1024 * 1024))} مگابایت.
+                {toPersianDigits(CUSTOM_FONT_MAX_BYTES / (1024 * 1024))}{" "}
+                مگابایت.
               </span>
             </form>
           ) : (
@@ -1405,8 +1420,7 @@ function PaletteColorPicker({
     hsv: hexToHsv(value),
   }));
   // External edits (palette preset, HEX field, reset) win over a stale draft.
-  const hsv =
-    draft.hex === value.toLowerCase() ? draft.hsv : hexToHsv(value);
+  const hsv = draft.hex === value.toLowerCase() ? draft.hsv : hexToHsv(value);
 
   const apply = (next: HsvColor) => {
     const clamped: HsvColor = {
@@ -1419,9 +1433,7 @@ function PaletteColorPicker({
     onChange(hex);
   };
 
-  const updateSaturationValue = (
-    event: ReactPointerEvent<HTMLDivElement>,
-  ) => {
+  const updateSaturationValue = (event: ReactPointerEvent<HTMLDivElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
     if (!rect.width || !rect.height) return;
     apply({
@@ -1539,7 +1551,6 @@ function PaletteColorPicker({
           <p className='mt-1.5 text-[9px] leading-relaxed text-indigo-light'>
             مربع را بکشید یا با کلیدهای جهت تنظیم کنید؛ نوار پایین تن رنگ است.
           </p>
-
         </Popover.Popup>
       </Popover.Positioner>
     </Popover.Portal>
@@ -1596,4 +1607,3 @@ function IconPickerRow<T extends string>({
     </div>
   );
 }
-

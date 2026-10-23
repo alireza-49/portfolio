@@ -6,7 +6,6 @@ import {
   ExternalLink,
   Maximize2,
   Minimize2,
-  MonitorPlay,
   ShieldCheck,
   TriangleAlert,
 } from "lucide-react";
@@ -224,19 +223,6 @@ export function CreateStudioCanvas({
       {/* The frame belongs to the studio: page tokens only. The preset's
           --cc-* scope starts at the content viewport below, so switching the
           style restyles the site inside the window and never the window. */}
-      <div
-        className={`shrink-0 items-center justify-between gap-2 px-1 text-[10px] font-bold text-paper/75 ${
-          expanded ? "hidden" : "hidden sm:flex"
-        }`}
-      >
-        <span className='flex items-center gap-1.5'>
-          <MonitorPlay aria-hidden='true' className='size-3.5 text-mustard' />
-          پنجرهٔ سایتِ مستقل
-        </span>
-        <span dir='ltr' className='font-mono text-[10px] text-paper/50'>
-          {activeScenario.demoHost}
-        </span>
-      </div>
 
       <div
         data-preview-window=''
@@ -312,7 +298,8 @@ export function CreateStudioCanvas({
               title='سبک فعال استودیو'
               className='hidden items-center gap-1 rounded-sm border-[1.5px] border-indigo-ink bg-paper-light px-2 py-0.5 text-[10px] font-bold whitespace-nowrap text-indigo-ink shadow-craft-sm lg:inline-flex'
             >
-              سبک: {STYLES.find((style) => style.id === styleId)?.label ?? styleId}
+              سبک:{" "}
+              {STYLES.find((style) => style.id === styleId)?.label ?? styleId}
             </span>
           </div>
         </div>
@@ -339,9 +326,7 @@ export function CreateStudioCanvas({
                 {archetype === "landing" ? <TutoringLandingView /> : null}
                 {archetype === "ecommerce" ? <ClothingShopView /> : null}
                 {archetype === "clinic" ? <ClinicReservationView /> : null}
-                {archetype === "dashboard" ? (
-                  <AnalyticsDashboardView />
-                ) : null}
+                {archetype === "dashboard" ? <AnalyticsDashboardView /> : null}
               </div>
             </IconSetProvider>
           </CreateComponentsThemeProvider>
@@ -750,7 +735,11 @@ function ComponentsView() {
               <ChartLegend
                 items={[
                   { label: "درآمد", color: "var(--cc-chart-1)" },
-                  { label: "میانگین", color: "var(--cc-chart-2)", dashed: true },
+                  {
+                    label: "میانگین",
+                    color: "var(--cc-chart-2)",
+                    dashed: true,
+                  },
                 ]}
               />
             }
@@ -835,7 +824,6 @@ function ComponentsView() {
         </CardContent>
       </Card>
 
-
       {/* 6 — Footer */}
       <div className='flex flex-wrap items-center justify-between gap-3 border-t-[length:var(--cc-border-width)] border-[color:var(--cc-border)] pt-4'>
         <span className='text-[length:calc(var(--cc-font-size)*0.8)] text-[color:var(--cc-muted-foreground)]'>
@@ -855,5 +843,3 @@ function ComponentsView() {
     </div>
   );
 }
-
-

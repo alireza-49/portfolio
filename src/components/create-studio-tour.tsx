@@ -149,6 +149,42 @@ export function CreateStudioTour({ run }: CreateStudioTourProps) {
     // until the visitor asks for it again from the studio bar.
     if (run === 0 && hasSeenStudioTour()) return;
 
+    /**
+     * Space steps forward even when a click moved focus out of the button.
+     * Focus parked on «قبلی» or the close button keeps its native behaviour so
+     * keyboard users can still go back or dismiss the guide.
+     */
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== " " || event.repeat || event.defaultPrevented) return;
+      if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey)
+        return;
+
+      const target = event.target;
+      if (target instanceof Element) {
+        if (
+          target.closest(
+            "input, textarea, select, [contenteditable='true'], [contenteditable='']",
+          )
+        ) {
+          return;
+        }
+
+        const button = target.closest(".cc-tour-popover button");
+        if (button && !button.classList.contains("driver-popover-next-btn"))
+          return;
+      }
+
+      const next = document.querySelector<HTMLButtonElement>(
+        ".cc-tour-popover .driver-popover-next-btn",
+      );
+      if (!next || next.disabled) return;
+
+      // Cancel the page scroll and the native button click on keyup, then
+      // advance once through driver's own handler.
+      event.preventDefault();
+      next.click();
+    };
+
     // Let the canvas paint (and the persisted configuration settle) first.
     const timer = window.setTimeout(() => {
       const tour = driver({
@@ -182,19 +218,29 @@ export function CreateStudioTour({ run }: CreateStudioTourProps) {
           popover.progress.textContent = toPersianDigits(
             popover.progress.textContent ?? "",
           );
+          // driver.js focuses its close button right after this hook, which
+          // makes Space dismiss the guide. Park focus on the primary action
+          // instead, once driver's own focus call has run.
+          queueMicrotask(() => {
+            if (!popover.nextButton.isConnected) return;
+            popover.nextButton.focus({ preventScroll: true });
+          });
         },
         onDestroyed: () => {
           markStudioTourSeen();
+          window.removeEventListener("keydown", onKeyDown);
           driverRef.current = null;
         },
       });
 
       driverRef.current = tour;
       tour.drive();
+      window.addEventListener("keydown", onKeyDown);
     }, 600);
 
     return () => {
       window.clearTimeout(timer);
+      window.removeEventListener("keydown", onKeyDown);
       driverRef.current?.destroy();
       driverRef.current = null;
     };

@@ -175,6 +175,12 @@ roles are re-validated, and invalid JSON is ignored.
   `canvas-status` on the preview window, `submit-config` on the sidebar CTA.
   Adding or reordering a scenario/section only needs its `data-tour` to stay
   put (or the step list in `create-studio-tour.tsx` updated).
+- The guide is keyboard-first: `onPopoverRender` moves focus to the popover's
+  **next** button in a microtask (driver focuses its close button right after
+  that hook, which made Space dismiss the guide) and a global `keydown` handler
+  advances on Space, even when a click dropped focus onto the page. Space on
+  «قبلی»/«بستن» keeps its native behaviour so users can still step back or
+  close; `preventScroll` keeps the sidebar's scroll position untouched.
 - The bottom sidebar CTA persists the current configuration and navigates to
   `/#contact-section`. `ContactSection` reads the same store, shows the saved
   combination as chips, attaches it as a hidden `studio-config` field (toggle

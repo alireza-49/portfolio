@@ -125,6 +125,13 @@
   box-shadow: 1px 1px 0 0 var(--color-indigo-ink);
 }
 
+/* The guide parks focus on «بعدی» every step and driver.css resets the
+   outline, so the primary action needs its own ring to read as focused. */
+.driver-popover.cc-tour-popover .driver-popover-footer-btn:focus {
+  outline: 2px solid var(--color-indigo-ink);
+  outline-offset: 2px;
+}
+
 .driver-popover.cc-tour-popover .driver-popover-next-btn {
   background-color: var(--color-coral);
   color: var(--color-paper-light);
