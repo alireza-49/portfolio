@@ -1,0 +1,109 @@
+/*
+ * Studio typefaces.
+ *
+ * The files live in /public/fonts exactly as they were supplied — no
+ * conversion, no renaming. Only /create imports this stylesheet, so the
+ * marketing pages never parse these rules and the browser only downloads a
+ * family when the canvas (or the picker preview) actually uses it.
+ *
+ * FONT_STACKS in create-studio-config.ts maps every studio font id onto the
+ * family names declared here, so the exported theme snippet stays portable.
+ */
+
+@font-face {
+  font-family: "Vazir";
+  src: url("/fonts/vazir-font-v16.1.0/Vazir.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Vazir";
+  src: url("/fonts/vazir-font-v16.1.0/Vazir-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Vazir";
+  src: url("/fonts/vazir-font-v16.1.0/Vazir-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Samim";
+  src: url("/fonts/samim-font-v2.0.1/Samim.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Samim";
+  src: url("/fonts/samim-font-v2.0.1/Samim-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Dirooz";
+  src: url("/fonts/dirooz-font-v0.2.1/Dirooz.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Maktab Rita";
+  src: url("/fonts/Maktab/MaktabRita-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Gandom and the four display faces only ship as TrueType files. */
+@font-face {
+  font-family: "Gandom";
+  src: url("/fonts/gandom-font-v0.5.1/Gandom.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Ordibehesht";
+  src: url("/fonts/AOrdibeheshtShablon/A%20Ordibehesht%20shablon.TTF")
+    format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "A Ghasem";
+  src: url("/fonts/AGhasem/AGhasem.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "A Google";
+  src: url("/fonts/A%20Google/A%20Google.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Parvaz";
+  src: url("/fonts/W_parvaz/W_parvaz.TTF") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}

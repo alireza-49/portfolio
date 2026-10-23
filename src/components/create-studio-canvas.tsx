@@ -10,11 +10,9 @@ import {
 } from "lucide-react";
 import {
   ARCHETYPES,
-  FONT_STACKS,
   ICON_LIBRARIES,
   mixWithWhite,
   type ArchetypeId,
-  type FontId,
   type IconLibraryId,
   type StyleId,
 } from "@/components/create-studio-config";
@@ -82,7 +80,8 @@ type CanvasProps = {
   primarySubtle: string;
   radius: number;
   styleId: StyleId;
-  font: FontId;
+  /** Fully resolved CSS stack, built-ins and uploaded fonts alike. */
+  fontFamily: string;
   iconLibrary: IconLibraryId;
 };
 
@@ -167,7 +166,7 @@ export function CreateStudioCanvas({
   primarySubtle,
   radius,
   styleId,
-  font,
+  fontFamily,
   iconLibrary,
 }: CanvasProps) {
   const presetDefinition = createThemePresets[styleId];
@@ -205,7 +204,7 @@ export function CreateStudioCanvas({
       : mixWithWhite(primarySubtle, 0.1),
     ring: primary,
     radius: effectiveRadius,
-    fontFamily: FONT_STACKS[font],
+    fontFamily,
   };
 
   return (

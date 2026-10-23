@@ -21,12 +21,16 @@ export type StyleId =
   | "terminal";
 
 export type FontId =
+  | "vazirmatn"
   | "vazir"
-  | "editorial"
-  | "sahel"
   | "samim"
-  | "shabnam"
-  | "tanha";
+  | "gandom"
+  | "dirooz"
+  | "maktab"
+  | "ordibehesht"
+  | "aghasem"
+  | "google"
+  | "parvaz";
 
 export type IconLibraryId = "google" | "lucide" | "tabler";
 
@@ -46,7 +50,13 @@ export type Swatch = {
 };
 export type PresetPill = { hex: string; subtle: string; name: string };
 export type RadiusOption = { value: number; label: string; caption: string };
-export type FontOption = { id: FontId; label: string; note: string };
+export type FontOption = {
+  id: FontId;
+  label: string;
+  note: string;
+  /** Body faces read as text; display faces are for headlines and accents. */
+  kind: "text" | "display";
+};
 export type IconLibrary = { id: IconLibraryId; label: string; note: string };
 export type ShufflePreset = {
   hex: string;
@@ -145,12 +155,21 @@ export const RADII: RadiusOption[] = [
 ];
 
 export const FONTS: FontOption[] = [
-  { id: "vazir", label: "وزیرمتن + اسپیس‌گروتسک", note: "پیش‌فرض" },
-  { id: "editorial", label: "نیوزریدر ادبی + وزیرمتن", note: "ادیتوریال" },
-  { id: "sahel", label: "ساحل + اینتر (Inter)", note: "خوانا و مدرن" },
-  { id: "samim", label: "صمیم + روبوتو (Roboto)", note: "ساده و کاربردی" },
-  { id: "shabnam", label: "شبنم + فیرا کد (Fira Code)", note: "تکنیکال" },
-  { id: "tanha", label: "تنها + اوپن سنس (Open Sans)", note: "دوستانه و مینیمال" },
+  { id: "vazirmatn", label: "وزیرمتن", note: "پیش‌فرض سایت", kind: "text" },
+  { id: "vazir", label: "وزیر", note: "کلاسیک", kind: "text" },
+  { id: "samim", label: "صمیم", note: "خوانا", kind: "text" },
+  { id: "gandom", label: "گندم", note: "گرم", kind: "text" },
+  { id: "dirooz", label: "دی‌روز", note: "مدرن", kind: "text" },
+  { id: "maktab", label: "مکتب ریتا", note: "نرم", kind: "text" },
+  {
+    id: "ordibehesht",
+    label: "اردیبهشت شابلون",
+    note: "تیتر",
+    kind: "display",
+  },
+  { id: "aghasem", label: "ع. قاسم", note: "دست‌نویس", kind: "display" },
+  { id: "google", label: "ای‌گوگل", note: "نمایشی", kind: "display" },
+  { id: "parvaz", label: "پرواز", note: "نمایشی", kind: "display" },
 ];
 
 export const ICON_LIBRARIES: IconLibrary[] = [
@@ -197,13 +216,23 @@ export const SHUFFLE_PRESETS: ShufflePreset[] = [
   },
 ];
 
+/**
+ * Font ids resolved to CSS stacks. Every local face is followed by Vazir and
+ * Vazirmatn so characters the display faces lack (A Ghasem has no digits,
+ * A Google and Parvaz no Latin letters) fall back to a real glyph instead of
+ * a missing-glyph box. Family names match src/app/create/fonts.css.
+ */
 export const FONT_STACKS: Record<FontId, string> = {
-  vazir: "'Vazirmatn', sans-serif",
-  editorial: "'Newsreader', 'Vazirmatn', serif",
-  sahel: "'Sahel', 'Inter', sans-serif",
-  samim: "'Samim', 'Roboto', sans-serif",
-  shabnam: "'Shabnam', 'Fira Code', monospace",
-  tanha: "'Tanha', 'Open Sans', sans-serif",
+  vazirmatn: "'Vazirmatn', sans-serif",
+  vazir: "'Vazir', 'Vazirmatn', sans-serif",
+  samim: "'Samim', 'Vazir', 'Vazirmatn', sans-serif",
+  gandom: "'Gandom', 'Vazir', 'Vazirmatn', sans-serif",
+  dirooz: "'Dirooz', 'Vazir', 'Vazirmatn', sans-serif",
+  maktab: "'Maktab Rita', 'Vazir', 'Vazirmatn', sans-serif",
+  ordibehesht: "'Ordibehesht', 'Vazir', 'Vazirmatn', sans-serif",
+  aghasem: "'A Ghasem', 'Vazir', 'Vazirmatn', sans-serif",
+  google: "'A Google', 'Vazir', 'Vazirmatn', sans-serif",
+  parvaz: "'Parvaz', 'Vazir', 'Vazirmatn', sans-serif",
 };
 
 export function mixWithWhite(hex: string, amount: number): string {
@@ -223,7 +252,7 @@ export function buildTokenLine(input: {
   radius: number;
   style: StyleId;
 }): string {
-  return `--primary: ${input.primary}; --radius: ${input.radius}px; --font-family: 'Vazirmatn'; --style: ${input.style};`;
+  return `--primary: ${input.primary}; --radius: ${input.radius}px; --font-family: ${FONT_STACKS.vazirmatn}; --style: ${input.style};`;
 }
 
 export function buildThemeSnippet(input: {
@@ -231,7 +260,7 @@ export function buildThemeSnippet(input: {
   primarySubtle: string;
   radius: number;
   style: StyleId;
-  font: FontId;
+  fontStack: string;
 }): string {
   const preset = createThemePresets[input.style];
   const dark = preset.tone === "dark";
@@ -250,7 +279,7 @@ export function buildThemeSnippet(input: {
       : input.primary,
     ring: input.primary,
     radius: input.radius,
-    fontFamily: FONT_STACKS[input.font],
+    fontFamily: input.fontStack,
   });
 
   const vars = Object.entries(themeToCssVars(theme))
@@ -264,7 +293,7 @@ export function buildThemeSnippet(input: {
   --color-primary: ${input.primary};
   --color-primary-subtle: ${input.primarySubtle};
   --radius-craft: ${input.radius}px;
-  --font-craft: ${FONT_STACKS[input.font]};
+  --font-craft: ${input.fontStack};
   --shadow-craft: ${shadow};
 }
 
@@ -273,7 +302,7 @@ export function buildThemeSnippet(input: {
   --primary-subtle: ${input.primarySubtle};
   --radius: ${input.radius}px;
   --preset-style: "${input.style}";
-  --font-family: ${FONT_STACKS[input.font]};
+  --font-family: ${input.fontStack};
   --box-shadow-offset: ${shadow};
 
   /* create-components design language */

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import {
   BookOpen,
   ChartLine,
@@ -21,10 +21,17 @@ import {
   SHUFFLE_PRESETS,
   buildThemeSnippet,
   type ArchetypeId,
-  type FontId,
   type IconLibraryId,
   type StyleId,
 } from "@/components/create-studio-config";
+import {
+  addCustomFont,
+  getCustomFontsServerSnapshot,
+  getCustomFontsSnapshot,
+  removeCustomFont,
+  resolveFontStack,
+  subscribeCustomFonts,
+} from "@/components/create-studio-custom-fonts";
 
 const ARCHETYPE_ICONS: Record<ArchetypeId, LucideIcon> = {
   components: LayoutGrid,
@@ -41,10 +48,19 @@ export function CreateStudio() {
   const [primarySubtle, setPrimarySubtle] = useState("#fbeee9");
   const [colorName, setColorName] = useState("سفال کهربایی");
   const [radius, setRadius] = useState(4);
-  const [font, setFont] = useState<FontId>("vazir");
+  const [font, setFont] = useState<string>("vazirmatn");
   const [iconLibrary, setIconLibrary] = useState<IconLibraryId>("google");
   const [modalOpen, setModalOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  // Uploaded fonts come from IndexedDB through the store; the server snapshot
+  // is empty, so hydration starts from the same list the prerender produced.
+  const customFonts = useSyncExternalStore(
+    subscribeCustomFonts,
+    getCustomFontsSnapshot,
+    getCustomFontsServerSnapshot,
+  );
+  const fontStack = resolveFontStack(font, customFonts);
 
   const snippet = useMemo(
     () =>
@@ -53,9 +69,9 @@ export function CreateStudio() {
         primarySubtle,
         radius,
         style: styleId,
-        font,
+        fontStack,
       }),
-    [primary, primarySubtle, radius, styleId, font],
+    [primary, primarySubtle, radius, styleId, fontStack],
   );
 
   const selectColor = (hex: string, subtle: string, name: string) => {
@@ -67,6 +83,16 @@ export function CreateStudio() {
   const selectStyle = (id: StyleId) => {
     setStyleId(id);
     setRadius(createThemePresets[id].tokens.radius ?? radius);
+  };
+
+  const addFont = async (name: string, file: File) => {
+    const customFont = await addCustomFont({ name, file });
+    setFont(customFont.id);
+  };
+
+  const deleteFont = async (id: string) => {
+    await removeCustomFont(id);
+    if (font === id) setFont("vazirmatn");
   };
 
   const shuffle = () => {
@@ -182,6 +208,9 @@ export function CreateStudio() {
           onRadiusChange={setRadius}
           font={font}
           onFontChange={setFont}
+          customFonts={customFonts}
+          onAddCustomFont={addFont}
+          onRemoveCustomFont={deleteFont}
           iconLibrary={iconLibrary}
           onIconLibraryChange={setIconLibrary}
           onShuffle={shuffle}
@@ -193,7 +222,7 @@ export function CreateStudio() {
           primarySubtle={primarySubtle}
           radius={radius}
           styleId={styleId}
-          font={font}
+          fontFamily={fontStack}
           iconLibrary={iconLibrary}
         />
       </div>

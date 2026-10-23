@@ -1,30 +1,45 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import {
   Check,
   Dices,
   Download,
   Palette,
   Pipette,
+  Plus,
   Shapes,
   SlidersHorizontal,
   Sparkles,
+  Trash2,
   Type,
+  Upload,
 } from "lucide-react";
+import { toPersianDigits } from "@/components/create-components/jalali";
 import {
   FONTS,
+  FONT_STACKS,
   ICON_LIBRARIES,
   PRESET_PILLS,
   RADII,
   STYLES,
   SWATCHES,
   mixWithWhite,
-  type FontId,
   type IconLibraryId,
   type StyleId,
 } from "@/components/create-studio-config";
+import {
+  CUSTOM_FONT_ACCEPT,
+  CUSTOM_FONT_MAX_BYTES,
+  resolveFontStack,
+  type CustomFont,
+} from "@/components/create-studio-custom-fonts";
 import { createThemePresets } from "@/components/create-components/style-presets";
+
+const FONT_GROUPS = [
+  { kind: "text", label: "متن" },
+  { kind: "display", label: "نمایشی" },
+] as const;
 
 type SidebarProps = {
   styleId: StyleId;
@@ -35,12 +50,15 @@ type SidebarProps = {
   onColorChange: (hex: string, subtle: string, name: string) => void;
   radius: number;
   onRadiusChange: (value: number) => void;
-  font: FontId;
-  onFontChange: (id: FontId) => void;
+  font: string;
+  onFontChange: (id: string) => void;
   iconLibrary: IconLibraryId;
   onIconLibraryChange: (id: IconLibraryId) => void;
   onShuffle: () => void;
   onExport: () => void;
+  customFonts: CustomFont[];
+  onAddCustomFont: (name: string, file: File) => Promise<void>;
+  onRemoveCustomFont: (id: string) => Promise<void>;
 };
 
 export function CreateStudioSidebar({
@@ -58,6 +76,9 @@ export function CreateStudioSidebar({
   onIconLibraryChange,
   onShuffle,
   onExport,
+  customFonts,
+  onAddCustomFont,
+  onRemoveCustomFont,
 }: SidebarProps) {
   const [hexDraft, setHexDraft] = useState({
     source: primary,
@@ -68,6 +89,11 @@ export function CreateStudioSidebar({
     value: String(radius),
   });
   const [colorMode, setColorMode] = useState<"presets" | "custom">("presets");
+  const [addingFont, setAddingFont] = useState(false);
+  const [fontName, setFontName] = useState("");
+  const [fontFile, setFontFile] = useState<File | null>(null);
+  const [fontError, setFontError] = useState<string | null>(null);
+  const [fontBusy, setFontBusy] = useState(false);
 
   // Derive the editable values during render: when the studio pushes a new
   // colour/radius (swatch, shuffle, custom input) the draft is stale, so the
@@ -100,6 +126,33 @@ export function CreateStudioSidebar({
     const value = Number(customRadius);
     if (Number.isFinite(value) && value >= 0 && value <= 48) {
       onRadiusChange(value);
+    }
+  };
+
+  const resetFontForm = () => {
+    setAddingFont(false);
+    setFontName("");
+    setFontFile(null);
+    setFontError(null);
+  };
+
+  const submitFont = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!fontFile) {
+      setFontError("یک فایل فونت انتخاب کنید.");
+      return;
+    }
+    setFontBusy(true);
+    setFontError(null);
+    try {
+      await onAddCustomFont(fontName, fontFile);
+      resetFontForm();
+    } catch (error) {
+      setFontError(
+        error instanceof Error ? error.message : "افزودن فونت ناموفق بود.",
+      );
+    } finally {
+      setFontBusy(false);
     }
   };
 
@@ -498,45 +551,205 @@ export function CreateStudioSidebar({
             <Type className='size-3.5 text-coral' />
             <span>تایپوگرافی</span>
           </span>
-          <span className='text-[10px] text-indigo-light'>Pairing</span>
+          <span className='text-[10px] text-indigo-light'>
+            {toPersianDigits(FONTS.length + customFonts.length)} فونت
+          </span>
         </div>
-        <div className='flex flex-col gap-1 text-xs'>
-          {FONTS.map((option) => {
-            const active = font === option.id;
-            return (
+        <div className='flex flex-col gap-1.5 text-xs'>
+          {FONT_GROUPS.map((group) => (
+            <div key={group.kind} className='flex flex-col gap-1'>
+              <span className='font-mono text-[9px] font-bold tracking-[0.12em] text-indigo-light uppercase'>
+                {group.label}
+              </span>
+              {FONTS.filter((option) => option.kind === group.kind).map(
+                (option) => {
+                  const active = font === option.id;
+                  return (
+                    <label
+                      key={option.id}
+                      className={`flex cursor-pointer items-center justify-between rounded-sm border border-indigo-ink p-1.5 transition-colors ${
+                        active
+                          ? "bg-paper-light shadow-craft-sm"
+                          : "bg-paper-dim hover:bg-paper-light"
+                      }`}
+                    >
+                      <div className='flex min-w-0 items-center gap-1.5'>
+                        <input
+                          type='radio'
+                          name='font_family_choice'
+                          value={option.id}
+                          checked={active}
+                          onChange={() => onFontChange(option.id)}
+                          className='size-3 shrink-0 accent-coral'
+                        />
+                        <span
+                          className='truncate text-[13px] leading-6 text-indigo-ink'
+                          style={{ fontFamily: FONT_STACKS[option.id] }}
+                        >
+                          {option.label}
+                        </span>
+                      </div>
+                      <span
+                        className={`shrink-0 ps-2 text-[9px] ${
+                          active
+                            ? "font-mono font-bold text-coral"
+                            : "text-indigo-light"
+                        }`}
+                      >
+                        {option.note}
+                      </span>
+                    </label>
+                  );
+                },
+              )}
+            </div>
+          ))}
+
+          {customFonts.length > 0 ? (
+            <div className='flex flex-col gap-1'>
+              <span className='font-mono text-[9px] font-bold tracking-[0.12em] text-indigo-light uppercase'>
+                فونت‌های من
+              </span>
+              {customFonts.map((customFont) => {
+                const active = font === customFont.id;
+                return (
+                  <div
+                    key={customFont.id}
+                    className={`flex items-center gap-1 rounded-sm border border-indigo-ink p-1.5 transition-colors ${
+                      active
+                        ? "bg-paper-light shadow-craft-sm"
+                        : "bg-paper-dim hover:bg-paper-light"
+                    }`}
+                  >
+                    <label className='flex min-w-0 flex-1 cursor-pointer items-center gap-1.5'>
+                      <input
+                        type='radio'
+                        name='font_family_choice'
+                        value={customFont.id}
+                        checked={active}
+                        onChange={() => onFontChange(customFont.id)}
+                        className='size-3 shrink-0 accent-coral'
+                      />
+                      <span
+                        className='truncate text-[13px] leading-6 text-indigo-ink'
+                        style={{
+                          fontFamily: resolveFontStack(
+                            customFont.id,
+                            customFonts,
+                          ),
+                        }}
+                      >
+                        {customFont.name}
+                      </span>
+                    </label>
+                    <span
+                      dir='ltr'
+                      className={`shrink-0 font-mono text-[9px] ${
+                        active ? "font-bold text-coral" : "text-indigo-light"
+                      }`}
+                    >
+                      {Math.max(1, Math.round(customFont.size / 1024))}KB
+                    </span>
+                    <button
+                      type='button'
+                      onClick={() => void onRemoveCustomFont(customFont.id)}
+                      aria-label={`حذف فونت ${customFont.name}`}
+                      title='حذف فونت'
+                      className='shrink-0 rounded-sm border border-transparent p-0.5 text-indigo-light transition-colors hover:border-indigo-ink hover:text-coral'
+                    >
+                      <Trash2 className='size-3.5' />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          ) : null}
+
+          {addingFont ? (
+            <form
+              onSubmit={submitFont}
+              className='flex flex-col gap-1.5 rounded-sm border border-indigo-ink bg-paper-dim p-2 shadow-craft-sm'
+            >
               <label
-                key={option.id}
-                className={`flex cursor-pointer items-center justify-between rounded-sm border border-indigo-ink p-1.5 transition-colors ${
-                  active
-                    ? "bg-paper-light shadow-craft-sm"
-                    : "bg-paper-dim hover:bg-paper-light"
-                }`}
+                htmlFor='custom-font-name'
+                className='text-[10px] font-bold text-indigo-ink'
               >
-                <div className='flex items-center gap-1.5'>
-                  <input
-                    type='radio'
-                    name='font_family_choice'
-                    value={option.id}
-                    checked={active}
-                    onChange={() => onFontChange(option.id)}
-                    className='size-3 accent-coral'
-                  />
-                  <span className='text-[11px] text-indigo-ink'>
-                    {option.label}
-                  </span>
-                </div>
-                <span
-                  className={`text-[9px] ${
-                    active
-                      ? "font-mono font-bold text-coral"
-                      : "text-indigo-light"
-                  }`}
-                >
-                  {option.note}
-                </span>
+                نام فونت
               </label>
-            );
-          })}
+              <input
+                id='custom-font-name'
+                autoFocus
+                value={fontName}
+                onChange={(event) => setFontName(event.target.value)}
+                maxLength={28}
+                placeholder='مثلاً: فونت برند من'
+                className='w-full rounded-sm border border-indigo-ink bg-paper-light px-1.5 py-1 text-[11px] font-bold text-indigo-ink outline-none focus:ring-1 focus:ring-coral'
+              />
+              <label className='flex cursor-pointer items-center justify-between gap-1.5 rounded-sm border border-dashed border-indigo-ink bg-paper-light px-1.5 py-1 text-[10px] font-bold text-indigo-ink hover:bg-paper-dim'>
+                <span className='flex min-w-0 items-center gap-1'>
+                  <Upload className='size-3 shrink-0 text-coral' />
+                  <span className='truncate' dir='ltr'>
+                    {fontFile ? fontFile.name : "woff2 / woff / ttf / otf"}
+                  </span>
+                </span>
+                <span className='shrink-0 rounded-sm border border-indigo-ink bg-paper-dim px-1.5 py-0.5 text-[9px]'>
+                  انتخاب فایل
+                </span>
+                <input
+                  type='file'
+                  accept={CUSTOM_FONT_ACCEPT}
+                  onChange={(event) => {
+                    setFontFile(event.target.files?.[0] ?? null);
+                    setFontError(null);
+                  }}
+                  className='sr-only'
+                />
+              </label>
+              {fontError ? (
+                <span
+                  role='alert'
+                  className='text-[9px] leading-relaxed font-bold text-coral'
+                >
+                  {fontError}
+                </span>
+              ) : null}
+              <div className='flex items-center gap-1.5'>
+                <button
+                  type='submit'
+                  disabled={fontBusy || !fontFile}
+                  className='flex flex-1 items-center justify-center gap-1 rounded-sm border border-indigo-ink bg-coral px-2 py-1 text-[10px] font-bold text-white shadow-craft-sm transition-all hover:bg-coral-dark active:translate-x-0.5 active:translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50'
+                >
+                  <Upload className='size-3' />
+                  <span>{fontBusy ? "در حال بارگذاری…" : "افزودن فونت"}</span>
+                </button>
+                <button
+                  type='button'
+                  onClick={resetFontForm}
+                  className='rounded-sm border border-indigo-ink bg-paper-light px-2 py-1 text-[10px] font-bold text-indigo-ink shadow-craft-sm hover:bg-paper-dim'
+                >
+                  انصراف
+                </button>
+              </div>
+              <span className='text-[9px] leading-relaxed text-indigo-light'>
+                فایل فقط روی همین دستگاه ذخیره می‌شود؛ حداکثر{" "}
+                {toPersianDigits(CUSTOM_FONT_MAX_BYTES / (1024 * 1024))} مگابایت.
+              </span>
+            </form>
+          ) : (
+            <button
+              type='button'
+              onClick={() => {
+                setAddingFont(true);
+                setFontName("");
+                setFontFile(null);
+                setFontError(null);
+              }}
+              className='flex w-full items-center justify-center gap-1.5 rounded-sm border border-dashed border-indigo-ink bg-paper-dim px-2 py-1.5 text-[11px] font-bold text-indigo-ink shadow-craft-sm transition-all hover:bg-paper-light active:translate-x-0.5 active:translate-y-0.5'
+            >
+              <Plus className='size-3.5 text-coral' />
+              <span>افزودن فونت سفارشی</span>
+            </button>
+          )}
         </div>
       </div>
 

@@ -45,10 +45,27 @@ Rebuilt the two canvas scenarios and added the primitives they needed:
   viewport height with slimmer padding, shows the active scenario + preset in its
   chrome, has a "بزرگ‌نمایی" full-screen toggle (Esc closes), and comes before the
   sidebar on small screens (`order-1`/`lg:order-2`).
+- Wired the real Persian typefaces in `public/fonts` into the studio: `src/app/create/fonts.css`
+  declares 12 `@font-face` rules (Vazir, Samim, Gandom, Dirooz, Maktab Rita, A Ordibehesht,
+  A Ghasem, A Google, Parvaz), `FONT_STACKS` maps the ten picker ids onto them, and the
+  sidebar previews every face in its own family under "متن" / "نمایشی" groups. The placeholder
+  options (sahel/shabnam/tanha/editorial) and the unused Next starter SVGs, duplicate font
+  formats and FD/WOL variants were removed — `public/fonts` went from 133 files to 20.
+- **Custom fonts**: visitors can upload their own font files (woff2/woff/ttf/otf, ≤ ۵ MB) from the
+  typography section, name them, and use them on the canvas like a built-in face. The binary is kept
+  in IndexedDB (`create-studio-custom-fonts.ts`, DB `cc-studio-fonts`) and re-registered with the CSS
+  Font Loading API on every visit, so uploaded fonts survive reloads and can be deleted. The list is
+  exposed through `useSyncExternalStore`, keeping hydration in sync with the prerendered HTML.
 
 ## Rules for this codebase
 
 - Style only through tokens (`var(--cc-*)`); never hardcode colours, so all six presets keep working.
+- Studio typefaces are the raw files in `public/fonts` (no woff2 conversion); declare them in
+  `src/app/create/fonts.css` and mirror the family name in `FONT_STACKS`. Display faces must keep
+  `'Vazir', 'Vazirmatn'` in their stack — A Ghasem has no digit glyphs, A Google/Parvaz no Latin ones.
+- Uploaded fonts are read through `useSyncExternalStore` (`create-studio-custom-fonts.ts`); IndexedDB
+  is only touched from the store's subscribe/mutation helpers, never during render and never from an
+  effect (`react-hooks/set-state-in-effect` is enabled).
 - Keep scenario data deterministic (hash-based noise, fixed demo dates) — the page is statically
   prerendered, so `Math.random()`/`Date.now()` cause hydration mismatches.
 - Disable recharts JS animations (`isAnimationActive={false}`); they render empty paths in prerender.
