@@ -3,12 +3,16 @@
 import { useEffect, useState } from "react";
 import {
   CheckCircle2,
+  ExternalLink,
   Maximize2,
   Minimize2,
+  MonitorPlay,
+  ShieldCheck,
   Sparkles,
   TriangleAlert,
 } from "lucide-react";
 import {
+  ARCHETYPE_ICONS,
   ARCHETYPES,
   ICON_LIBRARIES,
   mixWithWhite,
@@ -174,7 +178,7 @@ export function CreateStudioCanvas({
   const presetSurface = presetDefinition.tokens.surface ?? "#ffffff";
   const effectiveRadius = radius;
 
-  const ChromeIcon = LIBRARY_ICONS[iconLibrary];
+  const ChromeIcon = ARCHETYPE_ICONS[archetype];
   const [expanded, setExpanded] = useState(false);
   const activeScenario =
     ARCHETYPES.find((item) => item.id === archetype) ?? ARCHETYPES[0];
@@ -212,88 +216,156 @@ export function CreateStudioCanvas({
       id='studio-canvas'
       role='tabpanel'
       aria-labelledby={`scenario-tab-${archetype}`}
-      className={`studio-desk order-1 flex w-full shrink-0 flex-col gap-4 overflow-x-clip p-3 sm:p-5 lg:order-2 lg:min-h-0 lg:shrink lg:flex-1 lg:overflow-y-auto lg:p-8 xl:p-10 ${
-        expanded ? "fixed inset-0 z-[60] overflow-y-auto" : ""
+      className={`studio-desk order-1 flex w-full shrink-0 flex-col gap-3 overflow-x-clip p-3 sm:p-5 lg:order-2 lg:min-h-0 lg:shrink lg:flex-1 lg:gap-4 lg:overflow-hidden lg:p-8 xl:p-10 ${
+        expanded ? "fixed inset-0 z-[60] overflow-hidden" : ""
       }`}
     >
-      <CreateComponentsThemeProvider
-        preset={styleId}
-        theme={theme}
-        className={`paper-pattern relative flex w-full flex-col overflow-x-clip overflow-y-visible scroll-pt-14 rounded-sm transition-all lg:overflow-auto ${
-          expanded
-            ? "min-h-[calc(100dvh-1.5rem)] sm:min-h-[calc(100dvh-2.5rem)] lg:min-h-0 lg:flex-1"
-            : "min-h-[560px] sm:min-h-[660px] lg:min-h-0 lg:flex-1"
+      {/* The frame belongs to the studio: page tokens only. The preset's
+          --cc-* scope starts at the content viewport below, so switching the
+          style restyles the site inside the window and never the window. */}
+      <div
+        className={`shrink-0 items-center justify-between gap-2 px-1 text-[10px] font-bold text-paper/75 ${
+          expanded ? "hidden" : "hidden sm:flex"
         }`}
-        style={{
-          borderStyle: "var(--cc-border-style)",
-          borderWidth: "var(--cc-border-width)",
-          borderColor: "var(--cc-border)",
-          boxShadow: "var(--cc-shadow)",
-        }}
       >
+        <span className='flex items-center gap-1.5'>
+          <MonitorPlay aria-hidden='true' className='size-3.5 text-mustard' />
+          پنجرهٔ سایتِ مستقل
+        </span>
+        <span dir='ltr' className='font-mono text-[10px] text-paper/50'>
+          {activeScenario.demoHost}
+        </span>
+      </div>
+
+      <div
+        data-preview-window=''
+        className={`relative flex w-full flex-col overflow-hidden rounded-sm border-[2.5px] border-indigo-ink bg-paper-dim ${
+          expanded
+            ? "min-h-0 flex-1"
+            : "h-[72dvh] min-h-[420px] sm:h-[76dvh] lg:h-auto lg:min-h-0 lg:flex-1"
+        }`}
+      >
+        {/* One-line browser bar. Painted with the studio's mustard ink so it can
+            never be confused with the preset's own page background inside. */}
         <div
-          className='sticky top-0 z-20 flex w-full flex-wrap select-none items-center justify-between gap-2 rounded-t-[2px] border-b-[length:var(--cc-border-width)] border-[color:var(--cc-border)] px-3 py-2.5 sm:px-5 sm:py-3'
-          style={{
-            backgroundColor:
-              "color-mix(in srgb, var(--cc-muted) 82%, var(--cc-background))",
-            boxShadow:
-              "0 8px 16px -16px color-mix(in srgb, var(--cc-surface-foreground) 55%, transparent)",
-          }}
+          data-preview-chrome=''
+          className='relative z-10 flex w-full shrink-0 flex-nowrap items-center gap-1.5 border-b-[2.5px] border-indigo-ink bg-mustard px-2 py-1.5 select-none sm:gap-2 sm:px-3'
         >
-          <div className='flex min-w-0 items-center gap-2.5'>
-            <div className='flex items-center gap-1.5'>
-              <span className='size-3 rounded-full border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-primary)]' />
-              <span className='size-3 rounded-full border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-accent)]' />
-              <span className='size-3 rounded-full border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-success)]' />
-            </div>
-            <span className='mx-0.5 h-4 w-px bg-[var(--cc-border)]' />
-            <div className='flex min-w-0 items-center gap-1.5 text-xs font-black text-[color:var(--cc-surface-foreground)] sm:text-[13px]'>
-              <ChromeIcon className='size-4 shrink-0 text-[color:var(--cc-primary)]' />
-              <span className='truncate'>{activeScenario.label}</span>
-            </div>
-          </div>
-          <div className='flex items-center gap-1.5 sm:gap-2'>
-            <span className='hidden items-center gap-1 rounded-[var(--cc-radius-sm)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-surface)] px-2 py-0.5 font-mono text-[10px] font-bold text-[color:var(--cc-surface-foreground)] [box-shadow:var(--cc-shadow)] lg:inline-flex'>
-              STYLE: <span dir='ltr'>{styleId.toUpperCase()}</span>
+          <button
+            type='button'
+            onClick={() => setExpanded((value) => !value)}
+            aria-pressed={expanded}
+            aria-label={expanded ? "بستن بزرگ‌نمایی بوم" : "بزرگ‌نمایی بوم"}
+            title={expanded ? "بستن بزرگ‌نمایی بوم" : "بزرگ‌نمایی بوم"}
+            className='flex shrink-0 items-center gap-1 rounded-sm border-[1.5px] border-indigo-ink bg-indigo-ink px-2 py-1 text-[10px] font-bold whitespace-nowrap text-paper shadow-craft-sm transition-colors hover:bg-coral active:translate-x-px active:translate-y-px'
+          >
+            {expanded ? (
+              <Minimize2 className='size-3.5' />
+            ) : (
+              <Maximize2 className='size-3.5' />
+            )}
+            <span className='hidden sm:inline'>
+              {expanded ? "بستن" : "بزرگ‌نمایی"}
             </span>
-            <button
-              type='button'
-              onClick={() => setExpanded((value) => !value)}
-              aria-pressed={expanded}
-              aria-label={expanded ? "بستن بزرگ‌نمایی بوم" : "بزرگ‌نمایی بوم"}
-              title={expanded ? "بستن بزرگ‌نمایی بوم" : "بزرگ‌نمایی بوم"}
-              className='flex items-center gap-1 rounded-[var(--cc-radius-sm)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-primary)] px-2 py-0.5 font-mono text-[10px] font-bold text-[color:var(--cc-primary-foreground)] transition-transform [box-shadow:var(--cc-shadow)] hover:-translate-y-px'
+          </button>
+
+          <span className='h-4 w-px shrink-0 bg-indigo-ink/25' />
+
+          <div className='flex shrink-0 items-center gap-1.5'>
+            <span className='size-3 rounded-full border-[1.5px] border-indigo-ink bg-coral' />
+            <span className='size-3 rounded-full border-[1.5px] border-indigo-ink bg-paper' />
+            <span className='size-3 rounded-full border-[1.5px] border-indigo-ink bg-teal-craft' />
+          </div>
+
+          <div className='hidden min-w-0 shrink items-center gap-1.5 md:flex'>
+            <ChromeIcon
+              aria-hidden='true'
+              className='size-4 shrink-0 text-coral'
+            />
+            <span className='truncate font-display text-[13px] font-black text-indigo-ink'>
+              {activeScenario.label}
+            </span>
+          </div>
+
+          <div
+            dir='ltr'
+            title='این پنجره یک سایت مستقل است'
+            className='flex min-w-0 flex-1 items-center gap-1.5 rounded-sm border-[1.5px] border-indigo-ink bg-paper-light px-2 py-1 shadow-craft-sm sm:mx-auto sm:max-w-[20rem]'
+          >
+            <ShieldCheck
+              aria-hidden='true'
+              className='size-3.5 shrink-0 text-teal-craft'
+            />
+            <span className='truncate font-mono text-[10px] font-bold text-indigo-ink/80 sm:text-[11px]'>
+              https://{activeScenario.demoHost}
+            </span>
+          </div>
+
+          <div className='flex shrink-0 items-center gap-1.5 sm:gap-2'>
+            <span className='hidden items-center gap-1 rounded-full border-[1.5px] border-indigo-ink bg-teal-light px-2 py-0.5 text-[10px] font-bold whitespace-nowrap text-indigo-ink xl:inline-flex'>
+              <span className='size-1.5 animate-pulse rounded-full bg-teal-craft' />
+              پیش‌نمایش زنده
+            </span>
+            <span
+              dir='ltr'
+              className='hidden items-center gap-1 rounded-sm border-[1.5px] border-indigo-ink bg-paper-light px-2 py-0.5 font-mono text-[10px] font-bold whitespace-nowrap text-indigo-ink shadow-craft-sm lg:inline-flex'
             >
-              {expanded ? (
-                <Minimize2 className='size-3.5' />
-              ) : (
-                <Maximize2 className='size-3.5' />
-              )}
-              <span className='hidden sm:inline'>
-                {expanded ? "بستن" : "بزرگ‌نمایی"}
-              </span>
-            </button>
+              STYLE: {styleId.toUpperCase()}
+            </span>
           </div>
         </div>
 
-        <div className='flex flex-col gap-6 p-5 sm:p-7'>
-          {archetype === "components" ? (
-            <ComponentsView iconLibrary={iconLibrary} />
-          ) : null}
-          {archetype === "landing" ? (
-            <TutoringLandingView iconLibrary={iconLibrary} />
-          ) : null}
-          {archetype === "ecommerce" ? (
-            <ClothingShopView iconLibrary={iconLibrary} />
-          ) : null}
-          {archetype === "clinic" ? (
-            <ClinicReservationView iconLibrary={iconLibrary} />
-          ) : null}
-          {archetype === "dashboard" ? (
-            <AnalyticsDashboardView iconLibrary={iconLibrary} />
-          ) : null}
+        {/* The site viewport: the only scroller in the artboard. The tab strip,
+            toolbar and status bar live outside it, so the header always stays. */}
+        <div
+          data-preview-viewport=''
+          dir='ltr'
+          className='studio-scroll relative flex min-h-0 w-full flex-1 flex-col overflow-x-clip overflow-y-auto'
+        >
+          <CreateComponentsThemeProvider
+            preset={styleId}
+            theme={theme}
+            className='flex w-full flex-1 flex-col overflow-x-clip'
+          >
+            <div dir='rtl' className='flex flex-col gap-6 p-5 sm:p-7'>
+              {archetype === "components" ? (
+                <ComponentsView iconLibrary={iconLibrary} />
+              ) : null}
+              {archetype === "landing" ? (
+                <TutoringLandingView iconLibrary={iconLibrary} />
+              ) : null}
+              {archetype === "ecommerce" ? (
+                <ClothingShopView iconLibrary={iconLibrary} />
+              ) : null}
+              {archetype === "clinic" ? (
+                <ClinicReservationView iconLibrary={iconLibrary} />
+              ) : null}
+              {archetype === "dashboard" ? (
+                <AnalyticsDashboardView iconLibrary={iconLibrary} />
+              ) : null}
+            </div>
+          </CreateComponentsThemeProvider>
         </div>
-      </CreateComponentsThemeProvider>
+
+        {/* Browser status bar: repeats the "separate site" contract. */}
+        <div className='flex shrink-0 items-center justify-between gap-2 border-t-[2.5px] border-indigo-ink bg-paper px-2.5 py-1 text-[9px] font-bold text-indigo-ink/65 sm:text-[10px]'>
+          <span className='flex min-w-0 items-center gap-1.5'>
+            <ExternalLink
+              aria-hidden='true'
+              className='size-3 shrink-0 text-coral'
+            />
+            <span className='truncate'>
+              این محتوا یک سایت مستقل است، نه بخشی از این صفحه
+            </span>
+          </span>
+          <span
+            dir='ltr'
+            className='hidden shrink-0 font-mono text-[9px] text-indigo-ink/45 sm:inline'
+          >
+            {activeScenario.demoHost}
+          </span>
+        </div>
+      </div>
     </section>
   );
 }

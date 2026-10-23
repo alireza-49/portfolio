@@ -8,23 +8,18 @@ import {
 } from "react";
 import Link from "next/link";
 import {
-  ChartLine,
   Coffee,
   Code2,
   Copy,
-  LayoutGrid,
   MousePointerClick,
-  PanelsTopLeft,
-  ShoppingBag,
-  Stethoscope,
   X,
-  type LucideIcon,
 } from "lucide-react";
 import { LogoButton } from "@/assests/logo";
 import { CreateStudioCanvas } from "@/components/create-studio-canvas";
 import { CreateStudioSidebar } from "@/components/create-studio-sidebar";
 import { createThemePresets } from "@/components/create-components/style-presets";
 import {
+  ARCHETYPE_ICONS,
   ARCHETYPES,
   SHUFFLE_PRESETS,
   buildThemeSnippet,
@@ -40,14 +35,6 @@ import {
   resolveFontStack,
   subscribeCustomFonts,
 } from "@/components/create-studio-custom-fonts";
-
-const ARCHETYPE_ICONS: Record<ArchetypeId, LucideIcon> = {
-  components: LayoutGrid,
-  landing: PanelsTopLeft,
-  ecommerce: ShoppingBag,
-  clinic: Stethoscope,
-  dashboard: ChartLine,
-};
 
 /** Shared between the header tab and the canvas panel it controls. */
 const scenarioTabId = (id: ArchetypeId) => `scenario-tab-${id}`;

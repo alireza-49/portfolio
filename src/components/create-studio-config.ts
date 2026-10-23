@@ -1,4 +1,12 @@
 import {
+  ChartLine,
+  LayoutGrid,
+  PanelsTopLeft,
+  ShoppingBag,
+  Stethoscope,
+  type LucideIcon,
+} from "lucide-react";
+import {
   mixHex,
   readableForeground,
   themeToCssVars,
@@ -40,6 +48,8 @@ export type Archetype = {
   /** Compact name for the studio header tabs. */
   shortLabel: string;
   description: string;
+  /** Demo address shown in the preview window's browser bar. */
+  demoHost: string;
 };
 export type StyleOption = { id: StyleId; label: string };
 export type Swatch = {
@@ -73,32 +83,49 @@ export const ARCHETYPES: Archetype[] = [
     label: "کامپوننت‌ها و ویجت‌ها",
     shortLabel: "کامپوننت",
     description: "گالری فرم‌ها، بازخورد، جدول و نمودارها",
+    demoHost: "ui.demo-kodology.ir",
   },
   {
     id: "landing",
     label: "لندینگ تدریس آنلاین",
     shortLabel: "لندینگ",
     description: "صفحهٔ فرود آکادمی با ثبت‌نام و برنامهٔ کلاس‌ها",
+    demoHost: "academy.demo-kodology.ir",
   },
   {
     id: "ecommerce",
     label: "فروشگاه پوشاک",
     shortLabel: "فروشگاه",
     description: "ویترین پوشاک با فیلتر، سبد خرید و پیشنهادها",
+    demoHost: "shop.demo-kodology.ir",
   },
   {
     id: "clinic",
     label: "سامانه نوبت‌دهی کلینیک",
     shortLabel: "کلینیک",
     description: "رزرو نوبت چهار مرحله‌ای با تقویم شمسی",
+    demoHost: "clinic.demo-kodology.ir",
   },
   {
     id: "dashboard",
     label: "داشبورد داده و آمار",
     shortLabel: "داشبورد",
     description: "شاخص‌ها، نمودارها، جدول سفارش و سلامت سیستم",
+    demoHost: "insight.demo-kodology.ir",
   },
 ];
+
+/**
+ * Fixed glyph per scenario. Shared by the studio header tabs and the preview
+ * window chrome so the frame never follows the sidebar's icon-library setting.
+ */
+export const ARCHETYPE_ICONS: Record<ArchetypeId, LucideIcon> = {
+  components: LayoutGrid,
+  landing: PanelsTopLeft,
+  ecommerce: ShoppingBag,
+  clinic: Stethoscope,
+  dashboard: ChartLine,
+};
 
 export const STYLES: StyleOption[] = [
   { id: "nova", label: "نووا مدرن" },

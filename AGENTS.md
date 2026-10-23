@@ -49,14 +49,24 @@ Rebuilt the two canvas scenarios and added the primitives they needed:
   first child is the studio's own full-width 60px bar (`create-studio.tsx`), combining the logo,
   a labelled scenario switcher (`role='tablist'`, ink-filled active tab, RTL arrow-key navigation,
   coral reserved for the CTA) and the "مشاوره و سفارش" CTA (`/#contact-section`) — no nav links,
-  language toggle or mobile sheet. The artboard chrome keeps only the scenario name, the style
-  chip and the zoom toggle.
-- The artboard is presented as a window on a workbench: the stage uses the token-only
+  language toggle or mobile sheet. The artboard chrome is a single-line browser bar (zoom toggle at
+  the right edge, traffic lights, scenario name, demo address bar, style chip) plus a status bar;
+  it is painted `mustard` so it never matches the preset's page background.
+- The artboard is a fixed-height browser frame on a workbench: the stage uses the token-only
   `studio-desk` utility (ink-mixed bed + paper dots, `globals.css`) with a wide `lg:p-8 xl:p-10`
-  frame, and its chrome is `sticky top-0` so it stays visible while the preview scrolls. Below
-  `lg` the **page** container scrolls, so the stage and window use `overflow-x-clip` (not
-  `hidden`/`auto`) to avoid becoming sticky scroll containers; do not add a scroll container
-  between the chrome and the page scroller.
+  frame. The window is `flex flex-col overflow-hidden` (`h-[72dvh]` on small screens, `flex-1` on
+  `lg`), and **only** `data-preview-viewport` scrolls (`studio-scroll` utility in `globals.css`).
+  The browser bar and status bar sit outside that scroller, so the header always stays up; never
+  reintroduce a sticky chrome or a second scroller around the preview. The viewport is `dir="ltr"`
+  so its scrollbar sits on the right; the site content wrapper restores `dir="rtl"`. Below `lg` the
+  **page** container still scrolls to reach the sidebar — the nested preview viewport is
+  intentional and needs its `min-h-0` / `flex-1` chain to keep shrinking.
+- The window reads as a *separate site*: the shell (ink bezel, browser bar with traffic lights,
+  `https://<archetype>.demo-kodology.ir` address, "پیش‌نمایش زنده" badge, status bar under the
+  viewport and a "پنجرهٔ سایتِ مستقل" plate on the bed) is built from page tokens only, and
+  `ARCHETYPE_ICONS` (from `create-studio-config.ts`) supplies a fixed glyph.
+  `CreateComponentsThemeProvider` wraps **only** the content viewport, so the preset restyles the
+  site inside the window and can never repaint the studio frame.
 - Wired the real Persian typefaces in `public/fonts` into the studio: `src/app/create/fonts.css`
   declares 12 `@font-face` rules (Vazir, Samim, Gandom, Dirooz, Maktab Rita, A Ordibehesht,
   A Ghasem, A Google, Parvaz), `FONT_STACKS` maps the ten picker ids onto them, and the
@@ -72,6 +82,14 @@ Rebuilt the two canvas scenarios and added the primitives they needed:
 ## Rules for this codebase
 
 - Style only through tokens (`var(--cc-*)`); never hardcode colours, so all six presets keep working.
+- The studio frame (page shell, sidebar, artboard bed and preview-window chrome) uses the site's
+  own tokens (`paper`, `indigo-ink`, `coral`, `mustard`, `teal-craft`). Never move
+  `CreateComponentsThemeProvider` outside the window content viewport — the preset must not be
+  able to restyle the frame that presents it.
+- The preview window has exactly one scroller (`data-preview-viewport`, `studio-scroll`). Keep the
+  browser bar and status bar out of it so they stay visible; don't make them `sticky`. The
+  viewport is `dir="ltr"` purely to put the scrollbar on the right — restore `dir="rtl"` on the
+  site content wrapper, never on the chrome.
 - Studio typefaces are the raw files in `public/fonts` (no woff2 conversion); declare them in
   `src/app/create/fonts.css` and mirror the family name in `FONT_STACKS`. Display faces must keep
   `'Vazir', 'Vazirmatn'` in their stack — A Ghasem has no digit glyphs, A Google/Parvaz no Latin ones.
