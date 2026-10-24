@@ -64,6 +64,26 @@
   font-weight: 400;
   font-style: normal;
   font-display: swap;
+  /*
+   * The supplied file draws its glyphs at roughly half of its 1000-unit em
+   * (measured against Vazir's ink height), so body copy read much smaller than
+   * every other studio face at the same font-size. 210% puts it back on par
+   * with Vazir without touching the font-size the theme asks for.
+   */
+  size-adjust: 210%;
+  /*
+   * It also maps 61 codepoints — ک، گ، چ and the Persian digits among them —
+   * to blank glyphs, so those letters used to disappear. Limiting the face to
+   * the codepoints it actually draws (everything else is simply not covered)
+   * lets the stack fall through to Vazir for them instead of rendering blanks.
+   * Presentation forms (U+FB50–FDFF) are left out on purpose: the base
+   * codepoints are what shaping asks for.
+   */
+  unicode-range:
+    U+0020-0614, U+0616-0655, U+0657, U+0659-0669, U+066C, U+066E,
+    U+0672-0678, U+067A-0685, U+0687, U+0689-0690, U+0692-06A0,
+    U+06A2-06A8, U+06AA-06AE, U+06B0-06B9, U+06BB-06D1, U+06D3-06EF,
+    U+06F7-FB4F, U+FE00-10FFFF;
 }
 
 /* Gandom and the four display faces only ship as TrueType files. */

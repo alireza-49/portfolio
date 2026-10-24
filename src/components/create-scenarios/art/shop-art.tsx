@@ -27,6 +27,21 @@ function StudioBackdrop({ patternId }: { patternId: string }) {
       />
       <ellipse cx='160' cy='208' rx='82' ry='8' className={styles.muted} />
       <path d='M46 206h228' className={styles.stitch} />
+      {/* A hanging "sale" ribbon, so even the smallest card has motion. */}
+      <g
+        className={styles.wiggle}
+        style={motionVars({ "--sc-duration": "6.4s" })}
+      >
+        <g transform='translate(42 58)'>
+          <path d='M0 0v14' className={styles.hairline} />
+          <path
+            d='M0 14h40l10 11-10 11H0z'
+            className={cn(styles.brandSoft, styles.outlined)}
+          />
+          <circle cx='7' cy='25' r='2.2' className={styles.surface} />
+          <path d='M18 25h20' className={styles.brandStitch} />
+        </g>
+      </g>
       <Sparkle
         transform='translate(52 42) scale(0.55)'
         className={styles.accent}
@@ -751,7 +766,7 @@ export function ServiceArt({
   variant,
   className,
 }: {
-  variant: "truck" | "return" | "support";
+  variant: "truck" | "return" | "sew" | "shield";
   className?: string;
 }) {
   return (
@@ -765,20 +780,33 @@ export function ServiceArt({
 
       {variant === "truck" ? (
         <>
+          <g
+            className={styles.float}
+            style={motionVars({ "--sc-duration": "4.8s" })}
+          >
+            <g transform='translate(100 72)'>
+              <TruckShape />
+            </g>
+          </g>
+          <path d='M18 46h10M10 56h14M16 66h8' className={styles.brandLine} />
           <path
-            d='M30 72V46h78v26z'
-            className={cn(styles.surface, styles.outlined)}
+            d='M20 84h160'
+            className={styles.line}
+            strokeDasharray='7 9'
+            strokeWidth={2}
           />
           <path
-            d='M108 72V54h24l14 12v6z'
-            className={cn(styles.brandSoft, styles.outlined)}
+            d='M20 84h160'
+            className={cn(styles.brandLine, styles.travel)}
+            style={motionVars({
+              "--sc-dash-run": "10 22",
+              "--sc-run": "32",
+              "--sc-duration": "2.6s",
+            })}
+            strokeWidth={2}
           />
-          <circle cx='58' cy='80' r='9' className={styles.ink} />
-          <circle cx='130' cy='80' r='9' className={styles.ink} />
-          <path d='M16 46h12M8 56h16M14 66h10' className={styles.brandLine} />
-          <path d='M126 58h8l8 8h-16z' className={styles.surface} />
           <Sparkle
-            transform='translate(166 28) scale(0.4)'
+            transform='translate(166 24) scale(0.4)'
             className={styles.accent}
           />
         </>
@@ -797,16 +825,21 @@ export function ServiceArt({
             />
             <path d='M64 32l-4 14 14-4' className={styles.brandLine} />
           </g>
-          <rect
-            x='108'
-            y='52'
-            width='44'
-            height='34'
-            rx='4'
-            className={cn(styles.surface, styles.outlined)}
-          />
-          <path d='M108 64h44' className={styles.stitch} />
-          <path d='M130 52v12' className={styles.hairline} />
+          <g
+            className={styles.wiggle}
+            style={motionVars({ "--sc-duration": "5s" })}
+          >
+            <rect
+              x='108'
+              y='52'
+              width='44'
+              height='34'
+              rx='4'
+              className={cn(styles.surface, styles.outlined)}
+            />
+            <path d='M108 64h44' className={styles.stitch} />
+            <path d='M130 52v12' className={styles.hairline} />
+          </g>
           <Sparkle
             transform='translate(158 30) scale(0.4)'
             className={styles.accent}
@@ -814,39 +847,682 @@ export function ServiceArt({
         </>
       ) : null}
 
-      {variant === "support" ? (
+      {variant === "sew" ? (
         <>
+          <rect
+            x='34'
+            y='40'
+            width='92'
+            height='50'
+            rx='5'
+            className={cn(styles.surface, styles.outlined)}
+          />
           <path
-            d='M66 72V62a34 34 0 0 1 68 0v10'
-            className={styles.inkLine}
-            fill='none'
+            d='M42 60c18-8 30 8 48 0s24 6 32 0'
+            className={cn(styles.brandStitch, styles.draw)}
+            style={motionVars({ "--sc-dash": "120", "--sc-duration": "2.4s" })}
           />
-          <rect
-            x='58'
-            y='66'
-            width='14'
-            height='24'
-            rx='6'
-            className={cn(styles.brand, styles.outlined)}
-          />
-          <rect
-            x='128'
-            y='66'
-            width='14'
-            height='24'
-            rx='6'
-            className={cn(styles.brand, styles.outlined)}
-          />
-          <path d='M135 88q-8 10-22 8' className={styles.inkLine} />
-          <circle cx='110' cy='96' r='4' className={styles.brand} />
-          <g className={styles.pulse}>
-            <path
-              d='M150 56q8 8 0 20M158 48q14 14 0 32'
-              className={styles.brandLine}
-            />
+          <path d='M42 74h76' className={styles.hairline} />
+          <g
+            className={styles.sew}
+            style={motionVars({ "--sc-duration": "3.6s" })}
+          >
+            <g transform='translate(120 44) rotate(24)'>
+              <path d='M0 0h34' className={styles.inkLine} strokeWidth={2.4} />
+              <circle cx='34' cy='0' r='2.6' className={styles.brand} />
+              <path d='M0 0l-14 8v-16z' className={styles.ink} />
+            </g>
           </g>
+          <path d='M150 82h34' className={styles.brandLine} />
+          <Sparkle
+            transform='translate(166 26) scale(0.42)'
+            className={styles.accent}
+          />
         </>
       ) : null}
+
+      {variant === "shield" ? (
+        <>
+          <g
+            className={styles.pulse}
+            style={motionVars({ "--sc-duration": "3.2s" })}
+          >
+            <circle cx='100' cy='56' r='42' className={styles.brandSoft} />
+          </g>
+          <path
+            d='M100 22l28 10v22c0 16-12 27-28 34-16-7-28-18-28-34V32z'
+            className={cn(styles.surface, styles.outlined)}
+          />
+          <path
+            d='M86 54l10 10 18-20'
+            className={cn(styles.brandLine, styles.draw)}
+            style={motionVars({ "--sc-dash": "70", "--sc-duration": "1.8s" })}
+            strokeWidth={3.4}
+          />
+          <path d='M28 84h28M144 84h28' className={styles.hairline} />
+          <Sparkle
+            transform='translate(158 30) scale(0.4)'
+            className={styles.accent}
+          />
+        </>
+      ) : null}
+    </svg>
+  );
+}
+
+
+/* ------------------------------------------------------------- shared bits */
+
+/** Motion variables are written as inline custom properties. */
+const motionVars = (vars: Record<string, string>) =>
+  vars as unknown as CSSProperties;
+
+/**
+ * A wheel that really turns: the ink disc is symmetric, so the light spoke is
+ * what makes the rotation readable.
+ */
+function Wheel({ cx, cy, r = 8 }: { cx: number; cy: number; r?: number }) {
+  return (
+    <g
+      className={styles.spin}
+      style={motionVars({ "--sc-duration": "2.4s" })}
+    >
+      <circle cx={cx} cy={cy} r={r} className={styles.ink} />
+      <circle cx={cx} cy={cy} r={r * 0.42} className={styles.surface} />
+      <path
+        d={`M${cx} ${cy}v${-r + 2}`}
+        style={{ stroke: "var(--cc-surface)" }}
+        strokeWidth={2}
+        strokeLinecap='round'
+      />
+    </g>
+  );
+}
+
+/** Paper bag, centred on its own origin. Used by the hero and the receipt. */
+function BagShape({ className }: { className?: string }) {
+  return (
+    <g className={className}>
+      <path
+        d='M-22 -24v-8a22 22 0 0 1 44 0v8'
+        fill='none'
+        className={styles.garmentDeep}
+        strokeWidth={5}
+      />
+      <path
+        d='M-38 -24h76l8 80q-46 11-92 0z'
+        className={cn(styles.surface, styles.outlined)}
+      />
+      <path
+        d='M-38 -24h76l-2 20h-72z'
+        className={cn(styles.brandSoft, styles.outlined)}
+      />
+      <rect
+        x='-9'
+        y='6'
+        width='18'
+        height='11'
+        rx='2.5'
+        className={styles.ink}
+      />
+      <path d='M-26 20h52M-28 46h56' className={styles.brandStitch} />
+    </g>
+  );
+}
+
+/** Delivery van, wheels on y = 0 so it can sit exactly on a road. */
+function TruckShape() {
+  return (
+    <g>
+      <rect
+        x='-34'
+        y='-30'
+        width='46'
+        height='26'
+        rx='4'
+        className={cn(styles.surface, styles.outlined)}
+      />
+      <path d='M-30 -24h38M-30 -16h26' className={styles.hairline} />
+      <path
+        d='M12 -18h16l12 12v2h-28z'
+        className={cn(styles.brandSoft, styles.outlined)}
+      />
+      <path d='M26 -14h6l5 6h-11z' className={styles.surface} />
+      <Wheel cx={-20} cy={-3} r={7} />
+      <Wheel cx={18} cy={-3} r={7} />
+    </g>
+  );
+}
+
+/* -------------------------------------------------------------- storefront */
+
+/**
+ * Hero illustration: a boutique window with two pieces swaying on the rail, a
+ * hanging price tag, folded stacks on the counter, and the commerce story on
+ * the right — a bag catching items, a spinning sale seal and a delivery van.
+ */
+export function ShopfrontScene({ className }: { className?: string }) {
+  const dots = `shopfront-dots-${useId().replace(/:/g, "")}`;
+  const grid = `shopfront-grid-${useId().replace(/:/g, "")}`;
+
+  // Awning with a scalloped hem; generated so the scallop count stays editable.
+  // Ten scallops of 40 units exactly fill the 400-wide window.
+  const awning = `M44 60h400v26${" q -20 15 -40 0".repeat(10)}z`;
+
+  return (
+    <svg
+      viewBox='0 0 560 480'
+      className={cn(styles.art, className)}
+      aria-hidden='true'
+      focusable='false'
+    >
+      <defs>
+        <DotPattern id={dots} size={18} />
+        <GridPattern id={grid} size={30} />
+      </defs>
+
+      <rect width='560' height='480' className={styles.paper} />
+      <rect width='560' height='480' fill={`url(#${dots})`} />
+      <circle cx='474' cy='92' r='92' className={styles.brandFaint} />
+      <path
+        d='M22 456V330a124 124 0 0 1 248 0v126'
+        className={styles.accentSoft}
+        opacity={0.4}
+      />
+      <ellipse cx='250' cy='440' rx='150' ry='10' className={styles.muted} />
+
+      <rect
+        x='44'
+        y='86'
+        width='400'
+        height='322'
+        rx='18'
+        className={cn(styles.surface, styles.outlined)}
+      />
+      <rect
+        x='58'
+        y='116'
+        width='372'
+        height='278'
+        rx='10'
+        className={styles.muted}
+        opacity={0.45}
+      />
+      <rect
+        x='58'
+        y='116'
+        width='372'
+        height='278'
+        rx='10'
+        fill={`url(#${grid})`}
+        opacity={0.4}
+      />
+
+      <path d={awning} className={cn(styles.brandSoft, styles.outlined)} />
+      <path
+        d='M44 86h400'
+        className={styles.brandLine}
+        strokeWidth={2}
+        opacity={0.6}
+      />
+      <rect
+        x='184'
+        y='122'
+        width='120'
+        height='26'
+        rx='6'
+        className={cn(styles.surface, styles.outlined)}
+      />
+      <text
+        x='244'
+        y='140'
+        textAnchor='middle'
+        fontSize='12'
+        letterSpacing='3'
+        className={styles.ink}
+      >
+        MANO
+      </text>
+
+      <path d='M78 196h332' className={styles.inkLine} strokeWidth={2.6} />
+      <path d='M78 196v10M410 196v10' className={styles.inkLine} />
+
+      <g
+        className={styles.hangSlow}
+        style={motionVars({ "--sc-delay": "-1.2s", "--sc-duration": "8s" })}
+      >
+        <g
+          transform='translate(88 193) scale(0.7)'
+          style={garmentStyle("var(--cc-primary)")}
+        >
+          <Coat />
+        </g>
+      </g>
+      <g
+        className={styles.hang}
+        style={motionVars({ "--sc-delay": "-3.4s", "--sc-duration": "6.5s" })}
+      >
+        <g
+          transform='translate(241 194) scale(0.62)'
+          style={garmentStyle("var(--cc-accent)")}
+        >
+          <Knit />
+        </g>
+      </g>
+
+      {/* price tag twisting on its thread */}
+      <g
+        className={styles.wiggle}
+        style={motionVars({ "--sc-duration": "5.6s" })}
+      >
+        <g transform='translate(258 246)'>
+          <path d='M0 0v18' className={styles.hairline} />
+          <path
+            d='M-18 18h36l4 28h-44z'
+            className={cn(styles.surface, styles.outlined)}
+          />
+          <circle cx='0' cy='24' r='2.2' className={styles.brand} />
+          <text
+            x='0'
+            y='41'
+            textAnchor='middle'
+            fontSize='9.5'
+            className={styles.ink}
+          >
+            20%
+          </text>
+        </g>
+      </g>
+
+      <path d='M58 376h372' className={styles.inkLine} opacity={0.3} />
+      {[0, 1, 2].map((stack) => (
+        <g key={stack} transform={`translate(${96 + stack * 96} 344)`}>
+          {[0, 1, 2].map((layer) => (
+            <rect
+              key={layer}
+              x={0}
+              y={layer * 9}
+              width='64'
+              height='9'
+              rx='2'
+              className={cn(styles.outlined, styles.garment)}
+              style={garmentStyle(
+                ["var(--cc-primary)", "var(--cc-accent)", "var(--cc-success)"][
+                  (stack + layer) % 3
+                ],
+              )}
+            />
+          ))}
+          <path d='M6 27h52' className={styles.stitch} />
+        </g>
+      ))}
+
+      <g transform='translate(492 96)'>
+        <circle r='40' className={styles.brandSoft} />
+        <g
+          className={styles.spinSlow}
+          style={motionVars({ "--sc-duration": "34s" })}
+        >
+          <circle
+            r='33'
+            fill='none'
+            className={styles.brandLine}
+            strokeDasharray='2 9'
+            opacity={0.75}
+          />
+        </g>
+        <text y='-2' textAnchor='middle' fontSize='13' className={styles.ink}>
+          20%
+        </text>
+        <text y='13' textAnchor='middle' fontSize='8.5' className={styles.inkSoft}>
+          تخفیف پالتو
+        </text>
+      </g>
+
+      <g
+        className={styles.floatSlow}
+        style={motionVars({ "--sc-delay": "-2s", "--sc-duration": "9s" })}
+      >
+        <g transform='translate(492 250) scale(1.02)'>
+          <BagShape />
+        </g>
+      </g>
+      <g className={styles.pop} style={motionVars({ "--sc-duration": "7.6s" })}>
+        <circle cx='524' cy='204' r='12' className={styles.brand} />
+        <path
+          d='M519 204l3.5 3.5 6-6.5'
+          fill='none'
+          style={{ stroke: "var(--cc-primary-foreground)" }}
+          strokeWidth={2.2}
+          strokeLinecap='round'
+        />
+      </g>
+
+      <g transform='translate(486 404)'>
+        <path
+          d='M-48 0h96'
+          className={styles.brandLine}
+          strokeDasharray='7 9'
+          strokeWidth={2}
+          opacity={0.55}
+        />
+        <g transform='translate(0 -4)'>
+          <TruckShape />
+        </g>
+      </g>
+
+      <g className={styles.drift} style={motionVars({ "--sc-delay": "-1s" })}>
+        <Sparkle
+          transform='translate(78 60) scale(0.7)'
+          className={styles.brand}
+        />
+      </g>
+      <g
+        className={styles.drift}
+        style={motionVars({ "--sc-delay": "-5s", "--sc-duration": "14s" })}
+      >
+        <Sparkle
+          transform='translate(420 452) scale(0.6)'
+          className={styles.accent}
+        />
+      </g>
+      <Sparkle
+        transform='translate(534 330) scale(0.4)'
+        className={styles.warning}
+      />
+    </svg>
+  );
+}
+
+/* ---------------------------------------------------------- shipping track */
+
+/**
+ * The free-shipping meter as a road. `percent` is computed by the bag, so the
+ * van always parks exactly where the customer is on the way to free delivery
+ * and each milestone lights up as it is reached. The transition lives in
+ * `.sc-track`, which is disabled for reduced motion.
+ */
+export function ShippingTrack({
+  percent,
+  className,
+}: {
+  percent: number;
+  className?: string;
+}) {
+  const clamped = Math.min(100, Math.max(0, percent));
+  const start = 52;
+  const end = 256;
+  const x = start + ((end - start) * clamped) / 100;
+
+  return (
+    <svg
+      viewBox='0 0 320 84'
+      className={cn(styles.art, className)}
+      aria-hidden='true'
+      focusable='false'
+    >
+      <g transform='translate(8 28)'>
+        <path
+          d='M0 34V16l17-11 17 11v18z'
+          className={cn(styles.surface, styles.outlined)}
+        />
+        <path d='M9 34V22h16v12' className={styles.line} />
+        <path d='M-4 38h42' className={styles.stitch} />
+      </g>
+
+      <g transform='translate(278 28)'>
+        <path
+          d='M0 34V18l17-12 17 12v16z'
+          className={cn(styles.surface, styles.outlined)}
+        />
+        <path d='M11 34V23h12v11' className={styles.line} />
+        <path d='M-4 38h42' className={styles.stitch} />
+      </g>
+
+      <path
+        d={`M${start} 62H${end}`}
+        className={styles.line}
+        strokeDasharray='7 9'
+        strokeWidth={2}
+      />
+      <path d={`M${start} 62H${x}`} className={styles.brandLine} strokeWidth={4} />
+
+      {[0, 50, 100].map((mark) => {
+        const mx = start + ((end - start) * mark) / 100;
+        const reached = clamped >= mark;
+        return (
+          <circle
+            key={mark}
+            cx={mx}
+            cy='62'
+            r={reached ? 4.2 : 3}
+            className={reached ? styles.brand : styles.line}
+          />
+        );
+      })}
+
+      <g className={styles.track} style={{ transform: `translateX(${x}px)` }}>
+        <g transform='translate(0 64)'>
+          <TruckShape />
+        </g>
+      </g>
+    </svg>
+  );
+}
+
+/* ------------------------------------------------------------ order placed */
+
+/**
+ * Confirmation art: the bag opens, a receipt rises out of it and a ring of
+ * confetti keeps bursting. Used instead of a plain success alert.
+ */
+export function OrderPlacedScene({ className }: { className?: string }) {
+  const dots = `order-dots-${useId().replace(/:/g, "")}`;
+
+  return (
+    <svg
+      viewBox='0 0 300 220'
+      className={cn(styles.art, className)}
+      aria-hidden='true'
+      focusable='false'
+    >
+      <defs>
+        <DotPattern id={dots} size={16} />
+      </defs>
+      <rect
+        width='300'
+        height='220'
+        rx='14'
+        className={styles.muted}
+        opacity={0.6}
+      />
+      <rect width='300' height='220' rx='14' fill={`url(#${dots})`} />
+      <circle cx='150' cy='126' r='84' className={styles.brandFaint} />
+
+      <g
+        className={styles.burst}
+        style={motionVars({ "--sc-duration": "3.2s" })}
+      >
+        {Array.from({ length: 10 }).map((_, index) => {
+          const angle = (index / 10) * Math.PI * 2;
+          return (
+            <circle
+              key={index}
+              cx={150 + Math.cos(angle) * 64}
+              cy={122 + Math.sin(angle) * 64}
+              r={index % 2 ? 2.4 : 3.6}
+              className={
+                [styles.brand, styles.accent, styles.warning][index % 3]
+              }
+              style={motionVars({ "--sc-delay": `${index * 0.11}s` })}
+            />
+          );
+        })}
+      </g>
+
+      <g className={styles.rise} style={motionVars({ "--sc-delay": "-1.4s" })}>
+        <g transform='translate(150 108)'>
+          <path
+            d='M-23 -6v-44h46v44l-8-5-8 5-7-5-7 5-8-5z'
+            className={cn(styles.surface, styles.outlined)}
+          />
+          <path
+            d='M-13 -38h26M-13 -28h18M-13 -18h22'
+            className={styles.hairline}
+          />
+          <path d='M-6 -10h12' className={styles.brandStitch} />
+        </g>
+      </g>
+
+      <g transform='translate(150 172) scale(1.05)'>
+        <BagShape />
+      </g>
+
+      <g className={styles.pop} style={motionVars({ "--sc-duration": "6s" })}>
+        <circle cx='222' cy='74' r='17' className={styles.success} />
+        <path
+          d='M215 74l4.5 4.5 8-8.5'
+          fill='none'
+          style={{ stroke: "var(--cc-success-foreground)" }}
+          strokeWidth={2.6}
+          strokeLinecap='round'
+        />
+      </g>
+
+      <Sparkle
+        transform='translate(52 46) scale(0.55)'
+        className={styles.brand}
+      />
+      <Sparkle
+        transform='translate(248 150) scale(0.4)'
+        className={styles.accent}
+      />
+    </svg>
+  );
+}
+
+
+/* --------------------------------------------------------------- size tape */
+
+/**
+ * The size-guide illustration: a measuring tape unrolling from its roll, with
+ * a highlighted size window. The top edge draws itself so the tape reads as
+ * being pulled out, and the highlight marks the size being described.
+ */
+export function SizeTapeScene({ className }: { className?: string }) {
+  const dots = `tape-dots-${useId().replace(/:/g, "")}`;
+  const ticks = Array.from({ length: 15 }, (_, index) => 72 + index * 18);
+
+  return (
+    <svg
+      viewBox='0 0 380 140'
+      className={cn(styles.art, className)}
+      aria-hidden='true'
+      focusable='false'
+    >
+      <defs>
+        <DotPattern id={dots} size={16} />
+      </defs>
+      <rect width='380' height='140' rx='12' className={styles.muted} opacity={0.55} />
+      <rect width='380' height='140' rx='12' fill={`url(#${dots})`} />
+
+      <g transform='translate(38 74)'>
+        <circle r='24' className={cn(styles.brandSoft, styles.outlined)} />
+        <circle r='11' className={styles.surface} />
+        <path d='M0 -11a11 11 0 1 1-9 17' className={styles.line} />
+        <circle r='2.4' className={styles.brand} />
+      </g>
+
+      <rect
+        x='58'
+        y='60'
+        width='294'
+        height='28'
+        rx='4'
+        className={cn(styles.surface, styles.outlined)}
+      />
+      {ticks.map((x, index) => (
+        <path
+          key={x}
+          d={`M${x} 60v${index % 4 === 0 ? 13 : 7}`}
+          className={styles.hairline}
+        />
+      ))}
+      <rect
+        x='196'
+        y='60'
+        width='72'
+        height='28'
+        className={styles.brandSoft}
+        opacity={0.5}
+      />
+      <path
+        d='M62 60H348'
+        className={cn(styles.brandLine, styles.draw)}
+        style={motionVars({ "--sc-dash": "290", "--sc-duration": "3s" })}
+      />
+      <text x='232' y='79' textAnchor='middle' fontSize='11' className={styles.ink}>
+        M
+      </text>
+
+      <path d='M62 104h286' className={styles.stitch} />
+      <path d='M62 116h180' className={styles.hairline} />
+      <Sparkle
+        transform='translate(340 24) scale(0.5)'
+        className={styles.accent}
+      />
+    </svg>
+  );
+}
+
+/* ----------------------------------------------------------- footer pattern */
+
+/**
+ * Decorative band for the footer: a row of arches with drifting sparkles over
+ * the brand tint. `slice` keeps the arches round on any width.
+ */
+export function ShopPattern({ className }: { className?: string }) {
+  const dots = `pattern-dots-${useId().replace(/:/g, "")}`;
+
+  return (
+    <svg
+      viewBox='0 0 720 120'
+      preserveAspectRatio='xMidYMid slice'
+      className={cn(styles.art, className)}
+      aria-hidden='true'
+      focusable='false'
+    >
+      <defs>
+        <DotPattern id={dots} size={18} />
+      </defs>
+      <rect width='720' height='120' className={styles.brandFaint} opacity={0.55} />
+      <rect width='720' height='120' fill={`url(#${dots})`} opacity={0.5} />
+
+      {[0, 1, 2, 3, 4].map((index) => (
+        <path
+          key={index}
+          d={`M${28 + index * 146} 120V74a46 46 0 0 1 92 0v46`}
+          className={styles.brandSoft}
+          opacity={0.5}
+        />
+      ))}
+
+      <path d='M0 104h720' className={styles.stitch} />
+      <g className={styles.drift} style={motionVars({ "--sc-delay": "-2s" })}>
+        <Sparkle
+          transform='translate(96 28) scale(0.6)'
+          className={styles.brand}
+        />
+      </g>
+      <g
+        className={styles.drift}
+        style={motionVars({ "--sc-delay": "-6s", "--sc-duration": "13s" })}
+      >
+        <Sparkle
+          transform='translate(612 34) scale(0.45)'
+          className={styles.accent}
+        />
+      </g>
     </svg>
   );
 }

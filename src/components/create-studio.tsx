@@ -22,7 +22,6 @@ import { CreateStudioSidebar } from "@/components/create-studio-sidebar";
 import { CreateStudioTour } from "@/components/create-studio-tour";
 import { createThemePresets } from "@/components/create-components/style-presets";
 import {
-  PALETTE_PRESETS,
   resetPaletteGroup,
   resetPaletteToken,
   studioPaletteFromPreset,
@@ -30,12 +29,12 @@ import {
   type PalettePreset,
   type PaletteTokenId,
 } from "@/components/create-studio-palette";
+import { rollStudioConfig } from "@/components/create-studio-shuffle";
 import {
   ARCHETYPE_ICONS,
   ARCHETYPES,
   DEFAULT_SHADOW,
   STYLE_FONTS,
-  STYLES,
   buildThemeSnippet,
   type ArchetypeId,
   type StyleId,
@@ -43,6 +42,7 @@ import {
 import {
   DEFAULT_STUDIO_CONFIG,
   materializeStudioConfig,
+  resetStudioConfig,
   updateStudioConfig,
   useStudioConfig,
   type StudioConfig,
@@ -130,19 +130,16 @@ export function CreateStudio() {
   };
 
   const shuffle = () => {
-    // Random style + random ready palette: the preset already owns geometry
-    // and typography, so a hand-maintained combination list would only go
-    // stale.
-    const nextStyle = STYLES[Math.floor(Math.random() * STYLES.length)];
-    const nextPalette =
-      PALETTE_PRESETS[Math.floor(Math.random() * PALETTE_PRESETS.length)];
-    patchConfig({
-      palette: studioPaletteFromPreset(nextPalette),
-      radius: createThemePresets[nextStyle.id].tokens.radius ?? 8,
-      styleId: nextStyle.id,
-      font: STYLE_FONTS[nextStyle.id],
-      shadow: DEFAULT_SHADOW,
-    });
+    // One press rerolls style, palette, font, shadow, radius and the icon
+    // setup. `rollStudioConfig` skips the current value per dimension, so the
+    // button always produces a visible change, and it leaves the scenario alone.
+    // Uploaded faces join the built-in list so the dice covers every font the
+    // typography picker shows.
+    patchConfig(
+      rollStudioConfig(config, {
+        extraFontIds: customFonts.map((item) => item.id),
+      }),
+    );
   };
 
   const selectScenario = (id: ArchetypeId, moveFocus = false) => {
@@ -315,6 +312,7 @@ export function CreateStudio() {
           iconStyle={iconStyle}
           onIconStyleChange={(style) => patchConfig({ iconStyle: style })}
           onShuffle={shuffle}
+          onReset={resetStudioConfig}
           onExport={() => setModalOpen(true)}
           onSendConfig={sendConfig}
         />

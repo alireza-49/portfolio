@@ -1,4 +1,34 @@
+import type { IconName } from "@/components/create-components";
 import type { CourseArtVariant, FeatureVariant } from "../art/tutoring-art";
+
+/** Header anchors — they jump inside the preview's own scroll viewport. */
+export const NAV_ITEMS = [
+  { label: "دوره‌ها", href: "#courses" },
+  { label: "مدرسان", href: "#tutors" },
+  { label: "قیمت‌ها", href: "#pricing" },
+  { label: "پرسش‌ها", href: "#faq" },
+] as const;
+
+/** Three promises under the hero CTA, each with a semantic icon name. */
+export const HERO_POINTS: { icon: IconName; label: string }[] = [
+  { icon: "video", label: "کلاس زنده و ضبط‌شده" },
+  { icon: "users", label: "مدرس اختصاصی" },
+  { icon: "calendar-check", label: "برنامهٔ هفتگی" },
+];
+
+/** Marquee between the hero and the features. */
+export const SUBJECT_TICKER = [
+  "ریاضی دوازدهم",
+  "حسابان",
+  "هندسه",
+  "فیزیک",
+  "شیمی",
+  "زیست‌شناسی",
+  "مکالمهٔ انگلیسی",
+  "آیلتس",
+  "نگارش",
+  "ادبیات",
+];
 
 export const TUTORING_STATS: {
   label: string;
@@ -34,23 +64,31 @@ export const TUTORING_STATS: {
 
 export const TUTORING_FEATURES: {
   art: FeatureVariant;
+  icon: IconName;
   title: string;
   body: string;
+  meta: string;
 }[] = [
   {
     art: "live",
+    icon: "video",
     title: "کلاس زندهٔ تعاملی",
     body: "تختهٔ دیجیتال، اشتراک فایل و ضبط جلسه؛ همان تجربهٔ کلاس حضوری روی مرورگر.",
+    meta: "روی مرورگر، بدون نصب",
   },
   {
     art: "path",
+    icon: "calendar-check",
     title: "مسیر یادگیری شخصی",
     body: "تعیین سطح رایگان و برنامهٔ هفتگی که با سرعت و هدف شما هماهنگ می‌شود.",
+    meta: "بازبینی هر دو هفته",
   },
   {
     art: "feedback",
+    icon: "check-circle",
     title: "تمرین و بازخورد",
     body: "تمرین هدفمند بعد از هر جلسه، تصحیح انسانی و گزارش پیشرفت برای خانواده.",
+    meta: "بازخورد تا ۲۴ ساعت",
   },
 ];
 
@@ -238,6 +276,7 @@ export const WEEKDAYS = [
     time: "۱۸:۳۰",
     tutor: "سارا مهدوی",
     seatsLeft: 3,
+    capacity: 12,
   },
   {
     id: "sun",
@@ -247,6 +286,7 @@ export const WEEKDAYS = [
     time: "۱۷:۰۰",
     tutor: "امیر کاویانی",
     seatsLeft: 2,
+    capacity: 12,
   },
   {
     id: "mon",
@@ -256,6 +296,7 @@ export const WEEKDAYS = [
     time: "۱۹:۳۰",
     tutor: "نگار رستمی",
     seatsLeft: 5,
+    capacity: 12,
   },
   {
     id: "tue",
@@ -265,6 +306,7 @@ export const WEEKDAYS = [
     time: "۱۸:۰۰",
     tutor: "امیر کاویانی",
     seatsLeft: 4,
+    capacity: 12,
   },
   {
     id: "wed",
@@ -274,6 +316,7 @@ export const WEEKDAYS = [
     time: "۱۷:۳۰",
     tutor: "سارا مهدوی",
     seatsLeft: 6,
+    capacity: 12,
   },
 ];
 

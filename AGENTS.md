@@ -42,11 +42,19 @@ scenario.
   structural signature in `styles.css` (rings, ticks, gradient rule, arches, tape tilt, confetti,
   screentone/panel cut, brass rivets, glass blur). The sidebar groups the tiles and previews each
   style with its own heading face and a three-dot palette; picking a style also syncs radius, body
-  font (`STYLE_FONTS`) and the canvas chip label. `shuffle()` now picks a random style + brand swatch
-  instead of a hand-maintained combination list.
+  font (`STYLE_FONTS`) and the canvas chip label. The dice rerolls the whole look through
+  `create-studio-shuffle.ts`, so there is no hand-maintained combination list to go stale.
 
 Rebuilt the two canvas scenarios and added the primitives they needed:
 
+- **The dice rerolls the whole theme.** «بر زدن و ترکیب تصادفی تم» no longer only swaps the style
+  and the brand swatch: it calls `rollStudioConfig()` from `create-studio-shuffle.ts`, which picks
+  a new style, a ready palette, a face from the whole typography list (`FONTS` + uploaded font
+  ids), an elevation (including «پیرو سبک»), a radii step and a whole icon setup (library + size /
+  weight / tone). Every dimension skips the value already on screen, so each press is visibly
+  different; the palette is rebuilt
+  through `studioPaletteFromPreset`, dropping stale neutral/chart overrides; the scenario is left
+  alone. The roll accepts an injectable dice, so it stays deterministic under test.
 - **New primitives** (all exported from `create-components/index.ts`): `chart.tsx` (`ChartFrame`,
   `ChartLegend`, `Sparkline`, `MiniBars`, `RadialGauge`, `Heatmap`, `FunnelChart`, `useChartTheme`),
   `chart-recharts.tsx` (themed `AreaTrend`, `LineTrend`, `BarSeries`, `DonutBreakdown`), `calendar.tsx`
@@ -132,12 +140,71 @@ Rebuilt the two canvas scenarios and added the primitives they needed:
   font picker) and pins `theme.shadow` / `theme.shadowHover` from five token-only presets —
   بدون سایه، نرم، برجسته، چاپی (hard offset) و هاله (brand glow) — plus «پیرو سبک», which keeps the
   active preset's own signature. `SHADOWS` / `shadowOverrides()` live in `create-studio-config.ts`;
-  picking a style (or shuffling) resets the choice to «پیرو سبک». The swatches resolve the
-  `var(--cc-*)` references with `resolveShadowCss()` because the sidebar sits outside the preset
-  scope. `create-studio-canvas.tsx` writes `data-cc-shadow` on the content wrapper only for an
+  picking a style resets the choice to «پیرو سبک», while the dice rolls its own elevation. The
+  swatches resolve the `var(--cc-*)` references with `resolveShadowCss()` because the sidebar sits
+  outside the preset scope. `create-studio-canvas.tsx` writes `data-cc-shadow` on the content
+  wrapper only for an
   explicit choice, and `styles.css` uses that hook so the pinned elevation outranks per-style card
   and chart-frame signatures (Swiss flat cards, EdTech inset rule, …). `buildThemeSnippet` consumes
   the resolved shadow, so the exported CSS matches the canvas.
+- **Landing scenario rebuilt.** `tutoring-landing.tsx` went from 13 stacked cards to twelve sections
+  with a deliberate tempo: slim header bar (plain div, real `#courses`/`#tutors`/`#pricing`/`#faq`
+  anchors) → hero (copy + `ClassroomScene`, no card hover-tilt on the giant panel) → trust strip
+  (the only place the `TUTORING_STATS` numbers live) → subject marquee → feature trio → live week →
+  courses (tab rows separated by `Separator`) → tutors → full-bleed result band
+  (`-mx-5 sm:-mx-7` + `bg-[var(--cc-muted)]`) → pricing → comparison + onboarding steps → FAQ →
+  CTA band → compact footer. A local `SectionHeading` (eyebrow / display line / description /
+  trailing slot) replaces four ad-hoc heading scales; body copy has an 11px floor; the stray
+  `font-mono` uses became `monoType` (now exported from `create-components`); scores, seat counts
+  and the deltas print through `formatNumber`, and `Progress` no longer uses `showValue` (it prints
+  Latin digits). Week capacity comes from `WEEKDAYS[].capacity` instead of a hardcoded `12`, and the
+  schedule/story regions carry `aria-live="polite"`.
+- **Motion layer for the landing.** `motion` v14 (`motion/react`) is a real dependency now, but its
+  reach is deliberately small: `src/components/create-scenarios/motion-primitives.tsx` exports
+  `Reveal` (scroll-in spring), `Swap` (`AnimatePresence` for the weekday panel and the testimonial)
+  and `Lift` (hover/tap on CTAs and cards). **Prerender contract:** `Reveal` animates translate
+  only — never `opacity: 0` — because `/create` is statically prerendered and the markup has to be
+  readable before hydration; `Swap` mounts with `initial={false}` so the first paint equals the
+  server HTML; `useReducedMotion` may only change `transition` values, never the rendered style
+  tree or the component tree (that would split server/client markup). `motion` is imported by
+  scenario files only — `create-components/*` stays dependency-free and the studio frame keeps its
+  own CSS animation.
+- **New animated art.** `art/tutoring-art.tsx` now draws a `HeroOrbit` (counter-rotating dashed
+  orbits + subject chips + drifting sparkles), a live-class `ClassroomScene` with a chalk cursor
+  walking the board curve, speaking bars, an expanding live halo and a popping reaction bubble,
+  looping `FeatureVignette`s (waveform, travelling roadmap dot, typed feedback), animated
+  `CourseArt` glyphs (caret, reverse orbit, spinning meridian, page flip), a comet on `StepPath`,
+  growing columns behind `ScoreChart`, and a drifting `CtaPattern`. Keyframes live in
+  `scenes.css` as `sc-wave`, `sc-grow`, `sc-signal`, `sc-pop`, `sc-cursor` (viewBox units),
+  `sc-travel` (`--sc-dash-run` / `--sc-run`), `sc-flip`, `sc-drift`, `sc-caret`, with
+  `sc-accentLine` for the comet stroke and reduced-motion fallbacks that park `sc-cursor` and
+  `sc-signal` at `opacity: 0`. Everything is still token-only.
+- **Storefront rebuilt (`ecommerce`).** `clothing-shop.tsx` went from 1786 lines / 11 inline
+  components to a 12-stop page plus a `shop/` folder: `catalog.tsx` (toolbar + filter rail + grid),
+  `bag.tsx` (bag, coupon, checkout receipt), `size-guide.tsx`, `product-card.tsx` (moved out of
+  `shop-product-card.tsx`) and `section-heading.tsx` (one heading scale, shared by the section files).
+  Rhythm: announcement marquee strip → header bar (real anchors, one search input) → hero (copy +
+  `ShopfrontScene` with `HeroOffer` docked inside the art) → full-bleed trust band (four animated
+  `ServiceArt` variants) → category rail → `#shop-collection` → `#shop-lookbook` → `#shop-bag` →
+  `#shop-guide` → `#shop-reviews` → `#shop-faq` → footer band with `ShopPattern`. Filters live in one
+  `ShopFilters` object (`patchFilters` / `resetFilters`), so the page stops prop-drilling 19 values;
+  the price slider's bounds are derived from the catalogue (`PRICE_FLOOR` / `PRICE_CEILING`).
+- **Commerce art and state-driven motion.** `art/shop-art.tsx` gained `ShopfrontScene` (boutique
+  window: swaying rail, twisting price tag, folded stacks, spinning sale seal, a bag catching items,
+  a delivery van with turning wheels), `ShippingTrack` (the free-shipping meter as a road — the van
+  parks at `subtotal / FREE_SHIPPING` via `.sc-track`, milestones light up), `OrderPlacedScene`
+  (bag opens, receipt rises, confetti bursts, check pops), `SizeTapeScene`, `ShopPattern`, plus a
+  `sew` / `shield` `ServiceArt` variant and a hovering sale ribbon on every `GarmentArt` backdrop.
+  New keyframes in `scenes.css`: `sc-wiggle`, `sc-rise`, `sc-burst`, `sc-sew`, and the HTML-only
+  `sc-floatChip` / `sc-track` helpers (`.sc-float` is SVG-shaped). All of them are parked in the
+  `prefers-reduced-motion` block.
+- **`motion-primitives.tsx` grew three primitives** now that a second scenario uses `motion`:
+  `Collapse` (height-animated disclosure for the mobile filter panel and the header menu — closed
+  panels render nothing, so the prerender is untouched), `Row` (a `layout`/exit animated list item
+  for bag lines, used inside `<AnimatePresence initial={false}>`) and `Bump` (a spring pop on the
+  header count badges, keyed by the value). The icon registry also gained `truck` across all three
+  libraries.
+
 
 ## Studio defaults on first paint
 
@@ -147,7 +214,8 @@ Rebuilt the two canvas scenarios and added the primitives they needed:
 `DEFAULT_ICON_STYLE` (`size: md`, `weight: regular`, `tone: inherit`). Picking a
 style overwrites radius and body font from `STYLE_FONTS` and puts the shadow
 back on «پیرو سبک»; palette, radius, shadow, font and icon library stay
-user-controlled afterwards. `buildThemeSnippet` always exports the resolved
+user-controlled afterwards — the dice can reroll all six at once.
+`buildThemeSnippet` always exports the resolved
 theme, so a copied snippet reflects the current style + palette + radius +
 shadow + font + icon combination.
 
@@ -160,6 +228,19 @@ the server), so `create-studio.tsx` renders `DEFAULT_STUDIO_CONFIG` for the
 prerender and hydration never mismatches — same contract as the font store.
 Reads are defensive: unknown ids fall back, radius clamps to 0–48, palette
 roles are re-validated, and invalid JSON is ignored.
+
+### Reset button
+
+The sidebar header carries «بازگردانی به تنظیمات اولیه» under the dice. It calls
+`resetStudioConfig()` (`create-studio-store.ts`), which writes
+`DEFAULT_STUDIO_CONFIG` over the snapshot but **keeps the active archetype** —
+scenario tabs are navigation, the sidebar owns the theme — and persists the
+restored combination like any other edit, so the contact form still receives
+what is on screen. The button is two-step: the first press only arms it (label
+becomes «برای بازگردانی دوباره بزنید», coral fill) and losing focus disarms it
+again, so a stray click can never wipe a configuration. The sidebar also brings
+its local view state back in line (palette tab → presets, colour group → roles,
+the font upload form collapsed); uploaded fonts are *not* deleted from IndexedDB.
 
 ### First-visit guide and the contact hand-off
 
@@ -220,6 +301,10 @@ roles are re-validated, and invalid JSON is ignored.
   `COLOR_TOKENS`, plus `resolvePaletteToken` / `paletteThemeOverrides` when it is derived.
   Ready palettes own roles only; neutrals/charts stay with the style until the visitor overrides
   them, and `resetPaletteToken`/`resetPaletteGroup` are the only ways back.
+- The dice is data too: `rollStudioConfig()` (`create-studio-shuffle.ts`) returns a fresh
+  `StudioConfig`, never mutates the incoming one, and skips the current value in every dimension.
+  Keep the scenario out of a roll; fonts cover every `FONTS` entry plus uploaded ids, so the dice
+  explores display faces too (a visitor can still pick a body face from the picker).
 - Colour swatches open the studio's in-page HSV popover (`PaletteColorPicker`, Base UI
   `Popover`), never a native `<input type="color">`: the native dialog is an OS popup and Chrome
   can anchor it off-screen (especially on Wayland). Keep the positioner collision-aware and
@@ -227,6 +312,30 @@ roles are re-validated, and invalid JSON is ignored.
 - Numerals, dates and chart ticks use `monoType` (`--cc-mono-font-family`), never Tailwind's
   `font-mono` — the preset must own that face. Cards read `--cc-card-radius` and
   `--cc-surface-pattern`, buttons/cards read `--cc-hover-rotate`.
+- Scenario motion goes through `motion-primitives.tsx` (`Reveal`, `Swap`, `Lift`, `Collapse`, `Row`,
+  `Bump`) instead of raw `motion.*` in the sections (the testimonial dot's `layoutId` pill is the one
+  inline exception). `Collapse` and `Row` must be paired with `initial={false}` on their
+  `AnimatePresence`, so panels and list rows that exist at first paint never animate in on hydration.
+  Keep `initial` translate-only: `opacity: 0` initial states render a blank prerendered page.
+  `useReducedMotion` may change `transition` values only — branching the style tree or returning a
+  different element splits server and client markup. New illustration motion belongs in
+  `scenes.css` (`sc-*` class + a `prefers-reduced-motion` entry), not in JS timers.
+- State-driven SVG (the shop's free-shipping van) takes its geometry from React: compute the position
+  in the component and let `.sc-track` transition it, instead of animating custom properties in CSS.
+- The storefront's numbers live in `data/shop.ts` (`SHOP_STATS`, `SHOP_SIZE_TABLE`, `SHOP_TRACKING`,
+  `SHOP_REVIEW_STATS`, and the derived `PRICE_FLOOR` / `PRICE_CEILING`). Sections must not retype a
+  shipping threshold, review count or price ceiling — that was the main source of drift in the old
+  page. Filters travel as one `ShopFilters` object; never add a nineteenth prop to the grid.
+- The shop hero is a **bounded stage**, not a stack of blocks: the art column is
+  `@3xl:h-[clamp(360px,44vh,470px)]` (so the first screen holds the whole hero plus the trust band),
+  the copy column uses `justify-center` and owns no `mt-auto` spacer, and `HeroOffer` is absolutely
+  docked in the one empty corner of `ShopfrontScene` (`end-3 bottom-3`) from `@3xl` while staying in
+  flow under the art below it. Never let an illustration's intrinsic aspect ratio set the hero height
+  again, and never repeat the four promises or the rating in the hero — the trust band and the meta
+  line already own them.
+- `.sc-art` sets `display: block`, so a Tailwind `hidden`/`flex` on an illustration SVG loses to it.
+  Put responsive visibility on a wrapper `<div>` (`<div className='hidden @xl:block'>`) instead of
+  passing it to `HeroOrbit`/`StepPath`/… directly.
 - Persian is a connected script: keep `labelLetterSpacing`/`headingLetterSpacing` at `0em`. Tracking
   is only acceptable on `dir="ltr"` Latin/numeric spans.
 - Style presets never touch the studio frame: the frame keeps `paper`, `indigo-ink`, `coral`,
@@ -244,7 +353,13 @@ roles are re-validated, and invalid JSON is ignored.
   **Avoid `Maktab Rita`, `Ordibehesht`, `A Google` and `Parvaz` in preset stacks**: their Persian
   glyphs render disconnected/overlapping, so they cannot shape body copy or UI headings. The faces
   that actually join Persian text are Vazir, Samim, Gandom and Dirooz; A Ghasem is usable for short
-  headline accents only.
+  headline accents only. The dice still rolls those faces on request (`rollStudioConfig` covers the
+  whole `FONTS` list) — that is a visitor exploring, not a preset default.
+  The supplied `MaktabRita-Regular.woff2` also draws its glyphs at roughly half of its 1000-unit em
+  and maps 61 codepoints (ک، گ، چ، digits, …) to blank glyphs. Its `@font-face` therefore carries
+  `size-adjust: 210%` (size parity with Vazir) and a `unicode-range` limited to the codepoints it
+  really draws, so the blank ones fall through to Vazir instead of disappearing. A complete source
+  file would still be the better fix.
 - Uploaded fonts are read through `useSyncExternalStore` (`create-studio-custom-fonts.ts`); IndexedDB
   is only touched from the store's subscribe/mutation helpers, never during render and never from an
   effect (`react-hooks/set-state-in-effect` is enabled).

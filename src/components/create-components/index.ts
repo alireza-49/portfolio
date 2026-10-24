@@ -15,6 +15,7 @@ export {
   borderChrome,
   headingType,
   labelType,
+  monoType,
   motion,
 } from "./styles";
 

@@ -229,6 +229,22 @@ export function updateStudioConfig(patch: Partial<StudioConfig>): StudioConfig {
 }
 
 /**
+ * Restore the documented defaults from the sidebar's reset button.
+ *
+ * The scenario survives: tabs are navigation, while the sidebar owns the theme
+ * (style, palette, radius, shadow, font and icons). The restored combination is
+ * persisted like any other edit, so the contact form still attaches exactly
+ * what is on screen and a reload keeps showing it.
+ */
+export function resetStudioConfig(): StudioConfig {
+  ensureLoaded();
+  return updateStudioConfig({
+    ...DEFAULT_STUDIO_CONFIG,
+    archetype: snapshot?.archetype ?? DEFAULT_STUDIO_CONFIG.archetype,
+  });
+}
+
+/**
  * Saving the untouched defaults is still a valid hand-off: the contact form
  * should receive the exact combination the visitor saw on the canvas.
  */

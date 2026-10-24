@@ -49,6 +49,7 @@ import {
   Stethoscope,
   Trash2,
   TriangleAlert,
+  Truck,
   Users,
   Video,
   Wallet,
@@ -96,6 +97,7 @@ import {
   IconSparkles,
   IconStethoscope,
   IconTrash,
+  IconTruckDelivery,
   IconUsers,
   IconVideo,
   IconWallet,
@@ -130,6 +132,7 @@ import {
   MdInventory2,
   MdMedicalServices,
   MdMenu,
+  MdLocalShipping,
   MdMonitorHeart,
   MdNotificationsNone,
   MdPeople,
@@ -220,6 +223,7 @@ const LUCIDE_ICONS = {
   minus: Minus,
   plus: Plus,
   trash: Trash2,
+  truck: Truck,
   close: X,
   "alert-circle": AlertCircle,
   "alert-triangle": TriangleAlert,
@@ -276,6 +280,7 @@ const TABLER_ICONS: Record<IconName, Glyph> = {
   "alert-triangle": IconAlertTriangle,
   info: IconInfoCircle,
   boxes: IconPackages,
+  truck: IconTruckDelivery,
 };
 
 const GOOGLE_ICONS: Record<IconName, Glyph> = {
@@ -324,6 +329,7 @@ const GOOGLE_ICONS: Record<IconName, Glyph> = {
   "alert-triangle": MdWarningAmber,
   info: MdInfoOutline,
   boxes: MdInventory2,
+  truck: MdLocalShipping,
 };
 
 export const ICON_SETS: Record<IconLibraryId, Record<IconName, Glyph>> = {

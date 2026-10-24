@@ -111,6 +111,8 @@ type SidebarProps = {
   iconStyle: IconStyle;
   onIconStyleChange: (style: IconStyle) => void;
   onShuffle: () => void;
+  /** Restore every sidebar choice (style, palette, radius, shadow, font, icons). */
+  onReset: () => void;
   onExport: () => void;
   /** Persist the current configuration and open the contact form with it. */
   onSendConfig: () => void;
@@ -138,6 +140,7 @@ export function CreateStudioSidebar({
   iconStyle,
   onIconStyleChange,
   onShuffle,
+  onReset,
   onExport,
   onSendConfig,
   customFonts,
@@ -157,6 +160,10 @@ export function CreateStudioSidebar({
   const [fontFile, setFontFile] = useState<File | null>(null);
   const [fontError, setFontError] = useState<string | null>(null);
   const [fontBusy, setFontBusy] = useState(false);
+  // Resetting throws away every choice, so the button asks first: the first
+  // press only arms it, the second one restores the defaults, and moving focus
+  // away (any other click or a Tab) disarms it again.
+  const [resetArmed, setResetArmed] = useState(false);
   const fontInputRef = useRef<HTMLInputElement>(null);
 
   const resolvedIconStyle = resolveIconStyle(iconStyle);
@@ -229,6 +236,21 @@ export function CreateStudioSidebar({
     setFontError(null);
   };
 
+  const handleReset = () => {
+    if (!resetArmed) {
+      setResetArmed(true);
+      return;
+    }
+    setResetArmed(false);
+    // The panel keeps a little local view state of its own (palette tab, colour
+    // group, upload form); bring it back to the initial look so what is on
+    // screen matches the restored configuration.
+    setColorMode("presets");
+    setCustomGroup("roles");
+    resetFontForm();
+    onReset();
+  };
+
   const submitFont = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!fontFile) {
@@ -251,15 +273,36 @@ export function CreateStudioSidebar({
 
   return (
     <aside className='order-2 z-20 flex w-full shrink-0 flex-col gap-4 border-b-[2.5px] border-indigo-ink bg-paper-light p-4 lg:order-1 lg:h-full lg:min-h-0 lg:w-80 lg:overflow-y-auto lg:border-b-0 lg:border-l-[2.5px] scroll-smooth'>
-      <div className='border-b border-indigo-ink/20 pb-3'>
+      <div className='flex flex-col gap-1 border-b border-indigo-ink/20 pb-3'>
         <button
           type='button'
           onClick={onShuffle}
-          title='تولید تصادفی ترکیب استایل و رنگ'
+          title='تولید تصادفی سبک، پالت رنگ، فونت، سایه، گردی گوشه و آیکون‌ها'
           className='craft-btn flex w-full items-center justify-center gap-2 rounded-sm bg-coral px-3 py-2.5 text-xs font-black text-white'
         >
           <Dices className='size-[18px]' />
           <span>بر زدن و ترکیب تصادفی تم</span>
+        </button>
+        <span className='text-center text-[9px] leading-relaxed text-indigo-light'>
+          هر بار سبک، پالت، فونت، سایه، گردی و آیکون‌ها با هم عوض می‌شوند.
+        </span>
+        <button
+          type='button'
+          onClick={handleReset}
+          onBlur={() => setResetArmed(false)}
+          title='بازگردانی سبک، پالت، گردی گوشه، سایه، فونت و آیکون‌ها به مقادیر اولیه'
+          className={`mt-1 flex w-full items-center justify-center gap-1.5 rounded-sm border px-3 py-1.5 text-[11px] font-bold shadow-craft-sm transition-all active:translate-x-0.5 active:translate-y-0.5 ${
+            resetArmed
+              ? "border-indigo-ink bg-coral text-white hover:bg-coral-dark"
+              : "border-dashed border-indigo-ink bg-paper-dim text-indigo-ink hover:bg-paper-light"
+          }`}
+        >
+          <RotateCcw className='size-3.5' />
+          <span>
+            {resetArmed
+              ? "برای بازگردانی دوباره بزنید"
+              : "بازگردانی به تنظیمات اولیه"}
+          </span>
         </button>
       </div>
 
