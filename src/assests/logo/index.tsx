@@ -4,9 +4,9 @@ import { cn } from "cn";
 
 import { Button } from "@/components/ui/button";
 
-type Props = { className?: string };
+type Props = { className?: string; idPrefix?: string };
 
-const Logo = (props: Props) => {
+const Logo = ({ idPrefix = "", ...props }: Props) => {
   return (
     <svg
       xmlns='http://www.w3.org/2000/svg'
@@ -16,7 +16,13 @@ const Logo = (props: Props) => {
       {...props}
     >
       <defs>
-        <filter id='riso-texture' x='-10%' y='-10%' width='120%' height='120%'>
+        <filter
+          id={`${idPrefix}riso-texture`}
+          x='-10%'
+          y='-10%'
+          width='120%'
+          height='120%'
+        >
           <feTurbulence
             type='fractalNoise'
             baseFrequency='0.8'
@@ -39,7 +45,7 @@ const Logo = (props: Props) => {
         </filter>
 
         <pattern
-          id='dot-grid'
+          id={`${idPrefix}dot-grid`}
           x='0'
           y='0'
           width='16'
@@ -65,7 +71,7 @@ const Logo = (props: Props) => {
         width='464'
         height='464'
         rx='20'
-        fill='url(#dot-grid)'
+        fill={`url(#${idPrefix}dot-grid)`}
       />
 
       <rect

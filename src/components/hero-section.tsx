@@ -3,7 +3,6 @@
 import { useCallback, useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import {
-  BadgeCheck,
   Calculator,
   Coffee,
   Rocket,
@@ -13,6 +12,7 @@ import {
 import { cn } from "cn";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { HeroSpecSheet } from "@/components/hero-spec-sheet";
 
 const HERO_BADGES = [
   { icon: Coffee, label: "مشاوره ۱۰۰٪ رایگان و بدون تعهد", tone: "coral" },
@@ -56,14 +56,6 @@ const HERO_PROMISES = [
     box: "bg-coral/20 text-coral border-coral/40",
   },
 ] as const;
-
-const SPEC_SHEET = [
-  { label: "شاخص عملکرد لایت‌هاوس", value: "۹۹ / ۱۰۰" },
-  { label: "میانگین وزن صفحه", value: "زیر ۳۸۰ کیلوبایت" },
-  { label: "زمان تحویل", value: "۳ تا ۵ روز" },
-] as const;
-
-const TECH_LINE = "Next.js · TypeScript · Tailwind";
 
 const INK_COLORS = ["#E76F51", "#E9C46A", "#F237A1", "#264653", "#2A9D8F"];
 
@@ -245,7 +237,7 @@ export function HeroSection() {
               </svg>
 
               <span className='ink-text-target z-10 inline-block px-1 font-black tracking-normal'>
-                ارزان و سریع و شخصی سازی شده
+                ارزان ، سریع و شخصی سازی شده
               </span>
 
               <span className='absolute inset-x-0 bottom-0 h-[3px] rounded-full bg-coral transition-opacity duration-200 group-[.splashed]:opacity-0' />
@@ -313,68 +305,8 @@ export function HeroSection() {
           </div>
         </div>
 
-        <div className='flex w-full justify-center lg:w-5/12'>
-          <Card
-            data-cursor-morph
-            className='flex w-full max-w-sm flex-col gap-0 rounded-sm border-[2px] border-indigo-ink bg-paper-light px-6 py-7 shadow-[6px_6px_0_0_var(--color-mustard)] sm:max-w-md sm:px-7 sm:py-8'
-          >
-            <div className='flex items-center justify-between'>
-              <span className='flex items-center gap-2 text-[11px] font-bold text-indigo-light'>
-                <span
-                  aria-hidden
-                  className='size-1.5 rounded-full bg-teal-craft'
-                />
-                شناسنامهٔ فنی
-              </span>
-              <span className='font-mono text-[11px] font-bold text-indigo-ink/40'>
-                № ۰۸۴
-              </span>
-            </div>
-
-            <h2 className='mt-7 text-[20px] leading-[1.55] font-black text-indigo-ink sm:text-[22px]'>
-              کد سبک، سرعت بالا،
-              <br />
-              تبدیل حداکثری
-            </h2>
-            <p className='mt-3 max-w-[36ch] text-[13px] leading-[1.95] font-medium text-indigo-light'>
-              توسعهٔ دست‌ساز بر پایهٔ مهندسی تمیز و سفارشی‌سازی کامل؛ بدون قالب
-              آماده و افزونه‌های اضافه.
-            </p>
-
-            <dl className='mt-7 border-t border-indigo-ink/15'>
-              {SPEC_SHEET.map((spec) => (
-                <div
-                  key={spec.label}
-                  className='flex items-baseline justify-between gap-4 border-b border-dashed border-indigo-ink/15 py-3.5'
-                >
-                  <dt className='text-[12px] font-medium text-indigo-light'>
-                    {spec.label}
-                  </dt>
-                  <dd className='font-mono text-[12px] font-bold text-indigo-ink'>
-                    {spec.value}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-
-            <p className='mt-5 border-s-2 border-coral/70 ps-3 text-[11px] leading-relaxed font-medium text-indigo-light'>
-              <span className='font-bold text-indigo-ink'>لود ۰٫۷ ثانیه</span> —
-              نه ۴ تا ۸ ثانیهٔ قالب آماده.
-            </p>
-
-            <div className='mt-6 flex flex-wrap items-center justify-between gap-2 border-t border-indigo-ink/10 pt-4'>
-              <span className='flex items-center gap-1.5 text-[11px] font-bold text-indigo-ink'>
-                <BadgeCheck className='size-4 text-coral' />
-                ضمانت کد تمیز
-              </span>
-              <span
-                dir='ltr'
-                className='font-mono text-[10px] font-medium text-indigo-ink/45'
-              >
-                {TECH_LINE}
-              </span>
-            </div>
-          </Card>
+        <div className='flex w-full items-center justify-center lg:w-5/12'>
+          <HeroSpecSheet />
         </div>
       </div>
     </section>
