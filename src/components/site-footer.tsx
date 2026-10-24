@@ -2,11 +2,13 @@ import { LogoButton } from "@/assests/logo";
 import { ArrowLeft, Leaf, Mail, Send } from "lucide-react";
 
 const QUICK_LINKS = [
-  { href: "#projects-container", label: "پروژه‌های منتخب و آزموده" },
-  { href: "#estimator-section", label: "برآوردگر زنده هزینه و زمان" },
-  { href: "#why-me-section", label: "چرا کار با سازنده مستقل؟" },
-  { href: "#craft-values", label: "مرام‌نامه و تعهد اخلاقی کارگاه" },
-  { href: "#contact-section", label: "جلسه مشاوره رایگان ۳۰ دقیقه‌ای" },
+  { href: "/#projects-container", label: "پروژه‌های منتخب و آزموده" },
+  { href: "/blog", label: "روزنامهٔ کارگاه و یادداشت‌ها" },
+  { href: "/track", label: "رهگیری زندهٔ پیشرفت پروژه" },
+  { href: "/#estimator-section", label: "برآوردگر زنده هزینه و زمان" },
+  { href: "/#why-me-section", label: "چرا کار با سازنده مستقل؟" },
+  { href: "/#craft-values", label: "مرام‌نامه و تعهد اخلاقی کارگاه" },
+  { href: "/#contact-section", label: "جلسه مشاوره رایگان ۳۰ دقیقه‌ای" },
 ];
 
 const CHANNELS = [

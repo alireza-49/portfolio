@@ -403,6 +403,75 @@ the font upload form collapsed); uploaded fonts are *not* deleted from IndexedDB
   `STYLE_FONTS[styleId]` when the saved custom font is not on this device. Both
   dialogs share `StudioDialog` (Escape/backdrop close, `role='dialog'`).
 
+## Studio console, blog and project tracking
+
+The site now has a private console and two public content surfaces, all sharing the same riso
+tokens as the home page and `/create`:
+
+| Route | What it is |
+|---|---|
+| `/blog` | public archive (masthead, search, tags, featured post, grid) |
+| `/blog/[slug]` | public reader (hero, reading progress, TOC from H2/H3, share row, related posts) |
+| `/track` | public tracking landing (code lookup + published boards) |
+| `/track/[code]` | public project ledger (progress, phase stepper, changelog, optional finance) |
+| `/admin/login` | single-admin login card (server action, HMAC cookie) |
+| `/admin` | console overview (KPIs, 14-day bar chart, recent inbox, active projects) |
+| `/admin/projects` | project list: create, publish toggle, delete, open progress editor |
+| `/admin/progress` | quick progress board (inline percent / phase / status per active project) |
+| `/admin/projects/[id]` | full progress editor (identity, phases, ledger, changelog, publishing) |
+| `/admin/inbox` | contact submissions (filters, search, bulk status, CSV, slide-over detail) |
+| `/admin/posts` | post list (edit / publish / duplicate / delete) |
+| `/admin/posts/new`, `/admin/posts/[id]` | Tiptap editorial console |
+
+### Data layer
+
+- **Postgres via `pg`** (Neon/Supabase), `DATABASE_URL` points at the *pooled* connection string.
+  `src/lib/db.ts` creates one lazily-cached pool per process and applies `src/lib/schema.sql` once
+  per process, so `next build` never needs a database.
+- `npm run db:setup` applies the schema and seeds demo projects/posts/submissions only when the
+  tables are empty. Seeds live in `scripts/seed/*.mjs`; they are plain data, not runtime imports.
+- `src/lib/content.ts` is the only module that talks to Postgres. Never import it (or `db.ts`,
+  `sanitize.ts`, `auth.ts`) from a client component — `inquiry-csv`, `post-card`, `post-html`
+  and `text.ts` are deliberately client-safe.
+- Nested collections (`steps`, `updates`, `tags`) are JSONB and are re-validated field by field
+  in `src/app/admin/(console)/{projects,posts}/validation.ts` before they reach the database.
+- Public pages call `await connection()` (Next 16) before querying, because `dynamic`/`revalidate`
+  no longer exist with Cache Components. They also declare `instant = false`; the console layout
+  does the same so the session read can stream.
+
+### Auth
+
+`ADMIN_USERNAME`, `ADMIN_PASSWORD`, `ADMIN_SESSION_SECRET` (see `.env.example`). Sessions are
+HMAC-SHA256 signed, HttpOnly, `SameSite=Lax`, 12 h (30 days with «ثبت نشست»). `requireAdmin()` is
+called in the console layout **and** at the top of every server action; never trust the layout for
+authorization. Login failures are throttled per IP in memory. Without env vars the console only
+opens in development (fallback `admin` / `codology-dev`) and shows a mustard warning bar; in
+production it fails closed with a setup message.
+
+### Content rules
+
+- Post HTML is sanitized **on write** (`sanitizePostHtml`) and rendered with
+  `dangerouslySetInnerHTML`; never render raw editor output from another source. The allowlist
+  covers the Tiptap schema (tables, task lists, tinted spans, images) and strips classes/scripts.
+- Colour swatches in the editor store `var(--color-*)` values, so articles keep following the
+  riso palette instead of baking hexes into the database.
+- Images are **URLs only** (no uploads): cover fields and the editor's image insert validate
+  `https://` / site-relative paths. Never hotlink the Stitch design images.
+- Everything visible is Persian: dates through `faDate`/`faDateTime` (Jalali), digits through
+  `faNumber`/`faDigits`, chart ticks and codes inside `font-mono`/`dir="ltr"` spans only where the
+  value is Latin.
+- The contact form posts to `/api/contact`; the route validates, throttles, and stores the studio
+  hand-off JSONB exactly as sent. The inbox only reads that data — it never invents a submission.
+- Admin-only UI never uses fake controls: no SMS/OTP, no email sending, no media library. Missing
+  integrations are stated in the copy instead of simulated.
+
+### Verification
+
+```bash
+npx tsc --noEmit && npx eslint src && npm run build
+npm run db:setup   # once per database (reads DATABASE_URL)
+```
+
 ## Rules for this codebase
 
 - Style only through tokens (`var(--cc-*)`); never hardcode colours, so all presets keep working.

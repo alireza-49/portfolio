@@ -20,11 +20,12 @@ type NavLink = {
 };
 
 const NAV_LINKS: NavLink[] = [
-  { href: "#projects-container", label: "پروژه‌ها" },
-  { href: "#estimator-section", label: "برآورد هزینه" },
-  { href: "#why-me-section", label: "چرا مستقل؟" },
+  { href: "/#projects-container", label: "پروژه‌ها" },
+  { href: "/blog", label: "وبلاگ" },
+  { href: "/track", label: "پیگیری پروژه" },
   { href: "/create", label: "ساخت آنلاین", highlight: true },
-  { href: "#contact-section", label: "تماس و سفارش" },
+  { href: "/#estimator-section", label: "برآورد هزینه" },
+  { href: "/#contact-section", label: "تماس و سفارش" },
 ];
 
 export function SiteHeader() {

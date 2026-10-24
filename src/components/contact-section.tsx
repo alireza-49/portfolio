@@ -87,6 +87,8 @@ const STUDIO_BADGE_LABEL: Record<StudioThemeStatus | "delegated", string> = {
 
 export function ContactSection() {
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
   const [attachStudioConfig, setAttachStudioConfig] = useState(true);
@@ -190,21 +192,73 @@ export function ContactSection() {
       ?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!canSubmit) return;
+    if (!canSubmit || sending) return;
+
     const form = event.currentTarget;
-    setSent(true);
-    setName("");
-    setContact("");
-    // The optional fields are uncontrolled. Clearing them individually (instead
-    // of `form.reset()`) keeps the controlled hidden hand-off fields intact for
-    // a follow-up submission.
-    const business = form.elements.namedItem("business");
-    const message = form.elements.namedItem("message");
-    if (business instanceof HTMLInputElement) business.value = "";
-    if (message instanceof HTMLTextAreaElement) message.value = "";
-    window.setTimeout(() => setSent(false), 6000);
+    const formData = new FormData(form);
+    const text = (key: string) => String(formData.get(key) ?? "").trim();
+    const parseJson = (key: string): Record<string, unknown> | null => {
+      const raw = formData.get(key);
+      if (typeof raw !== "string" || !raw.trim()) return null;
+      try {
+        const parsed: unknown = JSON.parse(raw);
+        return parsed && typeof parsed === "object"
+          ? (parsed as Record<string, unknown>)
+          : null;
+      } catch {
+        return null;
+      }
+    };
+
+    setSending(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: text("name"),
+          contact: text("contact"),
+          business: text("business"),
+          message: text("message"),
+          estimate: parseJson("estimate"),
+          studioConfig: parseJson("studio-config"),
+          studioSummary: text("studio-summary"),
+          studioStatus: text("studio-status"),
+          designChoice: text("design-choice"),
+        }),
+      });
+
+      if (!response.ok) {
+        const payload = (await response.json().catch(() => null)) as {
+          error?: string;
+        } | null;
+        throw new Error(payload?.error || "ارسال پیام ناموفق بود.");
+      }
+
+      setSent(true);
+      setName("");
+      setContact("");
+      // The optional fields are uncontrolled. Clearing them individually (instead
+      // of `form.reset()`) keeps the controlled hidden hand-off fields intact for
+      // a follow-up submission.
+      const business = form.elements.namedItem("business");
+      const message = form.elements.namedItem("message");
+      if (business instanceof HTMLInputElement) business.value = "";
+      if (message instanceof HTMLTextAreaElement) message.value = "";
+      window.setTimeout(() => setSent(false), 8000);
+    } catch (submitError) {
+      setError(
+        submitError instanceof Error
+          ? submitError.message
+          : "ارسال پیام ناموفق بود؛ لطفاً دوباره تلاش کنید.",
+      );
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -695,12 +749,26 @@ export function ContactSection() {
               <Button
                 type="submit"
                 variant="default"
-                disabled={!canSubmit}
+                disabled={!canSubmit || sending}
                 className="craft-btn flex h-auto w-full items-center justify-center gap-2 rounded-sm border-[2.5px] border-indigo-ink py-3.5 text-base font-black disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <span>ارسال پیام و هماهنگی گفتگوی رایگان</span>
-                <Send className="size-5" />
+                <span>
+                  {sending
+                    ? "در حال ارسال و ثبت در کارگاه…"
+                    : "ارسال پیام و هماهنگی گفتگوی رایگان"}
+                </span>
+                <Send className={sending ? "size-5 animate-pulse" : "size-5"} />
               </Button>
+
+              {error ? (
+                <p
+                  role="alert"
+                  aria-live="assertive"
+                  className="rounded-sm border-[2px] border-coral bg-coral/10 p-3 text-center text-xs font-bold text-coral-dark"
+                >
+                  {error} اگر تکرار شد، مستقیم در تلگرام پیام دهید.
+                </p>
+              ) : null}
 
               {!canSubmit ? (
                 <p className="text-center text-[11px] font-bold text-coral">
@@ -711,8 +779,9 @@ export function ContactSection() {
 
               {sent ? (
                 <div className="rounded-sm border-[2px] border-teal-craft bg-teal-light p-3 text-center text-sm font-bold text-teal-craft">
-                  ✓ پیام شما با مهر کارگاه دریافت شد! ظرف ۲ ساعت آینده جهت
-                  هماهنگی جلسه با شما تماس می‌گیرم.
+                  ✓ پیام شما با مهر کارگاه دریافت شد و در صندوق درخواست‌های
+                  کنسول ثبت شد. ظرف ۲ ساعت آینده جهت هماهنگی جلسه با شما تماس
+                  می‌گیرم.
                   {attachSummary ? (
                     <span className="mt-1 block text-[11px] font-black">
                       {themeTone === "custom"
