@@ -151,10 +151,10 @@ export const ARCHETYPES: Archetype[] = [
   },
   {
     id: "components",
-    label: "کامپوننت‌ها و ویجت‌ها",
-    shortLabel: "کامپوننت",
-    description: "گالری فرم‌ها، بازخورد، جدول و نمودارها",
-    demoHost: "ui.demo-kodology.ir",
+    label: "المان‌های خام",
+    shortLabel: "المان‌ها",
+    description: "کاتالوگ تایپوگرافی، فرم، بازخورد، داده و زمان‌بندی",
+    demoHost: "elements.demo-kodology.ir",
   },
 ];
 

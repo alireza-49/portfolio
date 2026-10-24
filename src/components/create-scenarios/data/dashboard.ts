@@ -5,6 +5,8 @@
  * render identical charts (no `Math.random`, no effects).
  */
 
+import { formatNumber } from "../format";
+
 export type RangeId = "7d" | "30d" | "12m";
 
 export const RANGES: { id: RangeId; label: string }[] = [
@@ -34,11 +36,18 @@ export type DashboardRange = {
     previous: number;
     orders: number;
   }[];
+  /**
+   * Period-level comparison block. Revenue and order totals are summed from the
+   * rows above, so only the figures that cannot be derived live here — every
+   * KPI delta on the canvas is computed from this block.
+   */
   summary: {
-    revenue: number;
-    orders: number;
     visitors: number;
     conversion: number;
+    previousConversion: number;
+    churn: number;
+    previousChurn: number;
+    previousOrders: number;
   };
 };
 
@@ -74,7 +83,14 @@ export const DASHBOARD_RANGES: Record<RangeId, DashboardRange> = {
         orders: Math.round(120 + noise(`ord-7-${index}`) * 90),
       };
     }),
-    summary: { revenue: 386, orders: 1284, visitors: 18240, conversion: 3.8 },
+    summary: {
+      visitors: 18240,
+      conversion: 3.8,
+      previousConversion: 4.2,
+      churn: 4.1,
+      previousChurn: 4.6,
+      previousOrders: 1035,
+    },
   },
   "30d": {
     id: "30d",
@@ -89,10 +105,12 @@ export const DASHBOARD_RANGES: Record<RangeId, DashboardRange> = {
       };
     }),
     summary: {
-      revenue: 1740,
-      orders: 5420,
       visitors: 76200,
       conversion: 4.1,
+      previousConversion: 3.9,
+      churn: 3.8,
+      previousChurn: 4.0,
+      previousOrders: 4620,
     },
   },
   "12m": {
@@ -110,10 +128,12 @@ export const DASHBOARD_RANGES: Record<RangeId, DashboardRange> = {
       };
     }),
     summary: {
-      revenue: 6120,
-      orders: 21840,
       visitors: 268400,
       conversion: 4.4,
+      previousConversion: 3.6,
+      churn: 3.4,
+      previousChurn: 4.1,
+      previousOrders: 14740,
     },
   },
 };
@@ -169,7 +189,7 @@ export const HEATMAP_CELLS = HEATMAP_DAYS.flatMap((day, dayIndex) =>
       row: day,
       column: hour,
       intensity: Math.max(0.04, Math.min(1, raw)),
-      label: `${day} ساعت ${hour} — ${Math.round(raw * 180)} بازدید`,
+      label: `${day} ساعت ${hour} — ${formatNumber(Math.round(raw * 180))} بازدید`,
     };
   }),
 );
@@ -228,7 +248,7 @@ const CUSTOMER_NAMES = [
 
 const CITIES = ["تهران", "اصفهان", "شیراز", "تبریز", "مشهد", "رشت", "کرج"];
 const PLANS = ["اشتراک سالانه", "اشتراک ماهانه", "بستهٔ سازمانی", "خرید تک‌نوبت"];
-const STATUSES: OrderStatus[] = [
+export const ORDER_STATUSES: OrderStatus[] = [
   "پرداخت‌شده",
   "ارسال‌شده",
   "در انتظار",
@@ -242,9 +262,21 @@ export const ORDERS: DashboardOrder[] = CUSTOMER_NAMES.map((customer, index) => 
   city: CITIES[index % CITIES.length],
   plan: PLANS[index % PLANS.length],
   amount: 240000 + Math.round(noise(`amt-${index}`) * 46) * 100000,
-  status: STATUSES[index % STATUSES.length],
+  status: ORDER_STATUSES[index % ORDER_STATUSES.length],
   channel: CHANNEL_NAMES[index % CHANNEL_NAMES.length],
   date: `۱۴۰۵/۰${(index % 7) + 1}/۰${(index % 9) + 1}`,
+}));
+
+/**
+ * Revenue split by subscription plan, derived from `ORDERS` so the billing
+ * donut can never disagree with the table underneath it.
+ */
+export const PLAN_MIX = PLANS.map((plan) => ({
+  label: plan,
+  value: ORDERS.filter((order) => order.plan === plan).reduce(
+    (sum, order) => sum + order.amount,
+    0,
+  ),
 }));
 
 export const TOP_PAGES = [

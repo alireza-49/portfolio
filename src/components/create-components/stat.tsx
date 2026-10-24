@@ -5,6 +5,11 @@ import { borderChrome, headingType, labelType, monoType, motion } from "./styles
 export type StatDelta = {
   value: string;
   direction?: "up" | "down" | "flat";
+  /**
+   * Which direction counts as a good outcome. Defaults to `up`; metrics where
+   * falling is the win (churn, wait time) pass `down` so the chip turns green.
+   */
+  good?: "up" | "down";
 };
 
 export type StatProps = {
@@ -34,12 +39,13 @@ export function Stat({
   className,
 }: StatProps) {
   const direction = delta?.direction ?? "up";
+  const goodDirection = delta?.good ?? "up";
   const deltaTone =
-    direction === "up"
-      ? "bg-[var(--cc-success)] text-[color:var(--cc-success-foreground)]"
-      : direction === "down"
-        ? "bg-[var(--cc-danger)] text-[color:var(--cc-danger-foreground)]"
-        : "bg-[var(--cc-muted)] text-[color:var(--cc-muted-foreground)]";
+    direction === "flat"
+      ? "bg-[var(--cc-muted)] text-[color:var(--cc-muted-foreground)]"
+      : direction === goodDirection
+        ? "bg-[var(--cc-success)] text-[color:var(--cc-success-foreground)]"
+        : "bg-[var(--cc-danger)] text-[color:var(--cc-danger-foreground)]";
 
   return (
     <div

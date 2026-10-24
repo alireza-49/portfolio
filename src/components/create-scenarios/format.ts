@@ -9,3 +9,12 @@ export function formatNumber(value: number): string {
 export function formatToman(value: number): string {
   return `${numberFormatter.format(value)} تومان`;
 }
+
+const percentFormatter = new Intl.NumberFormat("fa-IR", {
+  maximumFractionDigits: 1,
+});
+
+/** Persian digits with the Persian percent sign (`۴٫۱٪`). */
+export function formatPercent(value: number): string {
+  return `${percentFormatter.format(value)}٪`;
+}

@@ -14,8 +14,8 @@ A Persian (RTL) portfolio site with a live **theme studio** at `/create` ("اس�
 Stack: Next.js 16 App Router, React 19, TypeScript, Tailwind CSS v4, `@base-ui/react`, `lucide-react`.
 
 `/create` is a preview canvas: the studio's top bar picks an **archetype** (`landing`, `ecommerce`,
-`clinic`, `dashboard`, `components` — landing is the default, the component gallery sits last), the
-left sidebar picks a **style preset** (13: `nova`, `corporate`, `editorial`, `swiss`, `blueprint`,
+`clinic`, `dashboard`, `components` — landing is the default, the «المان‌های خام» catalog sits last),
+the left sidebar picks a **style preset** (13: `nova`, `corporate`, `editorial`, `swiss`, `blueprint`,
 `terminal`, `glass`, `edtech`, `terracotta`, `zine`, `memphis`, `manga`, `steampunk`), palette,
 radius, font and icon library; the canvas re-skins instantly and can export CSS/Tailwind tokens.
 
@@ -231,6 +231,48 @@ Rebuilt the two canvas scenarios and added the primitives they needed:
   `BookingSlip` celebration (popping stamp, clipped confetti burst, barcode light sweep). New
   keyframes live in `scenes.css` (`sc-beat`, `sc-scan`, `sc-breathe`) and are parked in both
   `prefers-reduced-motion` blocks — `sc-scan` and the confetti join the `opacity: 0` group.
+- **The `components` scenario became «المان‌های خام».** The label/short label/description/demo host in
+  `ARCHETYPES` are «المان‌های خام» / «المان‌ها» / `elements.demo-kodology.ir`, and the tour string
+  follows. The 480-line `ComponentsView` left `create-studio-canvas.tsx` for
+  `create-scenarios/elements-gallery.tsx`, so the canvas is back to chrome only (239 lines, three
+  imported primitives). The gallery is now a numbered specimen sheet — ۰۱ تایپوگرافی (a new stop that
+  prints the preset's display/body/label/mono voices), ۰۲ اکشن‌ها, ۰۳ فرم, ۰۴ انتخاب, ۰۵ بازخورد, ۰۶
+  داده و ناوبری, ۰۷ زمان‌بندی و نمودار — with a jump bar (buttons, `scrollIntoView`, no URL hash), a
+  `TokenChip` line per stop naming the `--cc-*` variables it consumes, `Reveal` per section, and
+  counters derived from the `PRIMITIVES`/`SECTIONS` arrays. The FAQ accordion is a visible card (it
+  used to hide under a «تنظیمات» tab), Lucide imports became `<Icon>`, `font-mono` became `monoType`,
+  `Progress` lost `showValue`, every figure prints through `formatNumber`, and the English
+  `Live data` / `Recharts + SVG` badges were translated.
+- **The dashboard is a real multi-page app.** `create-scenarios/dashboard/` holds the pages —
+  `pages.ts` (the ordered `DASHBOARD_PAGES` metadata: label, eyebrow, description, icon and a
+  decorative `path`), `overview-page.tsx`, `sales-page.tsx`, `customers-page.tsx`, `billing-page.tsx`,
+  `infra-page.tsx`, `settings-page.tsx` — plus `section-heading.tsx` (`SectionHeading` +
+  `DashboardPage`), `use-dashboard-data.ts`, `orders-panel.tsx`, `infra-panel.tsx` and
+  `settings-panel.tsx`. `analytics-dashboard.tsx` is only the shell (app bar + rail + one page +
+  footer, 237 lines): the rail is navigation, so picking an item swaps the body inside a `Swap`
+  (`initial={false}` so the prerender matches the first paint, `min-h-[24rem]` so the footer doesn't
+  jump during the exit) and resets `[data-preview-viewport]` to the top — there is no scroll-spy and
+  no anchor list any more. The app bar keeps brand + breadcrumb (`آترین آنالیتیکس / صفحه` plus a
+  decorative `dir="ltr"` path chip) + range + live + refresh + avatar, while search, the status
+  filter and CSV live in `OrdersPanel`, where they actually filter something. `range`/`live`/`tick`
+  stay in the shell so the 8 s live tick and the chosen period survive page changes; page-local view
+  state (sort, paging, metric) resets when you leave a page, like a route change. Page changes are
+  announced by a visually hidden `role='status'`, and the rail marks the active page with
+  `aria-current='page'`.
+  Pages: نمای کلی (KPIs + alerts + revenue trend + traffic + goal), فروش (funnel + plan-mix donut +
+  channels + forecast), مشتریان (heatmap + satisfaction gauge + top pages), پرداخت‌ها (orders),
+  زیرساخت (health + nodes + team activity) and تنظیمات (a real preferences card). The old controls
+  work: CSV export (Blob + BOM, filtered rows or the selection), a real live interval, and the
+  settings page's range select drives the same state as the app bar.
+- **Dashboard numbers are derived, not typed.** `DASHBOARD_RANGES[*].summary` now carries
+  `previousConversion` / `churn` / `previousChurn` / `previousOrders`, so every KPI delta is computed
+  (`pctChange` in `use-dashboard-data.ts`), the traffic donut centre reads `TRAFFIC_TOTAL`, the
+  organic share comes from `SIGNUP_WEEKS`, and the billing mix is `PLAN_MIX` (derived from `ORDERS`).
+  `format.ts` gained `formatPercent`, `data/dashboard.ts` exports `ORDER_STATUSES` for the filter, and
+  `filterOrders()` inside `orders-panel.tsx` is the panel's only filter (the card counter and the
+  table share it). Every `font-mono` became `monoType`, heatmap aria labels and uptime/latency/node
+  load print Persian digits, `<th>` carries `aria-sort`, and `Stat` gained `delta.good` so a falling
+  churn chip turns green instead of red.
 
 
 ## Studio defaults on first paint
@@ -360,6 +402,23 @@ the font upload form collapsed); uploaded fonts are *not* deleted from IndexedDB
   hour and support phone come from `SLOT_CAPACITY` / `CLINIC_PRICING` / `CANCEL_WINDOW_HOURS` /
   `CLINIC_STATUS`; a section must not retype them. Selecting a doctor goes through `selectDoctor()`
   so an online visit can never stick to a doctor who does not offer one.
+- Dashboard pages are data: a new page means one `DASHBOARD_PAGES` entry in `dashboard/pages.ts`
+  (id, label, eyebrow, description, icon, decorative path) plus a component that renders
+  `<DashboardPage page={…}>`, which writes the `aria-labelledby` target. The shell renders exactly one
+  page — never reintroduce a scroll-spy, anchor ids or `scroll-mt`; the rail is navigation and
+  `selectPage()` resets `[data-preview-viewport]` to the top. Keep `range`/`live`/`tick` in the shell
+  (`useDashboardData`) and page-local state (sort, paging, metric, draft filters) in the page.
+  Dashboard numbers are derived too: `DASHBOARD_RANGES[*].summary` holds only what cannot be summed
+  from the rows (`previousOrders`, conversion/churn current + previous), `PLAN_MIX` comes from
+  `ORDERS`, `TRAFFIC_TOTAL`/`ORGANIC_SHARE` from their series, and `filterOrders()` in
+  `dashboard/orders-panel.tsx` is the only filter — its counter and the table call it, so they can
+  never disagree. Keep CSV export inside the panel and Persian digits on screen — the CSV itself
+  stays machine-readable.
+- «المان‌های خام» is a catalog, not a demo page: `create-scenarios/elements-gallery.tsx` owns the stops
+  and its `PRIMITIVES`/`SECTIONS` arrays drive both the jump bar and the counters, so a new primitive
+  means one entry in each plus its section. Each `Specimen` names the `--cc-*` tokens it consumes —
+  that hint is the point of the page, so don't drop it when reordering. No English eyebrow/badges and
+  no `font-mono`/raw Lucide imports here (it is still a scenario).
 - The shop hero is a **bounded stage**, not a stack of blocks: the art column is
   `@3xl:h-[clamp(360px,44vh,470px)]` (so the first screen holds the whole hero plus the trust band),
   the copy column uses `justify-center` and owns no `mt-auto` spacer, and `HeroOffer` is absolutely

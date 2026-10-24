@@ -48,23 +48,31 @@ export function Reveal({
 }
 
 /**
- * Cross-fades content that is swapped by state (weekday, testimonial). The
- * first render matches the prerendered HTML (`initial={false}` on the
- * presence), later swaps animate.
+ * Cross-fades content that is swapped by state (weekday, testimonial, dashboard
+ * page). The first render matches the prerendered HTML (`initial={false}` on the
+ * presence), later swaps animate. `onExitComplete` lets a caller react exactly
+ * when the outgoing child is gone — the dashboard uses it to reset its scroller
+ * after the page swap, not before it.
  */
 export function Swap({
   children,
   swapKey,
   className,
+  onExitComplete,
 }: {
   children: ReactNode;
   swapKey: string | number;
   className?: string;
+  onExitComplete?: () => void;
 }) {
   const reduce = useReducedMotion();
 
   return (
-    <AnimatePresence mode='wait' initial={false}>
+    <AnimatePresence
+      mode='wait'
+      initial={false}
+      onExitComplete={onExitComplete}
+    >
       <motion.div
         key={swapKey}
         className={className}
