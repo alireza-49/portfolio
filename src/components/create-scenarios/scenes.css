@@ -350,6 +350,37 @@
   animation-delay: var(--sc-delay, 0s);
 }
 
+/* ------------------------------------------------------- clinic motion */
+/*
+ * Added with the clinic rebuild: a heartbeat, a monitor playhead sweeping the
+ * ECG trace and a slow breathing halo behind it. Transform/opacity only, so
+ * the SVG keeps its token colours in every preset.
+ */
+
+.sc-beat,
+.sc-scan,
+.sc-breathe {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* Double thump of a heart monitor, not a linear pulse. */
+.sc-beat {
+  animation: sc-beat var(--sc-duration, 2.6s) ease-out infinite;
+  animation-delay: var(--sc-delay, 0s);
+}
+
+/* Playhead sweeping the monitor; `--sc-run-x` is the travel distance. */
+.sc-scan {
+  animation: sc-scan var(--sc-duration, 4.4s) ease-in-out infinite;
+  animation-delay: var(--sc-delay, 0s);
+}
+
+.sc-breathe {
+  animation: sc-breathe var(--sc-duration, 7s) ease-in-out infinite;
+  animation-delay: var(--sc-delay, 0s);
+}
+
 /*
  * HTML chips floating over an illustration. `.sc-float` is SVG-shaped
  * (`transform-box: fill-box`), so overlays get their own class.
@@ -396,7 +427,10 @@
   .sc-caret,
   .sc-wiggle,
   .sc-rise,
-  .sc-sew {
+  .sc-sew,
+  .sc-beat,
+  .sc-scan,
+  .sc-breathe {
     animation: none !important;
     transform: none !important;
   }
@@ -417,7 +451,8 @@
   /* These only exist as motion, so park them instead of freezing mid-air. */
   .sc-cursor,
   .sc-signal,
-  .sc-burst {
+  .sc-burst,
+  .sc-scan {
     opacity: 0 !important;
     animation: none !important;
   }
@@ -741,6 +776,58 @@
   }
   75% {
     transform: translate(9px, -8px) rotate(7deg);
+  }
+}
+
+/* ---------------------------------------------------- clinic keyframes */
+
+@keyframes sc-beat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  10% {
+    transform: scale(1.42);
+  }
+  20% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.24);
+  }
+  44% {
+    transform: scale(1);
+  }
+}
+
+@keyframes sc-scan {
+  0%,
+  100% {
+    transform: translateX(0);
+    opacity: 0.12;
+  }
+  8%,
+  40% {
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateX(var(--sc-run-x, 190px));
+    opacity: 0.55;
+  }
+  92% {
+    opacity: 0.12;
+  }
+}
+
+@keyframes sc-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.045);
+    opacity: 1;
   }
 }
 

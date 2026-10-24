@@ -204,6 +204,33 @@ Rebuilt the two canvas scenarios and added the primitives they needed:
   for bag lines, used inside `<AnimatePresence initial={false}>`) and `Bump` (a spring pop on the
   header count badges, keyed by the value). The icon registry also gained `truck` across all three
   libraries.
+- **Clinic scenario polished (`clinic`).** The «نوبت‌های من» table is gone; the freed `1.25fr` slot
+  now holds «بیمه‌های طرف قرارداد» (coverage bars from `INSURANCES`) so the FAQ keeps its narrow
+  column and the section rhythm is unchanged. The wizard is one `Swap` (`step-N` / `done`) instead
+  of four sibling ternaries, and the slot grid cross-fades on `${doctorId}-${date}`. CTAs finally
+  work: the header nav and the new `@3xl:hidden` anchor row are real `#reserve`/`#specialists`/
+  `#services`/`#reviews` links, `startBooking()` clears a finished booking before scrolling to
+  `#reserve`, `bookDoctor()` / `bookOnline()` jump straight to the time step, and service rows,
+  the doctor video buttons and the footer columns are wired too. Picking a doctor without online
+  visits forces `mode` back to in-person, a day with no free slots gets an empty state plus
+  «نزدیک‌ترین روز آزاد», and the review step reports the real completion ratio instead of 100 %.
+- **Clinic data is single-source now.** `buildAvailability()` derives every day from
+  `freeSlotCount()` (so the calendar can never promise more slots than the grid shows) and caches
+  the 120-day map per doctor; `bookingCode()` replaces the old `appointments.length` counter with a
+  deterministic FNV code in Persian digits; `nextFreeDate()` feeds the hero chip and the empty-day
+  action. `CLINIC_STATUS` (opening time, price-list date, phone), `CLINIC_PRICING` (online ratio,
+  first-visit fee/minutes, tax), `CANCEL_WINDOW_HOURS`, `SLOT_CAPACITY` and the four
+  `CLINIC_GUARANTEES` replace numbers that were retyped across the hero, form, FAQ and footer;
+  `CLINIC_TRUST` derives the doctor count from `DOCTORS`. Every `font-mono` became `monoType`, the
+  numeric inputs accept Arabic-Indic digits too, and the tables/anchors got labels and live regions.
+- **Clinic motion.** Sections ride on `Reveal`; doctor cards use `Lift`; the testimonial quote,
+  the wizard body and the slot grid use `Swap`; the free-slot badge and the running total use
+  `Bump`. `clinic-art.tsx` gained `preserveAspectRatio='xMidYMid slice'` (the 560×440 hero used to
+  letterbox inside its panel), a `sc-scan` playhead on the ECG monitor, a `sc-beat` double-thump on
+  the pulse dot, a `sc-breathe` halo, a pulsing map pin with a travelling route dash, and a
+  `BookingSlip` celebration (popping stamp, clipped confetti burst, barcode light sweep). New
+  keyframes live in `scenes.css` (`sc-beat`, `sc-scan`, `sc-breathe`) and are parked in both
+  `prefers-reduced-motion` blocks — `sc-scan` and the confetti join the `opacity: 0` group.
 
 
 ## Studio defaults on first paint
@@ -326,6 +353,13 @@ the font upload form collapsed); uploaded fonts are *not* deleted from IndexedDB
   `SHOP_REVIEW_STATS`, and the derived `PRICE_FLOOR` / `PRICE_CEILING`). Sections must not retype a
   shipping threshold, review count or price ceiling — that was the main source of drift in the old
   page. Filters travel as one `ShopFilters` object; never add a nineteenth prop to the grid.
+- The clinic's numbers live in `data/clinic.ts` too: `buildAvailability()` must keep deriving from
+  `slotsFor()`/`freeSlotCount()` (and stay cached per doctor) so the calendar and the slot grid
+  always agree, and `bookingCode()` is the only way to mint a tracking code — never a counter based
+  on a rendered list. Capacity, online discount, first-visit fee, tax, cancellation window, opening
+  hour and support phone come from `SLOT_CAPACITY` / `CLINIC_PRICING` / `CANCEL_WINDOW_HOURS` /
+  `CLINIC_STATUS`; a section must not retype them. Selecting a doctor goes through `selectDoctor()`
+  so an online visit can never stick to a doctor who does not offer one.
 - The shop hero is a **bounded stage**, not a stack of blocks: the art column is
   `@3xl:h-[clamp(360px,44vh,470px)]` (so the first screen holds the whole hero plus the trust band),
   the copy column uses `justify-center` and owns no `mt-auto` spacer, and `HeroOffer` is absolutely

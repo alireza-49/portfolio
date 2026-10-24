@@ -8,7 +8,9 @@ import { DotPattern, GridPattern, Sparkle } from "./shared";
 /**
  * Hero illustration for the clinic scenario: a calm reception room with a
  * live ECG trace, a reception desk and floating booking chips. Painted with
- * `sc-*` token classes so every preset re-colours the scene.
+ * `sc-*` token classes so every preset re-colours the scene. Motion: the trace
+ * draws itself, a playhead sweeps the monitor, the admission dot beats and the
+ * halo behind the room breathes.
  */
 export function ClinicScene({ className }: { className?: string }) {
   const dots = `clinic-dots-${useId().replace(/:/g, "")}`;
@@ -17,6 +19,7 @@ export function ClinicScene({ className }: { className?: string }) {
   return (
     <svg
       viewBox='0 0 560 440'
+      preserveAspectRatio='xMidYMid slice'
       className={cn(sc.art, className)}
       aria-hidden='true'
       focusable='false'
@@ -28,7 +31,7 @@ export function ClinicScene({ className }: { className?: string }) {
 
       <rect width='560' height='440' className={sc.paper} />
       <rect width='560' height='440' fill={`url(#${dots})`} />
-      <circle cx='300' cy='150' r='132' className={sc.brandFaint} />
+      <circle cx='300' cy='150' r='132' className={cn(sc.brandFaint, sc.breathe)} />
       <path d='M0 352h560' className={sc.inkLine} strokeWidth={2} opacity={0.25} />
 
       <rect
@@ -69,9 +72,15 @@ export function ClinicScene({ className }: { className?: string }) {
         />
         <path d='M266 100h180' className={sc.stitch} strokeDasharray='3 8' />
         <g className={sc.pulse}>
-          <circle cx='440' cy='100' r='4' className={sc.danger} />
           <circle cx='440' cy='100' r='9' className={sc.danger} opacity={0.22} />
+          <circle cx='440' cy='100' r='4' className={cn(sc.danger, sc.beat)} />
         </g>
+        <path
+          d='M266 84v52'
+          className={cn(sc.brandLine, sc.scan)}
+          strokeWidth={1.6}
+          style={{ "--sc-run-x": "182px" } as CSSProperties}
+        />
         <path d='M398 142h52' className={sc.hairline} />
       </g>
 
@@ -219,6 +228,7 @@ export function ClinicMap({ className }: { className?: string }) {
   return (
     <svg
       viewBox='0 0 320 150'
+      preserveAspectRatio='xMidYMid slice'
       className={cn(sc.art, className)}
       aria-hidden='true'
       focusable='false'
@@ -253,8 +263,21 @@ export function ClinicMap({ className }: { className?: string }) {
         />
       ))}
       <path d='M120 74h66' className={sc.brandLine} fill='none' />
+      <path
+        d='M24 120 L100 74 H186'
+        className={cn(sc.brandLine, sc.travel)}
+        fill='none'
+        strokeWidth={2}
+        style={{ "--sc-dash-run": "16 300" } as CSSProperties}
+      />
       <g>
         <circle cx='186' cy='74' r='16' className={sc.brandFaint} />
+        <circle
+          cx='186'
+          cy='74'
+          r='14'
+          className={cn(sc.brandFaint, sc.signal)}
+        />
         <circle cx='186' cy='74' r='9' className={sc.brand} />
         <circle cx='186' cy='74' r='3.4' className={sc.surface} />
         <circle
@@ -266,13 +289,22 @@ export function ClinicMap({ className }: { className?: string }) {
           strokeDasharray='2 4'
         />
       </g>
-      <Sparkle transform='translate(292 20) scale(0.4)' className={sc.accent} />
+      <Sparkle
+        transform='translate(292 20) scale(0.4)'
+        className={cn(sc.accent, sc.pop)}
+      />
     </svg>
   );
 }
 
-/** Faux printed appointment slip shown after a successful booking. */
+/**
+ * Faux printed appointment slip shown after a successful booking. The stamp
+ * pops, a short confetti burst celebrates it and a light sweep crosses the
+ * barcode — all CSS classes, so the preset still owns every colour.
+ */
 export function BookingSlip({ code }: { code: string }) {
+  const clip = `clinic-slip-${useId().replace(/:/g, "")}`;
+
   return (
     <svg
       viewBox='0 0 240 160'
@@ -280,6 +312,11 @@ export function BookingSlip({ code }: { code: string }) {
       aria-hidden='true'
       focusable='false'
     >
+      <defs>
+        <clipPath id={clip}>
+          <rect x='10' y='8' width='220' height='144' rx='8' />
+        </clipPath>
+      </defs>
       <rect
         x='10'
         y='8'
@@ -288,9 +325,39 @@ export function BookingSlip({ code }: { code: string }) {
         rx='8'
         className={cn(sc.surface, sc.outlined)}
       />
+      <g clipPath={`url(#${clip})`}>
+        {Array.from({ length: 8 }).map((_, index) => {
+          const angle = (index / 8) * Math.PI * 2;
+          return (
+            <rect
+              key={index}
+              x={196 + Math.cos(angle) * 27}
+              y={26 + Math.sin(angle) * 27}
+              width='3'
+              height='3'
+              rx='1'
+              className={cn(index % 2 === 0 ? sc.brand : sc.accent, sc.burst)}
+              style={
+                {
+                  "--sc-delay": `${index * 0.14}s`,
+                  "--sc-duration": "6.4s",
+                } as CSSProperties
+              }
+            />
+          );
+        })}
+      </g>
+      <g className={sc.pop}>
+        <circle cx='196' cy='26' r='13' className={sc.success} />
+        <path
+          d='M190 26l4 4 8-9'
+          className={sc.surface}
+          strokeWidth={2.2}
+          fill='none'
+        />
+      </g>
       <path d='M10 40h220' className={sc.hairline} />
       <rect x='26' y='20' width='74' height='9' rx='4.5' className={sc.brandSoft} />
-      <rect x='176' y='18' width='38' height='12' rx='4' className={sc.brand} />
       <path d='M28 58h96M28 70h64M28 88h78M28 100h48' className={sc.hairline} />
       <path
         d='M150 58h62M150 70h44M150 88h58M150 100h36'
@@ -308,6 +375,16 @@ export function BookingSlip({ code }: { code: string }) {
           opacity={0.75}
         />
       ))}
+      <g clipPath={`url(#${clip})`}>
+        <rect
+          x='26'
+          y='128'
+          width='4'
+          height='16'
+          className={cn(sc.brandSoft, sc.shimmer)}
+          style={{ "--sc-duration": "5.6s" } as CSSProperties}
+        />
+      </g>
       <rect x='176' y='124' width='22' height='22' rx='3' className={sc.muted} />
       <path
         d='M180 130h4v4h-4zM188 130h4v4h-4zM180 138h4v4h-4zM190 140h3v3h-3z'

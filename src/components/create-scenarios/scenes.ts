@@ -67,4 +67,8 @@ export const sc = {
   sew: "sc-sew",
   floatChip: "sc-floatChip",
   track: "sc-track",
+  /* Clinic motion: heartbeat, monitor playhead, breathing halo. */
+  beat: "sc-beat",
+  scan: "sc-scan",
+  breathe: "sc-breathe",
 } as const;
