@@ -22,6 +22,7 @@ import {
   PALETTE_PRESETS,
   ROLE_IDS,
   normalizeHex,
+  paletteForStyle,
   paletteLabel,
   type PaletteChartId,
   type PaletteNeutralId,
@@ -62,7 +63,9 @@ export type StudioConfig = {
 export const DEFAULT_STUDIO_CONFIG: StudioConfig = {
   archetype: "landing",
   styleId: "nova",
-  palette: DEFAULT_PALETTE,
+  // Derived from the default style, so the first paint can never show a
+  // palette that the style picker would immediately replace.
+  palette: paletteForStyle("nova"),
   radius: 4,
   shadow: DEFAULT_SHADOW,
   font: "vazir",

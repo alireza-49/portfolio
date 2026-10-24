@@ -91,7 +91,7 @@ export function SettingsPanel({
                 value: item.id,
                 label: item.label,
               }))}
-              className='h-8 text-[10px]'
+              size='sm'
             />
             <span className='text-[9px] text-[color:var(--cc-muted-foreground)]'>
               همین بازه در نوار بالا هم انتخاب شده است.

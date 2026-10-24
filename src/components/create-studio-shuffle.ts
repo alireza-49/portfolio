@@ -14,12 +14,7 @@ import {
   type ShadowChoice,
   type StyleId,
 } from "./create-studio-config";
-import {
-  PALETTE_PRESETS,
-  activePalettePresetId,
-  studioPaletteFromPreset,
-  type PalettePreset,
-} from "./create-studio-palette";
+import { paletteForStyle } from "./create-studio-palette";
 import type { StudioConfig } from "./create-studio-store";
 
 /**
@@ -39,18 +34,23 @@ export type StudioRollOptions = {
 };
 
 /**
- * One roll of the dice: style, ready palette, font, elevation, radius and the
- * icon setup (library + size / weight / tone).
+ * One roll of the dice: style, the palette that style matches, font, elevation,
+ * radius and the icon setup (library + size / weight / tone).
  *
  * Two rules keep the button useful:
  *
  * 1. Every dimension is rerolled, and every dimension *skips the value already
  *    on screen*, so a press always repaints something visible.
  * 2. Each dimension stays inside the values the sidebar can actually render:
- *    ready palettes own the five roles (neutral/chart overrides are dropped by
- *    `studioPaletteFromPreset`, so the new palette reads clean), fonts cover
- *    every built-in `FONTS` entry plus uploaded faces, and the shadow pool
- *    includes «پیرو سبک» so a roll may land on a preset signature.
+ *    fonts cover every built-in `FONTS` entry plus uploaded faces, and the
+ *    shadow pool includes «پیرو سبک» so a roll may land on a preset signature.
+ *
+ * The palette is not rolled on its own: it comes from `paletteForStyle()`, the
+ * same map a style pick uses. A rolled theme is therefore always a coherent
+ * style + palette pair (mint under the terminal, brass under steampunk) instead
+ * of a random brand colour fighting the design language. Ready palettes own the
+ * five roles, so stale neutral/chart overrides are dropped by
+ * `studioPaletteFromPreset` and the new style keeps its own neutrals and ramp.
  *
  * Display faces are part of the font pool on purpose: the dice explores the
  * whole typography list, including the faces whose Persian glyphs read rough in
@@ -74,15 +74,6 @@ export function rollStudioConfig(
     dice,
   );
 
-  const currentPalettePreset = PALETTE_PRESETS.find(
-    (preset) => preset.id === activePalettePresetId(config.palette),
-  );
-  const palettePreset = pickDifferent<PalettePreset>(
-    PALETTE_PRESETS,
-    currentPalettePreset,
-    dice,
-  );
-
   const shadowOptions: ShadowChoice[] = [
     "style",
     ...SHADOWS.map((option) => option.id),
@@ -96,7 +87,9 @@ export function rollStudioConfig(
   return {
     ...config,
     styleId,
-    palette: studioPaletteFromPreset(palettePreset),
+    // Follows the rolled style; see the note above. Neutral/chart overrides are
+    // style-scoped, so a roll starts the new style on its own tokens.
+    palette: paletteForStyle(styleId),
     radius: pickDifferent(
       RADII.map((option) => option.value),
       config.radius,

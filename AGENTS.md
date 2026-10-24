@@ -41,16 +41,18 @@ scenario.
   `./style-presets` import surface. Each preset owns its chart ramp, its display voice and one
   structural signature in `styles.css` (rings, ticks, gradient rule, arches, tape tilt, confetti,
   screentone/panel cut, brass rivets, glass blur). The sidebar groups the tiles and previews each
-  style with its own heading face and a three-dot palette; picking a style also syncs radius, body
-  font (`STYLE_FONTS`) and the canvas chip label. The dice rerolls the whole look through
+  style with its own heading face and a three-dot palette; picking a style also syncs its matched
+  palette (`STYLE_PALETTES`), radius, body font (`STYLE_FONTS`) and the canvas chip label. The dice
+  rerolls the whole look through
   `create-studio-shuffle.ts`, so there is no hand-maintained combination list to go stale.
 
 Rebuilt the two canvas scenarios and added the primitives they needed:
 
 - **The dice rerolls the whole theme.** «بر زدن و ترکیب تصادفی تم» no longer only swaps the style
   and the brand swatch: it calls `rollStudioConfig()` from `create-studio-shuffle.ts`, which picks
-  a new style, a ready palette, a face from the whole typography list (`FONTS` + uploaded font
-  ids), an elevation (including «پیرو سبک»), a radii step and a whole icon setup (library + size /
+  a new style, that style's matched palette (`paletteForStyle`), a face from the whole typography
+  list (`FONTS` + uploaded font ids), an elevation (including «پیرو سبک»), a radii step and a whole
+  icon setup (library + size /
   weight / tone). Every dimension skips the value already on screen, so each press is visibly
   different; the palette is rebuilt
   through `studioPaletteFromPreset`, dropping stale neutral/chart overrides; the scenario is left
@@ -281,8 +283,9 @@ Rebuilt the two canvas scenarios and added the primitives they needed:
 («سفال کهربایی» — primary `#e76f51`), radius `4`, shadow «پیرو سبک»
 (`DEFAULT_SHADOW`), body face `vazir`, the `google` icon set and
 `DEFAULT_ICON_STYLE` (`size: md`, `weight: regular`, `tone: inherit`). Picking a
-style overwrites radius and body font from `STYLE_FONTS` and puts the shadow
-back on «پیرو سبک»; palette, radius, shadow, font and icon library stay
+style overwrites the palette with that style's matched pair (`paletteForStyle`,
+e.g. terminal → «نعناع نئونی»), radius and body font from `STYLE_FONTS`, and puts
+the shadow back on «پیرو سبک»; palette, radius, shadow, font and icon library stay
 user-controlled afterwards — the dice can reroll all six at once.
 `buildThemeSnippet` always exports the resolved
 theme, so a copied snippet reflects the current style + palette + radius +
@@ -370,10 +373,18 @@ the font upload form collapsed); uploaded fonts are *not* deleted from IndexedDB
   `COLOR_TOKENS`, plus `resolvePaletteToken` / `paletteThemeOverrides` when it is derived.
   Ready palettes own roles only; neutrals/charts stay with the style until the visitor overrides
   them, and `resetPaletteToken`/`resetPaletteGroup` are the only ways back.
+- Every style ships with a matching ready palette: `STYLE_PALETTES` (the palette counterpart of
+  `STYLE_FONTS`) maps each `StyleId` onto a `PalettePresetId`, and `paletteForStyle()` is the only
+  way a style pick or a dice roll installs a palette. Styles may share a palette when they share a
+  colour family (nova/terracotta, swiss/manga); the strongly themed ones own theirs (bluebird,
+  neon-mint, blueprint-amber, aurora-cyan, brass-nebula). The sidebar marks the matched tile with a
+  «هم‌سبک» chip, so a visitor who picked another palette can always see the pairing.
 - The dice is data too: `rollStudioConfig()` (`create-studio-shuffle.ts`) returns a fresh
   `StudioConfig`, never mutates the incoming one, and skips the current value in every dimension.
   Keep the scenario out of a roll; fonts cover every `FONTS` entry plus uploaded ids, so the dice
-  explores display faces too (a visitor can still pick a body face from the picker).
+  explores display faces too (a visitor can still pick a body face from the picker). The palette is
+  **derived from the rolled style** (`paletteForStyle`) rather than rolled on its own, so a roll is
+  always a coherent style + palette pair.
 - Colour swatches open the studio's in-page HSV popover (`PaletteColorPicker`, Base UI
   `Popover`), never a native `<input type="color">`: the native dialog is an OS popup and Chrome
   can anchor it off-screen (especially on Wayland). Keep the positioner collision-aware and

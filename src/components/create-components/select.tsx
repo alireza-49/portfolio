@@ -7,6 +7,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type ComponentProps,
   type KeyboardEvent,
 } from "react";
 import { Icon } from "./icon-set";
@@ -19,13 +20,39 @@ export type SelectOption = {
   disabled?: boolean;
 };
 
-export type SelectProps = {
+/** Compact (`sm`) matches an `h-8` toolbar row; `md` is the form control. */
+export type SelectSize = "sm" | "md";
+
+/**
+ * Trigger metrics. `md` grows with the preset's density and type scale; `sm`
+ * pins the height to the 32px toolbar rhythm and scales the label from the
+ * preset's font size, so it still reads like the same design language.
+ */
+const TRIGGER_SIZES: Record<SelectSize, string> = {
+  sm: "h-8 gap-1.5 px-2 py-0 text-[length:calc(var(--cc-font-size)*0.8)]",
+  md: "gap-2 px-[calc(0.75rem*var(--cc-density))] py-[calc(0.5rem*var(--cc-density))] text-[length:var(--cc-font-size)]",
+};
+
+export type SelectProps = Omit<
+  ComponentProps<"button">,
+  | "value"
+  | "defaultValue"
+  | "onChange"
+  | "children"
+  | "type"
+  | "disabled"
+  | "size"
+  | "className"
+  | "id"
+> & {
   options: SelectOption[];
   value?: string;
   defaultValue?: string;
   onValueChange?: (value: string) => void;
   placeholder?: string;
   disabled?: boolean;
+  size?: SelectSize;
+  /** Applied to the wrapper; the trigger itself is `w-full`. */
   className?: string;
   id?: string;
 };
@@ -37,8 +64,10 @@ export function Select({
   onValueChange,
   placeholder = "Select an option",
   disabled = false,
+  size = "md",
   className,
   id,
+  ...props
 }: SelectProps) {
   const [open, setOpen] = useState(false);
   const [internal, setInternal] = useState(defaultValue);
@@ -121,6 +150,7 @@ export function Select({
   return (
     <div ref={rootRef} className={cn("relative w-full", className)}>
       <button
+        {...props}
         type="button"
         id={id}
         role="combobox"
@@ -131,14 +161,14 @@ export function Select({
         onClick={() => (open ? setOpen(false) : openList())}
         onKeyDown={handleKeyDown}
         data-cc-select-trigger=""
+        data-cc-select-size={size}
         className={cn(
           "flex w-full items-center justify-between gap-2",
           labelType,
           borderChrome,
           "rounded-[var(--cc-radius)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)]",
           "bg-[var(--cc-surface)] text-[color:var(--cc-surface-foreground)]",
-          "px-[calc(0.75rem*var(--cc-density))] py-[calc(0.5rem*var(--cc-density))]",
-          "text-[length:var(--cc-font-size)]",
+          TRIGGER_SIZES[size],
           "[box-shadow:var(--cc-shadow)]",
           motion,
           "focus-visible:outline-none focus-visible:ring-[length:var(--cc-focus-ring-width)] focus-visible:ring-[color:var(--cc-ring)]",

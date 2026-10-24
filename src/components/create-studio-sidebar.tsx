@@ -55,6 +55,7 @@ import {
   PALETTE_GROUPS,
   PALETTE_PRESETS,
   ROLE_IDS,
+  STYLE_PALETTES,
   activePalettePresetId,
   basePalettePreset,
   isTokenOverridden,
@@ -411,8 +412,9 @@ export function CreateStudioSidebar({
           })}
         </div>
         <p className='text-[10px] leading-relaxed text-indigo-light'>
-          هر سبک پالت، تایپوگرافی، بافت و فرم کنترل‌ها را عوض می‌کند و شعاع گوشه
-          و فونت را با خودش همگام می‌سازد.
+          هر سبک پالت رنگ، تایپوگرافی، بافت و فرم کنترل‌ها را عوض می‌کند و پالت،
+          شعاع گوشه و فونت را با خودش همگام می‌سازد؛ بعد از آن هر چهار مورد را
+          می‌توانید دستی تغییر بدهید.
         </p>
       </div>
 
@@ -463,6 +465,9 @@ export function CreateStudioSidebar({
           <div className='grid grid-cols-2 gap-1.5'>
             {PALETTE_PRESETS.map((preset) => {
               const active = activePreset === preset.id;
+              // The palette this style ships with; the chip keeps the pairing
+              // visible even after the visitor picks another ready palette.
+              const styleMatch = STYLE_PALETTES[styleId] === preset.id;
               return (
                 <button
                   key={preset.id}
@@ -493,8 +498,18 @@ export function CreateStudioSidebar({
                       <Check className='size-3 shrink-0 text-coral' />
                     ) : null}
                   </span>
-                  <span className='truncate text-[8px] text-indigo-light'>
-                    {preset.note}
+                  <span className='flex items-center justify-between gap-1'>
+                    <span className='truncate text-[8px] text-indigo-light'>
+                      {preset.note}
+                    </span>
+                    {styleMatch ? (
+                      <span
+                        title={`پالت هم‌سبک با سبک فعال (${currentStyleLabel})`}
+                        className='shrink-0 rounded-[1px] border border-teal-craft bg-teal-craft/15 px-1 text-[7px] leading-[1.6] font-black text-indigo-ink'
+                      >
+                        هم‌سبک
+                      </span>
+                    ) : null}
                   </span>
                 </button>
               );

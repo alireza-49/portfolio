@@ -136,14 +136,18 @@ export function AnalyticsDashboardView() {
                 value: item.id,
                 label: item.label,
               }))}
+              size='sm'
               aria-label='بازهٔ گزارش'
-              className='h-8 w-28 text-[11px]'
+              className='w-24 shrink-0'
             />
 
-            <span className='flex items-center gap-1.5 rounded-[var(--cc-radius-sm)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] px-2 py-1'>
+            {/* Live pill: same 32px height as the select, the icon button and
+                the avatar, so the whole cluster keeps one rhythm. */}
+            <div className='flex h-8 items-center gap-1.5 rounded-[var(--cc-radius-sm)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-surface)] ps-2 pe-1'>
               <span
+                aria-hidden='true'
                 className={cn(
-                  "size-1.5 rounded-full",
+                  "size-1.5 rounded-full transition-colors duration-[var(--cc-duration)]",
                   live ? "bg-[var(--cc-success)]" : "bg-[var(--cc-border)]",
                 )}
               />
@@ -151,14 +155,15 @@ export function AnalyticsDashboardView() {
                 زنده
               </span>
               <Switch
+                size='sm'
                 checked={live}
                 onCheckedChange={setLive}
                 aria-label='به‌روزرسانی زنده'
               />
-            </span>
+            </div>
 
             <Button
-              size='icon'
+              size='icon-sm'
               variant='outline'
               aria-label='بروزرسانی داده‌ها'
               onClick={refresh}

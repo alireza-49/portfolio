@@ -53,7 +53,12 @@ export type PalettePresetId =
   | "navy-coral"
   | "ocean-teal"
   | "iris-pink"
-  | "graphite";
+  | "graphite"
+  | "bluebird"
+  | "neon-mint"
+  | "blueprint-amber"
+  | "aurora-cyan"
+  | "brass-nebula";
 
 export type PalettePreset = {
   id: PalettePresetId;
@@ -331,6 +336,70 @@ export const PALETTE_PRESETS: PalettePreset[] = [
       danger: "#b91c1c",
     },
   },
+  // The five below are shaped by a specific style preset instead of a generic
+  // mood: each one repeats the brand colours that preset was drawn with, so
+  // pairing them never fights the page (a warm palette on a blueprint, or a
+  // navy primary on a navy background, is exactly what they prevent).
+  {
+    id: "bluebird",
+    name: "آبی کلاس درس",
+    note: "روشن، آموزشی، خوش‌بین",
+    colors: {
+      primary: "#2563eb",
+      accent: "#ffc107",
+      success: "#16a34a",
+      warning: "#f59e0b",
+      danger: "#e11d48",
+    },
+  },
+  {
+    id: "neon-mint",
+    name: "نعناع نئونی",
+    note: "تیره، ترمینالی، سبز فسفر",
+    colors: {
+      primary: "#34d399",
+      accent: "#2dd4bf",
+      success: "#4ade80",
+      warning: "#fbbf24",
+      danger: "#f87171",
+    },
+  },
+  {
+    id: "blueprint-amber",
+    name: "نقشهٔ کهربایی",
+    note: "کاغذ آبی، خط طلایی",
+    colors: {
+      primary: "#ffd700",
+      accent: "#7fdbff",
+      success: "#8ce0c0",
+      warning: "#ffc94d",
+      danger: "#e85d35",
+    },
+  },
+  {
+    id: "aurora-cyan",
+    name: "شفق فیروزه‌ای",
+    note: "شیشهٔ تیره، درخشش آبی",
+    colors: {
+      primary: "#4dd8ff",
+      accent: "#b79bff",
+      success: "#5ce1b0",
+      warning: "#ffd166",
+      danger: "#ff7a90",
+    },
+  },
+  {
+    id: "brass-nebula",
+    name: "برنج و سحابی",
+    note: "فلز گرم، خلأ سرد",
+    colors: {
+      primary: "#cd7f32",
+      accent: "#b5a642",
+      success: "#4e8c7a",
+      warning: "#e0b354",
+      danger: "#c0392b",
+    },
+  },
 ];
 
 export const DEFAULT_PALETTE_PRESET_ID: PalettePresetId = "clay-amber";
@@ -392,6 +461,49 @@ export const DEFAULT_PALETTE: StudioPalette = studioPaletteFromPreset(
     (preset) => preset.id === DEFAULT_PALETTE_PRESET_ID,
   ) ?? PALETTE_PRESETS[0],
 );
+
+/**
+ * The ready palette each style was drawn for — the palette counterpart of
+ * `STYLE_FONTS`.
+ *
+ * Picking a style therefore lands on a coherent pair instead of keeping a
+ * palette from the previous design language (warm clay under a blueprint, a
+ * navy primary on a navy page). Two styles may share one palette when they
+ * share a colour family: `nova`/`terracotta` are both warm clay, and
+ * `swiss`/`manga` are both ink-on-paper. The palette stays user-controlled
+ * afterwards — this map only decides what a style pick (and the dice) syncs to.
+ */
+export const STYLE_PALETTES: Record<StyleId, PalettePresetId> = {
+  nova: "clay-amber",
+  corporate: "ocean-teal",
+  editorial: "forest-ink",
+  swiss: "graphite",
+  edtech: "bluebird",
+  terracotta: "clay-amber",
+  zine: "navy-coral",
+  memphis: "iris-pink",
+  manga: "graphite",
+  blueprint: "blueprint-amber",
+  terminal: "neon-mint",
+  glass: "aurora-cyan",
+  steampunk: "brass-nebula",
+};
+
+/** The palette definition a style matches (falls back to the default tile). */
+export function stylePalettePreset(styleId: StyleId): PalettePreset {
+  return (
+    PALETTE_PRESETS.find((preset) => preset.id === STYLE_PALETTES[styleId]) ??
+    PALETTE_PRESETS[0]
+  );
+}
+
+/**
+ * A fresh palette for a style: ready roles, no stale neutral/chart overrides,
+ * so the style's own neutrals and chart ramp stay in charge.
+ */
+export function paletteForStyle(styleId: StyleId): StudioPalette {
+  return studioPaletteFromPreset(stylePalettePreset(styleId));
+}
 
 export function paletteMatchesPreset(
   palette: StudioPalette,

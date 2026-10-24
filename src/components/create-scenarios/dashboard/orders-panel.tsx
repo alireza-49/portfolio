@@ -188,7 +188,7 @@ export function OrdersPanel() {
                 }}
                 placeholder='مشتری، شهر، کانال…'
                 aria-label='جست‌وجوی سفارش‌ها'
-                className='h-8 w-40 pe-7 text-[10px]'
+                className='h-8 w-40 pe-7 text-[length:calc(var(--cc-font-size)*0.8)]'
               />
             </div>
             <Select
@@ -204,7 +204,9 @@ export function OrdersPanel() {
                   label: status,
                 })),
               ]}
-              className='h-8 w-32 text-[10px]'
+              size='sm'
+              aria-label='فیلتر وضعیت سفارش‌ها'
+              className='w-32 shrink-0'
             />
             {hasFilters ? (
               <Button size='sm' variant='ghost' onClick={resetFilters}>

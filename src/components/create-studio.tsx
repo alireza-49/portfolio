@@ -22,6 +22,7 @@ import { CreateStudioSidebar } from "@/components/create-studio-sidebar";
 import { CreateStudioTour } from "@/components/create-studio-tour";
 import { createThemePresets } from "@/components/create-components/style-presets";
 import {
+  paletteForStyle,
   resetPaletteGroup,
   resetPaletteToken,
   studioPaletteFromPreset,
@@ -109,10 +110,14 @@ export function CreateStudio() {
   };
 
   const selectStyle = (id: StyleId) => {
-    // Each style names the voice it was drawn for and owns its elevation and
-    // geometry; the picker can override radius, font and shadow afterwards.
+    // Each style names the voice it was drawn for and owns its elevation,
+    // geometry and colour family; the picker can override palette, radius,
+    // font and shadow afterwards. The palette is synced here (dropping stale
+    // neutral/chart overrides) so a style swap never keeps the previous
+    // language's brand colours.
     patchConfig({
       styleId: id,
+      palette: paletteForStyle(id),
       radius: createThemePresets[id].tokens.radius ?? radius,
       font: STYLE_FONTS[id],
       shadow: DEFAULT_SHADOW,

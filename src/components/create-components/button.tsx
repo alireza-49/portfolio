@@ -39,6 +39,8 @@ export const buttonVariants = cva(
         md: "h-10 px-[calc(1rem*var(--cc-density))] text-[length:var(--cc-font-size)]",
         lg: "h-12 px-[calc(1.5rem*var(--cc-density))] text-[length:calc(var(--cc-font-size)*1.1)]",
         icon: "size-10",
+        // Toolbar glyph button: same 32px rhythm as `sm` and an `h-8` input.
+        "icon-sm": "size-8",
       },
       fullWidth: {
         true: "w-full",
