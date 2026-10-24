@@ -282,6 +282,20 @@ Rebuilt the two canvas scenarios and added the primitives they needed:
   table share it). Every `font-mono` became `monoType`, heatmap aria labels and uptime/latency/node
   load print Persian digits, `<th>` carries `aria-sort`, and `Stat` gained `delta.good` so a falling
   churn chip turns green instead of red.
+- **Theme hand-off is explicit and complete.** The home form has exactly one «ظاهر و تم سایت» card
+  (below the fields) that reports the hand-off state in its badge and border («هنوز تمی نساختهاید» /
+  «ترکیب پیشفرض استودیو» / «تم سفارشی» / «انتخاب با من»), paints the palette swatches, lists the ten
+  choices plus a «همهٔ گزینهها» `<details>`, and submits the payload built by
+  `create-studio-handoff.ts` (config + labels + grouped options + resolved `--cc-*` tokens + CSS)
+  together with one flat field per choice and the estimator's JSON. The two mode buttons only switch
+  between «خودم انتخاب کردهام» and «انتخاب ظاهر را به شما میسپارم» (they never navigate); a small
+  link under them is the only way back to `/create`. Every surface that shows the theme — the card,
+  the canvas chrome and the first tour step — carries the same scope note: this studio builds colour,
+  palette, font and style, while the site's layout and functionality are custom-built from scratch.
+  `create-studio-config.ts` grew `buildStudioTheme`, shared by the canvas snippet and that payload.
+  The export dialog now also copies/downloads the configuration as JSON, and the sidebar's new
+  «بارگذاری پیکربندی کپیشده» dialog (paste, `.json` file or clipboard) restores it through
+  `parseStudioConfigPayload`, with a fallback face when an uploaded font is missing.
 
 
 ## Studio defaults on first paint
@@ -345,11 +359,49 @@ the font upload form collapsed); uploaded fonts are *not* deleted from IndexedDB
   «قبلی»/«بستن» keeps its native behaviour so users can still step back or
   close; `preventScroll` keeps the sidebar's scroll position untouched.
 - The bottom sidebar CTA persists the current configuration and navigates to
-  `/#contact-section`. `ContactSection` reads the same store, shows the saved
-  combination as chips, attaches it as a hidden `studio-config` field (toggle
-  on by default) and offers «انتخاب ظاهر را به شما می‌سپارم» (`design-choice`
-  = `delegated`) for visitors who do not want to pick a theme themselves. The
-  CSS export stayed as a secondary button under it.
+  `/#contact-section`. `ContactSection` reads the same store and keeps the whole
+  hand-off in **one** card («ظاهر و تم سایت», below the fields): its border and
+  badge carry the state from `studioConfigStatus()` in
+  `create-studio-handoff.ts` — «هنوز تمی نساختهاید» (`none`), «ترکیب پیشفرض
+  استودیو» (`defaults`) or «تم سفارشی» (`customized`) — plus the delegation
+  state. The state is derived from the stored config, never persisted, so
+  switching a scenario tab or pressing the CTA without editing anything cannot
+  masquerade as a custom theme. The card also shows the palette swatches, the
+  ten choice chips and a «همهٔ گزینههای انتخابشده» `<details>`.
+- The card's two buttons are a **mode choice, not navigation**: «خودم انتخاب
+  کردهام» (or «خودم میسازم» when nothing is saved) only paints itself ink and
+  clears `delegateDesign`; «انتخاب ظاهر را به شما میسپارم» paints teal and sets
+  `design-choice` = `delegated`. Neither button navigates — the small
+  «ویرایش در استودیو ←» / «ساخت تم در استودیو ←» text link under them is the
+  only path back to `/create`. The attach checkbox sits on the same row and only
+  appears for an existing configuration in the own-theme mode.
+- Every surface states the scope: the theme card (a mustard warning plate with
+  an ink border and a bold headline), the canvas window (a dark `role='note'`
+  alert bar with a mustard «مهم» badge above the browser bar, still outside the
+  viewport scroller) and the tour (a `.cc-tour-scope` mustard block inside the
+  welcome and canvas steps) all say the studio builds colour, palette, font and
+  style only, while layout, sections and functionality are custom-built from
+  scratch for the visitor. Keep the three copies in sync when the wording
+  changes.
+- The full hand-off lives in `create-studio-handoff.ts`: `describeStudioConfig`
+  (chips), `describeStudioOptions` (grouped, with role hexes and every
+  neutral/chart override), `buildStudioHandoff` (config + summary + options +
+  resolved `--cc-*` tokens + CSS) and `parseStudioConfigPayload`. When the
+  visitor attaches, the form submits `studio-config` (that JSON),
+  `studio-summary` (readable lines), one flat field per choice
+  (`studio-scenario`, `studio-style`, `studio-palette`,
+  `studio-palette-colors`, `studio-radius`, `studio-shadow`, `studio-font`,
+  `studio-icon-library`, `studio-icon-size`, `studio-icon-weight`,
+  `studio-icon-tone`), the estimator's `estimate` JSON and the always-present
+  `studio-status` + `design-choice`. Unchecking the attach box or delegating
+  blanks the payload fields; `studio-status` still reports the state.
+- The studio's export dialog copies the CSS **and** the same JSON, downloads it
+  as `kodology-theme-<style>.json`, and the sidebar's «بارگذاری پیکربندی
+  کپیشده» dialog restores it (paste, `.json` file ≤ ۱ MB, or clipboard). The
+  parser accepts both the hand-off wrapper and a bare `StudioConfig`, rejects
+  CSS/`{}`/unknown style ids, restores the scenario too, and falls back to
+  `STYLE_FONTS[styleId]` when the saved custom font is not on this device. Both
+  dialogs share `StudioDialog` (Escape/backdrop close, `role='dialog'`).
 
 ## Rules for this codebase
 
@@ -479,6 +531,30 @@ the font upload form collapsed); uploaded fonts are *not* deleted from IndexedDB
 - Uploaded fonts are read through `useSyncExternalStore` (`create-studio-custom-fonts.ts`); IndexedDB
   is only touched from the store's subscribe/mutation helpers, never during render and never from an
   effect (`react-hooks/set-state-in-effect` is enabled).
+- The theme hand-off status is derived, never stored: `studioConfigStatus()` compares the saved
+  config with what a style pick would install (`paletteForStyle`, the preset radius, `STYLE_FONTS`,
+  `DEFAULT_SHADOW` and the default icon setup) and deliberately ignores the archetype. Don't add a
+  “chosen” flag — a scenario-only visit or a CTA press without edits must keep reporting
+  `defaults`.
+- The contact form has exactly **one** theme surface: the «ظاهر و تم سایت» card below the fields.
+  Never re-add a status strip/chip row above the fields — the card's border and badge already carry
+  the state, and duplicating it is what made the hand-off ambiguous. Its two buttons only switch
+  between own-theme and delegated (`aria-pressed`, ink vs teal); the own-theme button must never
+  navigate, even when a configuration already exists, and the small «ویرایش در استودیو ←» /
+  «ساخت تم در استودیو ←» link is the only way back to `/create`.
+- The scope note is a product promise, not decoration, so it is loud on purpose: the theme card
+  renders it as a mustard plate with a 2px ink border, a coral badge and a bold headline; the canvas
+  window uses a dark ink `role='note'` alert bar with a mustard «مهم» badge above the browser bar
+  (outside the viewport scroller); the tour injects a `.cc-tour-scope` mustard block (styled in
+  `tour.css`, because driver.js renders `description` as HTML) into the welcome and canvas steps. All
+  three state that the studio builds colour/palette/font/style only and that layout, sections and
+  functionality are custom-built from scratch. Never shrink any of them back to fine print — update
+  all three together.
+- The contact form's theme fields come only from `buildStudioHandoff()`; add a choice to
+  `describeStudioConfig`/`describeStudioOptions` and the JSON payload, the details panel and the
+  downloaded file follow. Imported configurations go through `parseStudioConfigPayload` →
+  `parseStudioConfig` (exported by the store), never a raw `JSON.parse` + `updateStudioConfig`, and
+  a custom font missing on the device falls back to `STYLE_FONTS[styleId]`.
 - Keep scenario data deterministic (hash-based noise, fixed demo dates) — the page is statically
   prerendered, so `Math.random()`/`Date.now()` cause hydration mismatches.
 - Disable recharts JS animations (`isAnimationActive={false}`); they render empty paths in prerender.

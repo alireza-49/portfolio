@@ -6,6 +6,7 @@ import {
   Maximize2,
   Minimize2,
   ShieldCheck,
+  TriangleAlert,
 } from "lucide-react";
 import {
   ARCHETYPE_ICONS,
@@ -112,6 +113,28 @@ export function CreateStudioCanvas({
             : "h-[72dvh] min-h-[420px] sm:h-[76dvh] lg:h-auto lg:min-h-0 lg:flex-1"
         }`}
       >
+        {/* Scope alert: the preset restyles a theme, never the layout. It is a
+            deliberate dark band (ink + paper) so it cannot be skimmed past, and
+            it sits above the browser bar and outside the viewport scroller, so
+            the browser chrome still always stays up. */}
+        <div
+          role='note'
+          aria-label='دامنهٔ استودیو'
+          className='flex shrink-0 items-start gap-2 border-b-[2.5px] border-coral bg-indigo-ink px-2.5 py-2 text-[11.5px] leading-snug font-black text-paper-light sm:items-center sm:gap-2.5 sm:px-3 sm:py-2.5 sm:text-[13px]'
+        >
+          <span className='inline-flex shrink-0 items-center gap-1 rounded-sm border-[1.5px] border-indigo-ink bg-mustard px-1.5 py-0.5 text-[10px] font-black text-indigo-ink sm:text-[11px]'>
+            <TriangleAlert aria-hidden='true' className='size-3.5' />
+            مهم
+          </span>
+          <span className='min-w-0'>
+            این تم فقط رنگ، پالت، فونت و سبک بصری را می‌سازد؛{" "}
+            <span className='underline decoration-mustard decoration-2 underline-offset-4'>
+              چیدمان، بخش‌ها و عملکرد سایت بخشی از تم نیست
+            </span>
+            {" "}و کاملاً سفارشی و از صفر طراحی می‌شود.
+          </span>
+        </div>
+
         {/* One-line browser bar. Painted with the studio's mustard ink so it can
             never be confused with the preset's own page background inside. */}
         <div

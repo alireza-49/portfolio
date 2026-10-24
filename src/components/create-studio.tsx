@@ -1,19 +1,27 @@
 "use client";
 
 import {
+  useEffect,
+  useId,
   useMemo,
   useState,
   useSyncExternalStore,
+  type FormEvent,
   type KeyboardEvent,
+  type ReactNode,
 } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  Coffee,
+  ClipboardPaste,
   Code2,
+  Coffee,
   Copy,
+  FileDown,
+  FileUp,
   HelpCircle,
   MousePointerClick,
+  Upload,
   X,
 } from "lucide-react";
 import { LogoButton } from "@/assests/logo";
@@ -40,6 +48,13 @@ import {
   type ArchetypeId,
   type StyleId,
 } from "@/components/create-studio-config";
+import {
+  buildStudioHandoff,
+  describeStudioConfig,
+  isStudioFontAvailable,
+  parseStudioConfigPayload,
+  type StudioImportResult,
+} from "@/components/create-studio-handoff";
 import {
   DEFAULT_STUDIO_CONFIG,
   materializeStudioConfig,
@@ -72,7 +87,10 @@ export function CreateStudio() {
     config;
 
   const [modalOpen, setModalOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState<"css" | "config" | null>(null);
+  const [importOpen, setImportOpen] = useState(false);
+  const [importText, setImportText] = useState("");
+  const [importError, setImportError] = useState<string | null>(null);
   const [tourRun, setTourRun] = useState(0);
 
   // Uploaded fonts come from IndexedDB through the store; the server snapshot
@@ -96,6 +114,24 @@ export function CreateStudio() {
       }),
     [palette, radius, shadow, styleId, fontStack, iconStyle],
   );
+
+  // The same payload the contact form submits: configuration + labels +
+  // resolved tokens + CSS. Copying it is the only way to move a theme between
+  // browsers, so the export dialog offers it next to the CSS snippet.
+  const handoffJson = useMemo(
+    () => JSON.stringify(buildStudioHandoff(config, customFonts), null, 2),
+    [config, customFonts],
+  );
+
+  // Live validation of a pasted/loaded configuration. `null` means the field is
+  // still empty, so the dialog can keep the apply button disabled.
+  const importPreview: StudioImportResult | null = useMemo(
+    () => (importText.trim() ? parseStudioConfigPayload(importText) : null),
+    [importText],
+  );
+  const importFontMissing =
+    importPreview?.status === "ok" &&
+    !isStudioFontAvailable(importPreview.config.font, customFonts);
 
   const patchConfig = (patch: Partial<StudioConfig>) => {
     updateStudioConfig(patch);
@@ -182,14 +218,91 @@ export function CreateStudio() {
     selectScenario(ARCHETYPES[next].id, true);
   };
 
-  const copy = async (text: string) => {
+  const copy = async (text: string, kind: "css" | "config") => {
     try {
       await navigator.clipboard.writeText(text);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 2000);
+      setCopied(kind);
+      window.setTimeout(() => setCopied(null), 2000);
     } catch {
-      setCopied(false);
+      setCopied(null);
     }
+  };
+
+  /**
+   * Export the whole configuration as a file. Unlike the CSS snippet, this
+   * round-trips: the import dialog in the sidebar restores it verbatim, which
+   * is how a visitor moves a theme between browsers or sends it by message.
+   */
+  const downloadConfig = () => {
+    const blob = new Blob([handoffJson], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `kodology-theme-${styleId}.json`;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  const closeImportDialog = () => {
+    setImportOpen(false);
+    setImportText("");
+    setImportError(null);
+  };
+
+  const openImportDialog = () => {
+    setImportOpen(true);
+    setImportText("");
+    setImportError(null);
+  };
+
+  const readConfigFile = async (file: File | undefined) => {
+    if (!file) return;
+    if (file.size > 1024 * 1024) {
+      setImportError("حجم فایل پیکربندی باید کمتر از ۱ مگابایت باشد.");
+      return;
+    }
+    try {
+      setImportText(await file.text());
+      setImportError(null);
+    } catch {
+      setImportError("خواندن فایل ممکن نشد؛ متن پیکربندی را دستی بچسبانید.");
+    }
+  };
+
+  const pasteConfigFromClipboard = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      if (!text.trim()) {
+        setImportError(
+          "کلیپ‌بورد خالی است؛ ابتدا پیکربندی را در استودیو کپی کنید.",
+        );
+        return;
+      }
+      setImportText(text);
+      setImportError(null);
+    } catch {
+      setImportError(
+        "دسترسی به کلیپ‌بورد ممکن نشد؛ متن را دستی در کادر بچسبانید.",
+      );
+    }
+  };
+
+  const applyImportedConfig = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (importPreview?.status !== "ok") return;
+    const next = importPreview.config;
+    // A configuration can name an uploaded font this browser does not have;
+    // fall back to the face its style ships with instead of leaving the canvas
+    // without a usable family.
+    patchConfig({
+      ...next,
+      font: isStudioFontAvailable(next.font, customFonts)
+        ? next.font
+        : STYLE_FONTS[next.styleId],
+    });
+    closeImportDialog();
   };
 
   return (
@@ -319,6 +432,7 @@ export function CreateStudio() {
           onShuffle={shuffle}
           onReset={resetStudioConfig}
           onExport={() => setModalOpen(true)}
+          onImport={openImportDialog}
           onSendConfig={sendConfig}
         />
         <CreateStudioCanvas
@@ -336,48 +450,250 @@ export function CreateStudio() {
       <CreateStudioTour run={tourRun} />
 
       {modalOpen ? (
-        <div className='fixed inset-0 z-50 flex items-center justify-center bg-indigo-ink/60 p-4 backdrop-blur-sm'>
-          <div className='flex max-h-[90vh] w-full max-w-2xl flex-col gap-4 overflow-y-auto rounded-sm border border-indigo-ink bg-paper-light p-6 shadow-craft-lg'>
-            <div className='flex items-center justify-between border-b border-indigo-ink/20 pb-3'>
-              <div className='flex items-center gap-2'>
-                <Code2 className='size-[22px] text-coral' />
-                <h3 className='text-base font-black text-indigo-ink'>
-                  کد تم و پیکربندی خروجی استودیو کُدولوژی
-                </h3>
-              </div>
-              <button
-                type='button'
-                onClick={() => setModalOpen(false)}
-                aria-label='بستن'
-                className='rounded-sm border border-indigo-ink bg-paper-dim p-1 text-indigo-ink shadow-craft-sm hover:bg-paper-light'
-              >
-                <X className='size-[18px]' />
-              </button>
+        <StudioDialog
+          title='کد تم و پیکربندی خروجی استودیو کُدولوژی'
+          icon={<Code2 className='size-[22px] text-coral' />}
+          onClose={() => setModalOpen(false)}
+        >
+          <p className='text-xs text-indigo-light'>
+            این قطعه کد را در فایل{" "}
+            <code className='font-mono'>globals.css</code> پروژه خود (Tailwind
+            CSS v4) کپی و جای‌گذاری نمایید.
+          </p>
+          <pre
+            dir='ltr'
+            className='max-h-[34vh] overflow-auto rounded-sm border border-indigo-ink bg-indigo-ink p-4 text-left font-mono text-[12px] leading-relaxed text-paper select-all'
+          >
+            <code>{snippet}</code>
+          </pre>
+          <div className='flex items-center justify-end gap-2 border-t border-indigo-ink/20 pt-2'>
+            <button
+              type='button'
+              onClick={() => void copy(snippet, "css")}
+              className='flex items-center gap-1.5 rounded-sm border border-indigo-ink bg-coral px-4 py-2 text-xs font-bold text-white shadow-craft-sm transition-all hover:bg-coral-dark active:translate-x-0.5 active:translate-y-0.5'
+            >
+              <Copy className='size-4' />
+              <span>{copied === "css" ? "کپی شد!" : "کپی کد CSS"}</span>
+            </button>
+          </div>
+
+          <div className='flex flex-col gap-2 rounded-sm border border-dashed border-indigo-ink bg-paper-dim p-3'>
+            <div className='flex flex-wrap items-center justify-between gap-2'>
+              <span className='flex items-center gap-1.5 text-[12px] font-black text-indigo-ink'>
+                <FileDown className='size-4 text-coral' />
+                پیکربندی کامل (JSON)
+              </span>
+              <span className='rounded-sm border border-indigo-ink bg-paper px-1.5 py-0.5 text-[10px] font-bold text-indigo-light'>
+                قابل بارگذاری دوباره در استودیو
+              </span>
             </div>
-            <p className='text-xs text-indigo-light'>
-              این قطعه کد را در فایل{" "}
-              <code className='font-mono'>globals.css</code> پروژه خود (Tailwind
-              CSS v4) کپی و جای‌گذاری نمایید.
+            <p className='text-[11px] leading-relaxed text-indigo-light'>
+              این فایل همهٔ گزینه‌ها، رنگ‌های پالت، توکن‌های نهایی و کد CSS را
+              نگه می‌دارد؛ با «بارگذاری پیکربندی کپی‌شده» در نوار کنار بوم،
+              دقیقاً همین تم برمی‌گردد.
             </p>
             <pre
               dir='ltr'
-              className='overflow-x-auto rounded-sm border border-indigo-ink bg-indigo-ink p-4 text-left font-mono text-[12px] leading-relaxed text-paper select-all'
+              className='max-h-28 overflow-auto rounded-sm border border-indigo-ink bg-paper p-2 text-left font-mono text-[10px] leading-relaxed text-indigo-ink select-all'
             >
-              <code>{snippet}</code>
+              <code>{handoffJson}</code>
             </pre>
-            <div className='flex items-center justify-end gap-2 border-t border-indigo-ink/20 pt-2'>
+            <div className='flex flex-wrap items-center justify-end gap-2'>
               <button
                 type='button'
-                onClick={() => copy(snippet)}
-                className='flex items-center gap-1.5 rounded-sm border border-indigo-ink bg-coral px-4 py-2 text-xs font-bold text-white shadow-craft-sm transition-all hover:bg-coral-dark active:translate-x-0.5 active:translate-y-0.5'
+                onClick={() => void copy(handoffJson, "config")}
+                className='flex items-center gap-1.5 rounded-sm border border-indigo-ink bg-indigo-ink px-3 py-1.5 text-[11px] font-bold text-paper shadow-craft-sm transition-all hover:bg-indigo-ink/90 active:translate-x-0.5 active:translate-y-0.5'
               >
-                <Copy className='size-4' />
-                <span>{copied ? "کپی شد!" : "کپی در کلیپ‌بورد"}</span>
+                <Copy className='size-3.5' />
+                <span>{copied === "config" ? "کپی شد!" : "کپی پیکربندی"}</span>
+              </button>
+              <button
+                type='button'
+                onClick={downloadConfig}
+                className='flex items-center gap-1.5 rounded-sm border border-indigo-ink bg-paper px-3 py-1.5 text-[11px] font-bold text-indigo-ink shadow-craft-sm transition-all hover:bg-paper-light active:translate-x-0.5 active:translate-y-0.5'
+              >
+                <FileDown className='size-3.5' />
+                <span>دانلود فایل .json</span>
               </button>
             </div>
           </div>
-        </div>
+        </StudioDialog>
+      ) : null}
+
+      {importOpen ? (
+        <StudioDialog
+          title='بارگذاری پیکربندی کپی‌شده'
+          icon={<Upload className='size-[22px] text-coral' />}
+          onClose={closeImportDialog}
+        >
+          <form className='flex flex-col gap-3' onSubmit={applyImportedConfig}>
+            <p className='text-xs leading-relaxed text-indigo-light'>
+              پیکربندی‌ای را که با «کپی پیکربندی (JSON)» گرفته‌اید یا فایل{" "}
+              <code className='font-mono'>.json</code> آن را اینجا بگذارید. سبک،
+              پالت، گردی گوشه، سایه، فونت، آیکون‌ها و سناریوی بوم بازیابی
+              می‌شوند.
+            </p>
+
+            <div className='flex flex-wrap items-center gap-2'>
+              <label className='flex cursor-pointer items-center gap-1.5 rounded-sm border border-indigo-ink bg-paper-dim px-2.5 py-1.5 text-[11px] font-bold text-indigo-ink shadow-craft-sm transition-all hover:bg-paper-light'>
+                <FileUp className='size-4 text-coral' />
+                <span>انتخاب فایل .json</span>
+                <input
+                  type='file'
+                  accept='.json,application/json'
+                  className='hidden'
+                  onChange={(event) => {
+                    void readConfigFile(event.target.files?.[0]);
+                    event.target.value = "";
+                  }}
+                />
+              </label>
+              <button
+                type='button'
+                onClick={() => void pasteConfigFromClipboard()}
+                className='flex items-center gap-1.5 rounded-sm border border-indigo-ink bg-paper px-2.5 py-1.5 text-[11px] font-bold text-indigo-ink shadow-craft-sm transition-all hover:bg-paper-dim active:translate-x-0.5 active:translate-y-0.5'
+              >
+                <ClipboardPaste className='size-4 text-coral' />
+                <span>چسباندن از کلیپ‌بورد</span>
+              </button>
+            </div>
+
+            <textarea
+              dir='ltr'
+              value={importText}
+              onChange={(event) => {
+                setImportText(event.target.value);
+                setImportError(null);
+              }}
+              rows={6}
+              spellCheck={false}
+              autoFocus
+              aria-label='متن پیکربندی JSON'
+              placeholder={'{\n  "version": 1,\n  "config": { "styleId": "corporate", … }\n}'}
+              className='w-full resize-none rounded-sm border border-indigo-ink bg-paper p-2 text-left font-mono text-[11px] leading-relaxed text-indigo-ink outline-none focus-visible:ring-2 focus-visible:ring-coral/40'
+            />
+
+            {importError ? (
+              <p role='alert' className='text-[11px] font-bold text-coral'>
+                {importError}
+              </p>
+            ) : null}
+
+            {importPreview?.status === "error" ? (
+              <p role='alert' className='text-[11px] font-bold text-coral'>
+                {importPreview.message}
+              </p>
+            ) : null}
+
+            {importPreview?.status === "ok" ? (
+              <div className='flex flex-col gap-1.5 rounded-sm border border-teal-craft bg-teal-light p-2'>
+                <span className='text-[11px] font-black text-teal-craft'>
+                  پیکربندی معتبر است و آمادهٔ اعمال:
+                </span>
+                <div className='flex flex-wrap gap-1'>
+                  {describeStudioConfig(
+                    importPreview.config,
+                    customFonts,
+                  ).map((item) => (
+                    <span
+                      key={item.label}
+                      className='rounded-sm border border-indigo-ink/30 bg-paper px-1.5 py-0.5 text-[10px] font-bold text-indigo-ink'
+                    >
+                      <span className='text-indigo-light'>{item.label}:</span>{" "}
+                      {item.value}
+                    </span>
+                  ))}
+                </div>
+                {importFontMissing ? (
+                  <span className='text-[10px] leading-relaxed font-bold text-coral'>
+                    فونت سفارشی این پیکربندی روی این دستگاه نیست؛ فونت پیش‌فرض
+                    سبک انتخاب‌شده جایگزین می‌شود.
+                  </span>
+                ) : null}
+              </div>
+            ) : null}
+
+            <div className='flex flex-wrap items-center justify-end gap-2 border-t border-indigo-ink/20 pt-2'>
+              <button
+                type='button'
+                onClick={closeImportDialog}
+                className='rounded-sm border border-indigo-ink bg-paper-dim px-3 py-1.5 text-[11px] font-bold text-indigo-ink shadow-craft-sm hover:bg-paper-light'
+              >
+                انصراف
+              </button>
+              <button
+                type='submit'
+                disabled={importPreview?.status !== "ok"}
+                className='flex items-center gap-1.5 rounded-sm border border-indigo-ink bg-indigo-ink px-4 py-2 text-xs font-bold text-paper shadow-craft-sm transition-all hover:bg-indigo-ink/90 active:translate-x-0.5 active:translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50'
+              >
+                <Upload className='size-4' />
+                <span>بارگذاری و اعمال</span>
+              </button>
+            </div>
+          </form>
+        </StudioDialog>
       ) : null}
     </>
   );
 }
+
+type StudioDialogProps = {
+  title: string;
+  icon: ReactNode;
+  onClose: () => void;
+  children: ReactNode;
+};
+
+/**
+ * Shared chrome for the studio dialogs (CSS/JSON export and config import).
+ *
+ * Escape and a backdrop click both close it, the panel scrolls internally so a
+ * long JSON payload never pushes the action buttons off-screen, and the title
+ * names the dialog for assistive tech.
+ */
+function StudioDialog({ title, icon, onClose, children }: StudioDialogProps) {
+  const titleId = useId();
+
+  useEffect(() => {
+    const onKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [onClose]);
+
+  return (
+    <div
+      className='fixed inset-0 z-50 flex items-center justify-center bg-indigo-ink/60 p-4 backdrop-blur-sm'
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <div
+        role='dialog'
+        aria-modal='true'
+        aria-labelledby={titleId}
+        className='flex max-h-[90vh] w-full max-w-3xl flex-col gap-4 overflow-y-auto rounded-sm border border-indigo-ink bg-paper-light p-6 shadow-craft-lg'
+      >
+        <div className='flex items-center justify-between border-b border-indigo-ink/20 pb-3'>
+          <div className='flex items-center gap-2'>
+            {icon}
+            <h3 id={titleId} className='text-base font-black text-indigo-ink'>
+              {title}
+            </h3>
+          </div>
+          <button
+            type='button'
+            onClick={onClose}
+            aria-label='بستن'
+            className='rounded-sm border border-indigo-ink bg-paper-dim p-1 text-indigo-ink shadow-craft-sm hover:bg-paper-light'
+          >
+            <X className='size-[18px]' />
+          </button>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+}
+

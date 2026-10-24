@@ -479,7 +479,7 @@ export const FONT_STACKS: Record<FontId, string> = {
   parvaz: "'Parvaz', 'Vazir', 'Vazirmatn', sans-serif",
 };
 
-export function buildThemeSnippet(input: {
+export type StudioThemeInput = {
   palette: StudioPalette;
   radius: number;
   style: StyleId;
@@ -487,12 +487,21 @@ export function buildThemeSnippet(input: {
   iconStyle?: IconStyle;
   /** Elevation override; `style` keeps the preset's own shadow. */
   shadow?: ShadowChoice;
-}): string {
+};
+
+/**
+ * The resolved theme shared by the canvas, the exported CSS and the hand-off
+ * payload. Keeping one builder means the token map a visitor exports can never
+ * drift from the snippet it is pasted next to.
+ */
+export function buildStudioTheme(
+  input: StudioThemeInput,
+): CreateComponentTheme {
   const icons = resolveIconStyle(input.iconStyle ?? DEFAULT_ICON_STYLE);
 
   // Same layering as the canvas: roles always apply, neutrals and chart
   // overrides only when the visitor edited them.
-  const theme = resolveTheme(input.style, {
+  return resolveTheme(input.style, {
     ...paletteThemeOverrides(input.palette, input.style),
     radius: input.radius,
     fontFamily: input.fontStack,
@@ -501,6 +510,10 @@ export function buildThemeSnippet(input: {
     iconColor: icons.color,
     ...shadowOverrides(input.shadow ?? DEFAULT_SHADOW),
   });
+}
+
+export function buildThemeSnippet(input: StudioThemeInput): string {
+  const theme = buildStudioTheme(input);
   const primary = theme.primary;
   const primarySubtle = theme.secondary;
   const shadow = theme.shadow || "none";

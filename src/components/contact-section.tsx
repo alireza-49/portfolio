@@ -1,8 +1,14 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  useSyncExternalStore,
+  type FormEvent,
+} from "react";
 import Link from "next/link";
-import { Calculator, Check, Mail, Palette, Send, Sparkles } from "lucide-react";
+import { Calculator, Check, Info, Mail, Palette, Send } from "lucide-react";
 import { cn } from "cn";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -10,10 +16,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useEstimate } from "@/components/estimate-store";
+import { useStudioConfig } from "@/components/create-studio-store";
 import {
+  STUDIO_STATUS_LABELS,
+  buildStudioHandoff,
   describeStudioConfig,
-  useStudioConfig,
-} from "@/components/create-studio-store";
+  describeStudioOptions,
+  studioConfigStatus,
+  type StudioThemeStatus,
+} from "@/components/create-studio-handoff";
+import {
+  getCustomFontsServerSnapshot,
+  getCustomFontsSnapshot,
+  subscribeCustomFonts,
+} from "@/components/create-studio-custom-fonts";
 
 const SOCIALS = [
   { href: "https://github.com", label: "GitHub" },
@@ -33,6 +49,42 @@ function toPersianDigits(value: string | number) {
     .replace(/\./g, "٫");
 }
 
+/** Hex colours and font stacks stay machine-readable; everything else reads in Persian. */
+function displayValue(value: string) {
+  return /^#/.test(value) ? value : toPersianDigits(value);
+}
+
+/**
+ * The theme hand-off has four presentation states: a real custom theme, the
+ * studio's untouched default combination, no studio visit at all, and the
+ * “choose the visual direction for me” delegation. They are told apart by the
+ * card's border and badge — there is exactly one theme card on the form, so no
+ * state is ever repeated in two places.
+ */
+type ThemeTone = "custom" | "default" | "none" | "delegated";
+
+const THEME_CARD_TONE: Record<
+  ThemeTone,
+  { card: string; title: string }
+> = {
+  custom: { card: "border-teal-craft", title: "text-teal-craft" },
+  default: { card: "border-indigo-ink", title: "text-indigo-ink" },
+  none: { card: "border-indigo-ink", title: "text-indigo-ink" },
+  delegated: { card: "border-coral", title: "text-coral" },
+};
+
+const STUDIO_BADGE: Record<StudioThemeStatus | "delegated", string> = {
+  customized: "border-teal-craft bg-teal-light text-teal-craft",
+  defaults: "border-indigo-ink bg-mustard/20 text-indigo-ink",
+  none: "border-indigo-ink bg-paper-dim text-indigo-light",
+  delegated: "border-coral bg-coral/10 text-coral",
+};
+
+const STUDIO_BADGE_LABEL: Record<StudioThemeStatus | "delegated", string> = {
+  ...STUDIO_STATUS_LABELS,
+  delegated: "انتخاب با من",
+};
+
 export function ContactSection() {
   const [sent, setSent] = useState(false);
   const [name, setName] = useState("");
@@ -44,7 +96,56 @@ export function ContactSection() {
   // The studio persists its configuration in localStorage; this hook paints
   // the summary after hydration and stays `null` when nobody used it yet.
   const studioConfig = useStudioConfig();
-  const studioSummary = studioConfig ? describeStudioConfig(studioConfig) : [];
+  // Uploaded faces live in IndexedDB; the server snapshot is empty, exactly
+  // like on `/create`, so the prerender never mismatches.
+  const customFonts = useSyncExternalStore(
+    subscribeCustomFonts,
+    getCustomFontsSnapshot,
+    getCustomFontsServerSnapshot,
+  );
+
+  const status = studioConfigStatus(studioConfig);
+  const badgeState = delegateDesign ? "delegated" : status;
+  const themeTone: ThemeTone = delegateDesign
+    ? "delegated"
+    : status === "customized"
+      ? "custom"
+      : status === "defaults"
+        ? "default"
+        : "none";
+
+  const studioSummary = useMemo(
+    () => (studioConfig ? describeStudioConfig(studioConfig, customFonts) : []),
+    [studioConfig, customFonts],
+  );
+  const studioOptions = useMemo(
+    () => (studioConfig ? describeStudioOptions(studioConfig, customFonts) : []),
+    [studioConfig, customFonts],
+  );
+  const optionCount = studioOptions.reduce(
+    (total, group) => total + group.items.length,
+    0,
+  );
+  // The exact payload the form carries: config + labels + resolved tokens + CSS.
+  const studioHandoff = useMemo(
+    () => (studioConfig ? buildStudioHandoff(studioConfig, customFonts) : null),
+    [studioConfig, customFonts],
+  );
+  const studioSummaryText = useMemo(
+    () =>
+      studioOptions
+        .map((group) =>
+          [
+            `## ${group.label}`,
+            ...group.items.map((item) => `${item.label}: ${item.value}`),
+          ].join("\n"),
+        )
+        .join("\n\n"),
+    [studioOptions],
+  );
+  const roleSwatches =
+    studioOptions.find((group) => group.id === "colors")?.items.slice(0, 5) ?? [];
+
   const attachSummary = Boolean(
     studioConfig && attachStudioConfig && !delegateDesign,
   );
@@ -52,6 +153,22 @@ export function ContactSection() {
     studioSummary.find((item) => item.label === "سبک")?.value ?? "";
   const attachedPalette =
     studioSummary.find((item) => item.label === "پالت")?.value ?? "";
+  const attachedFont =
+    studioSummary.find((item) => item.label === "فونت")?.value ?? "";
+
+  /**
+   * One sentence per state — the card never repeats “which theme is this?” in a
+   * second place. The attach checkbox right below says whether it travels with
+   * the message, so the sentence describes the theme, not the submission.
+   */
+  const themeStatusText =
+    themeTone === "delegated"
+      ? "انتخاب ظاهر را به من سپرده‌اید؛ پیکربندی استودیو ارسال نمی‌شود و ظاهر را بر اساس ایده و برند شما انتخاب می‌کنم."
+      : status === "customized"
+        ? `تم سفارشی شما از استودیو ثبت شده است: سبک «${attachedStyle}» با پالت «${attachedPalette}» و فونت «${attachedFont}».`
+        : status === "defaults"
+          ? `استودیو را دیده‌اید ولی ترکیب پیش‌فرض آن را نگه داشته‌اید: سبک «${attachedStyle}» با پالت «${attachedPalette}».`
+          : "هنوز تمی در استودیو نساخته‌اید؛ می‌توانید خودتان بسازید یا انتخاب ظاهر را به من بسپارید.";
 
   const canSubmit = name.trim().length > 0 && contact.trim().length > 0;
 
@@ -78,9 +195,15 @@ export function ContactSection() {
     if (!canSubmit) return;
     const form = event.currentTarget;
     setSent(true);
-    form.reset();
     setName("");
     setContact("");
+    // The optional fields are uncontrolled. Clearing them individually (instead
+    // of `form.reset()`) keeps the controlled hidden hand-off fields intact for
+    // a follow-up submission.
+    const business = form.elements.namedItem("business");
+    const message = form.elements.namedItem("message");
+    if (business instanceof HTMLInputElement) business.value = "";
+    if (message instanceof HTMLTextAreaElement) message.value = "";
     window.setTimeout(() => setSent(false), 6000);
   };
 
@@ -243,21 +366,76 @@ export function ContactSection() {
                 />
               </div>
 
-              {/* Studio hand-off: the exact theme the visitor built, or a
-                  request to pick the visual direction on their behalf. */}
-              <div className="rounded-sm border-[2px] border-indigo-ink bg-paper p-3">
+              {/* One theme card: status, scope, palette, options and the mode
+                  choice live here — never in a second strip above the fields. */}
+              <div
+                className={cn(
+                  "rounded-sm border-[2px] bg-paper p-3",
+                  THEME_CARD_TONE[themeTone].card,
+                )}
+              >
                 <div className="mb-2 flex flex-wrap items-center justify-between gap-1.5 border-b border-indigo-ink/20 pb-1.5">
-                  <span className="flex items-center gap-1.5 text-[13px] font-black text-indigo-ink">
+                  <span
+                    className={cn(
+                      "flex items-center gap-1.5 text-[13px] font-black",
+                      THEME_CARD_TONE[themeTone].title,
+                    )}
+                  >
                     <Palette className="size-4 text-coral" />
                     ظاهر و تم سایت
                   </span>
-                  <span className="rounded-sm border border-indigo-ink bg-paper-dim px-1.5 py-0.5 text-[10px] font-bold text-indigo-light">
-                    {studioConfig ? "ساخته‌شده در استودیو" : "انتخاب با شما یا من"}
+                  <span
+                    aria-live="polite"
+                    className={cn(
+                      "rounded-sm border px-1.5 py-0.5 text-[10px] font-black",
+                      STUDIO_BADGE[badgeState],
+                    )}
+                  >
+                    {STUDIO_BADGE_LABEL[badgeState]}
                   </span>
+                </div>
+
+                <p className="mb-2 text-[11px] leading-relaxed font-bold text-indigo-ink">
+                  {themeStatusText}
+                </p>
+
+                {/* Scope alert: this studio builds a theme, never a layout. A
+                    solid mustard block with a hard ink edge so it reads as a
+                    warning, not as fine print. */}
+                <div className="mb-3 rounded-sm border-[2px] border-indigo-ink bg-mustard p-2.5 shadow-craft-sm">
+                  <p className="flex items-start gap-1.5 text-[13px] leading-tight font-black text-indigo-ink">
+                    <span className="inline-flex size-5 shrink-0 items-center justify-center rounded-full border-[1.5px] border-indigo-ink bg-coral text-white">
+                      <Info aria-hidden="true" className="size-3.5" />
+                    </span>
+                    این تم، چیدمان و عملکرد سایت را تغییر نمی‌دهد
+                  </p>
+                  <p className="mt-1.5 text-[12px] leading-relaxed font-bold text-indigo-ink">
+                    استودیو فقط رنگ، پالت، فونت و سبک بصری را می‌سازد؛ چیدمان،
+                    بخش‌ها و عملکرد سایت کاملاً سفارشی و از صفر بر اساس نیاز شما
+                    طراحی می‌شود.
+                  </p>
                 </div>
 
                 {studioConfig ? (
                   <>
+                    <div className="mb-2 flex flex-wrap items-center gap-1.5">
+                      <span className="text-[10px] font-bold text-indigo-light">
+                        رنگ‌های پالت شما:
+                      </span>
+                      {roleSwatches.map((item) => (
+                        <span
+                          key={item.label}
+                          role="img"
+                          title={`${item.label} — ${item.value}`}
+                          aria-label={`${item.label}: ${item.value}`}
+                          className="size-4 rounded-full border border-indigo-ink/40"
+                          style={{ backgroundColor: item.swatch }}
+                        />
+                      ))}
+                      <span className="text-[10px] font-black text-indigo-ink">
+                        «{attachedPalette}»
+                      </span>
+                    </div>
                     <div className="mb-2 flex flex-wrap gap-1">
                       {studioSummary.map((item) => (
                         <span
@@ -265,48 +443,72 @@ export function ContactSection() {
                           className="rounded-sm border border-indigo-ink/30 bg-paper-light px-1.5 py-0.5 text-[10px] font-bold text-indigo-ink"
                         >
                           <span className="text-indigo-light">{item.label}:</span>{" "}
-                          {toPersianDigits(item.value)}
+                          {displayValue(item.value)}
                         </span>
                       ))}
                     </div>
-                    <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                      <label className="flex cursor-pointer items-center gap-1.5 text-[11px] font-bold text-indigo-ink">
-                        <input
-                          type="checkbox"
-                          checked={attachStudioConfig}
-                          onChange={(event) =>
-                            setAttachStudioConfig(event.target.checked)
-                          }
-                          className="size-3.5 accent-coral"
-                        />
-                        این ترکیب همراه پیام ارسال شود
-                      </label>
-                      <Link
-                        href="/create"
-                        className="text-[11px] font-black text-coral underline underline-offset-4 hover:text-coral-dark"
-                      >
-                        ویرایش در استودیو ←
-                      </Link>
-                    </div>
+                    <details className="mb-2 rounded-sm border border-dashed border-indigo-ink/50 bg-paper-light p-2">
+                      <summary className="cursor-pointer text-[11px] font-black text-indigo-ink">
+                        همهٔ {toPersianDigits(optionCount)} گزینهٔ انتخاب‌شده را
+                        ببینید
+                      </summary>
+                      <div className="mt-2 flex flex-col gap-2">
+                        {studioOptions.map((group) => (
+                          <div key={group.id}>
+                            <span className="text-[10px] font-black text-coral">
+                              {group.label}
+                            </span>
+                            <dl className="mt-1 grid grid-cols-1 gap-1 sm:grid-cols-2">
+                              {group.items.map((item) => (
+                                <div
+                                  key={`${group.id}-${item.label}`}
+                                  className="flex items-center justify-between gap-2 rounded-sm bg-paper px-1.5 py-1 text-[10px]"
+                                >
+                                  <dt className="font-bold text-indigo-light">
+                                    {item.label}
+                                  </dt>
+                                  <dd className="flex min-w-0 items-center gap-1 font-black text-indigo-ink">
+                                    {item.swatch ? (
+                                      <span
+                                        aria-hidden="true"
+                                        className="size-3 shrink-0 rounded-full border border-indigo-ink/40"
+                                        style={{ backgroundColor: item.swatch }}
+                                      />
+                                    ) : null}
+                                    <span className="truncate" dir="auto">
+                                      {displayValue(item.value)}
+                                    </span>
+                                  </dd>
+                                </div>
+                              ))}
+                            </dl>
+                          </div>
+                        ))}
+                      </div>
+                    </details>
                   </>
-                ) : (
-                  <p className="mb-2 text-[11px] leading-relaxed font-medium text-indigo-light">
-                    هنوز تمی نساخته‌اید. می‌توانید خودتان در استودیو ترکیب
-                    دلخواه را بسازید یا انتخاب ظاهر را به من بسپارید.
-                  </p>
-                )}
+                ) : null}
 
-                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                  <Link
-                    href="/create"
-                    className="flex items-center justify-center gap-1.5 rounded-sm border-[2px] border-indigo-ink bg-paper px-2 py-2 text-[11px] font-black text-indigo-ink transition-colors hover:bg-mustard/30"
-                  >
-                    <Sparkles className="size-3.5 text-coral" />
-                    خودم در استودیو می‌سازم
-                  </Link>
+                {/* Mode choice, not navigation: the own-theme button only paints
+                    its state; the small link below is the only path to /create. */}
+                <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
                   <button
                     type="button"
-                    onClick={() => setDelegateDesign((value) => !value)}
+                    onClick={() => setDelegateDesign(false)}
+                    aria-pressed={!delegateDesign}
+                    className={cn(
+                      "flex items-center justify-center gap-1.5 rounded-sm border-[2px] border-indigo-ink px-2 py-2 text-[11px] font-black transition-colors",
+                      delegateDesign
+                        ? "bg-paper text-indigo-ink hover:bg-mustard/30"
+                        : "bg-indigo-ink text-paper",
+                    )}
+                  >
+                    <Check className="size-3.5" />
+                    {studioConfig ? "خودم انتخاب کرده‌ام" : "خودم می‌سازم"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDelegateDesign(true)}
                     aria-pressed={delegateDesign}
                     className={cn(
                       "flex items-center justify-center gap-1.5 rounded-sm border-[2px] border-indigo-ink px-2 py-2 text-[11px] font-black transition-colors",
@@ -320,23 +522,120 @@ export function ContactSection() {
                   </button>
                 </div>
 
-                {delegateDesign ? (
-                  <p className="mt-2 rounded-sm border border-dashed border-teal-craft bg-teal-light px-2 py-1.5 text-[10px] font-bold text-teal-craft">
-                    عالی؛ پیکربندی استودیو ارسال نمی‌شود و ظاهر را بر اساس ایده و
-                    برند شما انتخاب می‌کنم.
-                  </p>
-                ) : null}
+                <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
+                  {studioConfig && !delegateDesign ? (
+                    <label className="flex cursor-pointer items-center gap-1.5 text-[11px] font-bold text-indigo-ink">
+                      <input
+                        type="checkbox"
+                        checked={attachStudioConfig}
+                        onChange={(event) =>
+                          setAttachStudioConfig(event.target.checked)
+                        }
+                        className="size-3.5 accent-coral"
+                      />
+                      پیکربندی کامل ({toPersianDigits(optionCount)} گزینه) همراه
+                      پیام ارسال شود
+                    </label>
+                  ) : null}
+                  <Link
+                    href="/create"
+                    className="ms-auto text-[11px] font-black text-coral underline underline-offset-4 hover:text-coral-dark"
+                  >
+                    {studioConfig ? "ویرایش در استودیو ←" : "ساخت تم در استودیو ←"}
+                  </Link>
+                </div>
               </div>
 
+              {/* Full hand-off: the human-readable summary, the complete JSON
+                  (configuration + labels + resolved `--cc-*` tokens + CSS) and
+                  one flat field per choice, so any form handler can read the
+                  theme without parsing JSON. Everything is gated by the attach
+                  checkbox, and delegation sends nothing at all. */}
               <input
                 type="hidden"
                 name="studio-config"
-                value={attachSummary && studioConfig ? JSON.stringify(studioConfig) : ""}
+                value={
+                  attachSummary && studioHandoff
+                    ? JSON.stringify(studioHandoff)
+                    : ""
+                }
               />
               <input
                 type="hidden"
+                name="studio-summary"
+                value={attachSummary ? studioSummaryText : ""}
+              />
+              <input type="hidden" name="studio-status" value={status} />
+              <input
+                type="hidden"
                 name="design-choice"
-                value={delegateDesign ? "delegated" : studioConfig ? "studio" : ""}
+                value={
+                  delegateDesign ? "delegated" : attachSummary ? "studio" : "none"
+                }
+              />
+              {attachSummary && studioConfig ? (
+                <>
+                  <input
+                    type="hidden"
+                    name="studio-scenario"
+                    value={studioConfig.archetype}
+                  />
+                  <input
+                    type="hidden"
+                    name="studio-style"
+                    value={studioConfig.styleId}
+                  />
+                  <input
+                    type="hidden"
+                    name="studio-palette"
+                    value={studioConfig.palette.base}
+                  />
+                  <input
+                    type="hidden"
+                    name="studio-palette-colors"
+                    value={JSON.stringify(studioConfig.palette.colors)}
+                  />
+                  <input
+                    type="hidden"
+                    name="studio-radius"
+                    value={String(studioConfig.radius)}
+                  />
+                  <input
+                    type="hidden"
+                    name="studio-shadow"
+                    value={studioConfig.shadow}
+                  />
+                  <input
+                    type="hidden"
+                    name="studio-font"
+                    value={studioConfig.font}
+                  />
+                  <input
+                    type="hidden"
+                    name="studio-icon-library"
+                    value={studioConfig.iconLibrary}
+                  />
+                  <input
+                    type="hidden"
+                    name="studio-icon-size"
+                    value={studioConfig.iconStyle.size}
+                  />
+                  <input
+                    type="hidden"
+                    name="studio-icon-weight"
+                    value={studioConfig.iconStyle.weight}
+                  />
+                  <input
+                    type="hidden"
+                    name="studio-icon-tone"
+                    value={studioConfig.iconStyle.tone}
+                  />
+                </>
+              ) : null}
+              <input
+                type="hidden"
+                name="estimate"
+                value={estimate ? JSON.stringify(estimate) : ""}
               />
 
               {estimate ? (
@@ -416,8 +715,15 @@ export function ContactSection() {
                   هماهنگی جلسه با شما تماس می‌گیرم.
                   {attachSummary ? (
                     <span className="mt-1 block text-[11px] font-black">
-                      پیکربندی استودیو «{attachedStyle}» با پالت «{attachedPalette}»
-                      هم ضمیمه شد.
+                      {themeTone === "custom"
+                        ? `تم سفارشی «${attachedStyle}» با پالت «${attachedPalette}»، ${toPersianDigits(optionCount)} گزینه و کد CSS کامل ضمیمه شد.`
+                        : `ترکیب پیش‌فرض «${attachedStyle}» با پالت «${attachedPalette}» و ${toPersianDigits(optionCount)} گزینه ضمیمه شد.`}
+                    </span>
+                  ) : null}
+                  {!attachSummary && !delegateDesign ? (
+                    <span className="mt-1 block text-[11px] font-black">
+                      بدون پیکربندی استودیو ارسال شد؛ می‌توانید هر وقت خواستید
+                      تم بسازید و دوباره بفرستید.
                     </span>
                   ) : null}
                   {delegateDesign ? (

@@ -11,6 +11,7 @@ import {
   Check,
   Dices,
   Download,
+  FileUp,
   Layers,
   Palette,
   Pipette,
@@ -115,6 +116,8 @@ type SidebarProps = {
   /** Restore every sidebar choice (style, palette, radius, shadow, font, icons). */
   onReset: () => void;
   onExport: () => void;
+  /** Open the dialog that restores a copied/downloaded JSON configuration. */
+  onImport: () => void;
   /** Persist the current configuration and open the contact form with it. */
   onSendConfig: () => void;
   customFonts: CustomFont[];
@@ -143,6 +146,7 @@ export function CreateStudioSidebar({
   onShuffle,
   onReset,
   onExport,
+  onImport,
   onSendConfig,
   customFonts,
   onAddCustomFont,
@@ -1251,9 +1255,18 @@ export function CreateStudioSidebar({
           <Download className='size-[14px]' />
           <span>استخراج کد تم (CSS)</span>
         </button>
+        <button
+          type='button'
+          onClick={onImport}
+          className='flex w-full items-center justify-center gap-1.5 rounded-sm border border-dashed border-indigo-ink bg-paper-dim px-2.5 py-1.5 text-[11px] font-bold text-indigo-ink shadow-craft-sm transition-all hover:bg-paper-light active:translate-x-0.5 active:translate-y-0.5'
+        >
+          <FileUp className='size-[14px] text-coral' />
+          <span>بارگذاری پیکربندی کپی‌شده</span>
+        </button>
         <p className='text-center text-[9px] leading-relaxed text-indigo-light'>
-          تنظیمات این پنل در همین مرورگر ذخیره می‌شود؛ فرم تماس آن را به پیام
-          شما پیوست می‌کند.
+          تنظیمات این پنل در همین مرورگر ذخیره می‌شود؛ فرم تماس پیکربندی کامل را
+          به پیام شما پیوست می‌کند. فایل JSON خروجی را هم می‌توانید در همین پنل
+          بارگذاری کنید.
         </p>
       </div>
     </aside>

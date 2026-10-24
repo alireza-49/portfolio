@@ -3,7 +3,6 @@ import {
   ARCHETYPES,
   DEFAULT_ICON_STYLE,
   DEFAULT_SHADOW,
-  FONTS,
   ICON_LIBRARIES,
   ICON_SIZES,
   ICON_TONES,
@@ -25,7 +24,6 @@ import {
   ROLE_IDS,
   normalizeHex,
   paletteForStyle,
-  paletteLabel,
   type PaletteChartId,
   type PaletteNeutralId,
   type PalettePresetId,
@@ -179,6 +177,17 @@ function parseConfig(value: unknown): StudioConfig | null {
   };
 }
 
+/**
+ * Validate an arbitrary payload into a `StudioConfig`.
+ *
+ * Shared by the localStorage reader and the studio's «بارگذاری پیکربندی»
+ * dialog: everything is re-checked there too, so a pasted theme can never
+ * half-apply and a corrupted file just falls back to the documented defaults.
+ */
+export function parseStudioConfig(value: unknown): StudioConfig | null {
+  return parseConfig(value);
+}
+
 function persist(config: StudioConfig): void {
   if (typeof window === "undefined") return;
   try {
@@ -282,31 +291,3 @@ export function markStudioTourSeen(): void {
   }
 }
 
-export type StudioConfigSummaryItem = { label: string; value: string };
-
-/** Human-readable chips shared by the contact form and its confirmation. */
-export function describeStudioConfig(
-  config: StudioConfig,
-): StudioConfigSummaryItem[] {
-  const style = STYLES.find((item) => item.id === config.styleId);
-  const archetype = ARCHETYPES.find((item) => item.id === config.archetype);
-  const font = FONTS.find((item) => item.id === config.font);
-  const shadow = SHADOWS.find((item) => item.id === config.shadow);
-  const library = ICON_LIBRARIES.find(
-    (item) => item.id === config.iconLibrary,
-  );
-
-  return [
-    { label: "سناریو", value: archetype?.label ?? config.archetype },
-    { label: "سبک", value: style?.label ?? config.styleId },
-    { label: "پالت", value: paletteLabel(config.palette) },
-    { label: "گردی گوشه", value: `${config.radius}px` },
-    {
-      label: "سایه",
-      value:
-        config.shadow === "style" ? "پیرو سبک" : (shadow?.label ?? "سفارشی"),
-    },
-    { label: "فونت", value: font?.label ?? "فونت سفارشی" },
-    { label: "آیکون", value: library?.label ?? config.iconLibrary },
-  ];
-}
