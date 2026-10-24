@@ -22,8 +22,8 @@ export type ArchetypeId =
   | "dashboard";
 
 export type StyleId =
-  | "nova"
   | "corporate"
+  | "nova"
   | "editorial"
   | "swiss"
   | "edtech"
@@ -188,19 +188,24 @@ export const STYLE_GROUPS: StyleGroup[] = [
   },
 ];
 
+/**
+ * Picker order: the sidebar renders this array group by group, so the first
+ * entry is the first tile a visitor sees. `corporate` leads because it is also
+ * the style `/create` opens with (see `DEFAULT_STUDIO_CONFIG`).
+ */
 export const STYLES: StyleOption[] = [
-  {
-    id: "nova",
-    label: "نووا مدرن",
-    description: "چاپ گرم، خط مرکب و سایهٔ آفست",
-    font: "vazir",
-    group: "modern",
-  },
   {
     id: "corporate",
     label: "شرکتی رادیال",
     description: "سطح روشن، قوس فیروزه‌ای، گوشهٔ نرم",
     font: "samim",
+    group: "modern",
+  },
+  {
+    id: "nova",
+    label: "نووا مدرن",
+    description: "چاپ گرم، خط مرکب و سایهٔ آفست",
+    font: "vazir",
     group: "modern",
   },
   {

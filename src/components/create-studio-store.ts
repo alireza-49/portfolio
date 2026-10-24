@@ -9,6 +9,7 @@ import {
   ICON_TONES,
   ICON_WEIGHTS,
   SHADOWS,
+  STYLE_FONTS,
   STYLES,
   type ArchetypeId,
   type IconLibraryId,
@@ -16,6 +17,7 @@ import {
   type ShadowChoice,
   type StyleId,
 } from "./create-studio-config";
+import { createThemePresets } from "./create-components/style-presets";
 import {
   COLOR_TOKENS,
   DEFAULT_PALETTE,
@@ -59,16 +61,23 @@ export type StudioConfig = {
   iconStyle: IconStyle;
 };
 
+/**
+ * The style `/create` opens with. Every other first-paint default (palette,
+ * radius, body face) is derived from it, so the untouched studio shows exactly
+ * the combination a visitor gets by clicking this tile.
+ */
+export const DEFAULT_STYLE_ID: StyleId = "corporate";
+
 /** What `/create` renders before it has ever stored anything. */
 export const DEFAULT_STUDIO_CONFIG: StudioConfig = {
   archetype: "landing",
-  styleId: "nova",
+  styleId: DEFAULT_STYLE_ID,
   // Derived from the default style, so the first paint can never show a
   // palette that the style picker would immediately replace.
-  palette: paletteForStyle("nova"),
-  radius: 4,
+  palette: paletteForStyle(DEFAULT_STYLE_ID),
+  radius: createThemePresets[DEFAULT_STYLE_ID].tokens.radius ?? 4,
   shadow: DEFAULT_SHADOW,
-  font: "vazir",
+  font: STYLE_FONTS[DEFAULT_STYLE_ID],
   iconLibrary: "google",
   iconStyle: DEFAULT_ICON_STYLE,
 };

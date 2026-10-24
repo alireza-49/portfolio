@@ -402,7 +402,12 @@ export const PALETTE_PRESETS: PalettePreset[] = [
   },
 ];
 
-export const DEFAULT_PALETTE_PRESET_ID: PalettePresetId = "clay-amber";
+/**
+ * Fallback tile for a stored palette that cannot be parsed. It matches the
+ * style `/create` opens with (`corporate`), so a corrupted payload still lands
+ * on the same colours as the first paint.
+ */
+export const DEFAULT_PALETTE_PRESET_ID: PalettePresetId = "ocean-teal";
 
 const ROLE_TOKEN_SET: ReadonlySet<string> = new Set(ROLE_IDS);
 const NEUTRAL_TOKEN_SET: ReadonlySet<string> = new Set<PaletteNeutralId>([

@@ -15,9 +15,10 @@ Stack: Next.js 16 App Router, React 19, TypeScript, Tailwind CSS v4, `@base-ui/r
 
 `/create` is a preview canvas: the studio's top bar picks an **archetype** (`landing`, `ecommerce`,
 `clinic`, `dashboard`, `components` — landing is the default, the «المان‌های خام» catalog sits last),
-the left sidebar picks a **style preset** (13: `nova`, `corporate`, `editorial`, `swiss`, `blueprint`,
-`terminal`, `glass`, `edtech`, `terracotta`, `zine`, `memphis`, `manga`, `steampunk`), palette,
-radius, font and icon library; the canvas re-skins instantly and can export CSS/Tailwind tokens.
+the left sidebar picks a **style preset** (13: `corporate`, `nova`, `editorial`, `swiss`,
+`blueprint`, `terminal`, `glass`, `edtech`, `terracotta`, `zine`, `memphis`, `manga`, `steampunk`
+— «شرکتی رادیال» is both the first tile and the default), palette, radius, font and icon library;
+the canvas re-skins instantly and can export CSS/Tailwind tokens.
 
 Everything is built on `src/components/create-components/` — one token-themed component library.
 Tokens come from `theme.ts` (+ per-preset palettes in `style-presets/chart-palettes.ts`) and are
@@ -33,8 +34,14 @@ scenario.
   `create-studio.tsx` (`useState<ArchetypeId>("landing")`). The fake address bar follows the active
   archetype's `demoHost`, so the first paint loads `academy.demo-kodology.ir`; `components` stays
   reachable as the last tab and the last stop in keyboard navigation.
+- **Default style flipped to «شرکتی رادیال».** `STYLES` now leads with `corporate` (the picker renders
+  that array group by group, so its order *is* the tile order) and `DEFAULT_STUDIO_CONFIG` declares the
+  choice once as `DEFAULT_STYLE_ID`, deriving the rest from it — `paletteForStyle` («اقیانوس فیروزه»),
+  `createThemePresets.corporate.tokens.radius` (`16`) and `STYLE_FONTS.corporate` (`samim`). The
+  palette fallback (`DEFAULT_PALETTE_PRESET_ID`) moved to `ocean-teal` so an unreadable stored payload
+  lands on the same colours. `nova` keeps its full definition as the second tile.
 - **Style library rebuilt.** `riso` and `brutalist` were retired and the rest re-tuned; the picker now
-  ships 13 presets grouped as modern/corporate (nova, corporate, editorial, swiss), technical
+  ships 13 presets grouped as modern/corporate (corporate, nova, editorial, swiss), technical
   (blueprint, terminal, glass) and expressive (edtech, terracotta, zine, memphis, manga, steampunk).
   Definitions live in `create-components/style-presets/` (`types.ts`, `chart-palettes.ts`,
   `presets-classic.ts`, `presets-expressive.ts`, `presets-dark.ts`, `index.ts`) behind the same
@@ -279,10 +286,13 @@ Rebuilt the two canvas scenarios and added the primitives they needed:
 
 ## Studio defaults on first paint
 
-`create-studio.tsx` starts with `landing` + `nova`, `DEFAULT_PALETTE`
-(«سفال کهربایی» — primary `#e76f51`), radius `4`, shadow «پیرو سبک»
-(`DEFAULT_SHADOW`), body face `vazir`, the `google` icon set and
-`DEFAULT_ICON_STYLE` (`size: md`, `weight: regular`, `tone: inherit`). Picking a
+`create-studio.tsx` starts with `landing` + `corporate` («شرکتی رادیال»), its matched
+palette (`DEFAULT_PALETTE`, «اقیانوس فیروزه» — primary `#0e7490`), radius `16`, shadow «پیرو سبک»
+(`DEFAULT_SHADOW`), body face `samim`, the `google` icon set and
+`DEFAULT_ICON_STYLE` (`size: md`, `weight: regular`, `tone: inherit`). The style is declared once as
+`DEFAULT_STYLE_ID` (`create-studio-store.ts`) and the palette, radius and body face are derived from
+it (`paletteForStyle`, `createThemePresets[DEFAULT_STYLE_ID].tokens.radius`, `STYLE_FONTS`), so the untouched studio
+shows exactly the combination clicking that tile produces. Picking a
 style overwrites the palette with that style's matched pair (`paletteForStyle`,
 e.g. terminal → «نعناع نئونی»), radius and body font from `STYLE_FONTS`, and puts
 the shadow back on «پیرو سبک»; palette, radius, shadow, font and icon library stay
@@ -365,7 +375,9 @@ the font upload form collapsed); uploaded fonts are *not* deleted from IndexedDB
   `Icon` component skips the weight for it.
 - Presets are data, not components: add tokens in `style-presets/`, keep per-style structural
   signatures in `create-components/styles.css` under `[data-cc-style="…"]`, and register the id in
-  `CreateThemePreset`, `chartPalettes`, `STYLES` and `StyleId` in one pass.
+  `CreateThemePreset`, `chartPalettes`, `STYLES` and `StyleId` in one pass. `STYLES` order is the
+  picker order, so keep `corporate` first — it is also the default (`DEFAULT_STYLE_ID` in
+  `create-studio-store.ts`, whose palette, radius and body face are derived from it).
 - Palette state lives in `create-studio-palette.ts`: the five roles are explicit, while neutrals and
   charts are overrides on the active style preset. Never wire a role swatch straight to `primary` —
   route edits through `withPaletteToken` and render through `paletteThemeOverrides`, so one edit
