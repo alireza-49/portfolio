@@ -8,6 +8,34 @@
 /** Fixed anchor date so the calendar is identical on every render. */
 export const CLINIC_TODAY = "2026-10-05";
 
+const PERSIAN_DIGITS = "۰۱۲۳۴۵۶۷۸۹";
+
+/** Persian digits without grouping, for booking codes and short labels. */
+export function toPersian(value: string | number): string {
+  return String(value).replace(/\d/g, (digit) => PERSIAN_DIGITS[Number(digit)]);
+}
+
+/**
+ * Copy that used to be retyped in five sections. Every place that mentions the
+ * cancellation window, the opening hours or the price list reads it from here.
+ */
+export const CLINIC_STATUS = {
+  openUntil: "۲۱:۰۰",
+  pricingUpdated: "مهر ۱۴۰۵",
+  supportPhone: "۰۲۱-۸۸۷۷۰۰۰۰",
+} as const;
+
+export const CANCEL_WINDOW_HOURS = 12;
+
+export const CLINIC_PRICING = {
+  /** Online visits cost a quarter less than in-person ones. */
+  onlineRatio: 0.75,
+  firstVisitFee: 80_000,
+  taxRate: 0.09,
+  firstVisitMinutes: 30,
+  followVisitMinutes: 20,
+} as const;
+
 export type SpecialtyId =
   | "cardio"
   | "derma"
@@ -232,6 +260,9 @@ const SLOT_TIMES: { time: string; period: SlotPeriod }[] = [
   { time: "۱۹:۳۰", period: "evening" },
 ];
 
+/** Daily capacity, derived from the slot table instead of retyped in the view. */
+export const SLOT_CAPACITY = SLOT_TIMES.length;
+
 /** FNV-1a — tiny, stable, and fast enough for a few hundred cells. */
 function hashKey(key: string): number {
   let hash = 2166136261;
@@ -240,6 +271,19 @@ function hashKey(key: string): number {
     hash = Math.imul(hash, 16777619);
   }
   return Math.abs(hash);
+}
+
+/**
+ * Tracking code for a confirmed booking. Derived from the slot, so it stays
+ * deterministic (no clock, no counter) and survives a reload of the demo.
+ */
+export function bookingCode(
+  doctorId: string,
+  iso: string,
+  slotId: string | null,
+): string {
+  const seed = hashKey(`${doctorId}|${iso}|${slotId ?? "open"}`);
+  return `HK-${toPersian(24000 + (seed % 9000))}`;
 }
 
 export function slotsFor(doctorId: string, iso: string): ClinicSlot[] {
@@ -260,9 +304,21 @@ export function freeSlotCount(doctorId: string, iso: string): number {
 
 /**
  * Availability map for the calendar: 120 days of free-slot counts keyed by ISO
- * date. Fridays (weekend) are closed, mirroring the clinic schedule.
+ * date. Fridays (weekend) are closed, mirroring the clinic schedule, and every
+ * other day reports the *real* number of free slots from `slotsFor` — the
+ * calendar and the slot grid can therefore never disagree.
+ *
+ * Results are cached per doctor: the grid asks for all eight doctors and the
+ * map is 120 × 16 hashes, so recomputing it on every render would be wasteful
+ * while still staying deterministic.
  */
+const availabilityCache = new Map<string, Record<string, number>>();
+
 export function buildAvailability(doctorId?: string): Record<string, number> {
+  const key = doctorId ?? "clinic";
+  const cached = availabilityCache.get(key);
+  if (cached) return cached;
+
   const result: Record<string, number> = {};
   const [year, month, day] = CLINIC_TODAY.split("-").map(Number);
   const start = Date.UTC(year, month - 1, day);
@@ -271,16 +327,23 @@ export function buildAvailability(doctorId?: string): Record<string, number> {
     const date = new Date(start + offset * 86400000);
     const iso = date.toISOString().slice(0, 10);
     const weekday = date.getUTCDay(); // 5 = Friday
-    if (weekday === 5) {
-      result[iso] = 0;
-      continue;
-    }
-    const seed = hashKey(`${doctorId ?? "clinic"}|${iso}`);
-    result[iso] = weekday === 6 ? 4 + (seed % 5) : 6 + (seed % 9);
+    result[iso] = weekday === 5 ? 0 : freeSlotCount(key, iso);
   }
 
-  result[CLINIC_TODAY] = 5;
+  availabilityCache.set(key, result);
   return result;
+}
+
+/** First date with a free slot, used by the hero chip and the empty-day hint. */
+export function nextFreeDate(
+  doctorId: string,
+  fromIso = CLINIC_TODAY,
+): string | null {
+  const availability = buildAvailability(doctorId);
+  for (const iso of Object.keys(availability)) {
+    if (iso >= fromIso && (availability[iso] ?? 0) > 0) return iso;
+  }
+  return null;
 }
 
 export const CLINIC_SERVICES = [
@@ -357,7 +420,8 @@ export const CLINIC_FAQ = [
     value: "cancel",
     question: "تا چه زمانی می‌توانم نوبت را لغو کنم؟",
     answer:
-      "تا ۱۲ ساعت قبل از زمان ویزیت، لغو یا جابه‌جایی رایگان است. بعد از آن ۳۰٪ هزینهٔ ویزیت به‌عنوان رزرو محاسبه می‌شود.",
+      `تا ${toPersian(CANCEL_WINDOW_HOURS)} ساعت قبل از زمان ویزیت، لغو یا جابه‌جایی رایگان است. ` +
+      "بعد از آن ۳۰٪ هزینهٔ ویزیت به‌عنوان رزرو محاسبه می‌شود.",
   },
   {
     value: "online",
@@ -374,47 +438,44 @@ export const CLINIC_FAQ = [
 ];
 
 export const CLINIC_HOURS = [
-  { day: "شنبه تا چهارشنبه", hours: "۸:۰۰ تا ۲۱:۰۰" },
+  { day: "شنبه تا چهارشنبه", hours: `۸:۰۰ تا ${CLINIC_STATUS.openUntil}` },
   { day: "پنجشنبه", hours: "۸:۰۰ تا ۱۴:۰۰" },
   { day: "جمعه", hours: "تعطیل (اورژانس فعال)" },
 ];
 
-export type ClinicAppointment = {
-  code: string;
-  doctor: string;
-  specialty: string;
-  date: string;
-  time: string;
-  mode: string;
-  status: string;
-  tone: "success" | "soft" | "warning" | "outline" | "danger";
+export type ClinicGuarantee = {
+  id: "cancel" | "payment" | "records" | "support";
+  title: string;
+  note: string;
 };
 
-export const SEED_APPOINTMENTS: ClinicAppointment[] = [
+/** The four promises shown next to a testimonial. No numbers: the hero owns those. */
+export const CLINIC_GUARANTEES: ClinicGuarantee[] = [
   {
-    code: "HK-۲۴۰۸۱",
-    doctor: "دکتر مینا شریفی",
-    specialty: "مغز و اعصاب",
-    date: "۱۴۰۵/۰۷/۳۰",
-    time: "۱۰:۳۰",
-    mode: "حضوری",
-    status: "تأییدشده",
-    tone: "success",
+    id: "cancel",
+    title: `لغو رایگان تا ${toPersian(CANCEL_WINDOW_HOURS)} ساعت قبل`,
+    note: "جابه‌جایی زمان هم بدون جریمه انجام می‌شود.",
   },
   {
-    code: "HK-۲۳۹۵۲",
-    doctor: "دکتر امیر کاویانی",
-    specialty: "اطفال",
-    date: "۱۴۰۵/۰۷/۱۸",
-    time: "۱۶:۰۰",
-    mode: "آنلاین",
-    status: "انجام‌شده",
-    tone: "soft",
+    id: "payment",
+    title: "پرداخت آنلاین یا در محل",
+    note: "درگاه بانکی، کارت‌خوان پذیرش یا پرداخت نقدی.",
+  },
+  {
+    id: "records",
+    title: "پروندهٔ الکترونیک",
+    note: "نسخه، نتیجهٔ آزمایش و سوابق ویزیت در یک پنل.",
+  },
+  {
+    id: "support",
+    title: "پذیرش ۲۴ ساعته",
+    note: "حتی روزهای تعطیل، اورژانس و پذیرش فعال است.",
   },
 ];
 
+/** Hero figures. The doctor count is derived so it cannot drift from the team. */
 export const CLINIC_TRUST = [
-  { value: "۲۴", label: "پزشک متخصص" },
+  { value: toPersian(DOCTORS.length), label: "پزشک متخصص" },
   { value: "۹ دقیقه", label: "میانگین انتظار" },
   { value: "۴.۹", label: "امتیاز مراجعان" },
   { value: "۱۸ سال", label: "سابقهٔ درمان" },

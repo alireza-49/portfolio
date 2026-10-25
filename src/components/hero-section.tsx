@@ -3,18 +3,16 @@
 import { useCallback, useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import {
-  BadgeCheck,
   Calculator,
-  CheckCircle2,
   Coffee,
   Rocket,
   SlidersHorizontal,
   Smile,
-  XCircle,
 } from "lucide-react";
 import { cn } from "cn";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { HeroSpecSheet } from "@/components/hero-spec-sheet";
 
 const HERO_BADGES = [
   { icon: Coffee, label: "مشاوره ۱۰۰٪ رایگان و بدون تعهد", tone: "coral" },
@@ -57,37 +55,6 @@ const HERO_PROMISES = [
     body: "ارتباط مستقیم و کدنویسی اختصاصی",
     box: "bg-coral/20 text-coral border-coral/40",
   },
-] as const;
-
-const SPEC_SHEET = [
-  {
-    label: "معماری و استاندارد:",
-    value: "Zero-Bloat Next 15",
-    dot: "bg-teal-craft",
-  },
-  {
-    label: "شاخص عملکرد (Lighthouse):",
-    value: "99/100 Perf & SEO",
-    dot: "bg-coral",
-  },
-  {
-    label: "میانگین وزن صفحه:",
-    value: "< 380 KB (سبک)",
-    dot: "bg-mustard-deep",
-  },
-  {
-    label: "آثار زیست‌محیطی:",
-    value: "~0.14g CO2 (Eco)",
-    dot: "bg-teal-craft",
-  },
-] as const;
-
-const TECH_BADGES = [
-  { label: "Next.js 15", className: "bg-paper-dim text-indigo-ink" },
-  { label: "Tailwind CSS", className: "bg-coral/20 text-coral" },
-  { label: "TypeScript", className: "bg-paper-dim text-indigo-ink" },
-  { label: "Clean Canvas", className: "bg-teal-light text-teal-craft" },
-  { label: "Bespoke UI", className: "bg-mustard/30 text-indigo-ink" },
 ] as const;
 
 const INK_COLORS = ["#E76F51", "#E9C46A", "#F237A1", "#264653", "#2A9D8F"];
@@ -270,7 +237,7 @@ export function HeroSection() {
               </svg>
 
               <span className='ink-text-target z-10 inline-block px-1 font-black tracking-normal'>
-                ارزان و سریع و شخصی سازی شده
+                ارزان ، سریع و شخصی سازی شده
               </span>
 
               <span className='absolute inset-x-0 bottom-0 h-[3px] rounded-full bg-coral transition-opacity duration-200 group-[.splashed]:opacity-0' />
@@ -338,173 +305,8 @@ export function HeroSection() {
           </div>
         </div>
 
-        <div className='flex w-full justify-center lg:w-5/12'>
-          <div className='relative w-full max-w-sm sm:max-w-md'>
-            <div
-              aria-hidden
-              className='pointer-events-none absolute -top-3 -right-3 h-full w-full rounded-sm border-[2.5px] border-indigo-ink bg-mustard'
-            />
-
-            <Card
-              data-cursor-morph
-              className='relative flex flex-col gap-4 overflow-hidden rounded-sm border-[2.5px] border-indigo-ink bg-paper-light p-5 shadow-craft-inset sm:p-6'
-            >
-              <div
-                aria-hidden
-                className='pointer-events-none absolute top-1 right-1 h-3 w-3 border-t-2 border-r-2 border-indigo-ink/40'
-              />
-              <div
-                aria-hidden
-                className='pointer-events-none absolute top-1 left-1 h-3 w-3 border-t-2 border-l-2 border-indigo-ink/40'
-              />
-              <div
-                aria-hidden
-                className='pointer-events-none absolute right-1 bottom-1 h-3 w-3 border-r-2 border-b-2 border-indigo-ink/40'
-              />
-              <div
-                aria-hidden
-                className='pointer-events-none absolute bottom-1 left-1 h-3 w-3 border-b-2 border-l-2 border-indigo-ink/40'
-              />
-
-              <div className='relative flex items-center justify-between border-b-[2px] border-indigo-ink pb-3 font-mono text-xs text-indigo-ink'>
-                <div className='flex items-center gap-2 font-bold'>
-                  <span className='relative flex h-2.5 w-2.5'>
-                    <span className='absolute inline-flex h-full w-full animate-ping rounded-full bg-teal-craft opacity-75' />
-                    <span className='relative inline-flex h-2.5 w-2.5 rounded-full bg-teal-craft' />
-                  </span>
-                  <span className='tracking-tight text-indigo-ink'>
-                    STUDIO ARCHIVE // SPEC-2025
-                  </span>
-                </div>
-                <div className='flex items-center gap-1.5'>
-                  <span className='riso-stamp-teal px-2 py-[2px] text-[10px] font-bold'>
-                    شناسنامه فنی کارگاه
-                  </span>
-                  <span className='rounded-sm bg-indigo-ink px-1.5 py-[2px] font-mono text-[10px] font-bold text-paper'>
-                    № ۰۸۴
-                  </span>
-                </div>
-              </div>
-
-              <Card className='relative flex flex-col gap-3 overflow-hidden rounded-sm border-[2px] border-indigo-ink bg-paper-dim p-4 shadow-craft-inset'>
-                <div className='pointer-events-none absolute -top-2 left-3 z-10 -rotate-12 opacity-90 select-none'>
-                  <div className='flex h-20 w-20 flex-col items-center justify-center rounded-full border-[2.5px] border-dashed border-coral bg-coral/10 p-1.5 text-center text-coral shadow-inner backdrop-blur-[1px]'>
-                    <span className='font-mono text-[8px] leading-tight font-black tracking-widest'>
-                      ORIGINAL
-                    </span>
-                    <BadgeCheck className='size-[18px]' />
-                    <span className='text-[8px] leading-tight font-bold'>
-                      مهر کارگاه
-                    </span>
-                    <span className='font-mono text-[7px]'>100% CRAFT</span>
-                  </div>
-                </div>
-
-                <div className='pr-1 text-right'>
-                  <h3 className='mt-0.5 text-[17px] leading-snug font-black text-indigo-ink'>
-                    کد سبک، سرعت بالا، تبدیل حداکثری
-                  </h3>
-                  <p className='mt-1 max-w-[82%] text-[12px] leading-relaxed font-medium text-indigo-light'>
-                    توسعه سایت دست‌ساز بر پایه مهندسی تمیز،در کمترین زمان یا
-                    کمترین قیمت با سفارشی سازی کامل توسط مشتری و بالاترین سرعت
-                    بارگذاری .
-                  </p>
-                </div>
-
-                <div className='grid grid-cols-2 gap-2 border-t border-dashed border-indigo-ink/30 pt-2'>
-                  {SPEC_SHEET.map((spec) => (
-                    <Card
-                      key={spec.label}
-                      className='gap-0 rounded-sm border border-indigo-ink/40 bg-paper p-2 text-right'
-                    >
-                      <span className='mb-0.5 block text-[10px] font-bold text-indigo-light'>
-                        {spec.label}
-                      </span>
-                      <div className='flex items-center gap-1'>
-                        <span
-                          className={cn("h-1.5 w-1.5 rounded-full", spec.dot)}
-                        />
-                        <span className='font-mono text-[12px] font-black text-indigo-ink'>
-                          {spec.value}
-                        </span>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              </Card>
-
-              <Card className='flex flex-col gap-2 rounded-sm border-[1.5px] border-indigo-ink bg-paper p-3'>
-                <div className='flex items-center justify-between border-b border-indigo-ink/20 pb-1 text-[11px] font-bold text-indigo-ink'>
-                  <span>مقایسه فنی: کد دست‌ساز در برابر وردپرس سنگین</span>
-                  <span className='font-mono text-[10px] font-bold text-teal-craft'>
-                    BENCHMARK
-                  </span>
-                </div>
-                <div className='grid grid-cols-2 gap-2 text-right'>
-                  <Card className='gap-0 rounded-sm border border-teal-craft/40 bg-teal-light/60 p-2'>
-                    <span className='flex items-center gap-1 text-[10px] font-bold text-teal-craft'>
-                      <CheckCircle2 className='size-3.5' />
-                      کد اختصاصی کارگاه:
-                    </span>
-                    <ul className='mt-1 space-y-0.5 text-[10px] leading-tight font-medium text-indigo-ink'>
-                      <li>• لود زیر ۰.۷ ثانیه</li>
-                      <li>• ۱۰۰٪ سازگار با هویت برند</li>
-                      <li>• امنیت بدون باگ و رخنه</li>
-                    </ul>
-                  </Card>
-                  <Card className='gap-0 rounded-sm border border-coral/30 bg-coral/10 p-2'>
-                    <span className='flex items-center gap-1 text-[10px] font-bold text-coral-dark'>
-                      <XCircle className='size-3.5' />
-                      قالب آماده و المنتور:
-                    </span>
-                    <ul className='mt-1 space-y-0.5 text-[10px] leading-tight font-medium text-indigo-light'>
-                      <li>• لود کند (۴ تا ۸ ثانیه)</li>
-                      <li>• ۳۰+ افزونه ناهمگون و تکراری</li>
-                      <li>• هزینه مداوم رفع باگ و سرور</li>
-                    </ul>
-                  </Card>
-                </div>
-              </Card>
-
-              <div className='flex flex-wrap gap-1.5 pt-0.5' dir='ltr'>
-                {TECH_BADGES.map((tech) => (
-                  <Badge
-                    key={tech.label}
-                    variant='outline'
-                    className={cn(
-                      "rounded-sm border border-indigo-ink px-2 py-0.5 font-mono text-[10px] font-bold",
-                      tech.className,
-                    )}
-                  >
-                    {tech.label}
-                  </Badge>
-                ))}
-              </div>
-
-              <div className='flex items-center justify-between border-t border-dashed border-indigo-ink/30 pt-2'>
-                <div className='flex items-center gap-2'>
-                  <svg
-                    className='h-6 w-24 text-indigo-ink'
-                    preserveAspectRatio='none'
-                    viewBox='0 0 100 24'
-                    aria-hidden
-                  >
-                    <path
-                      d='M2,2 h2 v20 h-2 Z M6,2 h1 v20 h-1 Z M9,2 h3 v20 h-3 Z M14,2 h1 v20 h-1 Z M17,2 h4 v20 h-4 Z M23,2 h2 v20 h-2 Z M27,2 h1 v20 h-1 Z M30,2 h3 v20 h-3 Z M35,2 h2 v20 h-2 Z M39,2 h4 v20 h-4 Z M45,2 h1 v20 h-1 Z M48,2 h3 v20 h-3 Z M53,2 h2 v20 h-2 Z M57,2 h1 v20 h-1 Z M60,2 h4 v20 h-4 Z M66,2 h2 v20 h-2 Z M70,2 h1 v20 h-1 Z M73,2 h3 v20 h-3 Z M78,2 h2 v20 h-2 Z M82,2 h3 v20 h-3 Z M87,2 h1 v20 h-1 Z M90,2 h4 v20 h-4 Z M96,2 h2 v20 h-2 Z'
-                      fill='currentColor'
-                    />
-                  </svg>
-                  <span className='hidden font-mono text-[9px] font-bold tracking-widest text-indigo-light sm:inline'>
-                    CODOLOGY-SPEC#084
-                  </span>
-                </div>
-                <div className='flex items-center gap-1.5 rounded-sm border border-indigo-ink/30 bg-mustard/25 px-2.5 py-1 text-[10px] font-bold text-indigo-ink'>
-                  <BadgeCheck className='size-3.5 text-coral' />
-                  <span>ضمانت کد تمیز </span>
-                </div>
-              </div>
-            </Card>
-          </div>
+        <div className='flex w-full items-center justify-center lg:w-5/12'>
+          <HeroSpecSheet />
         </div>
       </div>
     </section>

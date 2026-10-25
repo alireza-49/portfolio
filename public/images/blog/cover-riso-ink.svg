@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="چاپ دو رنگ ریزوگراف با دایره‌های جوهری و نشانه‌های ثبت">
+  <defs>
+    <pattern id="grain" width="18" height="18" patternUnits="userSpaceOnUse">
+      <circle cx="3" cy="3" r="1.15" fill="#264653" opacity="0.16" />
+      <circle cx="12" cy="11" r="0.9" fill="#e76f51" opacity="0.14" />
+    </pattern>
+    <pattern id="halftone" width="14" height="14" patternUnits="userSpaceOnUse">
+      <circle cx="4" cy="4" r="2.4" fill="#e76f51" opacity="0.55" />
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="#fffdf5" />
+  <rect width="1200" height="630" fill="url(#grain)" />
+  <g style="mix-blend-mode:multiply">
+    <circle cx="430" cy="300" r="210" fill="#e9c46a" opacity="0.85" />
+    <circle cx="455" cy="315" r="210" fill="url(#halftone)" opacity="0.8" />
+    <circle cx="830" cy="330" r="168" fill="#2a9d8f" opacity="0.72" />
+    <rect x="640" y="120" width="260" height="260" fill="#e76f51" opacity="0.55" transform="rotate(-8 640 120)" />
+  </g>
+  <path d="M120 480 C 300 360, 520 560, 760 420 S 1080 300, 1140 360" fill="none" stroke="#264653" stroke-width="6" stroke-dasharray="16 12" opacity="0.7" />
+  <g fill="#264653" font-family="'Space Grotesk', ui-monospace, monospace" font-size="18" letter-spacing="4">
+    <text x="72" y="82">CODOLOGY PRESS — FIG. 01</text>
+    <text x="72" y="570">SOY INK / TWO-PASS REGISTRATION</text>
+  </g>
+  <g fill="none" stroke="#264653" stroke-width="2" opacity="0.6">
+    <path d="M40 40 h34 M40 40 v34 M1160 40 h-34 M1160 40 v34 M40 590 h34 M40 590 v-34 M1160 590 h-34 M1160 590 v-34" />
+  </g>
+  <circle cx="1080" cy="96" r="7" fill="#e76f51" />
+  <circle cx="1104" cy="96" r="7" fill="#264653" />
+</svg>

@@ -1,15 +1,8 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import {
-  AlertCircle,
-  ArrowRight,
-  CheckCircle2,
-  Info,
-  Sparkles,
-  TriangleAlert,
-} from "lucide-react";
 import { cn } from "@/lib/utils";
+import { monoType } from "./styles";
 import {
   Accordion,
   AccordionContent,
@@ -28,6 +21,7 @@ import {
   CheckboxField,
   CreateComponentsThemeProvider,
   Field,
+  Icon,
   Input,
   Progress,
   RadioGroup,
@@ -143,7 +137,7 @@ export function CreateComponentsShowcase({
             <Button size="md">Medium</Button>
             <Button size="lg">Large</Button>
             <Button size="icon" aria-label="Sparkle">
-              <Sparkles className="size-4" />
+              <Icon name='sparkles' className="size-4" />
             </Button>
             <Button disabled>Disabled</Button>
           </div>
@@ -206,7 +200,7 @@ export function CreateComponentsShowcase({
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between text-[length:calc(var(--cc-font-size)*0.85)]">
                 <span>Volume</span>
-                <span className="font-mono text-[color:var(--cc-muted-foreground)]">
+                <span className={cn("text-[color:var(--cc-muted-foreground)]", monoType)}>
                   {volume}%
                 </span>
               </div>
@@ -277,28 +271,28 @@ export function CreateComponentsShowcase({
           <div className="flex flex-col gap-2">
             <Alert
               variant="info"
-              icon={<Info className="size-4" />}
+              icon={<Icon name='info' className="size-4" />}
               title="Heads up"
             >
               Your trial ends in 3 days.
             </Alert>
             <Alert
               variant="success"
-              icon={<CheckCircle2 className="size-4" />}
+              icon={<Icon name='check-circle' className="size-4" />}
               title="Payment received"
             >
               Invoice INV-1042 was settled.
             </Alert>
             <Alert
               variant="warning"
-              icon={<TriangleAlert className="size-4" />}
+              icon={<Icon name='alert-triangle' className="size-4" />}
               title="Usage at 80%"
             >
               Consider upgrading before you hit the cap.
             </Alert>
             <Alert
               variant="danger"
-              icon={<AlertCircle className="size-4" />}
+              icon={<Icon name='alert-circle' className="size-4" />}
               title="Card declined"
             >
               Update your billing details to continue.
@@ -331,7 +325,7 @@ export function CreateComponentsShowcase({
                 <TableBody>
                   {INVOICES.map((invoice) => (
                     <TableRow key={invoice.id}>
-                      <TableCell className="font-mono">{invoice.id}</TableCell>
+                      <TableCell className={monoType}>{invoice.id}</TableCell>
                       <TableCell>{invoice.client}</TableCell>
                       <TableCell>{invoice.amount}</TableCell>
                       <TableCell>
@@ -389,7 +383,7 @@ export function CreateComponentsShowcase({
           </span>
           <Button variant="outline" size="sm">
             Continue
-            <ArrowRight className="size-4" />
+            <Icon name='arrow-right' className="size-4" />
           </Button>
         </div>
       </div>

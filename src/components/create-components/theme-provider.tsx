@@ -36,7 +36,7 @@ export type CreateComponentsThemeProviderProps = ThemedProps & {
  * wrapper element. Nest providers to preview several styles side by side.
  *
  * ```tsx
- * <CreateComponentsThemeProvider preset="riso">
+ * <CreateComponentsThemeProvider preset="nova">
  *   <Alert title="Saved">Your changes are live.</Alert>
  * </CreateComponentsThemeProvider>
  * ```

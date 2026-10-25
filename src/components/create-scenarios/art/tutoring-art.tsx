@@ -5,6 +5,132 @@ import { cn } from "@/lib/utils";
 import { sc as styles } from "../scenes";
 import { DotPattern, GridPattern, Sparkle } from "./shared";
 
+/** Motion variables are written as inline custom properties. */
+const motionVars = (vars: Record<string, string>) =>
+  vars as unknown as CSSProperties;
+
+/* ------------------------------------------------------------- hero orbit */
+
+/**
+ * Decorative rings behind the hero copy: three dashed orbits turning at
+ * different speeds, a couple of subject chips and drifting sparkles. Drawn in
+ * page tokens only so every preset recolours it.
+ */
+export function HeroOrbit({ className }: { className?: string }) {
+  const dots = `orbit-dots-${useId().replace(/:/g, "")}`;
+
+  return (
+    <svg
+      viewBox='0 0 420 420'
+      className={cn(styles.art, className)}
+      aria-hidden='true'
+      focusable='false'
+    >
+      <defs>
+        <DotPattern id={dots} size={16} />
+      </defs>
+
+      <circle cx='210' cy='210' r='178' fill={`url(#${dots})`} opacity={0.45} />
+      <circle cx='210' cy='210' r='150' className={styles.brandFaint} />
+
+      <g className={styles.spinSlow} style={motionVars({ "--sc-duration": "76s" })}>
+        <circle
+          cx='210'
+          cy='210'
+          r='188'
+          fill='none'
+          className={styles.line}
+          strokeDasharray='2 14'
+          opacity={0.7}
+        />
+        <circle cx='210' cy='22' r='5' className={styles.accent} />
+        <circle cx='210' cy='398' r='3' className={styles.warning} />
+      </g>
+
+      <g className={styles.spin} style={motionVars({ "--sc-duration": "48s" })}>
+        <circle
+          cx='210'
+          cy='210'
+          r='136'
+          fill='none'
+          className={styles.line}
+          strokeDasharray='2 10'
+        />
+        <circle cx='346' cy='210' r='6' className={styles.brand} />
+        <circle cx='74' cy='210' r='3' className={styles.success} />
+      </g>
+
+      <g className={styles.spin} style={motionVars({ "--sc-duration": "30s" })}>
+        <circle
+          cx='210'
+          cy='210'
+          r='90'
+          fill='none'
+          className={cn(styles.brandLine, "opacity-50")}
+          strokeDasharray='3 12'
+        />
+      </g>
+
+      <OrbitChip x={12} y={128} label='ریاضی' dot={styles.brand} delay='-1.4s' />
+      <OrbitChip x={300} y={54} label='فیزیک' dot={styles.accent} delay='-3.4s' />
+      <OrbitChip x={286} y={300} label='زبان' dot={styles.success} delay='-2.2s' />
+
+      <g className={styles.drift} style={motionVars({ "--sc-delay": "-2s" })}>
+        <Sparkle transform='translate(64 52) scale(0.9)' className={styles.brand} />
+      </g>
+      <g className={styles.drift} style={motionVars({ "--sc-delay": "-6s", "--sc-duration": "15s" })}>
+        <Sparkle transform='translate(340 350) scale(0.62)' className={styles.accent} />
+      </g>
+    </svg>
+  );
+}
+
+function OrbitChip({
+  x,
+  y,
+  label,
+  dot,
+  delay,
+}: {
+  x: number;
+  y: number;
+  label: string;
+  dot: string;
+  delay: string;
+}) {
+  return (
+    <g className={styles.float} style={motionVars({ "--sc-delay": delay })}>
+      <g transform={`translate(${x} ${y})`}>
+        <rect
+          width='72'
+          height='30'
+          rx='15'
+          className={cn(styles.surface, styles.outlined)}
+        />
+        <circle cx='15' cy='15' r='4' className={dot} />
+        <text
+          x='27'
+          y='16'
+          fontSize='10.5'
+          dominantBaseline='middle'
+          className={styles.ink}
+        >
+          {label}
+        </text>
+      </g>
+    </g>
+  );
+}
+
+/* --------------------------------------------------------- classroom scene */
+
+const WAVE_BARS = [14, 22, 30, 18, 27, 12, 21];
+
+/**
+ * The hero illustration: a live-class window with a board that draws itself,
+ * a chalk cursor walking the curve, speaking bars for the live session, a
+ * typing chat, and floating cards. All coordinates are in the 560×440 viewBox.
+ */
 export function ClassroomScene({ className }: { className?: string }) {
   const dots = `classroom-dots-${useId().replace(/:/g, "")}`;
   const grid = `classroom-grid-${useId().replace(/:/g, "")}`;
@@ -102,12 +228,18 @@ export function ClassroomScene({ className }: { className?: string }) {
       <path
         d='M196 258c34 4 26-58 60-62s34 44 64 26 18-72 58-74'
         className={cn(styles.brandLine, styles.draw)}
-        style={{ "--sc-dash": "360", "--sc-duration": "3.2s" } as CSSProperties}
+        style={motionVars({ "--sc-dash": "360", "--sc-duration": "3.2s" })}
       />
       <path d='M196 196h206' className={styles.stitch} strokeDasharray='4 8' />
       <path d='M196 258l60-62' className={styles.stitch} strokeDasharray='4 8' />
       <circle cx='256' cy='196' r='4' className={styles.accent} />
       <circle cx='256' cy='196' r='9' className={styles.brandFaint} />
+
+      {/* Chalk cursor walking the same curve, in viewBox units. */}
+      <g className={styles.cursor}>
+        <path d='M0 0l13 6-5.5 2.5L5 14z' className={styles.ink} />
+        <circle cx='0' cy='0' r='3' className={styles.accent} />
+      </g>
 
       <rect
         x='360'
@@ -122,24 +254,63 @@ export function ClassroomScene({ className }: { className?: string }) {
         d='M378 290c2-18 12-26 21-26s19 8 21 26'
         className={styles.brandSoft}
       />
-      <circle cx='427' cy='210' r='4' className={styles.danger} />
-      <g
-        className={styles.pulse}
-        style={{ "--sc-delay": "0.4s" } as CSSProperties}
-      >
+      <g className={styles.signal} style={motionVars({ "--sc-delay": "0.4s" })}>
         <circle
           cx='427'
           cy='210'
           r='7'
-          className={styles.danger}
-          opacity={0.25}
+          fill='none'
+          strokeWidth={1.6}
+          style={{ stroke: "var(--cc-danger)" }}
         />
       </g>
+      <circle cx='427' cy='210' r='4' className={styles.danger} />
 
-      <g
-        className={styles.float}
-        style={{ "--sc-delay": "-1.4s" } as CSSProperties}
-      >
+      {/* Speaking bars pinned under the board. */}
+      <g className={styles.float} style={motionVars({ "--sc-delay": "-1.9s" })}>
+        <rect
+          x='214'
+          y='330'
+          width='132'
+          height='46'
+          rx='12'
+          className={cn(styles.surface, styles.outlined)}
+        />
+        <circle cx='234' cy='353' r='9' className={styles.brandSoft} />
+        <path d='M231 349l5 4-5 4z' className={styles.brand} />
+        {WAVE_BARS.map((height, index) => (
+          <rect
+            key={index}
+            x={252 + index * 11}
+            y={353 - height / 2}
+            width='5'
+            height={height}
+            rx='2.5'
+            className={cn(styles.brand, styles.wave)}
+            style={motionVars({
+              "--sc-delay": `${index * 0.12}s`,
+              "--sc-duration": "1.25s",
+            })}
+          />
+        ))}
+      </g>
+
+      {/* Reaction bubble that pops in on top of the chat. */}
+      <g className={styles.pop} style={motionVars({ "--sc-delay": "-3.2s" })}>
+        <rect
+          x='444'
+          y='160'
+          width='78'
+          height='28'
+          rx='9'
+          className={cn(styles.brandSoft, styles.outlined)}
+        />
+        <path d='M452 188l-4 8 10-8z' className={styles.brandSoft} />
+        <circle cx='458' cy='174' r='4' className={styles.brand} />
+        <path d='M470 171h40M470 179h26' className={styles.hairline} />
+      </g>
+
+      <g className={styles.float} style={motionVars({ "--sc-delay": "-1.4s" })}>
         <rect
           x='64'
           y='320'
@@ -168,10 +339,7 @@ export function ClassroomScene({ className }: { className?: string }) {
         />
       </g>
 
-      <g
-        className={styles.float}
-        style={{ "--sc-delay": "-0.6s" } as CSSProperties}
-      >
+      <g className={styles.float} style={motionVars({ "--sc-delay": "-0.6s" })}>
         <rect
           x='418'
           y='92'
@@ -192,10 +360,7 @@ export function ClassroomScene({ className }: { className?: string }) {
         </g>
       </g>
 
-      <g
-        className={styles.floatSlow}
-        style={{ "--sc-delay": "-2s" } as CSSProperties}
-      >
+      <g className={styles.floatSlow} style={motionVars({ "--sc-delay": "-2s" })}>
         <rect
           x='436'
           y='300'
@@ -243,6 +408,8 @@ export function ClassroomScene({ className }: { className?: string }) {
   );
 }
 
+/* --------------------------------------------------------------- course art */
+
 
 export type CourseArtVariant = "formula" | "atom" | "globe" | "book";
 
@@ -285,7 +452,14 @@ export function CourseArt({
           <path
             d='M32 70h32'
             className={cn(styles.brandLine, styles.draw)}
-            style={{ "--sc-dash": "40" } as CSSProperties}
+            style={motionVars({ "--sc-dash": "40" })}
+          />
+          <rect
+            x='67'
+            y='65'
+            width='4'
+            height='10'
+            className={cn(styles.brand, styles.caret)}
           />
           <path d='M56 52l10 10M66 52l-10 10' className={styles.inkLine} />
         </>
@@ -293,7 +467,7 @@ export function CourseArt({
 
       {variant === "atom" ? (
         <>
-          <g className={styles.orbit} style={{ "--sc-duration": "20s" } as CSSProperties}>
+          <g className={styles.orbit} style={motionVars({ "--sc-duration": "20s" })}>
             <ellipse
               cx='48'
               cy='48'
@@ -320,10 +494,28 @@ export function CourseArt({
               className={styles.line}
               fill='none'
             />
+            <circle cx='80' cy='48' r='3' className={styles.accent} />
           </g>
-          <circle cx='48' cy='48' r='7' className={styles.brand} />
+          <g
+            className={styles.orbit}
+            style={motionVars({
+              "--sc-duration": "13s",
+              animationDirection: "reverse",
+            })}
+          >
+            <ellipse
+              cx='48'
+              cy='48'
+              rx='32'
+              ry='13'
+              transform='rotate(30 48 48)'
+              className={cn(styles.brandLine, "opacity-50")}
+              fill='none'
+            />
+            <circle cx='16' cy='48' r='2.5' className={styles.success} />
+          </g>
           <circle cx='48' cy='48' r='12' className={styles.brandFaint} />
-          <circle cx='80' cy='48' r='3' className={styles.accent} />
+          <circle cx='48' cy='48' r='7' className={styles.brand} />
         </>
       ) : null}
 
@@ -335,14 +527,20 @@ export function CourseArt({
             r='30'
             className={cn(styles.surface, styles.outlined)}
           />
-          <ellipse
-            cx='48'
-            cy='48'
-            rx='14'
-            ry='30'
-            className={styles.hairline}
-            fill='none'
-          />
+          <g
+            className={styles.spinSlow}
+            style={motionVars({ "--sc-duration": "26s" })}
+          >
+            <ellipse
+              cx='48'
+              cy='48'
+              rx='14'
+              ry='30'
+              className={styles.hairline}
+              fill='none'
+            />
+            <circle cx='72' cy='48' r='2.5' className={styles.accent} />
+          </g>
           <path
             d='M18 48h60M22 32h52M22 64h52'
             className={styles.hairline}
@@ -360,12 +558,22 @@ export function CourseArt({
             d='M48 28c-10-6-20-6-26-4v44c8-2 18-1 26 5 8-6 18-7 26-5V24c-6-2-16-2-26 4z'
             className={cn(styles.surface, styles.outlined)}
           />
+          <path d='M30 36h10M30 44h10M30 52h8' className={styles.hairline} />
           <path d='M48 28v45' className={styles.brandLine} />
-          <path d='M30 36h10M30 44h10M58 36h10M58 44h10' className={styles.hairline} />
+          <g
+            className={styles.flip}
+            style={motionVars({ "--sc-duration": "7s" })}
+          >
+            <path
+              d='M48 28c10-6 20-6 26-4v44c-8-2-18-1-26 5z'
+              className={cn(styles.brandSoft, styles.outlined)}
+            />
+            <path d='M58 36h10M58 44h10' className={styles.hairline} />
+          </g>
           <path
             d='M58 56h12'
             className={cn(styles.brandLine, styles.draw)}
-            style={{ "--sc-dash": "16" } as CSSProperties}
+            style={motionVars({ "--sc-dash": "16" })}
           />
         </>
       ) : null}
@@ -377,6 +585,7 @@ export function CourseArt({
     </svg>
   );
 }
+
 
 export function Sparkline({
   points,
@@ -406,11 +615,15 @@ export function Sparkline({
       aria-hidden='true'
       focusable='false'
     >
+      <path
+        d={`${line} L${lastX.toFixed(1)} 37 L2 37 Z`}
+        className={styles.brandFaint}
+      />
       <path d='M2 34h116' className={styles.hairline} />
       <path
         d={line}
         className={cn(styles.brandLine, styles.draw)}
-        style={{ "--sc-dash": "180" } as CSSProperties}
+        style={motionVars({ "--sc-dash": "180" })}
       />
       <circle cx={lastX} cy={lastY} r='3' className={styles.brand} />
       <g className={styles.pulse}>
@@ -420,7 +633,10 @@ export function Sparkline({
   );
 }
 
-
+/**
+ * Connector under the three onboarding steps: a dashed comet runs along the
+ * line while each node breathes in sequence.
+ */
 export function StepPath({ className }: { className?: string }) {
   return (
     <svg
@@ -433,8 +649,19 @@ export function StepPath({ className }: { className?: string }) {
       <path
         d='M24 20h752'
         className={cn(styles.brandLine, styles.draw)}
-        style={{ "--sc-dash": "760", "--sc-duration": "2.4s" } as CSSProperties}
+        style={motionVars({ "--sc-dash": "760", "--sc-duration": "2.4s" })}
         strokeWidth={2}
+      />
+      <path
+        d='M24 20h752'
+        className={cn(styles.accentLine, styles.travel)}
+        style={motionVars({
+          "--sc-dash-run": "26 726",
+          "--sc-run": "752",
+          "--sc-duration": "4.2s",
+        })}
+        strokeWidth={3}
+        fill='none'
       />
       {[24, 400, 776].map((x, index) => (
         <g key={x}>
@@ -445,7 +672,12 @@ export function StepPath({ className }: { className?: string }) {
             r='11'
             className={index === 1 ? styles.accent : styles.brand}
           />
-          <circle cx={x} cy='20' r='4' className={styles.surface} />
+          <g
+            className={styles.pulse}
+            style={motionVars({ "--sc-delay": `${index * 0.5}s` })}
+          >
+            <circle cx={x} cy='20' r='4' className={styles.surface} />
+          </g>
         </g>
       ))}
       <path d='M766 14l10 6-10 6z' className={styles.brand} />
@@ -453,6 +685,10 @@ export function StepPath({ className }: { className?: string }) {
   );
 }
 
+
+/**
+ * Before/after score chart: columns grow once behind the drawn trend line.
+ */
 export function ScoreChart({ className }: { className?: string }) {
   return (
     <svg
@@ -464,6 +700,20 @@ export function ScoreChart({ className }: { className?: string }) {
       {[24, 52, 80, 108].map((y) => (
         <path key={y} d={`M12 ${y}h276`} className={styles.hairline} />
       ))}
+
+      {[26, 38, 34, 50, 62, 58, 74].map((height, index) => (
+        <rect
+          key={index}
+          x={18 + index * 38}
+          y={108 - height}
+          width='18'
+          height={height}
+          rx='4'
+          className={cn(styles.brandFaint, styles.grow)}
+          style={motionVars({ "--sc-delay": `${index * 0.09}s` })}
+        />
+      ))}
+
       <path
         d='M16 96c32-20 56-26 88-36s60-16 92-24 60-12 88-14v86H16z'
         className={styles.brandFaint}
@@ -471,13 +721,13 @@ export function ScoreChart({ className }: { className?: string }) {
       <path
         d='M16 92c34-6 56-12 88-8s56-12 86-8 50-10 94-6'
         className={cn(styles.stitch, styles.drawSlow)}
-        style={{ "--sc-dash": "320", "--sc-duration": "3s" } as CSSProperties}
+        style={motionVars({ "--sc-dash": "320", "--sc-duration": "3s" })}
         fill='none'
       />
       <path
         d='M16 96c32-20 56-26 88-36s60-16 92-24 60-12 88-14'
         className={cn(styles.brandLine, styles.draw)}
-        style={{ "--sc-dash": "320", "--sc-duration": "2.6s" } as CSSProperties}
+        style={motionVars({ "--sc-dash": "320", "--sc-duration": "2.6s" })}
         fill='none'
       />
       <circle cx='284' cy='22' r='4' className={styles.brand} />
@@ -504,7 +754,7 @@ export function CtaPattern({ className }: { className?: string }) {
       <rect width='520' height='260' fill={`url(#${patternId})`} opacity={0.5} />
       <g
         className={styles.orbit}
-        style={{ "--sc-duration": "40s" } as CSSProperties}
+        style={motionVars({ "--sc-duration": "40s" })}
       >
         <circle
           cx='260'
@@ -527,20 +777,43 @@ export function CtaPattern({ className }: { className?: string }) {
         <circle cx='260' cy='26' r='4' className={styles.warning} />
         <circle cx='186' cy='200' r='3' className={styles.success} />
       </g>
-      <Sparkle
-        transform='translate(64 54) scale(0.8)'
-        className={styles.brand}
-      />
-      <Sparkle
-        transform='translate(430 190) scale(0.6)'
-        className={styles.accent}
-      />
+      <g
+        className={styles.pop}
+        style={motionVars({ "--sc-delay": "-2.6s", "--sc-duration": "9s" })}
+      >
+        <circle cx='402' cy='68' r='14' className={styles.brandSoft} />
+        <path
+          d='M396 68l4 4 7-8'
+          fill='none'
+          strokeWidth={2.2}
+          strokeLinecap='round'
+          style={{ stroke: "var(--cc-primary)" }}
+        />
+      </g>
+      <g className={styles.drift} style={motionVars({ "--sc-delay": "-3s" })}>
+        <Sparkle
+          transform='translate(64 54) scale(0.8)'
+          className={styles.brand}
+        />
+      </g>
+      <g
+        className={styles.drift}
+        style={motionVars({ "--sc-delay": "-7s", "--sc-duration": "13s" })}
+      >
+        <Sparkle
+          transform='translate(430 190) scale(0.6)'
+          className={styles.accent}
+        />
+      </g>
     </svg>
   );
 }
 
+/* -------------------------------------------------------- feature vignettes */
 
 export type FeatureVariant = "live" | "path" | "feedback";
+
+const VIGNETTE_BARS = [10, 16, 22, 14, 19, 11, 17, 13];
 
 export function FeatureVignette({
   variant,
@@ -586,16 +859,32 @@ export function FeatureVignette({
           />
           <circle cx='64' cy='49' r='9' className={styles.brand} />
           <path d='M61 44l8 5-8 5z' className={styles.surface} />
-          <g className={styles.pulse}>
-            <circle cx='182' cy='36' r='4' className={styles.danger} />
+          <g className={styles.signal}>
             <circle
               cx='182'
               cy='36'
-              r='8'
-              className={styles.danger}
-              opacity={0.25}
+              r='7'
+              fill='none'
+              strokeWidth={1.6}
+              style={{ stroke: "var(--cc-danger)" }}
             />
           </g>
+          <circle cx='182' cy='36' r='4' className={styles.danger} />
+          {VIGNETTE_BARS.map((height, index) => (
+            <rect
+              key={index}
+              x={118 + index * 9}
+              y={68 - height}
+              width='4'
+              height={height}
+              rx='2'
+              className={cn(styles.brand, styles.wave)}
+              style={motionVars({
+                "--sc-delay": `${index * 0.1}s`,
+                "--sc-duration": "1.15s",
+              })}
+            />
+          ))}
           <path d='M26 84h72M110 84h50' className={styles.hairline} />
           <path d='M26 94h110' className={styles.stitch} />
         </>
@@ -606,7 +895,18 @@ export function FeatureVignette({
           <path
             d='M34 84c26 0 22-46 48-46s22 42 46 42 20-38 46-38'
             className={cn(styles.brandLine, styles.draw)}
-            style={{ "--sc-dash": "230" } as CSSProperties}
+            style={motionVars({ "--sc-dash": "230" })}
+            fill='none'
+          />
+          <path
+            d='M34 84c26 0 22-46 48-46s22 42 46 42 20-38 46-38'
+            className={cn(styles.accentLine, styles.travel)}
+            style={motionVars({
+              "--sc-dash-run": "18 214",
+              "--sc-run": "232",
+              "--sc-duration": "3.6s",
+            })}
+            strokeWidth={3.4}
             fill='none'
           />
           {[
@@ -616,24 +916,19 @@ export function FeatureVignette({
             { x: 174, y: 42 },
           ].map((point, index) => (
             <g key={`${point.x}-${point.y}`}>
-              <circle
-                cx={point.x}
-                cy={point.y}
-                r='8'
-                className={styles.surface}
-              />
+              <circle cx={point.x} cy={point.y} r='8' className={styles.surface} />
               <circle
                 cx={point.x}
                 cy={point.y}
                 r='8'
                 className={index === 3 ? styles.accent : styles.brand}
               />
-              <circle
-                cx={point.x}
-                cy={point.y}
-                r='3'
-                className={styles.surface}
-              />
+              <g
+                className={styles.pulse}
+                style={motionVars({ "--sc-delay": `${index * 0.45}s` })}
+              >
+                <circle cx={point.x} cy={point.y} r='3' className={styles.surface} />
+              </g>
             </g>
           ))}
           <path d='M168 26h16v14' className={styles.accent} />
@@ -661,14 +956,24 @@ export function FeatureVignette({
             className={styles.brandSoft}
           />
           <path d='M174 92l8 10 2-12' className={styles.brandSoft} />
-          <path d='M112 72h58M112 82h40' className={styles.hairline} />
-          <circle cx='94' cy='88' r='7' className={styles.success} />
-          <path
-            d='M91 88l2 2 5-5'
-            className={styles.surface}
-            strokeWidth={1.6}
-            fill='none'
-          />
+          <path d='M112 70h58M112 80h40' className={styles.hairline} />
+          <g className={styles.typing}>
+            <circle cx='112' cy='86' r='2' className={styles.inkSoft} />
+            <circle cx='119' cy='86' r='2' className={styles.inkSoft} />
+            <circle cx='126' cy='86' r='2' className={styles.inkSoft} />
+          </g>
+          <g
+            className={styles.pop}
+            style={motionVars({ "--sc-delay": "-1.8s", "--sc-duration": "7s" })}
+          >
+            <circle cx='94' cy='88' r='8' className={styles.success} />
+            <path
+              d='M90 88l3 3 5-5'
+              className={styles.surface}
+              strokeWidth={1.8}
+              fill='none'
+            />
+          </g>
           <path d='M28 100h120' className={styles.stitch} />
         </>
       ) : null}

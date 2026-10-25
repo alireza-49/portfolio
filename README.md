@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# استودیو کدولوژی — پورتفولیو ریسوگراف
 
-## Getting Started
+سایت فارسی (RTL) با تم چاپ ریسوگراف: صفحهٔ اصلی، استودیوی تم `/create`، وبلاگ عمومی و کنسول
+مدیریت.
 
-First, run the development server:
+## اجرا
 
 ```bash
+npm install
+cp .env.example .env.local     # DATABASE_URL، ADMIN_USERNAME، ADMIN_PASSWORD، ADMIN_SESSION_SECRET
+npm run db:setup              # ساخت جدول‌ها + دادهٔ نمونه (فقط وقتی جدول خالی است)
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- خانه: `http://localhost:3000/`
+- استودیوی تم: `/create`
+- وبلاگ: `/blog`
+- رهگیری پروژه: `/track`
+- کنسول: `/admin/login` (بدون متغیرهای محیطی، در حالت توسعه با `admin` / `codology-dev` باز می‌شود)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## اسکریپت‌ها
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run dev       # سرور توسعه
+npm run build     # بیلد تولید (بدون نیاز به پایگاه داده)
+npm start         # اجرای بیلد
+npm run lint      # ESLint
+npm run db:setup  # اعمال schema.sql + seed نمونه روی DATABASE_URL
+```
 
-## Learn More
+## ساختار
 
-To learn more about Next.js, take a look at the following resources:
+- `src/app` — مسیرها: `/`، `/create`، `/blog`، `/track`، `/admin`
+- `src/components/create-*` — استودیوی تم و کتابخانهٔ کامپوننت‌های توکنی
+- `src/components/admin` — پوستهٔ کنسول، فرم‌ها، ویرایشگر Tiptap، جدول‌ها
+- `src/components/blog` و `src/components/track` — سطوح عمومی
+- `src/lib` — پایگاه داده (`db.ts`, `schema.sql`)، ریپازیتوری‌ها (`content.ts`)، احراز هویت،
+  پاک‌سازی HTML، تقویم جلالی و قالب‌بندی فارسی
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+قواعد کامل پروژه در `AGENTS.md` آمده است.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## استقرار
 
-## Deploy on Vercel
+1. یک پایگاه دادهٔ Postgres (Neon یا Supabase) بسازید و نشانی **pooled** را بردارید.
+2. `DATABASE_URL` را در `.env.local` بگذارید و یک‌بار `npm run db:setup` را اجرا کنید.
+3. روی Vercel همین کلیدها را به‌همراه `ADMIN_USERNAME`، `ADMIN_PASSWORD` و
+   `ADMIN_SESSION_SECRET` تعریف کنید.
+4. پس از دیپلوی، از `/admin/login` وارد شوید.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+> تصاویر مقاله‌ها فقط با نشانی (URL) درج می‌شوند؛ فایل روی سرور آپلود نمی‌شود.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

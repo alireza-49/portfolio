@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="نشانه‌های خط فارسی و خطوط اندازه‌گیری تایپوگرافی">
+  <defs>
+    <pattern id="paper-grain" width="16" height="16" patternUnits="userSpaceOnUse">
+      <circle cx="3" cy="4" r="1" fill="#264653" opacity="0.14" />
+      <circle cx="11" cy="12" r="0.8" fill="#e76f51" opacity="0.16" />
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="#fffdf5" />
+  <rect width="1200" height="630" fill="url(#paper-grain)" />
+  <g fill="none" stroke="#264653" stroke-width="2" opacity="0.35">
+    <path d="M90 210 H1110" />
+    <path d="M90 300 H1110" />
+    <path d="M90 390 H1110" />
+    <path d="M90 470 H1110" />
+  </g>
+  <g fill="none" stroke="#e76f51" stroke-width="5" stroke-linecap="round">
+    <path d="M180 400 C 210 300, 290 250, 330 320 C 360 372, 300 430, 260 380" />
+    <path d="M420 430 C 450 340, 470 260, 520 300 C 556 330, 520 400, 486 386" />
+    <path d="M610 300 V 430" />
+    <path d="M610 370 C 660 340, 700 340, 710 300" />
+    <path d="M800 430 C 830 330, 860 300, 900 330 C 930 354, 900 400, 866 388" />
+  </g>
+  <g fill="none" stroke="#2a9d8f" stroke-width="4" stroke-dasharray="8 8">
+    <path d="M150 268 H940" />
+    <rect x="150" y="150" width="790" height="300" />
+  </g>
+  <g fill="#264653" font-family="'Space Grotesk', ui-monospace, monospace" font-size="16" letter-spacing="3">
+    <text x="150" y="122">PERSIAN TYPE AT WEB SPEED</text>
+    <text x="150" y="566">SUBSET · SUBSET · SUBSET — 28 KB PER WEIGHT</text>
+  </g>
+  <g fill="#e76f51" font-family="'Space Grotesk', ui-monospace, monospace" font-size="14">
+    <text x="150" y="496">BASELINE</text>
+    <text x="150" y="252">ASCENDER</text>
+  </g>
+  <circle cx="1042" cy="96" r="9" fill="#264653" />
+</svg>

@@ -136,6 +136,15 @@
   opacity: 0.75;
 }
 
+/* Accent stroke for the travelling comet used by the step/roadmap paths. */
+.sc-accentLine {
+  fill: none;
+  stroke: var(--cc-accent);
+  stroke-width: 3;
+  stroke-linecap: round;
+  opacity: 0.9;
+}
+
 /* ---------------------------------------------------------------- motion */
 
 .sc-sway,
@@ -230,6 +239,169 @@
   stroke-dasharray: 5 7;
 }
 
+/* --------------------------------------------------- looping scene motion */
+/*
+ * Added for the landing rebuild. Everything below only animates transform,
+ * opacity or stroke-dashoffset so the illustrations stay on the compositor and
+ * keep working inside the scrollable preview viewport.
+ */
+
+.sc-wave,
+.sc-grow,
+.sc-flip,
+.sc-pop,
+.sc-signal {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* Speaking bars: pivot on their baseline, like a microphone meter. */
+.sc-wave {
+  transform-origin: bottom center;
+  animation: sc-wave var(--sc-duration, 1.1s) ease-in-out infinite;
+  animation-delay: var(--sc-delay, 0s);
+}
+
+/* One-shot column growth used by the score chart. */
+.sc-grow {
+  transform-origin: bottom center;
+  transform: scaleY(0);
+  animation: sc-grow 900ms var(--cc-ease, ease) forwards;
+  animation-delay: var(--sc-delay, 0s);
+}
+
+/* Expanding live-signal halo. */
+.sc-signal {
+  animation: sc-signal 2.6s ease-out infinite;
+  animation-delay: var(--sc-delay, 0s);
+}
+
+/* Chat bubble / check badge: appears, holds, disappears, loops. */
+.sc-pop {
+  animation: sc-pop var(--sc-duration, 8s) ease-in-out infinite;
+  animation-delay: var(--sc-delay, 0s);
+}
+
+/* Chalk cursor walking the board curve. Coordinates are viewBox units. */
+.sc-cursor {
+  animation: sc-cursor var(--sc-duration, 7.4s) var(--cc-ease, ease) infinite;
+}
+
+/* A dashboard-trail dot running along a connector line. */
+.sc-travel {
+  stroke-dasharray: var(--sc-dash-run, 20 640);
+  stroke-dashoffset: 0;
+  animation: sc-travel var(--sc-duration, 4.6s) linear infinite;
+}
+
+/* Book page turn, pivoting on the spine. */
+.sc-flip {
+  transform-origin: left center;
+  animation: sc-flip var(--sc-duration, 5.4s) ease-in-out infinite;
+}
+
+/* Slow diagonal drift for background decorations. */
+.sc-drift {
+  animation: sc-drift var(--sc-duration, 11s) ease-in-out infinite;
+  animation-delay: var(--sc-delay, 0s);
+}
+
+/* Text caret blinking after a self-drawn line. */
+.sc-caret {
+  animation: sc-caret var(--sc-duration, 1.6s) steps(1, end) infinite;
+}
+
+/* ------------------------------------------------------- commerce motion */
+/*
+ * Added with the storefront rebuild: a price tag twisting on its thread, a
+ * receipt rising out of a bag, a confetti burst and a sewing needle walking
+ * its seam. Same contract as above — transform/opacity only.
+ */
+
+.sc-wiggle,
+.sc-rise,
+.sc-burst,
+.sc-sew {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.sc-wiggle {
+  transform-origin: top center;
+  animation: sc-wiggle var(--sc-duration, 5.5s) ease-in-out infinite;
+  animation-delay: var(--sc-delay, 0s);
+}
+
+.sc-rise {
+  transform-origin: bottom center;
+  animation: sc-rise var(--sc-duration, 6.4s) ease-in-out infinite;
+  animation-delay: var(--sc-delay, 0s);
+}
+
+/* Only ever visible while moving, so it is parked in the reduced-motion block. */
+.sc-burst {
+  opacity: 0;
+  animation: sc-burst var(--sc-duration, 2.8s) ease-out infinite;
+  animation-delay: var(--sc-delay, 0s);
+}
+
+.sc-sew {
+  animation: sc-sew var(--sc-duration, 3.4s) ease-in-out infinite;
+  animation-delay: var(--sc-delay, 0s);
+}
+
+/* ------------------------------------------------------- clinic motion */
+/*
+ * Added with the clinic rebuild: a heartbeat, a monitor playhead sweeping the
+ * ECG trace and a slow breathing halo behind it. Transform/opacity only, so
+ * the SVG keeps its token colours in every preset.
+ */
+
+.sc-beat,
+.sc-scan,
+.sc-breathe {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* Double thump of a heart monitor, not a linear pulse. */
+.sc-beat {
+  animation: sc-beat var(--sc-duration, 2.6s) ease-out infinite;
+  animation-delay: var(--sc-delay, 0s);
+}
+
+/* Playhead sweeping the monitor; `--sc-run-x` is the travel distance. */
+.sc-scan {
+  animation: sc-scan var(--sc-duration, 4.4s) ease-in-out infinite;
+  animation-delay: var(--sc-delay, 0s);
+}
+
+.sc-breathe {
+  animation: sc-breathe var(--sc-duration, 7s) ease-in-out infinite;
+  animation-delay: var(--sc-delay, 0s);
+}
+
+/*
+ * HTML chips floating over an illustration. `.sc-float` is SVG-shaped
+ * (`transform-box: fill-box`), so overlays get their own class.
+ */
+.sc-floatChip {
+  animation: sc-float var(--sc-duration, 6s) ease-in-out infinite;
+  animation-delay: var(--sc-delay, 0s);
+}
+
+/*
+ * State-driven SVG element (the free-shipping truck). Its position comes from
+ * React on every render; this only smooths the jump between values.
+ */
+.sc-track {
+  transition: transform 600ms var(--cc-ease, ease);
+}
+
+.sc-art text {
+  font-family: var(--cc-font-family);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .sc-sway,
   .sc-swaySlow,
@@ -244,14 +416,45 @@
   .sc-draw,
   .sc-drawSlow,
   .sc-typing span,
-  .sc-tickerTrack {
+  .sc-tickerTrack,
+  .sc-wave,
+  .sc-signal,
+  .sc-pop,
+  .sc-grow,
+  .sc-flip,
+  .sc-travel,
+  .sc-drift,
+  .sc-caret,
+  .sc-wiggle,
+  .sc-rise,
+  .sc-sew,
+  .sc-beat,
+  .sc-scan,
+  .sc-breathe {
     animation: none !important;
     transform: none !important;
+  }
+
+  .sc-floatChip {
+    animation: none !important;
+  }
+
+  .sc-track {
+    transition: none;
   }
 
   .sc-draw,
   .sc-drawSlow {
     stroke-dashoffset: 0 !important;
+  }
+
+  /* These only exist as motion, so park them instead of freezing mid-air. */
+  .sc-cursor,
+  .sc-signal,
+  .sc-burst,
+  .sc-scan {
+    opacity: 0 !important;
+    animation: none !important;
   }
 }
 
@@ -401,6 +604,230 @@
   .sc-hangSlow {
     animation: none !important;
     transform: none !important;
+  }
+}
+
+
+/* ------------------------------------------------- landing motion keyframes */
+
+@keyframes sc-wave {
+  0%,
+  100% {
+    transform: scaleY(0.32);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes sc-grow {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes sc-signal {
+  0% {
+    transform: scale(0.55);
+    opacity: 0.6;
+  }
+  70%,
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+
+@keyframes sc-pop {
+  0%,
+  10% {
+    transform: scale(0.55);
+    opacity: 0;
+  }
+  20%,
+  78% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  92%,
+  100% {
+    transform: scale(0.55);
+    opacity: 0;
+  }
+}
+
+@keyframes sc-cursor {
+  0%,
+  6% {
+    transform: translate(196px, 258px);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  30% {
+    transform: translate(256px, 196px);
+  }
+  52% {
+    transform: translate(320px, 222px);
+  }
+  74% {
+    transform: translate(378px, 148px);
+  }
+  88%,
+  100% {
+    transform: translate(378px, 148px);
+    opacity: 0;
+  }
+}
+
+@keyframes sc-travel {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: calc(-1 * var(--sc-run, 660));
+  }
+}
+
+@keyframes sc-flip {
+  0%,
+  100% {
+    transform: scaleX(1);
+  }
+  38%,
+  62% {
+    transform: scaleX(0.08);
+  }
+}
+
+@keyframes sc-drift {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(6px, -9px);
+  }
+}
+
+@keyframes sc-caret {
+  0%,
+  42% {
+    opacity: 1;
+  }
+  50%,
+  96% {
+    opacity: 0;
+  }
+}
+
+/* --------------------------------------------------- commerce keyframes */
+
+@keyframes sc-wiggle {
+  0%,
+  100% {
+    transform: rotate(-4.5deg);
+  }
+  50% {
+    transform: rotate(4.5deg);
+  }
+}
+
+@keyframes sc-rise {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  40%,
+  72% {
+    transform: translateY(-15px);
+  }
+}
+
+@keyframes sc-burst {
+  0% {
+    transform: scale(0.18);
+    opacity: 0;
+  }
+  18% {
+    opacity: 0.85;
+  }
+  68%,
+  100% {
+    transform: scale(1.42);
+    opacity: 0;
+  }
+}
+
+@keyframes sc-sew {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(-7deg);
+  }
+  25% {
+    transform: translate(9px, 7px) rotate(5deg);
+  }
+  50% {
+    transform: translate(18px, -2px) rotate(-5deg);
+  }
+  75% {
+    transform: translate(9px, -8px) rotate(7deg);
+  }
+}
+
+/* ---------------------------------------------------- clinic keyframes */
+
+@keyframes sc-beat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  10% {
+    transform: scale(1.42);
+  }
+  20% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.24);
+  }
+  44% {
+    transform: scale(1);
+  }
+}
+
+@keyframes sc-scan {
+  0%,
+  100% {
+    transform: translateX(0);
+    opacity: 0.12;
+  }
+  8%,
+  40% {
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateX(var(--sc-run-x, 190px));
+    opacity: 0.55;
+  }
+  92% {
+    opacity: 0.12;
+  }
+}
+
+@keyframes sc-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.045);
+    opacity: 1;
   }
 }
 

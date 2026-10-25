@@ -31,6 +31,7 @@ export const sc = {
   hairline: "sc-hairline",
   stitch: "sc-stitch",
   brandStitch: "sc-brandStitch",
+  accentLine: "sc-accentLine",
   strokeDash: "sc-strokeDash",
   sway: "sc-sway",
   swaySlow: "sc-swaySlow",
@@ -49,4 +50,25 @@ export const sc = {
   typing: "sc-typing",
   ticker: "sc-ticker",
   tickerTrack: "sc-tickerTrack",
+  /* Looping motion added for the landing rebuild. */
+  cursor: "sc-cursor",
+  wave: "sc-wave",
+  signal: "sc-signal",
+  pop: "sc-pop",
+  travel: "sc-travel",
+  grow: "sc-grow",
+  flip: "sc-flip",
+  drift: "sc-drift",
+  caret: "sc-caret",
+  /* Commerce motion added with the storefront rebuild. */
+  wiggle: "sc-wiggle",
+  rise: "sc-rise",
+  burst: "sc-burst",
+  sew: "sc-sew",
+  floatChip: "sc-floatChip",
+  track: "sc-track",
+  /* Clinic motion: heartbeat, monitor playhead, breathing halo. */
+  beat: "sc-beat",
+  scan: "sc-scan",
+  breathe: "sc-breathe",
 } as const;

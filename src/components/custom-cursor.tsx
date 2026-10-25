@@ -23,10 +23,12 @@ const DOT_HOVER_RADIUS = 2;
 const DOT_COLOR = "#e76f51"; // --color-coral
 const DOT_HOVER_COLOR = "#264653"; // --color-secondary / --color-indigo-ink
 
-/** How much of the travel direction is turned into ring rotation. */
-const ROTATION_FACTOR = 0.12;
-/** Hard cap on the ring tilt, in radians (~8deg). */
-const MAX_ROTATION = 0.14;
+/** Ring elongation at full speed, along the direction of travel. */
+const STRETCH_LENGTH = 1.4;
+/** Ring thinning at full speed, across the direction of travel. */
+const STRETCH_SQUASH = 0.38;
+/** Small overall swell so the ring gains presence with speed. */
+const STRETCH_SWELL = 0.12;
 
 /**
  * Hides the OS cursor everywhere.
@@ -139,7 +141,7 @@ export function CustomCursor({
 
     // ---- morph state -----------------------------------------------------
     let morphTarget: MorphTarget | null = null;
-    let morphAmount = 0; // smoothed 0..1, damps stretch + rotation
+    let morphAmount = 0; // smoothed 0..1, damps the velocity stretch
     let ringW = RING_SIZE;
     let ringH = RING_SIZE;
     let ringR = RING_SIZE / 2;
@@ -381,20 +383,35 @@ export function CustomCursor({
       // dot: pinned, no lag
       dot.style.transform = `translate3d(${pointer.x}px, ${pointer.y}px, 0) translate(-50%, -50%)`;
 
-      // ring: stretched along the travel axis, squashed across it
-      const scaleY = (1 + stretch * 0.9) * (1 + stretch * 0.18);
-      const scaleX = (1 - stretch * 0.32) * (1 + stretch * 0.18);
+      // ring: elongated along the direction of travel, thinned across it.
+      //
+      // `rotate(angle) scale(along, across)` would also rotate the ring's own
+      // box, which pops as a spin the moment the ring morphs into a link or a
+      // button. So the anisotropic scale is baked into the travel frame
+      // instead:  R(angle) · S(along, across) · R(-angle).
+      // A circle is invariant under R(-angle), so the visible result is the
+      // same ellipse pointing down the travel axis, while a morphing shape
+      // keeps its own orientation. The stretch also relaxes as the ring grows
+      // into an element (`morphAmount`), so it never distorts the wrapper.
+      const spread = stretch * (1 - morphAmount);
+      const alongScale =
+        (1 + spread * STRETCH_LENGTH) * (1 + spread * STRETCH_SWELL);
+      const acrossScale =
+        (1 - spread * STRETCH_SQUASH) * (1 + spread * STRETCH_SWELL);
 
-      // only a slight tilt in the direction of travel, hard-capped
-      const rawRot = angle * ROTATION_FACTOR * (1 - morphAmount);
-      const rot = Math.max(-MAX_ROTATION, Math.min(MAX_ROTATION, rawRot));
+      const cos = Math.cos(angle);
+      const sin = Math.sin(angle);
+      // m12 === m21, so one value covers both
+      const cross = (alongScale - acrossScale) * cos * sin;
+      const m11 = alongScale * cos * cos + acrossScale * sin * sin;
+      const m22 = alongScale * sin * sin + acrossScale * cos * cos;
 
       ring.style.width = `${ringW}px`;
       ring.style.height = `${ringH}px`;
       ring.style.borderRadius = `${ringR}px`;
       ring.style.transform =
         `translate3d(${ringPos.x}px, ${ringPos.y}px, 0) translate(-50%, -50%) ` +
-        `rotate(${rot}rad) scale(${scaleX}, ${scaleY})`;
+        `matrix(${m11}, ${cross}, ${cross}, ${m22}, 0, 0)`;
 
       // emission
       if (sprinkles && !still && hasPointer) {
@@ -509,7 +526,9 @@ export function CustomCursor({
     <div
       ref={containerRef}
       aria-hidden='true'
-      className='pointer-events-none fixed inset-0 z-[9999] overflow-hidden'
+      // Above every dialog/overlay, including driver.js' tour layer (z-index
+      // 1e9): the custom pointer must stay visible while a guide is open.
+      className='pointer-events-none fixed inset-0 z-[2147483647] overflow-hidden'
     >
       <canvas ref={canvasRef} className='absolute inset-0' />
       <div

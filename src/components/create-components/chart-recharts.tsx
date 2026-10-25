@@ -18,7 +18,7 @@ import {
   YAxis,
 } from "recharts";
 import { cn } from "@/lib/utils";
-import { labelType } from "./styles";
+import { labelType, monoType } from "./styles";
 import { type ChartSeries, seriesColor, useChartTheme } from "./chart";
 
 /**
@@ -89,7 +89,7 @@ function ChartTooltipBox({
               />
               {item.name}
             </span>
-            <span className='font-mono font-bold'>
+            <span className={`${monoType} font-bold`}>
               {formatValue
                 ? formatValue(numeric)
                 : numeric.toLocaleString("fa-IR")}
@@ -435,7 +435,7 @@ export function DonutBreakdown({
 
       {centerValue !== undefined ? (
         <div className='pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-0.5 text-center'>
-          <span className='font-mono text-[length:calc(var(--cc-font-size)*1.05)] font-black text-[color:var(--cc-surface-foreground)]'>
+          <span className={`${monoType} text-[length:calc(var(--cc-font-size)*1.05)] font-black text-[color:var(--cc-surface-foreground)]`}>
             {centerValue}
           </span>
           {centerLabel ? (

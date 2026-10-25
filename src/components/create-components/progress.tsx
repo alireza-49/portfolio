@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { borderChrome } from "./styles";
+import { borderChrome, monoType } from "./styles";
 
 export type ProgressProps = {
   value?: number;
@@ -45,7 +45,7 @@ export function Progress({
         />
       </div>
       {showValue ? (
-        <span className="shrink-0 font-mono text-[length:calc(var(--cc-font-size)*0.8)] text-[color:var(--cc-muted-foreground)]">
+        <span className={cn("shrink-0 text-[length:calc(var(--cc-font-size)*0.8)] text-[color:var(--cc-muted-foreground)]", monoType)}>
           {Math.round(percent)}%
         </span>
       ) : null}

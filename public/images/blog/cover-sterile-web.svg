@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="ترکیب هندسی تیز با خطوط جوهر و سایه‌های چاپی">
+  <defs>
+    <pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.2" fill="#264653" opacity="0.18" />
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="#fffdf5" />
+  <rect width="1200" height="630" fill="url(#dots)" />
+  <g>
+    <rect x="150" y="132" width="270" height="366" fill="#264653" />
+    <rect x="142" y="124" width="270" height="366" fill="none" stroke="#e76f51" stroke-width="4" />
+    <rect x="470" y="132" width="270" height="366" fill="#e76f51" />
+    <rect x="486" y="148" width="270" height="366" fill="none" stroke="#264653" stroke-width="3" stroke-dasharray="10 8" />
+    <rect x="790" y="132" width="270" height="366" fill="#e9c46a" />
+    <path d="M790 132 L1060 498 M1060 132 L790 498" stroke="#264653" stroke-width="6" />
+  </g>
+  <g fill="none" stroke="#264653" stroke-width="4">
+    <path d="M150 560 H1060" />
+    <path d="M150 560 v-18 M470 560 v-18 M790 560 v-18 M1060 560 v-18" />
+  </g>
+  <g fill="#264653" font-family="'Space Grotesk', ui-monospace, monospace" font-size="17" letter-spacing="3">
+    <text x="150" y="98">STERILE WEB / INK RETURNS</text>
+    <text x="150" y="600">HARD EDGES · NO BLUR · ONE ACCENT</text>
+  </g>
+  <circle cx="1064" cy="92" r="10" fill="#e76f51" />
+</svg>

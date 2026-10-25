@@ -40,6 +40,16 @@ export type ShopLook = {
 export const FREE_SHIPPING = 3_000_000;
 export const SHIPPING_COST = 120_000;
 export const COUPON_CODE = "MANO10";
+export const COUPON_PERCENT = 10;
+
+/** Anchors used by the storefront header, so labels live with the sections. */
+export const SHOP_NAV = [
+  { href: "#shop-collection", label: "کالکشن" },
+  { href: "#shop-lookbook", label: "استایل‌ها" },
+  { href: "#shop-guide", label: "راهنمای سایز" },
+  { href: "#shop-bag", label: "سبد خرید" },
+  { href: "#shop-faq", label: "پرسش‌ها" },
+] as const;
 
 export const SHOP_CATEGORIES: {
   value: "all" | ShopCategory;
@@ -241,10 +251,27 @@ export const SHOP_LOOKS: ShopLook[] = [
     items: ["hoodie", "cargo", "tote"],
     scene: "stack",
   },
+  {
+    id: "gallery",
+    title: "گالری و مهمانی",
+    subtitle: "پیراهن کتان + بافت + ساعت",
+    items: ["shirt", "knit", "watch"],
+    scene: "tray",
+  },
 ];
 
+/** Headline facts. The storefront never repeats these numbers by hand. */
+export const SHOP_STATS = {
+  rating: 4.8,
+  reviews: 341,
+  pieces: SHOP_PRODUCTS.length,
+  deliveryHours: 24,
+  exchangeDays: 7,
+  madeIn: "تهران",
+} as const;
+
 export const SHOP_SERVICES: {
-  art: "truck" | "return" | "support";
+  art: "truck" | "return" | "sew" | "shield";
   title: string;
   body: string;
 }[] = [
@@ -259,11 +286,76 @@ export const SHOP_SERVICES: {
     body: "تعویض سایز بدون هزینه، فقط با یک تماس",
   },
   {
-    art: "support",
-    title: "پشتیبانی واقعی",
-    body: "پاسخ انسانی از ۹ صبح تا ۹ شب، هر روز هفته",
+    art: "sew",
+    title: "دوخت محدود",
+    body: "هر سری در تهران و در تعداد کم دوخته می‌شود",
+  },
+  {
+    art: "shield",
+    title: "پرداخت امن",
+    body: "درگاه بانکی و پرداخت در محل برای شهر تهران",
   },
 ];
+
+/** Size chart shown by the measuring-tape guide. */
+export const SHOP_SIZE_TABLE: {
+  size: string;
+  chest: string;
+  length: string;
+  sleeve: string;
+  fit: string;
+}[] = [
+  { size: "S", chest: "۹۶", length: "۶۸", sleeve: "۵۸", fit: "جذب" },
+  { size: "M", chest: "۱۰۲", length: "۷۰", sleeve: "۵۹", fit: "معمولی" },
+  { size: "L", chest: "۱۰۸", length: "۷۲", sleeve: "۶۰", fit: "راحت" },
+  { size: "XL", chest: "۱۱۴", length: "۷۴", sleeve: "۶۱", fit: "اورسایز" },
+];
+
+/** Order states printed on the confirmation panel. */
+export const SHOP_TRACKING: {
+  title: string;
+  description: string;
+  meta: string;
+  tone: "success" | "primary" | "muted";
+}[] = [
+  {
+    title: "سفارش ثبت شد",
+    description: "کد پیگیری برای شما پیامک شد.",
+    meta: "امروز · ۱۰:۲۴",
+    tone: "success",
+  },
+  {
+    title: "در حال آماده‌سازی",
+    description: "بسته‌بندی و بازرسی نهایی در کارگاه تهران.",
+    meta: "امروز · ۱۴:۰۰",
+    tone: "primary",
+  },
+  {
+    title: "تحویل به پست",
+    description: "پست پیشتاز، تحویل ۲۴ تا ۷۲ ساعت کاری.",
+    meta: "فردا",
+    tone: "muted",
+  },
+  {
+    title: "تحویل به شما",
+    description: "تعویض سایز تا ۷ روز پس از تحویل.",
+    meta: "۲ روز بعد",
+    tone: "muted",
+  },
+];
+
+/** Rating distribution for the aggregate review panel. */
+export const SHOP_REVIEW_STATS = {
+  average: 4.8,
+  total: 341,
+  buckets: [
+    { stars: 5, count: 268 },
+    { stars: 4, count: 51 },
+    { stars: 3, count: 14 },
+    { stars: 2, count: 6 },
+    { stars: 1, count: 2 },
+  ],
+} as const;
 
 export const SHOP_REVIEWS = [
   {
@@ -315,4 +407,18 @@ export const SHOP_FAQ = [
       "پرداخت آنلاین با تمام کارت‌های شتاب و همچنین پرداخت در محل برای شهر تهران فعال است.",
   },
 ];
+
+
+/**
+ * Filter bounds derived from the catalogue itself, so the price slider can
+ * never drift away from the products it filters. Both ends are rounded to
+ * 100 000 Toman for a tidy step.
+ */
+const PRICE_STEP = 100_000;
+export const PRICE_FLOOR =
+  Math.floor(Math.min(...SHOP_PRODUCTS.map((p) => p.price)) / PRICE_STEP) *
+  PRICE_STEP;
+export const PRICE_CEILING =
+  Math.ceil(Math.max(...SHOP_PRODUCTS.map((p) => p.price)) / PRICE_STEP) *
+  PRICE_STEP;
 

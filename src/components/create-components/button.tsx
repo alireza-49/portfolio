@@ -13,7 +13,7 @@ export const buttonVariants = cva(
     "rounded-[var(--cc-radius)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)]",
     "[box-shadow:var(--cc-shadow)]",
     motion,
-    "hover:[box-shadow:var(--cc-shadow-hover)] hover:[translate:var(--cc-hover-translate)] active:[translate:0px]",
+    "hover:[box-shadow:var(--cc-shadow-hover)] hover:[translate:var(--cc-hover-translate)] hover:[rotate:var(--cc-hover-rotate)] active:[translate:0px] active:[rotate:0deg]",
     "focus-visible:outline-none focus-visible:ring-[length:var(--cc-focus-ring-width)] focus-visible:ring-[color:var(--cc-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--cc-background)]",
     "disabled:pointer-events-none disabled:opacity-50",
   ],
@@ -39,6 +39,8 @@ export const buttonVariants = cva(
         md: "h-10 px-[calc(1rem*var(--cc-density))] text-[length:var(--cc-font-size)]",
         lg: "h-12 px-[calc(1.5rem*var(--cc-density))] text-[length:calc(var(--cc-font-size)*1.1)]",
         icon: "size-10",
+        // Toolbar glyph button: same 32px rhythm as `sm` and an `h-8` input.
+        "icon-sm": "size-8",
       },
       fullWidth: {
         true: "w-full",

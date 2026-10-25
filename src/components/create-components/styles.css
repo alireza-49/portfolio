@@ -11,9 +11,13 @@
   background-size: var(--cc-page-pattern-size);
 }
 
-/* Swiss / terminal: navigation reads as a rule, not a pill. */
+/* ------------------------------------------------------- structural hooks */
+
+/* Rule-based navigation: Swiss, terminal, blueprint and manga read as a line. */
 [data-cc-style="swiss"] [data-cc-tabs-list],
-[data-cc-style="terminal"] [data-cc-tabs-list] {
+[data-cc-style="terminal"] [data-cc-tabs-list],
+[data-cc-style="blueprint"] [data-cc-tabs-list],
+[data-cc-style="manga"] [data-cc-tabs-list] {
   gap: 1.25rem;
   padding: 0;
   border: 0;
@@ -23,7 +27,9 @@
 }
 
 [data-cc-style="swiss"] [data-cc-tabs-trigger][aria-selected="true"],
-[data-cc-style="terminal"] [data-cc-tabs-trigger][aria-selected="true"] {
+[data-cc-style="terminal"] [data-cc-tabs-trigger][aria-selected="true"],
+[data-cc-style="blueprint"] [data-cc-tabs-trigger][aria-selected="true"],
+[data-cc-style="manga"] [data-cc-tabs-trigger][aria-selected="true"] {
   border-radius: 0;
   border-bottom: 2px solid var(--cc-primary);
   background: transparent;
@@ -43,31 +49,134 @@
   border-bottom: 1px solid var(--cc-border);
 }
 
-/* Riso: halftone grain on every card surface. */
-[data-cc-style="riso"] [data-cc-card] {
-  background-image: radial-gradient(
-    circle at 1px 1px,
-    rgb(28 25 23 / 0.08) 1px,
-    transparent 0
-  );
-  background-size: 8px 8px;
+/* Corporate radial: the panel edge picks up the teal accent of the arc. */
+[data-cc-style="corporate"] [data-cc-card],
+[data-cc-style="corporate"] [data-cc-chart-frame] {
+  border-top-color: var(--cc-accent);
 }
 
-/* Terminal: scanlines over card and accordion surfaces. */
-[data-cc-style="terminal"] [data-cc-card],
-[data-cc-style="terminal"] [data-cc-accordion] {
+/* EdTech: gamified gradient fill + a brand rule inset on every panel. */
+[data-cc-style="edtech"] [data-cc-progress] > div {
+  background-image: linear-gradient(90deg, var(--cc-primary), var(--cc-accent));
+}
+
+[data-cc-style="edtech"] [data-cc-card],
+[data-cc-style="edtech"] [data-cc-chart-frame] {
+  box-shadow:
+    inset 0 3px 0 0 var(--cc-primary),
+    var(--cc-shadow);
+}
+
+/* Zine: marker underline on titles and a strip of tape on chart panels. */
+[data-cc-style="zine"] [data-cc-card-title] {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-decoration-color: var(--cc-danger);
+  text-underline-offset: 4px;
+}
+
+[data-cc-style="zine"] [data-cc-chart-frame] {
+  position: relative;
+}
+
+[data-cc-style="zine"] [data-cc-chart-frame]::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  inset-inline-start: 18px;
+  width: 58px;
+  height: 18px;
+  transform: rotate(-2.5deg);
+  background: color-mix(in srgb, var(--cc-accent) 38%, var(--cc-surface));
+  border: 1px solid color-mix(in srgb, var(--cc-border) 25%, transparent);
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+/* Memphis: confetti field on chart panels and a tilted badge. */
+[data-cc-style="memphis"] [data-cc-chart-frame] {
+  background-image:
+    radial-gradient(var(--cc-accent) 1.5px, transparent 1.6px),
+    radial-gradient(var(--cc-danger) 1.5px, transparent 1.6px);
+  background-size: 22px 22px, 22px 22px;
+  background-position: 0 0, 11px 11px;
+}
+
+[data-cc-style="memphis"] [data-cc-badge] {
+  transform: rotate(-1.5deg);
+}
+
+/* Manga: angled panel cut and speed lines on alerts. */
+[data-cc-style="manga"] [data-cc-chart-frame] {
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% calc(100% - 14px),
+    calc(100% - 14px) 100%,
+    0 100%
+  );
+  box-shadow: none;
+}
+
+[data-cc-style="manga"] [data-cc-alert] {
   background-image: repeating-linear-gradient(
-    0deg,
-    rgb(42 157 143 / 0.06) 0 1px,
-    transparent 1px 3px
+    45deg,
+    rgb(0 0 0 / 0.06) 0 1px,
+    transparent 1px 7px
   );
 }
 
-/* Terminal: a prompt mark on headings and disclosure triggers. */
+/* Blueprint: an inner dashed guide, like a plotted viewport border. */
+[data-cc-style="blueprint"] [data-cc-chart-frame] {
+  position: relative;
+}
+
+[data-cc-style="blueprint"] [data-cc-chart-frame]::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px dashed color-mix(in srgb, var(--cc-border) 55%, transparent);
+  pointer-events: none;
+}
+
+/* Terminal: a prompt mark on headings and disclosure triggers. The
+   isolate/LTR pair keeps the glyph unmirrored and on the inline-start edge of
+   an RTL line, where a shell prompt belongs. */
 [data-cc-style="terminal"] [data-cc-card-title]::before,
 [data-cc-style="terminal"] [data-cc-accordion-trigger] > span::before {
-  content: "> ";
+  content: ">";
+  display: inline-block;
+  direction: ltr;
+  unicode-bidi: isolate;
+  margin-inline-end: 0.35em;
   color: var(--cc-primary);
+}
+
+/* Steampunk: brass rivets in the chart frame's top corners. */
+[data-cc-style="steampunk"] [data-cc-chart-frame] {
+  background-image:
+    radial-gradient(
+      circle at 12px 12px,
+      var(--cc-border) 0 2px,
+      transparent 2.5px
+    ),
+    radial-gradient(
+      circle at calc(100% - 12px) 12px,
+      var(--cc-border) 0 2px,
+      transparent 2.5px
+    ),
+    var(--cc-surface-pattern);
+  background-repeat: no-repeat, no-repeat, repeat;
+  background-size: auto, auto, var(--cc-surface-pattern-size);
+}
+
+/* Glass: real blur where the engine supports it; the tint is token-only. */
+@supports (backdrop-filter: blur(2px)) {
+  [data-cc-style="glass"] [data-cc-card],
+  [data-cc-style="glass"] [data-cc-chart-frame],
+  [data-cc-style="glass"] [data-cc-accordion] {
+    backdrop-filter: blur(18px) saturate(1.15);
+  }
 }
 
 /* ------------------------------------------------------------- data visuals */
@@ -125,10 +234,6 @@
 }
 
 /* Chart frames speak the same structural language as cards. */
-[data-cc-style="brutalist"] [data-cc-chart-frame] {
-  box-shadow: 6px 6px 0 0 var(--cc-surface-foreground);
-}
-
 [data-cc-style="terminal"] [data-cc-chart-frame] {
   box-shadow:
     0 0 0 1px rgb(52 211 153 / 0.18),
@@ -175,4 +280,25 @@
   .sc-chart-fade {
     animation: none !important;
   }
+
+  [data-cc-theme] [data-cc-card]:hover,
+  [data-cc-theme] [data-cc-button]:hover,
+  [data-cc-theme] [data-cc-badge] {
+    rotate: 0deg !important;
+    transform: none;
+  }
 }
+
+/* ------------------------------------------------------ studio elevation pin */
+
+/*
+ * `data-cc-shadow` is only written when the studio pins an explicit elevation
+ * (anything but the style's own). It outranks the preset's card and chart
+ * signature so the sidebar choice is visible everywhere — the preset keeps its
+ * signature while the visitor leaves the section on «پیرو سبک».
+ */
+[data-cc-shadow] [data-cc-card],
+[data-cc-shadow] [data-cc-chart-frame] {
+  box-shadow: var(--cc-shadow);
+}
+
