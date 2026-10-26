@@ -73,3 +73,178 @@ CREATE TABLE IF NOT EXISTS submissions (
 
 CREATE INDEX IF NOT EXISTS submissions_created_idx ON submissions (created_at DESC);
 CREATE INDEX IF NOT EXISTS submissions_status_idx ON submissions (status, created_at DESC);
+
+-- ==========================================================================
+-- Project planning: timed tasks and the Google Calendar bridge
+-- ==========================================================================
+
+/*
+ * One task is one timed calendar block. Times are stored as timestamptz (UTC);
+ * the console always renders them in Asia/Tehran. `google_event_id` is the only
+ * link back to Google — an empty id means the event has never been created.
+ */
+CREATE TABLE IF NOT EXISTS project_tasks (
+  id UUID PRIMARY KEY,
+  project_id UUID NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  note TEXT NOT NULL DEFAULT '',
+  starts_at TIMESTAMPTZ NOT NULL,
+  ends_at TIMESTAMPTZ NOT NULL,
+  done BOOLEAN NOT NULL DEFAULT FALSE,
+  google_calendar_id TEXT NOT NULL DEFAULT '',
+  google_event_id TEXT NOT NULL DEFAULT '',
+  google_html_link TEXT NOT NULL DEFAULT '',
+  google_sync_state TEXT NOT NULL DEFAULT 'pending'
+    CHECK (google_sync_state IN ('pending', 'synced', 'error', 'skipped')),
+  google_error TEXT NOT NULL DEFAULT '',
+  google_synced_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT project_tasks_time_order CHECK (ends_at > starts_at)
+);
+
+CREATE INDEX IF NOT EXISTS project_tasks_project_idx
+  ON project_tasks (project_id, starts_at);
+CREATE INDEX IF NOT EXISTS project_tasks_start_idx ON project_tasks (starts_at);
+
+/*
+ * Single-admin OAuth link (`id` is always 'default'). Both tokens are stored
+ * encrypted (AES-256-GCM, key derived from ADMIN_SESSION_SECRET), so a database
+ * dump on its own cannot drive the calendar. `sync_token` is Google's
+ * incremental cursor; an empty value means the next pull is a full window.
+ */
+CREATE TABLE IF NOT EXISTS google_account (
+  id TEXT PRIMARY KEY,
+  account_email TEXT NOT NULL DEFAULT '',
+  access_token TEXT NOT NULL DEFAULT '',
+  access_expires_at TIMESTAMPTZ,
+  refresh_token TEXT NOT NULL DEFAULT '',
+  scope TEXT NOT NULL DEFAULT '',
+  calendar_id TEXT NOT NULL DEFAULT 'primary',
+  sync_token TEXT NOT NULL DEFAULT '',
+  last_synced_at TIMESTAMPTZ,
+  needs_reauth BOOLEAN NOT NULL DEFAULT FALSE,
+  last_error TEXT NOT NULL DEFAULT '',
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+/*
+ * Read-only mirror of events that did NOT come from a task (the “import” half
+ * of the two-way sync). They are shown beside the plan and never pushed back.
+ */
+CREATE TABLE IF NOT EXISTS calendar_events (
+  id UUID PRIMARY KEY,
+  google_event_id TEXT NOT NULL UNIQUE,
+  google_calendar_id TEXT NOT NULL DEFAULT 'primary',
+  summary TEXT NOT NULL DEFAULT '',
+  description TEXT NOT NULL DEFAULT '',
+  location TEXT NOT NULL DEFAULT '',
+  starts_at TIMESTAMPTZ NOT NULL,
+  ends_at TIMESTAMPTZ NOT NULL,
+  all_day BOOLEAN NOT NULL DEFAULT FALSE,
+  status TEXT NOT NULL DEFAULT 'confirmed'
+    CHECK (status IN ('confirmed', 'tentative')),
+  html_link TEXT NOT NULL DEFAULT '',
+  google_updated_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS calendar_events_start_idx ON calendar_events (starts_at);
+
+-- ==========================================================================
+-- Editorial workspace: draft previews, revisions and the media library
+-- ==========================================================================
+
+/*
+ * Only a hash of the preview token is stored. The raw token lives in the URL
+ * the author copies out of the console, so a database dump cannot open a draft.
+ */
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS preview_token_hash TEXT;
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS preview_expires_at TIMESTAMPTZ;
+CREATE UNIQUE INDEX IF NOT EXISTS posts_preview_token_idx
+  ON posts (preview_token_hash) WHERE preview_token_hash IS NOT NULL;
+
+/*
+ * A flat snapshot of the post body at save/publish/restore time. Autosave does
+ * not create revisions; the console prunes to the newest 20.
+ */
+CREATE TABLE IF NOT EXISTS post_revisions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  post_id UUID NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  content_html TEXT NOT NULL,
+  kind TEXT NOT NULL DEFAULT 'save'
+    CHECK (kind IN ('save', 'publish', 'restore')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS post_revisions_post_idx
+  ON post_revisions (post_id, created_at DESC);
+
+/*
+ * The bucket owns the bytes; this table only remembers metadata for the
+ * reusable library, reports and preview/download routes. `url` is the single
+ * identity so pasting the same link twice does not create duplicates.
+ */
+CREATE TABLE IF NOT EXISTS media_assets (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  url TEXT NOT NULL UNIQUE,
+  storage_key TEXT,
+  filename TEXT NOT NULL,
+  mime TEXT NOT NULL DEFAULT 'application/octet-stream',
+  size_bytes BIGINT NOT NULL DEFAULT 0 CHECK (size_bytes >= 0),
+  kind TEXT NOT NULL DEFAULT 'file'
+    CHECK (kind IN ('image', 'video', 'audio', 'file')),
+  width INTEGER,
+  height INTEGER,
+  alt TEXT NOT NULL DEFAULT '',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  last_used_at TIMESTAMPTZ
+);
+
+CREATE INDEX IF NOT EXISTS media_assets_kind_idx
+  ON media_assets (kind, created_at DESC);
+
+-- ==========================================================================
+-- Reader engagement: visits, hearts and comments
+-- ==========================================================================
+
+/*
+ * Display baselines. Real visits/likes are added on top at read time, so these
+ * columns are the only place a starting number is stored and the owner can edit
+ * them in the post editor.
+ */
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS base_views INTEGER NOT NULL DEFAULT 0
+  CHECK (base_views >= 0);
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS base_likes INTEGER NOT NULL DEFAULT 0
+  CHECK (base_likes >= 0);
+
+/* One row per reader per post; `views` only grows once per hour (see content). */
+CREATE TABLE IF NOT EXISTS post_viewers (
+  post_id UUID NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+  visitor_hash TEXT NOT NULL CHECK (length(visitor_hash) = 64),
+  views INTEGER NOT NULL DEFAULT 1 CHECK (views >= 0),
+  last_seen_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (post_id, visitor_hash)
+);
+
+/* The primary key is what makes a heart idempotent per reader. */
+CREATE TABLE IF NOT EXISTS post_likes (
+  post_id UUID NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+  visitor_hash TEXT NOT NULL CHECK (length(visitor_hash) = 64),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (post_id, visitor_hash)
+);
+
+CREATE TABLE IF NOT EXISTS post_comments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  post_id UUID NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  email TEXT NOT NULL DEFAULT '',
+  body TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS post_comments_post_idx
+  ON post_comments (post_id, created_at DESC);

@@ -128,6 +128,52 @@ async function insertPosts() {
   }
 }
 
+/**
+ * One-time display baselines for the posts that already exist. The guard means
+ * re-running setup never overwrites numbers the owner edited in the console.
+ */
+const BLOG_ENGAGEMENT = [
+  { slug: "riso-ink-and-modern-code", views: 1840, likes: 46 },
+  { slug: "sterile-web-return-of-ink", views: 960, likes: 27 },
+  { slug: "persian-type-at-web-speed", views: 615, likes: 18 },
+];
+
+async function seedEngagementBaselines() {
+  let touched = 0;
+  for (const item of BLOG_ENGAGEMENT) {
+    const result = await pool.query(
+      `UPDATE posts SET base_views = $2, base_likes = $3
+        WHERE slug = $1 AND base_views = 0 AND base_likes = 0`,
+      [item.slug, item.views, item.likes],
+    );
+    touched += result.rowCount ?? 0;
+  }
+
+  // Posts written in the console are not in the seed list; give them the same
+  // starting numbers (newest first) so a live archive is not all zeros. The
+  // zero-guard still skips anything the owner already touched.
+  const rest = await pool.query(
+    `SELECT id FROM posts
+      WHERE status = 'published' AND base_views = 0 AND base_likes = 0
+      ORDER BY published_at DESC NULLS LAST, created_at DESC`,
+  );
+  for (const [index, row] of rest.rows.entries()) {
+    const seed = BLOG_ENGAGEMENT[index % BLOG_ENGAGEMENT.length];
+    const result = await pool.query(
+      `UPDATE posts SET base_views = $2, base_likes = $3
+        WHERE id = $1 AND base_views = 0 AND base_likes = 0`,
+      [row.id, seed.views, seed.likes],
+    );
+    touched += result.rowCount ?? 0;
+  }
+
+  console.log(
+    touched
+      ? `✓ starting views/hearts set on ${touched} posts`
+      : "• starting views/hearts already set — skipped",
+  );
+}
+
 async function insertSubmissions() {
   for (const submission of submissions) {
     await pool.query(
@@ -185,6 +231,8 @@ try {
   } else {
     console.log(`• posts already has ${existing.posts} rows — skipped`);
   }
+
+  await seedEngagementBaselines();
 
   if (existing.submissions === 0) {
     await insertSubmissions();

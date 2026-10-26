@@ -1,4 +1,5 @@
 import { readingMinutes } from "@/lib/fa";
+import { MAX_CONTENT_HTML, validateEmbeddedBlocks } from "@/lib/richtext";
 import { isSafeMediaUrl, sanitizePostHtml, stripHtml } from "@/lib/sanitize";
 import { slugify } from "@/lib/slugs";
 import {
@@ -24,6 +25,16 @@ function text(value: unknown, max: number): string {
   return typeof value === "string" ? value.trim().slice(0, max) : "";
 }
 
+/**
+ * Baselines are display-only counters: clamp them so a hand-crafted payload
+ * cannot store a negative or absurd starting number.
+ */
+function baseCount(value: unknown): number {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return 0;
+  return Math.min(Math.max(0, Math.round(parsed)), 10_000_000);
+}
+
 export function parsePostInput(raw: unknown): PostParseResult {
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
     return { ok: false, error: "دادهٔ یادداشت معتبر نیست." };
@@ -47,9 +58,20 @@ export function parsePostInput(raw: unknown): PostParseResult {
     };
   }
 
-  const contentHtml = sanitizePostHtml(
-    typeof record.contentHtml === "string" ? record.contentHtml.slice(0, 250_000) : "",
-  );
+  const rawHtml =
+    typeof record.contentHtml === "string" ? record.contentHtml : "";
+  if (rawHtml.length > MAX_CONTENT_HTML) {
+    return {
+      ok: false,
+      error:
+        "محتوای یادداشت بیش از حد مجاز است؛ بخشی از بلوک‌های سنگین را حذف یا فشرده کنید.",
+    };
+  }
+
+  const contentHtml = sanitizePostHtml(rawHtml);
+  const embeddedError = validateEmbeddedBlocks(contentHtml);
+  if (embeddedError) return { ok: false, error: embeddedError };
+
   const plain = stripHtml(contentHtml);
   const status: PostStatus =
     typeof record.status === "string" &&
@@ -100,6 +122,8 @@ export function parsePostInput(raw: unknown): PostParseResult {
     coverUrl,
     author: text(record.author, 120) || "وب دیزاین فیل",
     tags,
+    baseViews: baseCount(record.baseViews),
+    baseLikes: baseCount(record.baseLikes),
     status,
     publishedAt,
   };
