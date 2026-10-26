@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, Clock3 } from "lucide-react";
+import { ArrowLeft, Clock3, Eye, Heart } from "lucide-react";
 import { cn } from "cn";
 import { faDate, faNumber } from "@/lib/fa";
 import { deriveExcerpt } from "@/lib/text";
@@ -84,6 +84,17 @@ export function PostCard({
         <p className='line-clamp-3 text-[12px] leading-relaxed font-medium text-indigo-light'>
           {post.excerpt || deriveExcerpt(post.contentHtml, featured ? 220 : 130)}
         </p>
+
+        <span className='flex items-center gap-3 text-[10px] font-bold text-indigo-light'>
+          <span className='inline-flex items-center gap-1'>
+            <Eye className='size-3' />
+            {faNumber(post.views)}
+          </span>
+          <span className='inline-flex items-center gap-1'>
+            <Heart className='size-3' />
+            {faNumber(post.likes)}
+          </span>
+        </span>
 
         <div className='mt-auto flex items-center justify-between border-t border-dashed border-indigo-ink/20 pt-2'>
           <span className='flex items-center gap-2 text-[10px] font-bold text-indigo-light'>

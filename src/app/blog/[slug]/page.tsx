@@ -8,9 +8,12 @@ import { PublicPageShell } from "@/components/public-page-shell";
 import { PostHero } from "@/components/blog/post-hero";
 import { PostBody } from "@/components/blog/post-body";
 import { PostCard } from "@/components/blog/post-card";
+import { PostEngagement } from "@/components/blog/post-engagement";
 import { ReadingProgress } from "@/components/blog/reading-progress";
-import { getPostBySlug, listPosts } from "@/lib/content";
+import { getPostBySlug, isPostLikedBy, listPosts } from "@/lib/content";
+import { readReaderId } from "@/lib/reader";
 import { deriveExcerpt } from "@/lib/text";
+import { readerSalt, visitorHash } from "@/lib/visitor";
 
 export const instant = false;
 
@@ -53,6 +56,11 @@ export default async function BlogPostPage({
 
   if (!post || post.status !== "published") notFound();
 
+  const reader = await readReaderId();
+  const liked = reader
+    ? await isPostLikedBy(post.id, visitorHash(reader, readerSalt()))
+    : false;
+
   const all = await listPosts({ publishedOnly: true });
   const related = all
     .filter(
@@ -66,6 +74,14 @@ export default async function BlogPostPage({
     <PublicPageShell>
       <ReadingProgress />
       <PostHero post={post} />
+
+      <PostEngagement
+        slug={post.slug}
+        views={post.views}
+        likes={post.likes}
+        liked={liked}
+        commentCount={post.commentCount}
+      />
 
       <div className='mx-auto w-full max-w-7xl px-4 py-8 sm:px-8 lg:px-12'>
         <PostBody html={post.contentHtml} />
