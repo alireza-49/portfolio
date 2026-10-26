@@ -23,6 +23,16 @@ import { readerSalt, visitorHash } from "@/lib/visitor";
 
 export const instant = false;
 
+/** Next 16.4 hands the page the raw URL segment while metadata gets it decoded. */
+function decodeSlug(value: string): string {
+  if (!value.includes("%")) return value;
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
 const loadPost = cache(async (slug: string) => getPostBySlug(slug));
 
 export async function generateMetadata({
@@ -31,7 +41,8 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   await connection();
-  const { slug } = await params;
+  const { slug: rawSlug } = await params;
+  const slug = decodeSlug(rawSlug);
   const post = await loadPost(slug);
 
   if (!post || post.status !== "published") {
@@ -57,7 +68,8 @@ export default async function BlogPostPage({
   params: Promise<{ slug: string }>;
 }) {
   await connection();
-  const { slug } = await params;
+  const { slug: rawSlug } = await params;
+  const slug = decodeSlug(rawSlug);
   const post = await loadPost(slug);
 
   if (!post || post.status !== "published") notFound();
