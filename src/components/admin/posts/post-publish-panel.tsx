@@ -15,6 +15,7 @@ import {
 import { faDate, faNumber } from "@/lib/fa";
 import { slugify } from "@/lib/slugs";
 import type { PostInput } from "@/lib/types";
+import { PostPreviewLink } from "./post-preview-link";
 
 export function PostPublishPanel({
   draft,
@@ -24,6 +25,7 @@ export function PostPublishPanel({
   pending,
   onSave,
   onTogglePublish,
+  postId,
 }: {
   draft: PostInput;
   patch: (values: Partial<PostInput>) => void;
@@ -32,6 +34,7 @@ export function PostPublishPanel({
   pending: boolean;
   onSave: () => void;
   onTogglePublish: () => void;
+  postId: string | null;
 }) {
   const published = draft.status === "published";
 
@@ -103,6 +106,8 @@ export function PostPublishPanel({
               مشاهده در وبلاگ
             </Link>
           ) : null}
+
+          <PostPreviewLink postId={postId} />
 
           {exists && dirty ? (
             <p className='text-[10px] leading-relaxed font-medium text-indigo-light'>

@@ -1,0 +1,45 @@
+/* Editorial faces, scoped to the blog reader and the post editor. The studio's
+   own font declarations stay in `src/app/create/fonts.css` and are only
+   imported by `/create`. */
+@font-face {
+  font-family: "Vazir";
+  src: url("/fonts/vazir-font-v16.1.0/Vazir.woff2") format("woff2");
+  font-display: swap;
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Vazir";
+  src: url("/fonts/vazir-font-v16.1.0/Vazir-Bold.woff2") format("woff2");
+  font-display: swap;
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Samim";
+  src: url("/fonts/samim-font-v2.0.1/Samim.woff2") format("woff2");
+  font-display: swap;
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Samim";
+  src: url("/fonts/samim-font-v2.0.1/Samim-Bold.woff2") format("woff2");
+  font-display: swap;
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Gandom";
+  src: url("/fonts/gandom-font-v0.5.1/Gandom.ttf") format("truetype");
+  font-display: swap;
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Dirooz";
+  src: url("/fonts/dirooz-font-v0.2.1/Dirooz.woff2") format("woff2");
+  font-display: swap;
+  font-weight: 400;
+  font-style: normal;
+}

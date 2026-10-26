@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getProject } from "@/lib/content";
+import { getProject, listTasks } from "@/lib/content";
 import { ProjectEditor } from "@/components/admin/projects/project-editor";
 import { requireConsolePage } from "@/lib/auth";
 
@@ -18,5 +18,8 @@ export default async function ProjectEditorPage({
 
   if (!project) notFound();
 
-  return <ProjectEditor project={project} />;
+  const tasks = await listTasks({ projectId: project.id });
+  const now = new Date().toISOString();
+
+  return <ProjectEditor project={project} tasks={tasks} now={now} />;
 }

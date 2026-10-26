@@ -38,7 +38,7 @@ import {
   ICON_WEIGHTS,
   RADII,
   SHADOWS,
-  STYLE_GROUPS,
+  STYLE_FONTS,
   STYLES,
   resolveIconStyle,
   resolveShadowCss,
@@ -82,6 +82,13 @@ const FONT_GROUPS = [
   { kind: "text", label: "متن" },
   { kind: "display", label: "نمایشی" },
 ] as const;
+
+/**
+ * The icon picker is off for now: icons keep the default library and styling,
+ * but the whole section stays out of the sidebar (and out of the tour) until
+ * it is ready to ship. Flip this to bring it back unchanged.
+ */
+const SHOW_ICON_LIBRARY = false;
 
 /**
  * Preview swatches for the studio frame, which lives outside the preset's
@@ -183,6 +190,12 @@ export function CreateStudioSidebar({
 
   const currentStyleLabel =
     STYLES.find((item) => item.id === styleId)?.label ?? "";
+  // The active style already names a body face, so the picker calls it
+  // «پیشفرض» (the face the style would install) instead of showing the same
+  // font twice: the default row plus every other built-in face.
+  const styleFontId = STYLE_FONTS[styleId];
+  const styleFontLabel = FONTS.find((item) => item.id === styleFontId)?.label;
+  const fontChoices = FONTS.filter((item) => item.id !== styleFontId);
   const radiusOption = RADII.find((item) => item.value === radius);
   const radiusLabel = radiusOption
     ? `${radiusOption.label} (${radiusOption.caption})`
@@ -323,95 +336,74 @@ export function CreateStudioSidebar({
             {currentStyleLabel}
           </span>
         </div>
-        <div className='flex flex-col gap-2'>
-          {STYLE_GROUPS.map((group) => {
-            const options = STYLES.filter((style) => style.group === group.id);
+        <div className='grid grid-cols-2 gap-1.5'>
+          {STYLES.map((option) => {
+            const active = styleId === option.id;
+            const preset = createThemePresets[option.id];
+            const tokens = preset.tokens;
+            const fontLabel =
+              FONTS.find((item) => item.id === option.font)?.label ?? "";
             return (
-              <div key={group.id} className='flex flex-col gap-1'>
-                <div className='flex items-baseline justify-between gap-2'>
-                  <span className='text-[10px] font-black text-indigo-ink'>
-                    {group.label}
+              <button
+                key={option.id}
+                type='button'
+                onClick={() => onStyleChange(option.id)}
+                aria-pressed={active}
+                title={option.description}
+                className={`flex flex-col gap-1 rounded-sm border border-indigo-ink p-1.5 text-right transition-all ${
+                  active
+                    ? "bg-coral font-bold text-white shadow-craft-sm"
+                    : "bg-paper-dim font-medium text-indigo-ink hover:bg-paper-light"
+                }`}
+              >
+                <span className='flex items-center justify-between gap-1'>
+                  <span
+                    aria-hidden='true'
+                    className='flex size-7 shrink-0 items-center justify-center font-black'
+                    style={{
+                      fontFamily: FONT_STACKS[option.font],
+                      borderRadius: tokens.radius ?? 0,
+                      borderStyle: tokens.borderStyle ?? "solid",
+                      borderWidth: Math.min(tokens.borderWidth ?? 1, 3),
+                      borderColor: tokens.border ?? "#264653",
+                      backgroundColor: tokens.background ?? "#ffffff",
+                      color: tokens.surfaceForeground ?? "#264653",
+                    }}
+                  >
+                    Aa
                   </span>
-                  <span className='text-[9px] text-indigo-light'>
-                    {group.caption}
+                  <span className='flex items-center gap-0.5'>
+                    <span
+                      className='size-2 rounded-full border border-indigo-ink/30'
+                      style={{
+                        backgroundColor: tokens.background ?? "#ffffff",
+                      }}
+                    />
+                    <span
+                      className='size-2 rounded-full border border-indigo-ink/30'
+                      style={{
+                        backgroundColor: tokens.accent ?? "#e9c46a",
+                      }}
+                    />
+                    <span
+                      className='size-2 rounded-full border border-indigo-ink/30'
+                      style={{
+                        backgroundColor: tokens.border ?? "#264653",
+                      }}
+                    />
                   </span>
-                </div>
-                <div className='grid grid-cols-2 gap-1.5'>
-                  {options.map((option) => {
-                    const active = styleId === option.id;
-                    const preset = createThemePresets[option.id];
-                    const tokens = preset.tokens;
-                    const fontLabel =
-                      FONTS.find((item) => item.id === option.font)?.label ??
-                      "";
-                    return (
-                      <button
-                        key={option.id}
-                        type='button'
-                        onClick={() => onStyleChange(option.id)}
-                        aria-pressed={active}
-                        title={option.description}
-                        className={`flex flex-col gap-1 rounded-sm border border-indigo-ink p-1.5 text-right transition-all ${
-                          active
-                            ? "bg-coral font-bold text-white shadow-craft-sm"
-                            : "bg-paper-dim font-medium text-indigo-ink hover:bg-paper-light"
-                        }`}
-                      >
-                        <span className='flex items-center justify-between gap-1'>
-                          <span
-                            aria-hidden='true'
-                            className='flex size-7 shrink-0 items-center justify-center font-black'
-                            style={{
-                              fontFamily: FONT_STACKS[option.font],
-                              borderRadius: tokens.radius ?? 0,
-                              borderStyle: tokens.borderStyle ?? "solid",
-                              borderWidth: Math.min(tokens.borderWidth ?? 1, 3),
-                              borderColor: tokens.border ?? "#264653",
-                              backgroundColor: tokens.background ?? "#ffffff",
-                              color: tokens.surfaceForeground ?? "#264653",
-                            }}
-                          >
-                            Aa
-                          </span>
-                          <span className='flex items-center gap-0.5'>
-                            <span
-                              className='size-2 rounded-full border border-indigo-ink/30'
-                              style={{
-                                backgroundColor: tokens.background ?? "#ffffff",
-                              }}
-                            />
-                            <span
-                              className='size-2 rounded-full border border-indigo-ink/30'
-                              style={{
-                                backgroundColor: tokens.accent ?? "#e9c46a",
-                              }}
-                            />
-                            <span
-                              className='size-2 rounded-full border border-indigo-ink/30'
-                              style={{
-                                backgroundColor: tokens.border ?? "#264653",
-                              }}
-                            />
-                          </span>
-                        </span>
-                        <span className='flex flex-col gap-0.5'>
-                          <span className='text-[10px] leading-tight'>
-                            {option.label}
-                          </span>
-                          <span className='text-[8px] leading-snug opacity-80'>
-                            {option.description}
-                          </span>
-                          <span className='truncate font-mono text-[8px] opacity-60'>
-                            {fontLabel} ·{" "}
-                            {preset.tone === "dark" ? "DARK" : "LIGHT"} ·{" "}
-                            {tokens.radius ?? 0}px
-                          </span>
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+                </span>
+                <span className='flex flex-col gap-0.5'>
+                  <span className='text-[10px] leading-tight'>
+                    {option.label}
+                  </span>
+                  <span className='truncate font-mono text-[8px] opacity-60'>
+                    {fontLabel} ·{" "}
+                    {preset.tone === "dark" ? "DARK" : "LIGHT"} ·{" "}
+                    {tokens.radius ?? 0}px
+                  </span>
+                </span>
+              </button>
             );
           })}
         </div>
@@ -502,19 +494,14 @@ export function CreateStudioSidebar({
                       <Check className='size-3 shrink-0 text-coral' />
                     ) : null}
                   </span>
-                  <span className='flex items-center justify-between gap-1'>
-                    <span className='truncate text-[8px] text-indigo-light'>
-                      {preset.note}
+                  {styleMatch ? (
+                    <span
+                      title={`پالت هم‌سبک با سبک فعال (${currentStyleLabel})`}
+                      className='shrink-0 self-start rounded-[1px] border border-teal-craft bg-teal-craft/15 px-1 text-[7px] leading-[1.6] font-black text-indigo-ink'
+                    >
+                      هم‌سبک
                     </span>
-                    {styleMatch ? (
-                      <span
-                        title={`پالت هم‌سبک با سبک فعال (${currentStyleLabel})`}
-                        className='shrink-0 rounded-[1px] border border-teal-craft bg-teal-craft/15 px-1 text-[7px] leading-[1.6] font-black text-indigo-ink'
-                      >
-                        هم‌سبک
-                      </span>
-                    ) : null}
-                  </span>
+                  ) : null}
                 </button>
               );
             })}
@@ -736,140 +723,142 @@ export function CreateStudioSidebar({
         ) : null}
       </div>
 
-      <div
-        data-tour='icons'
-        className='flex flex-col gap-1.5 border-t border-indigo-ink/20 pt-1'
-      >
-        <div className='flex items-center justify-between text-xs font-bold'>
-          <span className='flex items-center gap-1 text-indigo-ink'>
-            <Shapes className='size-3.5 text-coral' />
-            <span>کتابخانه آیکون‌ها</span>
-          </span>
-          <span className='font-mono text-[10px] text-indigo-light'>Icons</span>
-        </div>
+      {SHOW_ICON_LIBRARY ? (
+        <div
+          data-tour='icons'
+          className='flex flex-col gap-1.5 border-t border-indigo-ink/20 pt-1'
+        >
+          <div className='flex items-center justify-between text-xs font-bold'>
+            <span className='flex items-center gap-1 text-indigo-ink'>
+              <Shapes className='size-3.5 text-coral' />
+              <span>کتابخانه آیکون‌ها</span>
+            </span>
+            <span className='font-mono text-[10px] text-indigo-light'>Icons</span>
+          </div>
 
-        <div className='grid grid-cols-3 gap-1'>
-          {ICON_LIBRARIES.map((library) => {
-            const active = iconLibrary === library.id;
-            return (
-              <button
-                key={library.id}
-                type='button'
-                onClick={() => onIconLibraryChange(library.id)}
-                aria-pressed={active}
-                title={`کتابخانهٔ ${library.label} (${library.note})`}
-                className={`flex flex-col items-center gap-0.5 rounded-sm border border-indigo-ink p-1.5 text-center transition-all ${
-                  active
-                    ? "bg-coral text-white shadow-craft-sm"
-                    : "bg-paper-dim text-indigo-ink hover:bg-paper-light"
-                }`}
-              >
-                <span
-                  aria-hidden='true'
-                  className='flex items-center justify-center gap-0.5'
-                >
-                  {ICON_PREVIEW_NAMES.map((name) => (
-                    <Icon
-                      key={name}
-                      name={name}
-                      library={library.id}
-                      strokeWidth={2}
-                      className='size-3.5'
-                    />
-                  ))}
-                </span>
-                <span className='text-[10px] font-bold'>{library.label}</span>
-                <span
-                  className={`font-mono text-[8px] ${
-                    active ? "opacity-80" : "text-indigo-light"
+          <div className='grid grid-cols-3 gap-1'>
+            {ICON_LIBRARIES.map((library) => {
+              const active = iconLibrary === library.id;
+              return (
+                <button
+                  key={library.id}
+                  type='button'
+                  onClick={() => onIconLibraryChange(library.id)}
+                  aria-pressed={active}
+                  title={`کتابخانهٔ ${library.label} (${library.note})`}
+                  className={`flex flex-col items-center gap-0.5 rounded-sm border border-indigo-ink p-1.5 text-center transition-all ${
+                    active
+                      ? "bg-coral text-white shadow-craft-sm"
+                      : "bg-paper-dim text-indigo-ink hover:bg-paper-light"
                   }`}
                 >
-                  {library.note}
-                </span>
+                  <span
+                    aria-hidden='true'
+                    className='flex items-center justify-center gap-0.5'
+                  >
+                    {ICON_PREVIEW_NAMES.map((name) => (
+                      <Icon
+                        key={name}
+                        name={name}
+                        library={library.id}
+                        strokeWidth={2}
+                        className='size-3.5'
+                      />
+                    ))}
+                  </span>
+                  <span className='text-[10px] font-bold'>{library.label}</span>
+                  <span
+                    className={`font-mono text-[8px] ${
+                      active ? "opacity-80" : "text-indigo-light"
+                    }`}
+                  >
+                    {library.note}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className='flex flex-col gap-1 rounded-sm border border-dashed border-indigo-ink/35 bg-paper-dim/70 p-1.5'>
+            <div className='flex items-center justify-between gap-1'>
+              <span className='text-[10px] font-bold text-indigo-ink'>
+                ساخت و استایل آیکون
+              </span>
+              <button
+                type='button'
+                onClick={() => onIconStyleChange(DEFAULT_ICON_STYLE)}
+                className='flex items-center gap-0.5 rounded-sm border border-indigo-ink/40 bg-paper-light px-1 py-0.5 text-[9px] font-bold text-indigo-ink transition-colors hover:bg-paper-dim'
+              >
+                <RotateCcw className='size-2.5' />
+                <span>بازنشانی</span>
               </button>
-            );
-          })}
-        </div>
+            </div>
 
-        <div className='flex flex-col gap-1 rounded-sm border border-dashed border-indigo-ink/35 bg-paper-dim/70 p-1.5'>
-          <div className='flex items-center justify-between gap-1'>
-            <span className='text-[10px] font-bold text-indigo-ink'>
-              ساخت و استایل آیکون
-            </span>
-            <button
-              type='button'
-              onClick={() => onIconStyleChange(DEFAULT_ICON_STYLE)}
-              className='flex items-center gap-0.5 rounded-sm border border-indigo-ink/40 bg-paper-light px-1 py-0.5 text-[9px] font-bold text-indigo-ink transition-colors hover:bg-paper-dim'
-            >
-              <RotateCcw className='size-2.5' />
-              <span>بازنشانی</span>
-            </button>
-          </div>
+            <IconPickerRow
+              label='اندازه'
+              value={iconStyle.size}
+              options={ICON_SIZES.map((option) => ({
+                id: option.id,
+                label: option.label,
+              }))}
+              onChange={(size: IconSizeId) =>
+                onIconStyleChange({ ...iconStyle, size })
+              }
+            />
+            <IconPickerRow
+              label='ضخامت'
+              value={iconStyle.weight}
+              options={ICON_WEIGHTS.map((option) => ({
+                id: option.id,
+                label: option.label,
+              }))}
+              onChange={(weight: IconWeightId) =>
+                onIconStyleChange({ ...iconStyle, weight })
+              }
+            />
+            <IconPickerRow
+              label='رنگ'
+              columns={4}
+              value={iconStyle.tone}
+              options={ICON_TONES.map((option) => ({
+                id: option.id,
+                label: option.label,
+              }))}
+              onChange={(tone: IconToneId) =>
+                onIconStyleChange({ ...iconStyle, tone })
+              }
+            />
 
-          <IconPickerRow
-            label='اندازه'
-            value={iconStyle.size}
-            options={ICON_SIZES.map((option) => ({
-              id: option.id,
-              label: option.label,
-            }))}
-            onChange={(size: IconSizeId) =>
-              onIconStyleChange({ ...iconStyle, size })
-            }
-          />
-          <IconPickerRow
-            label='ضخامت'
-            value={iconStyle.weight}
-            options={ICON_WEIGHTS.map((option) => ({
-              id: option.id,
-              label: option.label,
-            }))}
-            onChange={(weight: IconWeightId) =>
-              onIconStyleChange({ ...iconStyle, weight })
-            }
-          />
-          <IconPickerRow
-            label='رنگ'
-            columns={4}
-            value={iconStyle.tone}
-            options={ICON_TONES.map((option) => ({
-              id: option.id,
-              label: option.label,
-            }))}
-            onChange={(tone: IconToneId) =>
-              onIconStyleChange({ ...iconStyle, tone })
-            }
-          />
+            <div className='flex items-center justify-between gap-1 rounded-sm border border-indigo-ink/20 bg-paper-light px-1.5 py-1'>
+              <span className='text-[9px] text-indigo-light'>پیش‌نمایش</span>
+              <span
+                className='flex items-center gap-2'
+                style={{ color: ICON_TONE_SWATCH[iconStyle.tone] }}
+              >
+                {ICON_PREVIEW_NAMES.map((name) => (
+                  <Icon
+                    key={name}
+                    name={name}
+                    library={iconLibrary}
+                    strokeWidth={resolvedIconStyle.stroke}
+                    className='size-4'
+                    style={{
+                      transform: `scale(${resolvedIconStyle.scale})`,
+                      transformOrigin: "center",
+                    }}
+                  />
+                ))}
+              </span>
+            </div>
 
-          <div className='flex items-center justify-between gap-1 rounded-sm border border-indigo-ink/20 bg-paper-light px-1.5 py-1'>
-            <span className='text-[9px] text-indigo-light'>پیش‌نمایش</span>
-            <span
-              className='flex items-center gap-2'
-              style={{ color: ICON_TONE_SWATCH[iconStyle.tone] }}
-            >
-              {ICON_PREVIEW_NAMES.map((name) => (
-                <Icon
-                  key={name}
-                  name={name}
-                  library={iconLibrary}
-                  strokeWidth={resolvedIconStyle.stroke}
-                  className='size-4'
-                  style={{
-                    transform: `scale(${resolvedIconStyle.scale})`,
-                    transformOrigin: "center",
-                  }}
-                />
-              ))}
+            <span className='text-[9px] leading-relaxed text-indigo-light'>
+              {iconLibrary === "google"
+                ? "آیکون‌های متریال توپرند؛ ضخامت خط روی لوسید و تب‌لر دیده می‌شود."
+                : "همهٔ آیکون‌های بوم اندازه، ضخامت و رنگ را از همین‌جا می‌گیرند."}
             </span>
           </div>
-
-          <span className='text-[9px] leading-relaxed text-indigo-light'>
-            {iconLibrary === "google"
-              ? "آیکون‌های متریال توپرند؛ ضخامت خط روی لوسید و تب‌لر دیده می‌شود."
-              : "همهٔ آیکون‌های بوم اندازه، ضخامت و رنگ را از همین‌جا می‌گیرند."}
-          </span>
         </div>
-      </div>
+      ) : null}
 
       <div
         data-tour='radius'
@@ -902,6 +891,11 @@ export function CreateStudioSidebar({
                     : "bg-paper-dim text-indigo-ink hover:bg-paper-light"
                 }`}
               >
+                <span
+                  aria-hidden='true'
+                  className='my-0.5 block h-8 w-full border-[1.5px] border-current bg-paper-light/40'
+                  style={{ borderRadius: option.value }}
+                />
                 <span className='font-mono text-xs'>{option.label}</span>
                 <span
                   className={`text-[8px] ${
@@ -988,7 +982,7 @@ export function CreateStudioSidebar({
               >
                 <span
                   aria-hidden='true'
-                  className='my-0.5 block h-5 w-8 border border-indigo-ink/25'
+                  className='mt-1 mb-3 block h-7 w-12 border border-indigo-ink/25'
                   style={{
                     borderRadius: Math.min(Math.max(radius, 0), 10),
                     backgroundColor: shadowSwatch.surface,
@@ -1023,59 +1017,93 @@ export function CreateStudioSidebar({
         <div className='flex items-center justify-between text-xs font-bold'>
           <span className='flex items-center gap-1 text-indigo-ink'>
             <Type className='size-3.5 text-coral' />
-            <span>تایپوگرافی</span>
+            <span>انتخاب فونت</span>
           </span>
           <span className='text-[10px] text-indigo-light'>
-            {toPersianDigits(FONTS.length + customFonts.length)} فونت
+            {toPersianDigits(fontChoices.length + 1 + customFonts.length)} فونت
           </span>
         </div>
         <div className='flex flex-col gap-1.5 text-xs'>
+          <label
+            className={`flex cursor-pointer items-center justify-between rounded-sm border border-indigo-ink p-1.5 transition-colors ${
+              font === styleFontId
+                ? "bg-paper-light shadow-craft-sm"
+                : "bg-paper-dim hover:bg-paper-light"
+            }`}
+          >
+            <div className='flex min-w-0 items-center gap-1.5'>
+              <input
+                type='radio'
+                name='font_family_choice'
+                value={styleFontId}
+                checked={font === styleFontId}
+                onChange={() => onFontChange(styleFontId)}
+                className='size-3 shrink-0 accent-coral'
+              />
+              <span
+                className='truncate text-[13px] leading-6 text-indigo-ink'
+                style={{ fontFamily: FONT_STACKS[styleFontId] }}
+              >
+                پیش‌فرض
+              </span>
+            </div>
+            <span
+              className={`shrink-0 ps-2 text-[9px] ${
+                font === styleFontId
+                  ? "font-mono font-bold text-coral"
+                  : "text-indigo-light"
+              }`}
+            >
+              {styleFontLabel}
+            </span>
+          </label>
           {FONT_GROUPS.map((group) => (
             <div key={group.kind} className='flex flex-col gap-1'>
               <span className='font-mono text-[9px] font-bold tracking-[0.12em] text-indigo-light uppercase'>
                 {group.label}
               </span>
-              {FONTS.filter((option) => option.kind === group.kind).map(
-                (option) => {
-                  const active = font === option.id;
-                  return (
-                    <label
-                      key={option.id}
-                      className={`flex cursor-pointer items-center justify-between rounded-sm border border-indigo-ink p-1.5 transition-colors ${
+              {FONTS.filter(
+                (option) =>
+                  option.kind === group.kind && option.id !== styleFontId,
+              ).map((option) => {
+                const active = font === option.id;
+                return (
+                  <label
+                    key={option.id}
+                    className={`flex cursor-pointer items-center justify-between rounded-sm border border-indigo-ink p-1.5 transition-colors ${
+                      active
+                        ? "bg-paper-light shadow-craft-sm"
+                        : "bg-paper-dim hover:bg-paper-light"
+                    }`}
+                  >
+                    <div className='flex min-w-0 items-center gap-1.5'>
+                      <input
+                        type='radio'
+                        name='font_family_choice'
+                        value={option.id}
+                        checked={active}
+                        onChange={() => onFontChange(option.id)}
+                        className='size-3 shrink-0 accent-coral'
+                      />
+                      <span
+                        className='truncate text-[13px] leading-6 text-indigo-ink'
+                        style={{ fontFamily: FONT_STACKS[option.id] }}
+                      >
+                        {option.label}
+                      </span>
+                    </div>
+                    <span
+                      className={`shrink-0 ps-2 text-[9px] ${
                         active
-                          ? "bg-paper-light shadow-craft-sm"
-                          : "bg-paper-dim hover:bg-paper-light"
+                          ? "font-mono font-bold text-coral"
+                          : "text-indigo-light"
                       }`}
                     >
-                      <div className='flex min-w-0 items-center gap-1.5'>
-                        <input
-                          type='radio'
-                          name='font_family_choice'
-                          value={option.id}
-                          checked={active}
-                          onChange={() => onFontChange(option.id)}
-                          className='size-3 shrink-0 accent-coral'
-                        />
-                        <span
-                          className='truncate text-[13px] leading-6 text-indigo-ink'
-                          style={{ fontFamily: FONT_STACKS[option.id] }}
-                        >
-                          {option.label}
-                        </span>
-                      </div>
-                      <span
-                        className={`shrink-0 ps-2 text-[9px] ${
-                          active
-                            ? "font-mono font-bold text-coral"
-                            : "text-indigo-light"
-                        }`}
-                      >
-                        {option.note}
-                      </span>
-                    </label>
-                  );
-                },
-              )}
+                      {option.note}
+                    </span>
+                  </label>
+                );
+              })}
             </div>
           ))}
 

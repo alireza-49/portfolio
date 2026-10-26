@@ -338,12 +338,25 @@ export function buildStudioHandoff(
 }
 
 /**
+ * The console downloads a submission as `{ applicant, studioConfig: <hand-off
+ * wrapper> }`, and the wrapper itself carries the configuration as `config`.
+ * Both keys are unwrapped here so any file the site produces round-trips.
+ */
+export function unwrapConfig(value: unknown): Record<string, unknown> | null {
+  if (!isRecord(value)) return null;
+  if (isRecord(value.config)) return unwrapConfig(value.config);
+  if (isRecord(value.studioConfig)) return unwrapConfig(value.studioConfig);
+  return value;
+}
+
+/**
  * Parse a pasted/downloaded configuration.
  *
- * Accepts both shapes the studio produces — the hand-off wrapper the contact
- * form submits (`{ config, … }`) and a bare `StudioConfig` — and rejects
- * anything that is not a studio configuration (CSS snippets, `{}`, random
- * JSON) instead of silently applying the defaults.
+ * Accepts every shape the site produces — the hand-off wrapper the contact
+ * form submits (`{ config, … }`), the console's submission export
+ * (`{ studioConfig: … }`) and a bare `StudioConfig` — and rejects anything that
+ * is not a studio configuration (CSS snippets, `{}`, random JSON) instead of
+ * silently applying the defaults.
  */
 export function parseStudioConfigPayload(raw: string): StudioImportResult {
   const text = raw.trim();
@@ -369,8 +382,8 @@ export function parseStudioConfigPayload(raw: string): StudioImportResult {
     };
   }
 
-  const candidate = isRecord(parsed.config) ? parsed.config : parsed;
-  if (!STYLES.some((style) => style.id === candidate.styleId)) {
+  const candidate = unwrapConfig(parsed);
+  if (!candidate || !STYLES.some((style) => style.id === candidate.styleId)) {
     return {
       status: "error",
       message:

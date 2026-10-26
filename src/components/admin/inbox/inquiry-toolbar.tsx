@@ -1,6 +1,7 @@
 "use client";
 
-import { Search, X } from "lucide-react";
+import { useState } from "react";
+import { Search, Trash2, X } from "lucide-react";
 import { FIELD_CLASS } from "@/components/admin/ui";
 import { faNumber } from "@/lib/fa";
 import {
@@ -31,6 +32,7 @@ export function InquiryToolbar({
   bulkStatus,
   onBulkStatus,
   onApplyBulk,
+  onDeleteSelected,
   onClearSelection,
   pending,
   notice,
@@ -46,10 +48,14 @@ export function InquiryToolbar({
   bulkStatus: SubmissionStatus;
   onBulkStatus: (value: SubmissionStatus) => void;
   onApplyBulk: () => void;
+  onDeleteSelected: () => void;
   onClearSelection: () => void;
   pending: boolean;
   notice: string | null;
 }) {
+  // The arm only survives while the same number of rows stays selected.
+  const [armCount, setArmCount] = useState<number | null>(null);
+  const armed = armCount === selectedCount;
   return (
     <div className='flex flex-col gap-3 border-b-[2px] border-dashed border-indigo-ink/20 p-3 sm:p-4'>
       <div className='flex flex-wrap items-center justify-between gap-2'>
@@ -123,7 +129,30 @@ export function InquiryToolbar({
           </button>
           <button
             type='button'
-            onClick={onClearSelection}
+            disabled={pending}
+            onClick={() => {
+              if (!armed) {
+                setArmCount(selectedCount);
+                return;
+              }
+              setArmCount(null);
+              onDeleteSelected();
+            }}
+            className={
+              armed
+                ? "inline-flex items-center gap-1 rounded-sm border-[1.5px] border-coral bg-coral px-2.5 py-1 text-[11px] font-black text-white transition-colors disabled:opacity-60"
+                : "inline-flex items-center gap-1 rounded-sm border-[1.5px] border-coral bg-paper px-2.5 py-1 text-[11px] font-black text-coral transition-colors hover:bg-coral hover:text-white disabled:opacity-60"
+            }
+          >
+            <Trash2 className='size-3' />
+            {armed ? "برای حذف دوباره بزنید" : "حذف انتخاب‌شده‌ها"}
+          </button>
+          <button
+            type='button'
+            onClick={() => {
+              setArmCount(null);
+              onClearSelection();
+            }}
             className='inline-flex items-center gap-1 text-[11px] font-bold text-indigo-ink/70 hover:text-coral'
           >
             <X className='size-3' />

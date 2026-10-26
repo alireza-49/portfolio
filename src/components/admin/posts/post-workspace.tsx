@@ -7,7 +7,7 @@ import {
   Panel,
   PanelHeading,
 } from "@/components/admin/ui";
-import type { PostInput, PostStatus } from "@/lib/types";
+import type { PostInput, PostIssue, PostStatus } from "@/lib/types";
 import { RichTextEditor, type OutlineItem } from "./rich-text-editor";
 import { PostSidebar } from "./post-sidebar";
 
@@ -21,6 +21,10 @@ export function PostWorkspace({
   pending,
   onSave,
   published,
+  issues,
+  onRestore,
+  onAuditChange,
+  onExport,
 }: {
   draft: PostInput;
   patch: (values: Partial<PostInput>) => void;
@@ -31,6 +35,10 @@ export function PostWorkspace({
   pending: boolean;
   onSave: (status: PostStatus) => void;
   published: boolean;
+  issues: PostIssue[];
+  onRestore: (html: string) => void;
+  onAuditChange: (issues: PostIssue[]) => void;
+  onExport: (markdown: string) => void;
 }) {
   return (
     <div className='grid grid-cols-1 gap-4 xl:grid-cols-12'>
@@ -60,6 +68,8 @@ export function PostWorkspace({
           value={draft.contentHtml}
           onChange={(contentHtml) => patch({ contentHtml })}
           onOutlineChange={onOutlineChange}
+          onAuditChange={onAuditChange}
+          onExport={onExport}
         />
 
         <Panel>
@@ -98,6 +108,9 @@ export function PostWorkspace({
           pending={pending}
           onSave={() => onSave(draft.status)}
           onTogglePublish={() => onSave(published ? "draft" : "published")}
+          postId={postId}
+          issues={issues}
+          onRestore={onRestore}
         />
       </div>
     </div>

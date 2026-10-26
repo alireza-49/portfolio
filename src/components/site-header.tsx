@@ -16,17 +16,16 @@ import {
 type NavLink = {
   href: string;
   label: string;
-  highlight?: boolean;
 };
 
 const NAV_LINKS: NavLink[] = [
-  { href: "/#projects-container", label: "پروژه‌ها" },
   { href: "/blog", label: "وبلاگ" },
+  { href: "/#projects-container", label: "پروژه‌ها" },
   { href: "/track", label: "پیگیری پروژه" },
-  { href: "/create", label: "ساخت آنلاین", highlight: true },
   { href: "/#estimator-section", label: "برآورد هزینه" },
-  { href: "/#contact-section", label: "تماس و سفارش" },
 ];
+
+const CREATE_LINK: NavLink = { href: "/create", label: "ساخت آنلاین" };
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
@@ -64,11 +63,7 @@ export function SiteHeader() {
             <Link
               key={link.href}
               href={link.href}
-              className={
-                link.highlight
-                  ? "rounded-sm border-[1.5px] border-indigo-ink bg-mustard/40 px-2.5 py-1 font-black text-indigo-ink shadow-craft-sm transition-all hover:bg-mustard"
-                  : "rounded px-2 py-1 text-indigo-ink/80 transition-all hover:bg-mustard/20 hover:text-coral"
-              }
+              className='rounded px-2 py-1 text-indigo-ink/80 transition-all hover:bg-mustard/20 hover:text-coral'
             >
               {link.label}
             </Link>
@@ -76,6 +71,12 @@ export function SiteHeader() {
         </nav>
 
         <div className='flex shrink-0 items-center gap-2.5 whitespace-nowrap'>
+          <Link
+            href={CREATE_LINK.href}
+            className='craft-btn hidden items-center justify-center rounded-sm border-[2.5px] border-indigo-ink bg-mustard/60 px-3.5 py-1.5 text-xs font-black whitespace-nowrap text-indigo-ink shadow-craft-sm transition-colors hover:bg-mustard hover:text-coral sm:inline-flex sm:text-[13px]'
+          >
+            {CREATE_LINK.label}
+          </Link>
           <Link
             href='#contact-section'
             className='craft-btn hidden h-auto items-center justify-center gap-1 rounded-sm border-[2.5px] border-indigo-ink bg-coral px-3.5 py-1.5 text-xs font-bold whitespace-nowrap text-white shadow-craft-sm transition-colors hover:bg-coral-dark sm:inline-flex sm:text-[13px]'
@@ -107,16 +108,21 @@ export function SiteHeader() {
                       <Link
                         href={link.href}
                         onClick={() => setOpen(false)}
-                        className={
-                          link.highlight
-                            ? "block py-3 text-sm font-black text-coral transition-colors hover:text-coral-dark"
-                            : "block py-3 text-sm font-bold text-indigo-ink transition-colors hover:text-coral"
-                        }
+                        className='block py-3 text-sm font-bold text-indigo-ink transition-colors hover:text-coral'
                       >
                         {link.label}
                       </Link>
                     </li>
                   ))}
+                  <li>
+                    <Link
+                      href={CREATE_LINK.href}
+                      onClick={() => setOpen(false)}
+                      className='block py-3 text-sm font-black text-coral transition-colors hover:text-coral-dark'
+                    >
+                      {CREATE_LINK.label}
+                    </Link>
+                  </li>
                 </ul>
               </nav>
             </SheetContent>

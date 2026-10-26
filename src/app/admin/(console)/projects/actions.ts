@@ -2,11 +2,13 @@
 
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
+import { deleteTaskEvent } from "@/lib/calendar-sync";
 import {
   createProject,
   deleteProject,
   getProject,
   getProjectByCode,
+  listTasks,
   patchProjectProgress,
   setProjectPublished,
   updateProject,
@@ -169,6 +171,11 @@ export async function deleteProjectAction(
 
   const project = await getProject(id);
   if (!project) return { ok: false, message: "پروژه پیدا نشد." };
+
+  // The DB cascade drops the task rows, so their calendar events must go first —
+  // afterwards there is no stored event id left to delete with.
+  const tasks = await listTasks({ projectId: id });
+  await Promise.all(tasks.map((task) => deleteTaskEvent(task)));
 
   const deleted = await deleteProject(id);
   if (!deleted) return { ok: false, message: "حذف پروژه ناموفق بود." };

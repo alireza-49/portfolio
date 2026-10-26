@@ -16,6 +16,7 @@ import {
   type SubmissionStatus,
 } from "@/lib/types";
 import {
+  bulkDeleteSubmissionAction,
   bulkSetSubmissionStatusAction,
   deleteSubmissionAction,
   setSubmissionStatusAction,
@@ -86,6 +87,21 @@ export function InquiryInbox({
       if (result.ok) {
         setOpenId(null);
         setSelected((current) => current.filter((item) => item !== id));
+      }
+      notify(result.message);
+      if (result.ok) router.refresh();
+    });
+  };
+
+  const removeSelected = () => {
+    if (selected.length === 0) return;
+    startTransition(async () => {
+      const result = await bulkDeleteSubmissionAction(selected);
+      if (result.ok) {
+        setOpenId((current) =>
+          current && selected.includes(current) ? null : current,
+        );
+        setSelected([]);
       }
       notify(result.message);
       if (result.ok) router.refresh();
@@ -186,6 +202,7 @@ export function InquiryInbox({
           bulkStatus={bulkStatus}
           onBulkStatus={setBulkStatus}
           onApplyBulk={applyBulk}
+          onDeleteSelected={removeSelected}
           onClearSelection={() => setSelected([])}
           pending={pending}
           notice={notice}
@@ -193,9 +210,11 @@ export function InquiryInbox({
         <InquiryTable
           rows={filtered}
           selected={selected}
+          pending={pending}
           onToggle={toggle}
           onToggleAll={toggleAll}
           onOpen={(id) => setOpenId(id)}
+          onDelete={remove}
         />
       </Panel>
 

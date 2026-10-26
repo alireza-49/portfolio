@@ -1,19 +1,20 @@
 import { ListTree } from "lucide-react";
-import { addHeadingIds } from "@/lib/post-html";
+import { addHeadingIds, enhancePostHtml } from "@/lib/post-html";
+import { PostRuntime } from "./post-runtime";
 
 /**
  * Renders the saved article body. Anchor ids are added here (never stored), so a
  * heading can be renamed without leaving broken links in the database.
  */
 export function PostBody({ html }: { html: string }) {
-  const { html: withIds, headings } = addHeadingIds(html);
+  const { html: withIds, headings } = addHeadingIds(enhancePostHtml(html));
 
   return (
     <div className='grid grid-cols-1 gap-4 lg:grid-cols-12'>
       <article className='min-w-0 lg:col-span-8'>
-        <div
+        <PostRuntime
+          html={withIds}
           className='post-body rounded-md border-[2px] border-indigo-ink bg-paper-light p-5 shadow-craft sm:p-7'
-          dangerouslySetInnerHTML={{ __html: withIds }}
         />
       </article>
 

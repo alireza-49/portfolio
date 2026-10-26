@@ -1,12 +1,12 @@
 import {
   Clock,
-  FlaskConical,
-  Leaf,
+  FileSearch,
+  MousePointerClick,
   Palette,
+  Radio,
   Wallet,
   Zap,
   BadgeCheck,
-  Sparkles,
 } from "lucide-react";
 import { cn } from "cn";
 import { Card } from "@/components/ui/card";
@@ -36,21 +36,21 @@ const REASONS = [
     icon: Palette,
     iconBox: "bg-teal-craft text-white shadow-craft-inset",
     blob: "bg-teal-craft/15",
-    title: "طراحی دست‌ساز و بااصالت",
-    body: "سایت شما شبیه هزاران وب‌سایت کپی‌شده دیگر نخواهد بود. پالت‌های رنگی جذاب، تایپوگرافی خوش‌خوان و بافت بصری باهویت متناسب با کسب‌وکارتان.",
-    footer: "✨ هویت بصری منحصر‌به‌فرد",
+    title: "رنگ استایل و فونت مطابق سلیقه شما ",
+    body: "در استودیو کدولوژی پالت، فونت، گوشه‌ها و سبک را زنده عوض می‌کنید و همان انتخاب روی سایت شما پیاده می‌شود. چیزی که می‌بینید، همان چیزی است که تحویل می‌گیرید.",
+    footer: "🖌️ پیش‌نمایش زنده، بدون حدس",
     footerTone: "text-teal-craft",
-    footerIcon: Sparkles,
+    footerIcon: MousePointerClick,
   },
   {
-    icon: FlaskConical,
+    icon: FileSearch,
     iconBox: "bg-indigo-ink text-paper shadow-craft-coral",
     blob: "bg-indigo-ink/10",
-    title: "نظم علمی و معماری پایدار",
-    body: "تخصص ارشد مهندسی بهداشت محیط به معنای احترام عمیق به بهینگی است: کدهای تمیز، لود زیر یک ثانیه و کمترین بار سرور و مصرف باتری.",
-    footer: "🌱 رتبه لایت‌هاوس ۹۵ به بالا",
+    title: "شفاف، از پیش‌پرداخت تا تحویل",
+    body: "هر پروژه یک کد رهگیری دارد که درصد پیشرفت، فازهای اجرایی و لاگ مهندسی را نشان می‌دهد. دیگر لازم نیست بپرسید «کارم کجاست؟» — خودتان می‌بینید.",
+    footer: "🔍 کد رهگیری و پیشرفت زنده",
     footerTone: "text-indigo-ink",
-    footerIcon: Leaf,
+    footerIcon: Radio,
   },
 ] as const;
 

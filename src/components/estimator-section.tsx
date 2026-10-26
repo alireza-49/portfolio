@@ -18,11 +18,15 @@ const PROJECT_TYPES = [
     label: "سایت وردپرسی و قالب آماده",
     base: "پایه ۴ م.ت",
   },
-  { value: "corporate", label: "وب‌سایت شرکتی / خدماتی", base: "پایه ۷ م.ت" },
-  { value: "ecommerce", label: "فروشگاه آنلاین دست‌ساز", base: "پایه ۱۱ م.ت" },
+  {
+    value: "ecommerce",
+    label: "آنلاین شاپ (همراه با صفحه معرفی و لندینگ رایگان)",
+    base: "پایه ۱۱ م.ت",
+  },
   {
     value: "webapp",
-    label: "وب‌اپلیکیشن یا پورتال سفارشی",
+    label:
+      "اپلیکیشن بر پایه وب / داشبورد مدیریتی (همراه با صفحه معرفی و لندینگ رایگان)",
     base: "پایه ۱۴ م.ت",
   },
 ] as const;
@@ -31,21 +35,11 @@ const SPEEDS = [
   {
     value: "standard",
     title: "عادی (۱۰ تا ۱۴ روز)",
-    note: "اقتصادی و آرام",
-    noteTone: "text-indigo-light",
+    note: "بدون هزینه اضافه",
+    nominal: "",
   },
-  {
-    value: "fast",
-    title: "سریع (۵ تا ۷ روز)",
-    note: "+۲۰٪ شتاب‌یافته",
-    noteTone: "text-coral font-bold",
-  },
-  {
-    value: "urgent",
-    title: "فوری (۲ تا ۳ روز)",
-    note: "+۴۰٪ شیفت شبانه",
-    noteTone: "text-coral-dark font-black",
-  },
+  { value: "fast", title: "سریع (۵ تا ۷ روز)", note: "", nominal: "+۱۰٪" },
+  { value: "urgent", title: "فوری (۳ تا ۵ روز)", note: "", nominal: "+۱۵٪" },
 ] as const;
 
 const ADDONS = [
@@ -59,19 +53,54 @@ type ProjectType = (typeof PROJECT_TYPES)[number]["value"];
 type Speed = (typeof SPEEDS)[number]["value"];
 type Addon = (typeof ADDONS)[number]["value"];
 
+/**
+ * Which timing and which modules each project type can take. The form only
+ * offers a combination that exists, so a project type can never be paired with
+ * a timing or a module that is not built for it:
+ * landing → every timing, every module except the payment portal;
+ * wordpress → standard/fast, every module except extra animations;
+ * online shop → standard/fast, every module;
+ * web app → standard/fast, every module except the payment portal.
+ */
+const TIMINGS: Record<ProjectType, readonly Speed[]> = {
+  landing: ["standard", "fast", "urgent"],
+  wordpress: ["standard", "fast"],
+  ecommerce: ["standard", "fast"],
+  webapp: ["standard", "fast"],
+};
+
+const MODULES: Record<ProjectType, readonly Addon[]> = {
+  landing: ["cms", "support", "motion"],
+  wordpress: ["cms", "support", "payportal"],
+  ecommerce: ["cms", "support", "motion", "payportal"],
+  webapp: ["cms", "support", "motion"],
+};
+
 const PRICES: Record<ProjectType, { min: number; max: number; title: string }> =
   {
     landing: { min: 4, max: 6, title: "لندینگ‌پیج معرفی و تبلیغاتی" },
     wordpress: { min: 4, max: 5, title: "سایت وردپرسی و قالب آماده" },
-    corporate: { min: 7, max: 10, title: "وب‌سایت شرکتی / خدماتی" },
-    ecommerce: { min: 11, max: 15, title: "فروشگاه آنلاین دست‌ساز" },
-    webapp: { min: 14, max: 22, title: "وب‌اپلیکیشن یا پورتال سفارشی" },
+    ecommerce: {
+      min: 11,
+      max: 15,
+      title: "آنلاین شاپ (همراه با صفحه معرفی و لندینگ رایگان)",
+    },
+    webapp: {
+      min: 14,
+      max: 22,
+      title:
+        "اپلیکیشن بر پایه وب / داشبورد مدیریتی (همراه با صفحه معرفی و لندینگ رایگان)",
+    },
   };
 
-const SPEED_FACTORS: Record<Speed, { factor: number; title: string }> = {
-  standard: { factor: 1, title: "۱۰ تا ۱۴ روز کاری" },
-  fast: { factor: 1.2, title: "۵ تا ۷ روز کاری (شتاب‌یافته)" },
-  urgent: { factor: 1.4, title: "۲ تا ۳ روز کاری (تحویل فوری)" },
+/**
+ * The rush surcharge (+۱۰٪ / +۱۵٪) is advertised struck through and waived
+ * right now, so the estimate is priced at the base range for every timing.
+ */
+const SPEED_TIMELINES: Record<Speed, string> = {
+  standard: "۱۰ تا ۱۴ روز کاری",
+  fast: "۵ تا ۷ روز کاری (شتاب‌یافته)",
+  urgent: "۳ تا ۵ روز کاری (تحویل فوری)",
 };
 
 const ADDON_PRICES: Record<Addon, number> = {
@@ -97,17 +126,16 @@ export function EstimatorSection() {
 
   const estimate = useMemo(() => {
     const base = PRICES[projectType];
-    const { factor, title } = SPEED_FACTORS[speed];
     const addonSum = addons.reduce(
       (total, addon) => total + ADDON_PRICES[addon],
       0,
     );
 
     return {
-      min: (base.min * factor + addonSum).toFixed(1),
-      max: (base.max * factor + addonSum).toFixed(1),
+      min: (base.min + addonSum).toFixed(1),
+      max: (base.max + addonSum).toFixed(1),
       typeTitle: base.title,
-      timeline: title,
+      timeline: SPEED_TIMELINES[speed],
       addonsCount: addons.length,
     };
   }, [projectType, speed, addons]);
@@ -122,7 +150,19 @@ export function EstimatorSection() {
     });
   }, [estimate]);
 
+  /** Switching the project type drops choices that type cannot take. */
+  const selectProjectType = (next: ProjectType) => {
+    setProjectType(next);
+    if (!TIMINGS[next].includes(speed)) {
+      setSpeed("standard");
+    }
+    setAddons((current) =>
+      current.filter((addon) => MODULES[next].includes(addon)),
+    );
+  };
+
   const toggleAddon = (addon: Addon) => {
+    if (!MODULES[projectType].includes(addon)) return;
     setAddons((current) =>
       current.includes(addon)
         ? current.filter((item) => item !== addon)
@@ -140,10 +180,6 @@ export function EstimatorSection() {
           <h2 className='text-[26px] font-black text-indigo-ink sm:text-[34px]'>
             برآورد رایگان زمان و هزینه پروژه شما
           </h2>
-          <p className='max-w-2xl pt-2 text-base font-medium text-indigo-light'>
-            بدون نیاز به مذاکرات طولانی و قیمت‌های متغیر؛ نوع سایت خود را انتخاب
-            کنید تا محدوده سرمایه‌گذاری و تاریخ دقیق تحویل بدون واسطه مشخص گردد.
-          </p>
         </div>
 
         <div className='grid grid-cols-1 gap-8 lg:grid-cols-12'>
@@ -157,7 +193,9 @@ export function EstimatorSection() {
               </span>
               <RadioGroup
                 value={projectType}
-                onValueChange={(value) => setProjectType(value as ProjectType)}
+                onValueChange={(value) =>
+                  selectProjectType(value as ProjectType)
+                }
                 className='grid grid-cols-1 gap-3 sm:grid-cols-2'
               >
                 {PROJECT_TYPES.map((type) => {
@@ -166,22 +204,22 @@ export function EstimatorSection() {
                     <label
                       key={type.value}
                       className={cn(
-                        "flex cursor-pointer items-center justify-between rounded-sm border-[2px] p-3.5 transition-colors",
+                        "flex cursor-pointer items-center justify-between gap-2 rounded-sm border-[2px] p-3.5 transition-colors",
                         checked
                           ? "border-coral bg-coral/10"
                           : "border-indigo-ink bg-paper hover:bg-mustard/20",
                       )}
                     >
-                      <div className='flex items-center gap-2.5'>
+                      <div className='flex items-start gap-2.5'>
                         <RadioGroupItem
                           value={type.value}
-                          className='shrink-0'
+                          className='mt-1 shrink-0'
                         />
                         <span className='text-sm font-bold text-indigo-ink'>
                           {type.label}
                         </span>
                       </div>
-                      <span className='font-mono text-[12px] font-bold text-coral'>
+                      <span className='shrink-0 whitespace-nowrap font-mono text-[12px] font-bold text-coral'>
                         {type.base}
                       </span>
                     </label>
@@ -203,32 +241,55 @@ export function EstimatorSection() {
                 className='grid grid-cols-1 gap-3 sm:grid-cols-3'
               >
                 {SPEEDS.map((option) => {
+                  const available = TIMINGS[projectType].includes(option.value);
                   const checked = speed === option.value;
                   return (
                     <label
                       key={option.value}
                       className={cn(
-                        "flex cursor-pointer flex-col items-center justify-center gap-1 rounded-sm border-[2px] p-3 text-center transition-colors",
-                        checked
-                          ? "border-coral bg-coral/10"
-                          : "border-indigo-ink bg-paper hover:bg-mustard/20",
+                        "flex flex-col items-center justify-center gap-1 rounded-sm border-[2px] p-3 text-center transition-colors",
+                        !available
+                          ? "cursor-not-allowed border-dashed border-indigo-ink/30 bg-paper-dim text-indigo-ink/45"
+                          : checked
+                            ? "cursor-pointer border-coral bg-coral/10"
+                            : "cursor-pointer border-indigo-ink bg-paper hover:bg-mustard/20",
                       )}
                     >
                       <RadioGroupItem
                         value={option.value}
+                        disabled={!available}
                         className='sr-only'
                       />
-                      <div className='text-sm font-bold text-indigo-ink'>
-                        {option.title}
-                      </div>
                       <div
                         className={cn(
-                          "mt-0.5 font-mono text-[11px]",
-                          option.noteTone,
+                          "text-sm font-bold",
+                          !available
+                            ? "line-through decoration-indigo-ink/40"
+                            : "text-indigo-ink",
                         )}
                       >
-                        {option.note}
+                        {option.title}
                       </div>
+                      {available ? (
+                        <div className='mt-0.5 flex items-center gap-1 font-mono text-[11px]'>
+                          {option.nominal ? (
+                            <>
+                              <span className='text-indigo-light line-through'>
+                                {option.nominal}
+                              </span>
+                              <span className='font-black text-coral'>۰٪</span>
+                            </>
+                          ) : (
+                            <span className='text-indigo-light'>
+                              {option.note}
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <div className='mt-0.5 font-mono text-[10px] font-bold text-indigo-ink/55'>
+                          برای این نوع پروژه نیست
+                        </div>
+                      )}
                     </label>
                   );
                 })}
@@ -240,26 +301,37 @@ export function EstimatorSection() {
                 <span className='flex h-6 w-6 items-center justify-center rounded-full bg-coral font-mono text-xs text-white'>
                   ۳
                 </span>
-                <span>امکانات و ماژول‌های تکمیلی کارگاه:</span>
+                <span>امکانات اضافه:</span>
               </span>
               <div className='grid grid-cols-1 gap-3 sm:grid-cols-2'>
                 {ADDONS.map((addon) => {
+                  const available = MODULES[projectType].includes(addon.value);
                   const checked = addons.includes(addon.value);
                   return (
                     <label
                       key={addon.value}
                       className={cn(
-                        "flex cursor-pointer items-center gap-2.5 rounded-sm border-[1.5px] p-3",
-                        checked
-                          ? "border-coral bg-coral/10"
-                          : "border-indigo-ink/40 bg-paper hover:border-indigo-ink",
+                        "flex items-center gap-2.5 rounded-sm border-[1.5px] p-3",
+                        !available
+                          ? "cursor-not-allowed border-dashed border-indigo-ink/30 bg-paper-dim"
+                          : checked
+                            ? "cursor-pointer border-coral bg-coral/10"
+                            : "cursor-pointer border-indigo-ink/40 bg-paper hover:border-indigo-ink",
                       )}
                     >
                       <Checkbox
                         checked={checked}
+                        disabled={!available}
                         onCheckedChange={() => toggleAddon(addon.value)}
                       />
-                      <span className='text-xs font-medium text-indigo-ink sm:text-sm'>
+                      <span
+                        className={cn(
+                          "text-xs font-medium sm:text-sm",
+                          !available
+                            ? "text-indigo-ink/45 line-through decoration-indigo-ink/40"
+                            : "text-indigo-ink",
+                        )}
+                      >
                         {addon.label}
                       </span>
                     </label>
@@ -271,11 +343,10 @@ export function EstimatorSection() {
 
           <Card className='craft-card relative flex flex-col justify-between gap-6 rounded-sm bg-paper-light p-6 sm:p-8 lg:col-span-5'>
             <div className='flex flex-col gap-5'>
-              <div className='flex items-center justify-between border-b-[2px] border-indigo-ink pb-3'>
-                <span className='font-mono text-xs font-bold text-indigo-ink'>
-                  INVOICE SUMMARY // پیش‌فاکتور زنده
-                </span>
-                <span className='riso-stamp text-[10px]'>بدون واسطه</span>
+              <div className='border-b-[2px] border-indigo-ink pb-3'>
+                <h3 className='text-base font-black text-indigo-ink'>
+                  پیش‌فاکتور
+                </h3>
               </div>
 
               <div className='space-y-3 text-sm text-indigo-light'>
@@ -297,10 +368,20 @@ export function EstimatorSection() {
                     {toPersianDigits(estimate.addonsCount)} مورد انتخاب شده
                   </span>
                 </div>
-                <div className='flex items-center justify-between border-b border-indigo-ink/15 py-1.5'>
-                  <span>راه‌اندازی هاست و اتصال دامنه:</span>
-                  <span className='font-extrabold text-teal-craft'>
-                    ۱۰۰٪ هدیه رایگان
+                <div className='flex items-center justify-between gap-3 border-b border-indigo-ink/15 py-1.5'>
+                  <span className='shrink-0'>دامنه:</span>
+                  <span className='text-left font-extrabold text-teal-craft'>
+                    <span dir='ltr' className='font-mono'>
+                      .ir
+                    </span>{" "}
+                    رایگان — <span dir='ltr' className='font-mono'>.com</span>{" "}
+                    و بقیه به عهدهٔ خودتان
+                  </span>
+                </div>
+                <div className='flex items-center justify-between gap-3 border-b border-indigo-ink/15 py-1.5'>
+                  <span className='shrink-0'>هاست:</span>
+                  <span className='text-left font-extrabold text-teal-craft'>
+                    ماه اول رایگان، بعدش هزینهٔ پلن انتخابی شما
                   </span>
                 </div>
               </div>
@@ -327,15 +408,12 @@ export function EstimatorSection() {
               </Card>
             </div>
 
-            <div className='flex flex-col gap-2 pt-4'>
-              <p className='text-center text-[11px] font-medium text-indigo-light'>
-                برآورد شما به‌صورت زنده در فرم تماس ثبت می‌شود.
-              </p>
+            <div className='pt-4'>
               <a
                 href='#contact-section'
-                className='text-center text-xs font-black text-coral underline underline-offset-4'
+                className='craft-btn flex w-full items-center justify-center gap-2 rounded-sm border-[2.5px] border-indigo-ink bg-coral px-4 py-3.5 text-base font-black text-white shadow-craft-sm transition-colors hover:bg-coral-dark'
               >
-                رفتن به فرم تماس و ارسال پیام ←
+                ثبت در فرم تماس و ارسال پیام ←
               </a>
             </div>
           </Card>

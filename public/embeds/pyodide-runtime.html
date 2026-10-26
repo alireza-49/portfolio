@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pyodide runtime</title>
+    <style>
+      html, body { margin: 0; background: #fffdf5; color: #264653; font: 13px/1.8 Vazirmatn, sans-serif; }
+      body { padding: 12px; }
+    </style>
+  </head>
+  <body>
+    <p id="status">در حال آماده‌سازی محیط پایتون…</p>
+    <script>
+      (function () {
+        "use strict";
+        var params = new URLSearchParams(window.location.search);
+        var indexUrl = params.get("index") || "https://cdn.jsdelivr.net/pyodide/v0.29.5/full/";
+        var frameId = params.get("frame") || "";
+        if (indexUrl.charAt(indexUrl.length - 1) !== "/") indexUrl += "/";
+        var statusNode = document.getElementById("status");
+        var pyodide = null;
+        var loading = null;
+
+        function post(type, data) {
+          try {
+            parent.postMessage(Object.assign({ __cc: true, frameId: frameId, type: type }, data || {}), "*");
+          } catch (_) {}
+        }
+
+        function setStatus(text) {
+          statusNode.textContent = text;
+        }
+
+        function load() {
+          if (pyodide) return Promise.resolve(pyodide);
+          if (loading) return loading;
+          loading = new Promise(function (resolve, reject) {
+            setStatus("در حال دریافت Pyodide از CDN…");
+            var script = document.createElement("script");
+            script.src = indexUrl + "pyodide.js";
+            script.async = true;
+            script.onload = function () {
+              setStatus("در حال راه‌اندازی مفسر پایتون…");
+              window
+                .loadPyodide({ indexURL: indexUrl })
+                .then(function (instance) {
+                  pyodide = instance;
+                  instance.setStdout({
+                    batched: function (text) {
+                      post("stdout", { text: String(text) });
+                    },
+                  });
+                  instance.setStderr({
+                    batched: function (text) {
+                      post("stderr", { text: String(text) });
+                    },
+                  });
+                  setStatus("آماده");
+                  post("ready", { version: String(instance.version || "") });
+                  resolve(instance);
+                })
+                .catch(function (error) {
+                  setStatus("خطا در راه‌اندازی Pyodide");
+                  post("fatal", { message: String((error && error.message) || error) });
+                  reject(error);
+                });
+            };
+            script.onerror = function () {
+              setStatus("دریافت Pyodide ناموفق بود");
+              post("fatal", { message: "بارگذاری Pyodide از CDN ناموفق بود." });
+              reject(new Error("Pyodide load failed"));
+            };
+            document.head.appendChild(script);
+          });
+          return loading;
+        }
+
+        function serialise(value) {
+          var result = { text: "", html: "" };
+          if (value === undefined || value === null) return result;
+          try {
+            if (typeof value === "string") result.text = value;
+            else result.text = String(value);
+          } catch (_) {}
+          try {
+            if (value && typeof value._repr_html_ === "function") result.html = String(value._repr_html_());
+          } catch (_) {}
+          try {
+            if (value && typeof value.destroy === "function") value.destroy();
+          } catch (_) {}
+          return result;
+        }
+
+        window.addEventListener("message", function (event) {
+          if (event.source !== parent) return;
+          var data = event.data;
+          if (!data || data.__cc !== true) return;
+
+          if (data.type === "run") {
+            var id = String(data.id || "");
+            setStatus("در حال اجرا…");
+            post("running", { id: id });
+            load()
+              .then(function (instance) {
+                return instance.runPythonAsync(String(data.code || ""), { globals: instance.globals });
+              })
+              .then(function (value) {
+                var output = serialise(value);
+                setStatus("آماده");
+                post("result", { id: id, text: output.text, html: output.html });
+              })
+              .catch(function (error) {
+                setStatus("خطا در اجرا");
+                post("error", {
+                  id: id,
+                  message: String((error && error.message) || error),
+                  traceback: String((error && error.stack) || ""),
+                });
+              });
+          }
+
+          if (data.type === "install") {
+            var installId = String(data.id || "");
+            load()
+              .then(function (instance) {
+                return instance.loadPackage("micropip").then(function () {
+                  return instance.runPythonAsync(
+                    "import micropip\nmicropip.install(" + JSON.stringify(data.packages || []) + ")\n",
+                  );
+                });
+              })
+              .then(function () {
+                post("installed", { id: installId });
+              })
+              .catch(function (error) {
+                post("install-error", {
+                  id: installId,
+                  message: String((error && error.message) || error),
+                });
+              });
+          }
+        });
+
+        post("boot");
+        setStatus("در حال آماده‌سازی…");
+        load().catch(function () {});
+      })();
+    </script>
+  </body>
+</html>

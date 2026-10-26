@@ -2,60 +2,46 @@
 
 import { useCallback, useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
-import {
-  Calculator,
-  Coffee,
-  Rocket,
-  SlidersHorizontal,
-  Smile,
-} from "lucide-react";
+import { Calculator, Coffee, Palette, Rocket, type LucideIcon } from "lucide-react";
 import { cn } from "cn";
-import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { HeroSpecSheet } from "@/components/hero-spec-sheet";
 
-const HERO_BADGES = [
-  { icon: Coffee, label: "مشاوره ۱۰۰٪ رایگان و بدون تعهد", tone: "coral" },
-  { icon: Calculator, label: "ماشین‌حساب آنلاین قیمت و زمان", tone: "teal" },
-  {
-    icon: SlidersHorizontal,
-    label: "امکان تست و شخصی‌سازی آزمایشی",
-    tone: "mustard",
-  },
-] as const;
-
-const BADGE_TONES: Record<string, string> = {
-  coral: "bg-coral/10 text-coral border-coral/40",
-  teal: "bg-teal-craft/15 text-teal-craft border-teal-craft/40",
-  mustard: "bg-mustard/25 text-indigo-ink border-indigo-ink/20",
+type HeroPromise = {
+  icon: LucideIcon;
+  title: string;
+  body: string;
+  box: string;
+  href?: string;
 };
 
-const HERO_PROMISES = [
-  {
-    icon: Smile,
-    title: "مشاوره رایگان ۳۰ دقیقه‌ای",
-    body: "بدون هیچ پیش‌پرداخت یا تعهد مالی",
-    box: "bg-paper-dim text-indigo-ink border-indigo-ink/40",
-  },
+const HERO_PROMISES: HeroPromise[] = [
   {
     icon: Calculator,
-    title: "تخمین آنلاین و شفاف هزینه",
-    body: "محاسبه دقیق قیمت و تحویل در چند ثانیه",
+    title: "اول قیمت، بعد تصمیم",
+    body: "برآورد شفاف در چند ثانیه",
     box: "bg-mustard/30 text-indigo-ink border-indigo-ink/40",
   },
   {
-    icon: SlidersHorizontal,
-    title: "تست و شخصی‌سازی آزمایشی",
-    body: "بررسی زنده چیدمان قبل از شروع رسمی",
-    box: "bg-teal-craft/20 text-teal-craft border-teal-craft/40",
+    icon: Coffee,
+    title: "۳۰ دقیقه مشاوره، رایگان",
+    body: "بدون پیش‌پرداخت و بدون تعهد",
+    box: "bg-paper-dim text-indigo-ink border-indigo-ink/40",
   },
   {
     icon: Rocket,
-    title: "تحویل چابک ۳ الی ۵ روز",
-    body: "ارتباط مستقیم و کدنویسی اختصاصی",
+    title: "تحویل ۳ تا ۵ روز",
+    body: "کدنویسی دست‌ساز، نه قالب آماده",
     box: "bg-coral/20 text-coral border-coral/40",
   },
-] as const;
+  {
+    icon: Palette,
+    title: "تم را قبل از سفارش ببینید",
+    body: "استودیو کدولوژی: رنگ، فونت و سبک را زنده امتحان کنید",
+    box: "bg-teal-craft/20 text-teal-craft border-teal-craft/40",
+    href: "/create",
+  },
+];
 
 const INK_COLORS = ["#E76F51", "#E9C46A", "#F237A1", "#264653", "#2A9D8F"];
 
@@ -72,7 +58,7 @@ type Particle = {
 };
 
 function createParticles(count: number): Particle[] {
-  return Array.from({ length: count }, (_, index) => {
+  return Array.from({ length: count }, () => {
     const angle = Math.random() * Math.PI * 2;
     const distance = Math.random() * 48 + 32;
     const squish = () =>
@@ -123,23 +109,7 @@ export function HeroSection() {
 
       <div className='relative z-10 mx-auto flex max-w-7xl flex-col items-center gap-12 lg:flex-row'>
         <div className='flex w-full flex-col gap-6 text-right lg:w-7/12'>
-          <div className='flex flex-wrap items-center gap-2.5'>
-            {HERO_BADGES.map((badge) => (
-              <Badge
-                key={badge.label}
-                variant='outline'
-                className={cn(
-                  "inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-bold [&>svg]:size-4",
-                  BADGE_TONES[badge.tone],
-                )}
-              >
-                <badge.icon className='size-4' />
-                {badge.label}
-              </Badge>
-            ))}
-          </div>
-
-          <h1 className='font-display text-[32px] leading-[1.3] font-black text-indigo-ink sm:text-[46px]'>
+          <h1 className='font-display text-[32px] leading-[1.3] font-black text-indigo-ink sm:text-[40px] lg:text-[clamp(38px,3.4vw,46px)]'>
             طراحی وب{" "}
             <span
               className={`ink-splash-wrapper group mx-1.5 inline-block px-3 py-1 align-baseline text-coral ${
@@ -236,51 +206,62 @@ export function HeroSection() {
               </svg>
 
               <span className='ink-text-target z-10 inline-block px-1 font-black tracking-normal'>
-                ارزان ، سریع و شخصی سازی شده
+                سریع، سئو عالی و منصفانه قیمت
               </span>
 
               <span className='absolute inset-x-0 bottom-0 h-[3px] rounded-full bg-coral transition-opacity duration-200 group-[.splashed]:opacity-0' />
-            </span>{" "}
-            برای همه کسب‌وکارها{" "}
+            </span>
+            <span className='block'>برای کسب‌وکارهای کوچک </span>
           </h1>
 
           <p className='max-w-2xl text-[17px] leading-[1.85] font-medium text-indigo-light sm:text-[18px]'>
-            بدون واسطه و مستقیم با من گفتگو کنید! قبل از شروع می توانید با{" "}
+            مستقیم با خودم کار می‌کنید؛{" "}
             <strong className='font-bold text-indigo-ink'>
-              ماشین‌حساب آنلاین
-            </strong>{" "}
-            هزینه و زمان دقیق پروژه‌تان را برآورد کنید، در{" "}
+              بدون واسطه و بدون هزینهٔ پنهان
+            </strong>
+            . قیمت و زمان تحویل را همین حالا آنلاین می‌بینید، بعد در یک{" "}
             <strong className='font-bold text-indigo-ink'>
-              جلسه مشاوره رایگان ۳۰ دقیقه‌ای
+              جلسهٔ ۳۰ دقیقه‌ای رایگان
             </strong>{" "}
-            ایده‌تان را موشکافی کنیم و حتی می توانید از قسمت ساخت ساخت انلاین
-            چیدمان و دیزاین را به صورت{" "}
-            <strong className='font-bold text-indigo-ink'>
-              رایگان و تست و شخصی‌سازی زنده
-            </strong>{" "}
-            مطابق سلیقه برند خود بررسی نمایید.
+            ایده را با هم می‌سنجیم.
+          </p>
+
+          <p className='-mt-3 flex items-center gap-2 text-[13px] font-medium text-indigo-ink/60 sm:text-sm'>
+            <span className='size-1.5 shrink-0 rounded-full bg-teal-craft' />
+            بیش از ۴ سال توسعهٔ فرانت‌اند در تیم‌های محصول
           </p>
 
           <div className='grid grid-cols-1 gap-3 pt-1 sm:grid-cols-2'>
             {HERO_PROMISES.map((promise) => (
               <Card
                 key={promise.title}
-                className='flex flex-row items-center gap-3 rounded-sm border-[2px] border-indigo-ink bg-paper-light p-3 shadow-craft-inset'
+                className={cn(
+                  "relative flex flex-row items-center gap-3 rounded-sm border-[2px] border-indigo-ink bg-paper-light p-3 shadow-craft-inset",
+                  promise.href &&
+                    "transition-colors hover:border-teal-craft hover:bg-teal-craft/5",
+                )}
               >
                 <span
                   className={cn(
-                    "flex size-9 items-center justify-center rounded border font-bold",
+                    "flex size-9 shrink-0 items-center justify-center rounded border font-bold",
                     promise.box,
                   )}
                 >
                   <promise.icon className='size-5' />
                 </span>
-                <div className='text-xs sm:text-sm'>
+                <div className='min-w-0 text-xs'>
                   <strong className='block text-indigo-ink'>
                     {promise.title}
                   </strong>
                   <span className='text-indigo-light'>{promise.body}</span>
                 </div>
+                {promise.href && (
+                  <Link
+                    href={promise.href}
+                    className='absolute inset-0 rounded-sm'
+                    aria-label={promise.title}
+                  />
+                )}
               </Card>
             ))}
           </div>
@@ -290,17 +271,21 @@ export function HeroSection() {
               href='#contact-section'
               className='craft-btn inline-flex h-auto items-center justify-center gap-2 rounded-sm border-[2.5px] border-indigo-ink bg-coral px-6 py-3.5 text-base font-bold text-white shadow-craft-sm transition-colors hover:bg-coral-dark'
             >
-              <span>رزرو جلسه مشاوره رایگان (۳۰ دقیقه)</span>
+              <span>رزرو مشاورهٔ رایگان</span>
               <Coffee className='size-5' />
             </Link>
             <Link
               href='#estimator-section'
               className='craft-btn inline-flex h-auto items-center justify-center gap-2 rounded-sm border-[2.5px] border-indigo-ink bg-mustard px-6 py-3.5 text-base font-bold text-indigo-ink shadow-craft-sm transition-colors hover:bg-mustard-deep'
             >
-              <span>محاسبه آنلاین قیمت و زمان تحویل</span>
+              <span>محاسبهٔ قیمت و زمان</span>
               <Calculator className='size-5' />
             </Link>
           </div>
+
+          <p className='-mt-1 text-[13px] font-medium text-indigo-light'>
+            همان روز جواب می‌دهم، بدون پیش‌پرداخت.
+          </p>
         </div>
 
         <div className='flex w-full items-center justify-center lg:w-5/12'>

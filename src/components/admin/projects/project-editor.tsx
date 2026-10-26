@@ -20,12 +20,21 @@ import {
   PROJECT_STATUS_META,
   type Project,
   type ProjectInput,
+  type ProjectTask,
 } from "@/lib/types";
 import { updateProjectAction } from "@/app/admin/(console)/projects/actions";
 import { projectToDraft } from "./draft";
 import { ProjectEditorPanels } from "./project-editor-panels";
 
-export function ProjectEditor({ project }: { project: Project }) {
+export function ProjectEditor({
+  project,
+  tasks,
+  now,
+}: {
+  project: Project;
+  tasks: ProjectTask[];
+  now: string;
+}) {
   const router = useRouter();
   const [draft, setDraft] = useState<ProjectInput>(() =>
     projectToDraft(project),
@@ -143,7 +152,13 @@ export function ProjectEditor({ project }: { project: Project }) {
         </p>
       ) : null}
 
-      <ProjectEditorPanels draft={draft} patch={patch} />
+      <ProjectEditorPanels
+        draft={draft}
+        patch={patch}
+        projectId={project.id}
+        tasks={tasks}
+        now={now}
+      />
 
       <div className='sticky bottom-2 z-10 flex flex-wrap items-center justify-between gap-2 rounded-md border-[2px] border-indigo-ink bg-paper-light px-3 py-2 shadow-craft'>
         <span className='text-[11px] font-bold text-indigo-light'>

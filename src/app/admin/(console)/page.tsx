@@ -11,6 +11,7 @@ import {
   PageHeader,
 } from "@/components/admin/ui";
 import { TrendPanel } from "@/components/admin/overview/trend-panel";
+import { DesignDocsPanel } from "@/components/admin/overview/design-docs";
 import {
   ActiveProjectsPanel,
   RecentSubmissionsPanel,
@@ -85,6 +86,8 @@ export default async function AdminOverviewPage() {
         <RecentSubmissionsPanel submissions={recentSubmissions} />
         <ActiveProjectsPanel projects={activeProjects} />
       </div>
+
+      <DesignDocsPanel />
     </div>
   );
 }

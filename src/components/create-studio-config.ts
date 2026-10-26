@@ -36,8 +36,6 @@ export type StyleId =
   | "glass"
   | "steampunk";
 
-export type StyleGroupId = "modern" | "technical" | "expressive";
-
 export type FontId =
   | "vazirmatn"
   | "vazir"
@@ -89,12 +87,6 @@ export type StyleOption = {
   description: string;
   /** Built-in body face applied when the style is selected. */
   font: FontId;
-  group: StyleGroupId;
-};
-export type StyleGroup = {
-  id: StyleGroupId;
-  label: string;
-  caption: string;
 };
 export type RadiusOption = { value: number; label: string; caption: string };
 
@@ -170,26 +162,8 @@ export const ARCHETYPE_ICONS: Record<ArchetypeId, LucideIcon> = {
   dashboard: ChartLine,
 };
 
-export const STYLE_GROUPS: StyleGroup[] = [
-  {
-    id: "modern",
-    label: "مدرن و شرکتی",
-    caption: "خوانا، منظم، قابل اعتماد",
-  },
-  {
-    id: "technical",
-    label: "دیجیتال و تکنیکال",
-    caption: "داده، خط، مونو",
-  },
-  {
-    id: "expressive",
-    label: "بیان‌گرا و آزمایشی",
-    caption: "رنگ، بافت، شخصیت",
-  },
-];
-
 /**
- * Picker order: the sidebar renders this array group by group, so the first
+ * Picker order: the sidebar renders this array as one flat grid, so the first
  * entry is the first tile a visitor sees. `corporate` leads because it is also
  * the style `/create` opens with (see `DEFAULT_STUDIO_CONFIG`).
  */
@@ -199,91 +173,78 @@ export const STYLES: StyleOption[] = [
     label: "شرکتی رادیال",
     description: "سطح روشن، قوس فیروزه‌ای، گوشهٔ نرم",
     font: "samim",
-    group: "modern",
   },
   {
     id: "nova",
     label: "نووا مدرن",
     description: "چاپ گرم، خط مرکب و سایهٔ آفست",
     font: "vazir",
-    group: "modern",
   },
   {
     id: "editorial",
     label: "ادیتوریال مینیمال",
     description: "کاغذ گرم، خط مو و فاصلهٔ زیاد",
     font: "samim",
-    group: "modern",
   },
   {
     id: "swiss",
     label: "سازمانی سوییسی",
     description: "شبکهٔ دقیق، صفر گردی، یک لهجهٔ رنگی",
     font: "samim",
-    group: "modern",
   },
   {
     id: "blueprint",
     label: "نقشهٔ مهندسی",
     description: "کاغذ آبی، خط سفید، برچسب مونو",
     font: "vazir",
-    group: "technical",
   },
   {
     id: "terminal",
     label: "ترمینال تکنیکال",
     description: "CRT سبز، اسکن‌لاین، اعداد مونو",
     font: "vazir",
-    group: "technical",
   },
   {
     id: "glass",
     label: "گلَس نئونی",
     description: "پنل شفاف، هالهٔ فیروزه‌ای، گوشهٔ بزرگ",
     font: "dirooz",
-    group: "technical",
   },
   {
     id: "edtech",
     label: "آموزشی بازی‌وار",
     description: "نارنجی و بنفش، گوشهٔ بزرگ، نشان پیشرفت",
     font: "gandom",
-    group: "expressive",
   },
   {
     id: "terracotta",
     label: "سفال مدیترانه",
     description: "خاک رس، قوس معماری، بافت گچ",
     font: "gandom",
-    group: "expressive",
   },
   {
     id: "zine",
     label: "کلاژ کاغذی",
     description: "کاغذ کرم، برش خط‌چین، تیتر دست‌نویس",
     font: "vazir",
-    group: "expressive",
   },
   {
     id: "memphis",
     label: "ممفیس",
     description: "رنگ متضاد، خط سه‌پیکسلی، چرخش بازیگوش",
     font: "dirooz",
-    group: "expressive",
   },
   {
     id: "manga",
     label: "کمیک مانگا",
     description: "سیاه‌وسفید، پنل مورب، اسکرین‌تون",
     font: "vazir",
-    group: "expressive",
   },
   {
     id: "steampunk",
     label: "استیم‌پانک نجومی",
     description: "برنج و مس، قاب دوتایی، آسمان ستاره‌ای",
     font: "vazir",
-    group: "expressive",
   },
 ];
 
@@ -310,7 +271,7 @@ export const RADII: RadiusOption[] = [
  * palette editor repaints it with the rest of the theme.
  */
 const SHADOW_INK =
-  "color-mix(in srgb, var(--cc-surface-foreground) 55%, var(--cc-background))";
+  "color-mix(in srgb, var(--cc-surface-foreground) 80%, var(--cc-background))";
 
 /**
  * Box-shadow presets. Every value stays inside the token layer, which means
@@ -329,15 +290,15 @@ export const SHADOWS: ShadowOption[] = [
     id: "soft",
     label: "نرم",
     caption: "ملایم",
-    shadow: `0 1px 2px 0 color-mix(in srgb, ${SHADOW_INK} 22%, transparent)`,
-    shadowHover: `0 8px 18px -8px color-mix(in srgb, ${SHADOW_INK} 40%, transparent)`,
+    shadow: `0 2px 4px -2px color-mix(in srgb, ${SHADOW_INK} 40%, transparent), 0 6px 12px -8px color-mix(in srgb, ${SHADOW_INK} 45%, transparent)`,
+    shadowHover: `0 4px 8px -2px color-mix(in srgb, ${SHADOW_INK} 45%, transparent), 0 12px 22px -10px color-mix(in srgb, ${SHADOW_INK} 55%, transparent)`,
   },
   {
     id: "raised",
     label: "برجسته",
     caption: "شناور",
-    shadow: `0 12px 28px -18px color-mix(in srgb, ${SHADOW_INK} 55%, transparent)`,
-    shadowHover: `0 18px 34px -16px color-mix(in srgb, ${SHADOW_INK} 65%, transparent)`,
+    shadow: `0 10px 22px -12px color-mix(in srgb, ${SHADOW_INK} 70%, transparent), 0 4px 8px -6px color-mix(in srgb, ${SHADOW_INK} 50%, transparent)`,
+    shadowHover: `0 16px 30px -14px color-mix(in srgb, ${SHADOW_INK} 80%, transparent), 0 6px 12px -6px color-mix(in srgb, ${SHADOW_INK} 55%, transparent)`,
   },
   {
     id: "hard",

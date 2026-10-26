@@ -11,6 +11,7 @@ import {
   Wand2,
 } from "lucide-react";
 import { StatusPill } from "@/components/admin/ui";
+import { designDocForSubmission } from "@/components/create-studio-design-doc";
 import {
   SUBMISSION_STATUSES,
   SUBMISSION_STATUS_META,
@@ -29,6 +30,16 @@ const STUDIO_STATUS_LABEL: Record<string, string> = {
   defaults: "ترکیب پیش‌فرض استودیو",
   customized: "تم سفارشی ساخته‌شده",
 };
+
+function downloadMarkdown(filename: string, content: string) {
+  const blob = new Blob([content], { type: "text/markdown;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename;
+  anchor.click();
+  URL.revokeObjectURL(url);
+}
 
 function downloadStudioConfig(submission: Submission) {
   if (!submission.studioConfig) return;
@@ -67,6 +78,14 @@ export function InquiryStudioPanel({
 }) {
   const [copied, setCopied] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+
+  const designDoc = submission.studioConfig
+    ? designDocForSubmission(submission.studioConfig, {
+        requester: submission.name,
+        business: submission.business,
+        submittedAt: submission.createdAt,
+      })
+    : null;
 
   const replyText = [
     `${submission.name} عزیز، سلام`,
@@ -121,14 +140,31 @@ export function InquiryStudioPanel({
           </p>
         )}
         {submission.studioConfig ? (
-          <button
-            type='button'
-            onClick={() => downloadStudioConfig(submission)}
-            className='inline-flex w-fit items-center gap-1.5 rounded-sm border-[1.5px] border-indigo-ink bg-paper px-2 py-1 text-[11px] font-black text-indigo-ink transition-colors hover:bg-mustard/30'
-          >
-            <Download className='size-3.5' />
-            دانلود پیکربندی JSON
-          </button>
+          <div className='flex flex-wrap gap-1.5'>
+            <button
+              type='button'
+              onClick={() => downloadStudioConfig(submission)}
+              className='inline-flex w-fit items-center gap-1.5 rounded-sm border-[1.5px] border-indigo-ink bg-paper px-2 py-1 text-[11px] font-black text-indigo-ink transition-colors hover:bg-mustard/30'
+            >
+              <Download className='size-3.5' />
+              دانلود پیکربندی JSON
+            </button>
+            {designDoc ? (
+              <button
+                type='button'
+                onClick={() =>
+                  downloadMarkdown(
+                    `design-${submission.id.slice(0, 8)}.md`,
+                    designDoc,
+                  )
+                }
+                className='inline-flex w-fit items-center gap-1.5 rounded-sm border-[1.5px] border-teal-craft bg-teal-craft/10 px-2 py-1 text-[11px] font-black text-teal-craft transition-colors hover:bg-teal-craft hover:text-white'
+              >
+                <Download className='size-3.5' />
+                دانلود design.md (انگلیسی)
+              </button>
+            ) : null}
+          </div>
         ) : null}
       </div>
 
