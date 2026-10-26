@@ -18,8 +18,8 @@ Stack: Next.js 16 App Router, React 19, TypeScript, Tailwind CSS v4, `@base-ui/r
 `ecommerce`, `clinic`, `dashboard`, and the «المان‌های خام» catalog last), the sidebar picks one of
 **13 style presets** (`corporate` «شرکتی رادیال» is both first tile and default, then nova,
 editorial, swiss, blueprint, terminal, glass, edtech, terracotta, zine, memphis, manga, steampunk),
-plus palette, radius, shadow, font and icon library. The canvas re-skins instantly and exports the
-theme as CSS/Tailwind tokens or JSON.
+plus palette, radius, shadow and font (the icon-library picker is hidden for now). The canvas
+re-skins instantly and exports the theme as CSS/Tailwind tokens or JSON.
 
 Everything inside the window is built on `src/components/create-components/` — one token-themed
 library. Tokens come from `theme.ts` (plus per-preset `chartPalettes` in
@@ -38,9 +38,13 @@ every preset and scenario.
 | `/admin` | console overview (KPIs, 14-day chart, recents) |
 | `/admin/projects`, `/admin/projects/[id]` | project CRUD + full progress editor |
 | `/admin/progress` | quick progress board |
+| `/admin/plan` | planner: Jalali month grid, project timeline, task board, Google Calendar sync |
 | `/admin/inbox` | contact submissions (filters, bulk status, CSV, slide-over) |
 | `/admin/posts`, `/admin/posts/new`, `/admin/posts/[id]` | post list + Tiptap editor |
+| `/admin/comments` | reader comments for every post (bulk delete) |
 | `/api/contact` | validates, throttles and stores a submission |
+| `/api/google/start`, `/api/google/callback` | OAuth handshake for the planner's calendar account |
+| `/api/google/sync` | pull-run, admin cookie or `Authorization: Bearer $CRON_SECRET` |
 
 ## Where things live
 
@@ -55,8 +59,10 @@ every preset and scenario.
   `STYLES`, `SHADOWS`, `buildThemeSnippet`), `-store.ts`, `-palette.ts`, `-shuffle.ts`,
   `-handoff.ts`, `-tour.tsx`, `-custom-fonts.ts`.
 - `src/lib/` — `db.ts`, `content.ts` (the only DB module), `auth.ts`, `sanitize.ts`, `fa.ts`
-  (Tehran-aware Jalali dates, Persian digits), `text.ts` + `post-html.ts` + `inquiry-csv.ts`
-  (client-safe), `types.ts`, `schema.sql`.
+  (Tehran-aware Jalali dates, Persian digits), `schedule.ts` (Tehran wall-time math, month grid,
+  timeline geometry), `secrets.ts` (AES-256-GCM at-rest encryption), `google-calendar.ts`
+  (OAuth + Calendar REST), `calendar-sync.ts` (push/pull rules), `text.ts` + `post-html.ts` +
+  `inquiry-csv.ts` (client-safe), `types.ts`, `schema.sql`.
 - `src/app/admin/(console)/{projects,posts}/validation.ts` — JSONB re-validation.
 - `scripts/db-setup.mjs` + `scripts/seed/*.mjs`; `public/fonts` (20 files) and
   `src/app/create/fonts.css`.
@@ -85,12 +91,33 @@ every preset and scenario.
   it, a face from `FONTS` plus uploaded ids, an elevation, a radii step and a whole icon setup. It
   skips the current value in every dimension, never touches the scenario and accepts an injectable
   dice so it stays deterministic.
-- `create-studio-tour.tsx` renders a driver.js tour (12 steps) that opens once per browser
+- The sidebar renders the 13 presets as **one flat 2-column grid** — no family headers and no
+  per-tile caption line (`description` stays on the tile's `title`), and palette tiles drop their
+  `note` line the same way. Radius tiles carry a live corner preview (a bordered box drawn with
+  that value) and every shadow preset must read differently at swatch size.
+- The font section is «انتخاب فونت» and opens with a «پیش‌فرض» row that resolves to
+  `STYLE_FONTS[styleId]`; the style's own face is filtered out of the list below so exactly one
+  radio is ever checked. Picking any face still calls `onFontChange` — the default is not a new
+  stored sentinel.
+- The icon-library section is off: `SHOW_ICON_LIBRARY = false` in `create-studio-sidebar.tsx`
+  keeps the whole picker (library, size, weight, tone) out of the DOM and out of the tour. Icons
+  keep `google` + `DEFAULT_ICON_STYLE`; flip the flag to bring the section back unchanged.
+- `create-studio-tour.tsx` renders a driver.js tour (11 steps) that opens once per browser
   (`cc-studio-tour-v1`) and replays from «راهنما»; `driver.css` is imported in
   `src/app/create/page.tsx` before `tour.css`.
 - The hand-off lives in `create-studio-handoff.ts`: `studioConfigStatus()` (derived, never stored),
   `describeStudioConfig`/`describeStudioOptions`, `buildStudioHandoff`, `parseStudioConfigPayload`
-  and the store's `parseStudioConfig`.
+  and the store's `parseStudioConfig`. The import unwraps `config` **and** `studioConfig` (the
+  console's submission download wraps the hand-off under `studioConfig`), so any file the site
+  produces round-trips into `/create` unchanged.
+- `create-studio-design-doc.ts` renders an **English** `design.md` from a resolved
+  `buildStudioTheme` (roles, neutrals, chart ramp, shape/shadow/motion, typography, icons, the
+  customization diff against the style preset, and the full `--cc-*` map), so a token added in
+  `theme.ts` appears there without a second declaration. Two entry points: `designDocForStyle(id)`
+  is the preset baseline behind the `/admin` «راهنمای طراحی سبک‌ها» panel, and
+  `designDocForSubmission(payload)` reads the JSONB the contact form stored (hand-off wrapper,
+  console envelope or bare config) so every request in `/admin/inbox` can download a document built
+  from what the visitor actually customized.
 
 ## Console: data, auth, content
 
@@ -110,15 +137,37 @@ every preset and scenario.
   (`requireConsolePage()` on every console page) — never trust the layout for authorization.
   Without env vars the console only opens in development (`admin` / `phill-dev`, mustard warning
   bar); in production it fails closed.
+- Project tasks live in `project_tasks` and are internal only — never surface them on `/track`.
+  `src/lib/schedule.ts` owns every wall-clock decision: the Tehran offset is derived from `Intl`
+  (never a hardcoded constant), `tehranInstant(day, "HH:MM")` is the only way a Jalali day plus a
+  wall time becomes an instant, and `faDuration` lives there, not in `fa.ts`. Instants are stored
+  UTC; the UI only ever formats them back through `faDate`/`faTime`/`faTimeRange`.
+- Google Calendar is optional and must never block a write. `google-calendar.ts` holds OAuth and the
+  REST calls (global `fetch`, no SDK); `calendar-sync.ts` holds the rules. A task is saved first and
+  pushed afterwards: a failed push leaves `google_sync_state = 'error'` (or `'skipped'` when Google
+  is not configured/connected) and the planner shows the reason instead of losing the task. Events
+  carry `extendedProperties.private.cc_task_id`; a `404`/`410` on PATCH re-inserts instead of
+  duplicating state, and deleting a project deletes its events before the FK cascade drops the rows.
+- Pulling is incremental and one-way into a read-only mirror: `sync_token` + `singleEvents`, a `410`
+  resets to a full window (now−30d…now+120d), recurring instances are skipped, and only events that
+  are not ours are upserted into `calendar_events`. Events we created reconcile back onto their task
+  (title and times) when Google's `updated` is newer than `google_synced_at`; an event deleted in
+  Google marks its task `'skipped'` rather than resurrecting it.
+- Refresh tokens are encrypted at rest with AES-256-GCM in `secrets.ts`, keyed from
+  `ADMIN_SESSION_SECRET` — rotating that secret forces a Google reconnect. `GET /api/google/sync`
+  exists so a cron can pull (`CRON_SECRET` bearer); without it the planner only pulls on demand.
+  Google env keys: `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET`,
+  `GOOGLE_OAUTH_REDIRECT_URI` (see README for the Google Cloud steps).
 - Post HTML is sanitized **on write** (`sanitizePostHtml`) and rendered with
   `dangerouslySetInnerHTML` — never render raw editor output from elsewhere. Editor swatches store
-  `var(--color-*)`, never hex. Images are URLs only (`https://` or site-relative); never hotlink
-  the Stitch exports.
+  `var(--color-*)`, never hex. Media URLs are `https://` or site-relative; direct uploads go to the
+  Arvan S3 bucket when `ARVAN_S3_*` is configured. Never hotlink the Stitch exports.
 - `/api/contact` validates, throttles and stores the hand-off JSONB exactly as sent; `/admin/inbox`
   only reads that row and never invents a submission.
-- Admin UI never uses fake controls: no SMS/OTP, no email sending, no uploads, no password reset.
-  Known limits: URL-only media, one admin account, in-memory throttles per instance, and missing
-  content answers with the themed 404 plus a 200 status and `noindex`.
+- Admin UI never uses fake controls: no SMS/OTP, no email sending, no password reset. Media uploads
+  appear only when `ARVAN_S3_*` is configured; URL paste always works.
+  Known limits: media is URL/S3-only (no binary in Postgres), one admin account, in-memory throttles
+  per instance, and missing content answers with the themed 404 plus a 200 status and `noindex`.
 
 ## Rules
 
@@ -237,7 +286,7 @@ every preset and scenario.
   present. Imports go through `parseStudioConfigPayload` → `parseStudioConfig`, never
   `JSON.parse` + `updateStudioConfig`, falling back to `STYLE_FONTS[styleId]` when the saved custom
   font is not on this device.
-- The tour targets `data-tour='…'` attributes only (`scenarios`, `styles`, `palette`, `icons`,
+- The tour targets `data-tour='…'` attributes only (`scenarios`, `styles`, `palette`,
   `radius`, `shadow`, `typography`, `canvas-chrome`, `canvas-status`, `submit-config`) and is
   keyboard-first: focus moves to the popover's next button in a microtask, Space advances even after
   a click dropped focus, and `preventScroll` keeps the sidebar still.
@@ -245,6 +294,6 @@ every preset and scenario.
 ## Verify
 
 ```bash
-npx tsc --noEmit && npx eslint src && npm run build
+npx tsc --noEmit && npx eslint src && npm test && npm run build
 npm run db:setup   # once per database (reads DATABASE_URL)
 ```

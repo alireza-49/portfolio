@@ -4,11 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   ArrowUpRight,
+  CalendarClock,
   Gauge,
   Inbox,
   Layers,
   LayoutDashboard,
+  MessageSquare,
   Newspaper,
+  Wallet,
 } from "lucide-react";
 import { cn } from "cn";
 import { LogoButton } from "@/assests/logo";
@@ -28,9 +31,12 @@ export const ADMIN_NAV: NavItem[] = [
     exact: true,
   },
   { href: "/admin/projects", label: "مدیریت پروژه‌ها", icon: Layers },
+  { href: "/admin/plan", label: "برنامه‌ریزی و تقویم", icon: CalendarClock },
   { href: "/admin/progress", label: "پیشرفت پروژه‌ها", icon: Gauge },
+  { href: "/admin/income", label: "درآمد و پیش‌بینی", icon: Wallet },
   { href: "/admin/inbox", label: "درخواست‌های سفارش", icon: Inbox },
   { href: "/admin/posts", label: "نشر یادداشت‌ها", icon: Newspaper },
+  { href: "/admin/comments", label: "نظرات یادداشت‌ها", icon: MessageSquare },
 ];
 
 export function isActive(pathname: string, item: NavItem): boolean {
