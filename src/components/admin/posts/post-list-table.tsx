@@ -106,13 +106,14 @@ export function PostListTable({
         </div>
       ) : (
         <div className='overflow-x-auto'>
-          <table className='w-full min-w-[980px] border-collapse text-right'>
+          <table className='w-full min-w-[1080px] border-collapse text-right'>
             <thead>
               <tr className='border-b-[2px] border-indigo-ink bg-paper-dim text-[11px] font-black text-indigo-ink'>
                 <th scope='col' className='px-3 py-2'>یادداشت</th>
                 <th scope='col' className='px-3 py-2'>وضعیت</th>
                 <th scope='col' className='px-3 py-2'>برچسب‌ها</th>
                 <th scope='col' className='px-3 py-2'>زمان</th>
+                <th scope='col' className='px-3 py-2'>آمار</th>
                 <th scope='col' className='px-3 py-2 text-left'>عملیات</th>
               </tr>
             </thead>

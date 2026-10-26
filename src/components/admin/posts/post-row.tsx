@@ -5,6 +5,9 @@ import Link from "next/link";
 import {
   Copy,
   ExternalLink,
+  Eye,
+  Heart,
+  MessageSquare,
   Pencil,
   Send,
   Trash2,
@@ -74,6 +77,22 @@ export function PostRow({
           {published ? (
             <span>انتشار: {faDate(post.publishedAt)}</span>
           ) : null}
+        </div>
+      </td>
+      <td className='px-3 py-3'>
+        <div className='flex flex-col gap-0.5 text-[10px] font-bold text-indigo-light'>
+          <span className='inline-flex items-center gap-1'>
+            <Eye className='size-3' />
+            {faNumber(post.views)}
+          </span>
+          <span className='inline-flex items-center gap-1'>
+            <Heart className='size-3' />
+            {faNumber(post.likes)}
+          </span>
+          <span className='inline-flex items-center gap-1'>
+            <MessageSquare className='size-3' />
+            {faNumber(post.commentCount)}
+          </span>
         </div>
       </td>
       <td className='px-3 py-3'>

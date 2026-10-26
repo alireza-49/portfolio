@@ -10,6 +10,15 @@ import {
 } from "@/components/admin/ui";
 import type { PostInput } from "@/lib/types";
 
+const MAX_BASE = 10_000_000;
+
+/** Mirrors the server clamp so the field never shows an impossible value. */
+function clampBase(value: string): number {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed < 0) return 0;
+  return Math.min(MAX_BASE, Math.round(parsed));
+}
+
 export function PostTaxonomyPanel({
   draft,
   patch,
@@ -116,6 +125,43 @@ export function PostTaxonomyPanel({
             className={FIELD_CLASS}
           />
         </label>
+
+        <div className='grid grid-cols-2 gap-3'>
+          <label className='flex flex-col gap-1.5'>
+            <span className={LABEL_CLASS}>شمارش پایهٔ بازدید</span>
+            <input
+              type='number'
+              min={0}
+              max={10_000_000}
+              step={1}
+              dir='ltr'
+              value={draft.baseViews}
+              onChange={(event) =>
+                patch({ baseViews: clampBase(event.target.value) })
+              }
+              className={`${FIELD_CLASS} text-left font-mono`}
+            />
+          </label>
+          <label className='flex flex-col gap-1.5'>
+            <span className={LABEL_CLASS}>شمارش پایهٔ پسند</span>
+            <input
+              type='number'
+              min={0}
+              max={10_000_000}
+              step={1}
+              dir='ltr'
+              value={draft.baseLikes}
+              onChange={(event) =>
+                patch({ baseLikes: clampBase(event.target.value) })
+              }
+              className={`${FIELD_CLASS} text-left font-mono`}
+            />
+          </label>
+        </div>
+        <p className='text-[10px] leading-relaxed font-medium text-indigo-light'>
+          به آمار واقعی اضافه می‌شود؛ برای اینکه صفحه از روز اول زنده به نظر
+          برسد. حداکثر ۱۰٬۰۰۰٬۰۰۰.
+        </p>
       </div>
     </Panel>
   );
