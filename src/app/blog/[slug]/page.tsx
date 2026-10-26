@@ -8,9 +8,15 @@ import { PublicPageShell } from "@/components/public-page-shell";
 import { PostHero } from "@/components/blog/post-hero";
 import { PostBody } from "@/components/blog/post-body";
 import { PostCard } from "@/components/blog/post-card";
+import { PostComments } from "@/components/blog/post-comments";
 import { PostEngagement } from "@/components/blog/post-engagement";
 import { ReadingProgress } from "@/components/blog/reading-progress";
-import { getPostBySlug, isPostLikedBy, listPosts } from "@/lib/content";
+import {
+  getPostBySlug,
+  isPostLikedBy,
+  listPostComments,
+  listPosts,
+} from "@/lib/content";
 import { readReaderId } from "@/lib/reader";
 import { deriveExcerpt } from "@/lib/text";
 import { readerSalt, visitorHash } from "@/lib/visitor";
@@ -60,6 +66,7 @@ export default async function BlogPostPage({
   const liked = reader
     ? await isPostLikedBy(post.id, visitorHash(reader, readerSalt()))
     : false;
+  const comments = await listPostComments(post.id);
 
   const all = await listPosts({ publishedOnly: true });
   const related = all
@@ -86,6 +93,8 @@ export default async function BlogPostPage({
       <div className='mx-auto w-full max-w-7xl px-4 py-8 sm:px-8 lg:px-12'>
         <PostBody html={post.contentHtml} />
       </div>
+
+      <PostComments slug={post.slug} initialComments={comments} />
 
       {related.length > 0 ? (
         <section className='border-t-[2.5px] border-indigo-ink bg-paper-dim/40 px-4 py-8 sm:px-8 lg:px-12'>
