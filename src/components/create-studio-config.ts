@@ -6,7 +6,10 @@ import {
   Stethoscope,
   type LucideIcon,
 } from "lucide-react";
-import { themeToCssVars, type CreateComponentTheme } from "./create-components/theme";
+import {
+  themeToCssVars,
+  type CreateComponentTheme,
+} from "./create-components/theme";
 import type { IconLibraryId } from "./create-components/icon-set";
 import { resolveTheme } from "./create-components/style-presets";
 import {
@@ -328,7 +331,9 @@ export function shadowOverrides(
   choice: ShadowChoice,
 ): Partial<Pick<CreateComponentTheme, "shadow" | "shadowHover">> {
   const option = SHADOWS.find((item) => item.id === choice);
-  return option ? { shadow: option.shadow, shadowHover: option.shadowHover } : {};
+  return option
+    ? { shadow: option.shadow, shadowHover: option.shadowHover }
+    : {};
 }
 
 /**
@@ -407,17 +412,16 @@ export function resolveIconStyle(style: IconStyle): {
   color: string;
 } {
   return {
-    scale:
-      (ICON_SIZES.find((option) => option.id === style.size) ?? ICON_SIZES[1])
-        .scale,
-    stroke:
-      (
-        ICON_WEIGHTS.find((option) => option.id === style.weight) ??
-        ICON_WEIGHTS[1]
-      ).stroke,
-    color:
-      (ICON_TONES.find((option) => option.id === style.tone) ?? ICON_TONES[0])
-        .color,
+    scale: (
+      ICON_SIZES.find((option) => option.id === style.size) ?? ICON_SIZES[1]
+    ).scale,
+    stroke: (
+      ICON_WEIGHTS.find((option) => option.id === style.weight) ??
+      ICON_WEIGHTS[1]
+    ).stroke,
+    color: (
+      ICON_TONES.find((option) => option.id === style.tone) ?? ICON_TONES[0]
+    ).color,
   };
 }
 
@@ -483,7 +487,7 @@ export function buildThemeSnippet(input: StudioThemeInput): string {
     .map(([token, value]) => `  ${token}: ${value};`)
     .join("\n");
 
-  return `/* استودیو کُدولوژی // ${input.style} theme (Tailwind CSS v4) */
+  return `/* استودیو فیل وب // ${input.style} theme (Tailwind CSS v4) */
 @import "tailwindcss";
 
 @theme {

@@ -36,9 +36,11 @@ export function BlogMasthead({
 
         <div className='flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between'>
           <div className='flex flex-col gap-2'>
-            <span className='riso-stamp w-fit text-[10px]'>بیانیهٔ چاپ و کد</span>
+            <span className='riso-stamp w-fit text-[10px]'>
+              بیانیهٔ چاپ و کد
+            </span>
             <h1 className='font-display text-3xl leading-tight font-black text-indigo-ink sm:text-4xl'>
-              روزنامهٔ کارگاه کُدولوژی
+              روزنامهٔ کارگاه فیل وب
             </h1>
             <p className='max-w-2xl text-sm leading-relaxed font-medium text-indigo-light'>
               یادداشت‌های مهندسی، تایپوگرافی، وب پایدار و فلسفهٔ فرم؛ نوشته‌شده

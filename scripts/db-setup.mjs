@@ -131,11 +131,13 @@ async function insertPosts() {
 /**
  * One-time display baselines for the posts that already exist. The guard means
  * re-running setup never overwrites numbers the owner edited in the console.
+ * Kept modest on purpose: 100–200 reads a lively archive without bragging, and
+ * likes stay around 5% of views so the pair looks natural.
  */
 const BLOG_ENGAGEMENT = [
-  { slug: "riso-ink-and-modern-code", views: 1840, likes: 46 },
-  { slug: "sterile-web-return-of-ink", views: 960, likes: 27 },
-  { slug: "persian-type-at-web-speed", views: 615, likes: 18 },
+  { slug: "riso-ink-and-modern-code", views: 180, likes: 9 },
+  { slug: "sterile-web-return-of-ink", views: 140, likes: 7 },
+  { slug: "persian-type-at-web-speed", views: 120, likes: 6 },
 ];
 
 async function seedEngagementBaselines() {

@@ -83,8 +83,16 @@ export function CreateStudio() {
   // defaults, so hydration always matches the prerendered HTML.
   const savedConfig = useStudioConfig();
   const config = savedConfig ?? DEFAULT_STUDIO_CONFIG;
-  const { archetype, styleId, palette, radius, shadow, font, iconLibrary, iconStyle } =
-    config;
+  const {
+    archetype,
+    styleId,
+    palette,
+    radius,
+    shadow,
+    font,
+    iconLibrary,
+    iconStyle,
+  } = config;
 
   const [modalOpen, setModalOpen] = useState(false);
   const [copied, setCopied] = useState<"css" | "config" | null>(null);
@@ -451,7 +459,7 @@ export function CreateStudio() {
 
       {modalOpen ? (
         <StudioDialog
-          title='کد تم و پیکربندی خروجی استودیو کُدولوژی'
+          title='کد تم و پیکربندی خروجی استودیو فیل وب'
           icon={<Code2 className='size-[22px] text-coral' />}
           onClose={() => setModalOpen(false)}
         >
@@ -569,7 +577,9 @@ export function CreateStudio() {
               spellCheck={false}
               autoFocus
               aria-label='متن پیکربندی JSON'
-              placeholder={'{\n  "version": 1,\n  "config": { "styleId": "corporate", … }\n}'}
+              placeholder={
+                '{\n  "version": 1,\n  "config": { "styleId": "corporate", … }\n}'
+              }
               className='w-full resize-none rounded-sm border border-indigo-ink bg-paper p-2 text-left font-mono text-[11px] leading-relaxed text-indigo-ink outline-none focus-visible:ring-2 focus-visible:ring-coral/40'
             />
 
@@ -591,18 +601,17 @@ export function CreateStudio() {
                   پیکربندی معتبر است و آمادهٔ اعمال:
                 </span>
                 <div className='flex flex-wrap gap-1'>
-                  {describeStudioConfig(
-                    importPreview.config,
-                    customFonts,
-                  ).map((item) => (
-                    <span
-                      key={item.label}
-                      className='rounded-sm border border-indigo-ink/30 bg-paper px-1.5 py-0.5 text-[10px] font-bold text-indigo-ink'
-                    >
-                      <span className='text-indigo-light'>{item.label}:</span>{" "}
-                      {item.value}
-                    </span>
-                  ))}
+                  {describeStudioConfig(importPreview.config, customFonts).map(
+                    (item) => (
+                      <span
+                        key={item.label}
+                        className='rounded-sm border border-indigo-ink/30 bg-paper px-1.5 py-0.5 text-[10px] font-bold text-indigo-ink'
+                      >
+                        <span className='text-indigo-light'>{item.label}:</span>{" "}
+                        {item.value}
+                      </span>
+                    ),
+                  )}
                 </div>
                 {importFontMissing ? (
                   <span className='text-[10px] leading-relaxed font-bold text-coral'>
@@ -696,4 +705,3 @@ function StudioDialog({ title, icon, onClose, children }: StudioDialogProps) {
     </div>
   );
 }
-

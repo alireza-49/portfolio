@@ -16,7 +16,6 @@ export default function Home() {
         <WhyMeSection />
         <ProjectsSection />
         <EstimatorSection />
-        <CraftValuesSection />
         <ContactSection />
       </main>
       <SiteFooter />

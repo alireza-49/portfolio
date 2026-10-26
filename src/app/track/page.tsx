@@ -2,9 +2,7 @@ import type { Metadata } from "next";
 import { connection } from "next/server";
 import { PublicPageShell } from "@/components/public-page-shell";
 import { TrackSearchForm } from "@/components/track/track-search";
-import {
-  PublishedBoards,
-} from "@/components/track/published-boards";
+import { PublishedBoards } from "@/components/track/published-boards";
 import { TrackGuide } from "@/components/track/track-guide";
 import { listProjects } from "@/lib/content";
 
@@ -31,7 +29,7 @@ export default async function TrackIndexPage() {
             <h1 className='font-display text-3xl leading-tight font-black text-indigo-ink sm:text-4xl'>
               رهگیری زنده و شفاف پیشرفت پروژه
               <span className='mt-1 block text-xl text-coral sm:text-2xl'>
-                کارگاه دیجیتال کُدولوژی
+                کارگاه دیجیتال فیل وب
               </span>
             </h1>
             <p className='max-w-2xl text-sm leading-relaxed font-medium text-indigo-light sm:text-base'>

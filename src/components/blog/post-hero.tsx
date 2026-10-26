@@ -51,9 +51,11 @@ export function PostHero({ post }: { post: Post }) {
                   {post.author.slice(0, 1)}
                 </span>
                 <div className='flex min-w-0 flex-col'>
-                  <span className='truncate text-sm font-black'>{post.author}</span>
+                  <span className='truncate text-sm font-black'>
+                    {post.author}
+                  </span>
                   <span className='text-[10px] font-medium text-paper/60'>
-                    نویسندهٔ کارگاه کُدولوژی
+                    نویسندهٔ کارگاه فیل وب
                   </span>
                 </div>
               </div>
@@ -98,7 +100,7 @@ export function PostHero({ post }: { post: Post }) {
               className='max-h-80 w-full rounded-sm object-cover'
             />
             <p className='px-1 pt-1.5 text-[10px] font-medium text-indigo-light'>
-              تصویر کاور یادداشت — آرشیو چاپ دیجیتال کُدولوژی
+              تصویر کاور یادداشت — آرشیو چاپ دیجیتال فیل وب
             </p>
           </div>
         ) : null}
