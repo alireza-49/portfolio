@@ -64,7 +64,7 @@ export function AdminShell({
               <Menu className='size-4' />
             </button>
             <span className='hidden font-mono text-[10px] font-bold tracking-widest text-indigo-light uppercase sm:inline'>
-              CODOLOGY // OPS
+              PHILL // OPS
             </span>
             <span className='truncate text-[13px] font-black text-indigo-ink'>
               {section}

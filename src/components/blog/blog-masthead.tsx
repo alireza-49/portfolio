@@ -29,7 +29,7 @@ export function BlogMasthead({
             آرشیو رسمی یادداشت‌های کارگاه
           </span>
           <span className='font-mono'>
-            ISSUE {faNumber(postsCount)} — CODOLOGY PRESS
+            ISSUE {faNumber(postsCount)} — PHILL PRESS
           </span>
           <span className='hidden font-mono sm:inline'>چاپ دیجیتال دو رنگ</span>
         </div>

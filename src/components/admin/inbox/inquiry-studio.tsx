@@ -71,10 +71,10 @@ export function InquiryStudioPanel({
   const replyText = [
     `${submission.name} عزیز، سلام`,
     "",
-    "پیام شما در کارگاه کدولوژی دریافت شد. برای هماهنگی جلسهٔ مشاورهٔ رایگان، لطفاً یکی از بازه‌های زیر را اعلام کنید:",
+    "پیام شما در کارگاه فیل دریافت شد. برای هماهنگی جلسهٔ مشاورهٔ رایگان، لطفاً یکی از بازه‌های زیر را اعلام کنید:",
     "• شنبه تا چهارشنبه، ۱۰ تا ۱۸",
     "",
-    "با احترام، استودیو کدولوژی",
+    "با احترام، وب دیزاین فیل",
   ].join("\n");
 
   const copyReply = async () => {
@@ -170,7 +170,7 @@ export function InquiryStudioPanel({
           {copied ? "متن پاسخ کپی شد" : "کپی متن پاسخ"}
         </button>
         <a
-          href={`mailto:${submission.contact}?subject=${encodeURIComponent("پاسخ استودیو کدولوژی")}&body=${encodeURIComponent(replyText)}`}
+          href={`mailto:${submission.contact}?subject=${encodeURIComponent("پاسخ وب دیزاین فیل")}&body=${encodeURIComponent(replyText)}`}
           className='inline-flex items-center gap-1.5 rounded-sm border-[2px] border-indigo-ink bg-paper px-2.5 py-1.5 text-[11px] font-black text-indigo-ink transition-colors hover:bg-mustard/30'
         >
           <Mail className='size-3.5' />

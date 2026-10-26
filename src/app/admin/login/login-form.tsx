@@ -54,7 +54,7 @@ export function LoginForm({
             required
             autoComplete='username'
             spellCheck={false}
-            placeholder='admin@codology.studio'
+            placeholder='admin@phill.studio'
             className={cn(FIELD_CLASS, "h-12 pr-11 pl-4 text-left")}
           />
         </div>

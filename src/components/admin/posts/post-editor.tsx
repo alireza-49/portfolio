@@ -20,7 +20,7 @@ const EMPTY_DRAFT: PostInput = {
   excerpt: "",
   contentHtml: "",
   coverUrl: "",
-  author: "استودیو کدولوژی",
+  author: "وب دیزاین فیل",
   tags: [],
   status: "draft",
   publishedAt: null,

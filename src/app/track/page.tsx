@@ -9,7 +9,7 @@ import { TrackGuide } from "@/components/track/track-guide";
 import { listProjects } from "@/lib/content";
 
 export const metadata: Metadata = {
-  title: "رهگیری زندهٔ پیشرفت پروژه | استودیو کدولوژی",
+  title: "رهگیری زندهٔ پیشرفت پروژه | وب دیزاین فیل",
   description:
     "با کد رهگیری سفارش، فازهای اجرایی، درصد پیشرفت، لاگ مهندسی و وضعیت تحویل پروژهٔ خود را شفاف ببینید.",
 };

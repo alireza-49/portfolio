@@ -72,9 +72,9 @@ export function AdminBrand() {
   return (
     <div className='flex items-center gap-2.5 border-b-[2px] border-dashed border-indigo-ink/20 px-4 py-4'>
       <LogoButton
-        aria-label='استودیو کدولوژی'
+        aria-label='وب دیزاین فیل'
         logoClassName='size-full'
-        className='size-9 rounded-sm border-[1.5px] border-indigo-ink bg-mustard/30 p-1 text-indigo-ink shadow-craft-inset hover:bg-mustard/30 hover:text-indigo-ink'
+        className='size-13 rounded-sm border-[1.5px] border-indigo-ink bg-mustard/30 p-1 text-indigo-ink shadow-craft-inset hover:bg-mustard/30 hover:text-indigo-ink'
       />
       <div className='flex min-w-0 flex-col'>
         <Link
@@ -84,7 +84,7 @@ export function AdminBrand() {
           کنسول مدیریت
         </Link>
         <span className='font-mono text-[9px] tracking-widest text-indigo-light uppercase'>
-          CODOLOGY OPS
+          PHILL OPS
         </span>
       </div>
     </div>

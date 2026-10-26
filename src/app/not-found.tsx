@@ -4,7 +4,7 @@ import { ArrowLeft, FileQuestion } from "lucide-react";
 import { PublicPageShell } from "@/components/public-page-shell";
 
 export const metadata: Metadata = {
-  title: "صفحه پیدا نشد | استودیو کدولوژی",
+  title: "صفحه پیدا نشد | وب دیزاین فیل",
   robots: { index: false, follow: false },
 };
 

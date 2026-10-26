@@ -727,3 +727,38 @@
     pointer-events: none;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   «فیل» — the studio mark: the elephant at the little laptop on its desk,
+   reading its own screen while we see the back of its lid, trunk reaching
+   onto the keys. The SVG itself is static; hovering (or keyboard-
+   focusing) the button carrying `logo-live` sways the trunk. The pivot is the
+   trunk root in the 512x512 view-box, so it holds at every container size.
+   --------------------------------------------------------------------------- */
+.logo-live .el-trunk {
+  transform-box: view-box;
+  transform-origin: 256px 228px;
+  transition: transform 320ms ease-out;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .logo-live:hover .el-trunk,
+  .logo-live:focus-visible .el-trunk {
+    animation: phill-trunk 2.4s ease-in-out infinite;
+  }
+
+  @keyframes phill-trunk {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+    30% {
+      transform: rotate(6.5deg);
+    }
+    70% {
+      transform: rotate(-6.5deg);
+    }
+  }
+}
+
+/* cache-bust: 1792954200 */

@@ -6,10 +6,10 @@ import "./tour.css";
 import { CreateStudio } from "@/components/create-studio";
 
 export const metadata: Metadata = {
-  title: "کارگاه ساخت تم | استودیو کدولوژی",
+  title: "کارگاه ساخت تم | وب دیزاین فیل",
   description:
     "تم ریسوگراف خودت را بساز: پالت رنگ، شعاع گوشه و تراکم را انتخاب کن، پیش‌نمایش زنده را ببین و خروجی CSS و Tailwind را کپی کن.",
-  keywords: ["تم ریسوگراف", "دیزاین سیستم", "Tailwind", "پالت رنگ", "کدولوژی"],
+  keywords: ["تم ریسوگراف", "دیزاین سیستم", "Tailwind", "پالت رنگ", "فیل"],
 };
 
 export default function CreatePage() {

@@ -318,7 +318,7 @@ function postValues(input: PostInput): (string | number | null)[] {
     input.excerpt.trim(),
     input.contentHtml,
     input.coverUrl.trim(),
-    input.author.trim() || "استودیو کدولوژی",
+    input.author.trim() || "وب دیزاین فیل",
     JSON.stringify(input.tags),
     input.status,
     input.publishedAt,

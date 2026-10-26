@@ -311,9 +311,9 @@ export function CreateStudio() {
         <div className='flex h-15 w-full items-center gap-2 px-3 sm:gap-3 sm:px-6 lg:px-8'>
           <div className='relative flex shrink-0 items-center'>
             <LogoButton
-              aria-label='استودیو کدولوژی'
+              aria-label='وب دیزاین فیل'
               logoClassName='size-full'
-              className='size-8 rounded-sm border-[1.5px] border-indigo-ink bg-mustard/30 p-1 text-indigo-ink shadow-craft-inset hover:bg-mustard/30 hover:text-indigo-ink sm:size-9'
+              className='size-12 rounded-sm border-[1.5px] border-indigo-ink bg-mustard/30 p-1 text-indigo-ink shadow-craft-inset hover:bg-mustard/30 hover:text-indigo-ink sm:size-13'
             />
             <span className='absolute -top-1 -right-1 flex h-2.5 w-2.5'>
               <span className='absolute inline-flex h-full w-full animate-ping rounded-full bg-teal-craft opacity-75' />
@@ -325,7 +325,7 @@ export function CreateStudio() {
             href='/'
             className='hidden shrink-0 font-display text-sm leading-tight font-black tracking-tight text-indigo-ink transition-colors hover:text-coral md:block lg:text-base'
           >
-            استودیو کدولوژی
+            وب دیزاین فیل
           </Link>
 
           <span className='mx-1 hidden h-6 w-px shrink-0 bg-indigo-ink/20 lg:block' />

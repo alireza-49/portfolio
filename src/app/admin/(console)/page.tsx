@@ -27,7 +27,7 @@ export default async function AdminOverviewPage() {
   return (
     <div className='flex flex-col gap-6'>
       <PageHeader
-        eyebrow='CODOLOGY STUDIO // INBOUND OPS'
+        eyebrow='PHILL WEB DESIGN // INBOUND OPS'
         title='میز کار مدیریت'
         description='تصویر زندهٔ درخواست‌های سفارش، پروژه‌های در جریان و یادداشت‌های منتشرشده. همهٔ اعداد از پایگاه دادهٔ کنسول خوانده می‌شوند.'
         actions={

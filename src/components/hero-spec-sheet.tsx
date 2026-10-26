@@ -204,7 +204,6 @@ function Barcode() {
 export function HeroSpecSheet() {
   return (
     <Card
-      data-cursor-morph
       className='group relative flex w-full max-w-sm flex-col gap-0 rounded-sm border-[2px] border-indigo-ink bg-paper-light py-0 shadow-[6px_6px_0_0_var(--color-mustard)] sm:max-w-md lg:max-w-[30rem]'
     >
       {/* crop marks — the sheet reads as printed on a bigger bed */}
@@ -230,14 +229,14 @@ export function HeroSpecSheet() {
           aria-hidden
           className='flex size-9 shrink-0 items-center justify-center rounded-sm border-[1.5px] border-indigo-ink bg-mustard/35 p-[3px] shadow-craft-sm'
         >
-          <Logo idPrefix='hero-' className='size-full' />
+          <Logo className='size-full' />
         </span>
         <div className='flex flex-col gap-[3px]'>
           <span
             dir='ltr'
             className='font-mono text-[6.5px] font-bold tracking-[0.22em] text-indigo-light/70'
           >
-            KODOLOGY STUDIO
+            PHILL WEB DESIGN
           </span>
           <h2 className='text-[13px] leading-none font-black text-indigo-ink'>
             شناسنامهٔ فنی

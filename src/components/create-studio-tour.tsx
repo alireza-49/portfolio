@@ -22,7 +22,7 @@ import {
 const STEPS: DriveStep[] = [
   {
     popover: {
-      title: "به استودیو کدولوژی خوش آمدید",
+      title: "به وب دیزاین فیل خوش آمدید",
       // driver.js renders `description` as HTML, so the scope note is a real
       // styled block (`.cc-tour-scope` in tour.css) instead of a buried
       // sentence at the end of the paragraph.

@@ -341,7 +341,7 @@ export function ElementsGalleryView() {
       {/* ------------------------------------------------------------- header */}
       <header className='flex flex-wrap items-start justify-between gap-4'>
         <div className='flex flex-col gap-1.5'>
-          <span className={eyebrowType}>کاتالوگ المان‌ها · استودیو کدولوژی</span>
+          <span className={eyebrowType}>کاتالوگ المان‌ها · وب دیزاین فیل</span>
           <h2
             className={cn(
               "text-2xl leading-tight text-[color:var(--cc-surface-foreground)] @2xl:text-3xl",

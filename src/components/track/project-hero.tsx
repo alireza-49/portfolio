@@ -49,7 +49,7 @@ export function ProjectHero({ project }: { project: Project }) {
         <div className='mx-auto flex max-w-7xl items-center gap-3 text-[10px] font-bold whitespace-nowrap text-indigo-light'>
           <span className='flex items-center gap-1.5 text-coral'>
             <span className='size-2 animate-pulse rounded-full bg-coral' />
-            پایگاه زندهٔ رهگیری استودیو کدولوژی
+            پایگاه زندهٔ رهگیری وب دیزاین فیل
           </span>
           <span className='text-indigo-ink/20'>|</span>
           <span>آخرین به‌روزرسانی: {faDate(project.updatedAt)}</span>
@@ -86,7 +86,7 @@ export function ProjectHero({ project }: { project: Project }) {
             </h1>
             <p className='max-w-2xl text-sm leading-relaxed font-medium text-indigo-light sm:text-base'>
               {project.summary ||
-                "این پروژه در کارگاه کدولوژی در حال اجراست؛ وضعیت هر فاز در همین تابلو به‌روز می‌شود."}
+                "این پروژه در کارگاه فیل در حال اجراست؛ وضعیت هر فاز در همین تابلو به‌روز می‌شود."}
             </p>
           </div>
 

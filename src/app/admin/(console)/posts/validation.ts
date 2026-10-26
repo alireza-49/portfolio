@@ -98,7 +98,7 @@ export function parsePostInput(raw: unknown): PostParseResult {
     excerpt: text(record.excerpt, 400),
     contentHtml,
     coverUrl,
-    author: text(record.author, 120) || "استودیو کدولوژی",
+    author: text(record.author, 120) || "وب دیزاین فیل",
     tags,
     status,
     publishedAt,

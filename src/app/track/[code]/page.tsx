@@ -25,14 +25,14 @@ export async function generateMetadata({
   const project = await loadProject(code);
 
   if (!project || !project.published) {
-    return { title: "سفارش پیدا نشد | استودیو کدولوژی" };
+    return { title: "سفارش پیدا نشد | وب دیزاین فیل" };
   }
 
   return {
-    title: `رهگیری ${project.title} | استودیو کدولوژی`,
+    title: `رهگیری ${project.title} | وب دیزاین فیل`,
     description:
       project.summary ||
-      `تابلوی زندهٔ پیشرفت پروژهٔ ${project.title} در کارگاه کدولوژی.`,
+      `تابلوی زندهٔ پیشرفت پروژهٔ ${project.title} در کارگاه فیل.`,
   };
 }
 

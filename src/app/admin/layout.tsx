@@ -3,8 +3,8 @@ import type { ReactNode } from "react";
 
 export const metadata: Metadata = {
   title: {
-    default: "کنسول مدیریت | استودیو کدولوژی",
-    template: "%s | کنسول کدولوژی",
+    default: "کنسول مدیریت | وب دیزاین فیل",
+    template: "%s | کنسول فیل",
   },
   description: "کنسول خصوصی مدیریت پروژه‌ها، درخواست‌ها و یادداشت‌های استودیو.",
   robots: { index: false, follow: false },

@@ -37,9 +37,9 @@ export function SiteHeader() {
         <div className='flex shrink-0 items-center gap-3'>
           <div className='relative flex items-center'>
             <LogoButton
-              aria-label='استودیو کدولوژی'
+              aria-label='وب دیزاین فیل'
               logoClassName='size-full'
-              className='size-9 rounded-sm border-[1.5px] border-indigo-ink bg-mustard/30 p-1 text-indigo-ink shadow-craft-inset hover:bg-mustard/30 hover:text-indigo-ink'
+              className='size-13 rounded-sm border-[1.5px] border-indigo-ink bg-mustard/30 p-1 text-indigo-ink shadow-craft-inset hover:bg-mustard/30 hover:text-indigo-ink'
             />
             <span className='absolute -top-1 -right-1 flex h-2.5 w-2.5'>
               <span className='absolute inline-flex h-full w-full animate-ping rounded-full bg-teal-craft opacity-75' />
@@ -51,7 +51,7 @@ export function SiteHeader() {
               href='/'
               className='font-display text-base leading-tight font-black tracking-tight text-indigo-ink transition-colors hover:text-coral sm:text-lg'
             >
-              استودیو کدولوژی
+              وب دیزاین فیل
             </Link>
             <span className='mt-0.5 text-[11px] leading-none font-medium text-indigo-light'>
               توسعه فرانت‌اند دست‌ساز
@@ -76,21 +76,6 @@ export function SiteHeader() {
         </nav>
 
         <div className='flex shrink-0 items-center gap-2.5 whitespace-nowrap'>
-          <div className='inline-flex items-center rounded-sm border-[1.5px] border-indigo-ink bg-paper-dim p-[2px] text-[10px] font-bold shadow-craft-inset'>
-            <Link
-              href='#'
-              className='rounded-[2px] bg-indigo-ink px-2 py-[2px] text-paper'
-            >
-              فا
-            </Link>
-            <Link
-              href='#'
-              className='px-1.5 py-[2px] text-indigo-ink transition-colors hover:text-coral'
-            >
-              EN
-            </Link>
-          </div>
-
           <Link
             href='#contact-section'
             className='craft-btn hidden h-auto items-center justify-center gap-1 rounded-sm border-[2.5px] border-indigo-ink bg-coral px-3.5 py-1.5 text-xs font-bold whitespace-nowrap text-white shadow-craft-sm transition-colors hover:bg-coral-dark sm:inline-flex sm:text-[13px]'
@@ -112,7 +97,7 @@ export function SiteHeader() {
                   منوی ناوبری
                 </SheetTitle>
                 <SheetDescription className='text-right text-xs text-indigo-light'>
-                  دسترسی سریع به بخش‌های استودیو کدولوژی
+                  دسترسی سریع به بخش‌های وب دیزاین فیل
                 </SheetDescription>
               </SheetHeader>
               <nav className='px-4'>

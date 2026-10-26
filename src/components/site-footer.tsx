@@ -81,13 +81,13 @@ export function SiteFooter() {
           <div className='flex flex-col gap-4 text-right lg:col-span-4'>
             <div className='flex items-center gap-3'>
               <LogoButton
-                aria-label='استودیو کدولوژی'
+                aria-label='وب دیزاین فیل'
                 logoClassName='size-full'
-                className='size-9 rounded-sm border-[1.5px] border-indigo-ink bg-mustard/30 p-1 text-indigo-ink shadow-craft-inset hover:bg-mustard/30 hover:text-indigo-ink'
+                className='size-13 rounded-sm border-[1.5px] border-indigo-ink bg-mustard/30 p-1 text-indigo-ink shadow-craft-inset hover:bg-mustard/30 hover:text-indigo-ink'
               />
               <div className='flex flex-col'>
                 <span className='font-display text-lg leading-tight font-black tracking-tight text-indigo-ink'>
-                  استودیو کدولوژی
+                  وب دیزاین فیل
                 </span>
                 <span className='mt-0.5 font-mono text-[11px] leading-none font-bold text-teal-craft'>
                   CRAFT WEB &amp; DIGITAL PRINT
@@ -220,30 +220,14 @@ export function SiteFooter() {
         <div className='mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 text-xs font-medium text-indigo-light sm:flex-row'>
           <div className='flex flex-wrap items-center justify-center gap-3 sm:justify-start'>
             <span className='font-bold text-indigo-ink'>
-              © ۲۰۲۵ استودیو کدولوژی
+              © وب دیزاین فیل 2026{" "}
             </span>
             <span className='hidden text-indigo-ink/30 sm:inline-block'>|</span>
-            <span>
-              تمامی حقوق و دیزاین با هویت چاپ دیجیتال دو رنگ ریزوگراف محفوظ است.
-            </span>
+            <span>تمامی حقوق و دیزاین محفوظ است.</span>
           </div>
           <div className='flex shrink-0 items-center gap-3'>
-            <div className='inline-flex items-center rounded-sm border-[1.5px] border-indigo-ink bg-paper p-[2px] text-[10px] font-bold shadow-craft-inset'>
-              <a
-                href='#'
-                className='rounded-[2px] bg-indigo-ink px-2 py-[2px] text-paper'
-              >
-                فا
-              </a>
-              <a
-                href='#'
-                className='px-2 py-[2px] font-mono text-indigo-ink transition-colors hover:text-coral'
-              >
-                EN
-              </a>
-            </div>
             <span className='riso-stamp-mustard px-2 py-[2px] text-[10px] font-bold'>
-              ساخته‌شده با وسواس مهندسی و عشق به وب اصیل
+              ساخته‌شده با تلاش فراوان
             </span>
           </div>
         </div>

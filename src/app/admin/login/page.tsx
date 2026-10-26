@@ -50,7 +50,7 @@ export default async function AdminLoginPage() {
           <div className='flex flex-col items-center gap-2 text-center'>
             <div className='relative rounded-full border-[2px] border-indigo-ink bg-paper-dim p-1.5 shadow-craft-sm'>
               <LogoButton
-                aria-label='استودیو کدولوژی'
+                aria-label='وب دیزاین فیل'
                 logoClassName='size-full'
                 className='flex size-20 items-center justify-center rounded-full border border-indigo-ink/20 bg-paper text-indigo-ink hover:text-indigo-ink'
               />
@@ -59,7 +59,7 @@ export default async function AdminLoginPage() {
               </span>
             </div>
             <span className='pt-1 font-mono text-[10px] font-bold tracking-[0.2em] text-indigo-ink uppercase'>
-              CODOLOGY // چاپ و کُد
+              PHILL // چاپ و کُد
             </span>
           </div>
 
@@ -108,7 +108,7 @@ export default async function AdminLoginPage() {
               <Lock className='size-3.5 text-mustard-deep' />
               نشست رمزنگاری‌شده و HttpOnly
             </span>
-            <span className='font-mono'>CODOLOGY OPS © ۲۰۲۶</span>
+            <span className='font-mono'>PHILL OPS © ۲۰۲۶</span>
           </div>
         </section>
 

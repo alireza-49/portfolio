@@ -36,8 +36,15 @@ function sslFor(url) {
   return { rejectUnauthorized: false };
 }
 
+// Keep in sync with src/lib/db.ts: `sslmode=require` already means verify-full,
+// so state it explicitly instead of letting pg warn about its v3 change.
+function explicitSslMode(url) {
+  if (/\buselibpqcompat=true\b/.test(url)) return url;
+  return url.replace(/([?&]sslmode=)(prefer|require|verify-ca)(?=&|$)/, "$1verify-full");
+}
+
 const pool = new Pool({
-  connectionString,
+  connectionString: explicitSslMode(connectionString),
   max: 1,
   ssl: sslFor(connectionString),
 });

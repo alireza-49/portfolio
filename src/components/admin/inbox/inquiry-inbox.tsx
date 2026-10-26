@@ -125,7 +125,7 @@ export function InquiryInbox({
   return (
     <div className='flex flex-col gap-5'>
       <PageHeader
-        eyebrow='CODOLOGY STUDIO // INBOUND OPS'
+        eyebrow='PHILL WEB DESIGN // INBOUND OPS'
         title='صندوق استعلام و پیام‌های سفارش'
         description='هر پیامی که از فرم تماس سایت ثبت شود، همراه با برآورد هزینه و پیکربندی استودیو، همین‌جا نگه‌داری می‌شود.'
         actions={

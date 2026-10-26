@@ -26,7 +26,7 @@ export async function generateMetadata({
   const post = await loadPost(slug);
 
   if (!post || post.status !== "published") {
-    return { title: "یادداشت پیدا نشد | استودیو کدولوژی" };
+    return { title: "یادداشت پیدا نشد | وب دیزاین فیل" };
   }
 
   return {
