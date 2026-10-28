@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { createSubmission } from "@/lib/content";
 import { hasDatabaseConfig } from "@/lib/db";
 import { looksLikePhone } from "@/lib/contact-pending";
-import { notifySubmissionSms } from "@/lib/sms";
+import { notifySubmissionAlertSms, notifySubmissionSms } from "@/lib/sms";
 
 /**
  * Public contact endpoint. The form posts one JSON object; everything is capped,
@@ -114,15 +114,16 @@ export async function POST(request: Request) {
     });
 
     /*
-     * The text is a courtesy: the submission is already stored, so a dead key or
-     * an offline provider must never turn a successful form into an error. Only
-     * a real mobile number earns a message (the page promises exactly that).
+     * The texts are a courtesy: the submission is already stored, so a dead key
+     * or an offline provider must never turn a successful form into an error.
+     * The visitor's receipt needs a real mobile (the page promises exactly
+     * that); the owner's alert goes out for every submission, phone or not.
      */
-    if (looksLikePhone(contact)) {
-      try {
-        await notifySubmissionSms(submission);
-      } catch (error) {
-        console.error("[contact] sms failed:", error);
+    const sends = [notifySubmissionAlertSms(submission)];
+    if (looksLikePhone(contact)) sends.push(notifySubmissionSms(submission));
+    for (const result of await Promise.allSettled(sends)) {
+      if (result.status === "rejected") {
+        console.error("[contact] sms failed:", result.reason);
       }
     }
 

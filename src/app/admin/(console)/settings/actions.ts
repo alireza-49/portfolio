@@ -19,6 +19,7 @@ const SENDER_SHAPE = /^\+?\d{3,14}$/;
 export async function saveSmsSettingsAction(input: {
   enabled: boolean;
   sender: string;
+  notifyMobile: string;
   token: string;
   clearToken?: boolean;
 }): Promise<SmsActionResult> {
@@ -33,6 +34,16 @@ export async function saveSmsSettingsAction(input: {
     };
   }
 
+  const rawNotify =
+    typeof input?.notifyMobile === "string" ? input.notifyMobile.trim() : "";
+  const notifyMobile = rawNotify ? (normalizeMobile(rawNotify) ?? "") : "";
+  if (!notifyMobile && rawNotify) {
+    return {
+      ok: false,
+      message: "شمارهٔ دریافت پیامک سفارش معتبر نیست؛ نمونه: ۰۹۱۲۱۲۳۴۵۶۷.",
+    };
+  }
+
   const token = typeof input?.token === "string" ? input.token.trim() : "";
   if (token && !TOKEN_SHAPE.test(token)) {
     return {
@@ -44,6 +55,7 @@ export async function saveSmsSettingsAction(input: {
   await saveSmsSettings({
     enabled: Boolean(input?.enabled),
     sender,
+    notifyMobile,
     token,
     clearToken: Boolean(input?.clearToken),
   });

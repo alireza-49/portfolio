@@ -38,6 +38,7 @@ export type SmsPreview = {
 
 const KIND_LABEL: Record<SmsKind, string> = {
   submission: "درخواست سفارش",
+  submission_alert: "سفارش (برای من)",
   project_status: "تغییر وضعیت",
   project_progress: "پیشرفت دستی",
   test: "پیام آزمایشی",
@@ -56,6 +57,7 @@ export function SmsSettingsPanel({
 }) {
   const [enabled, setEnabled] = useState(settings.enabled);
   const [sender, setSender] = useState(settings.sender);
+  const [notifyMobile, setNotifyMobile] = useState(settings.notifyMobile);
   const [token, setToken] = useState("");
   const [testPhone, setTestPhone] = useState("");
   const [notice, setNotice] = useState<Notice>(null);
@@ -72,6 +74,7 @@ export function SmsSettingsPanel({
   const dirty =
     enabled !== settings.enabled ||
     sender.trim() !== settings.sender.trim() ||
+    notifyMobile.trim() !== settings.notifyMobile.trim() ||
     token.trim() !== "";
 
   const tokenChip = settings.hasToken ? (
@@ -96,6 +99,7 @@ export function SmsSettingsPanel({
       const result = await saveSmsSettingsAction({
         enabled,
         sender,
+        notifyMobile,
         token,
         clearToken,
       });
@@ -175,6 +179,25 @@ export function SmsSettingsPanel({
               />
             </label>
 
+            <label className='flex flex-col gap-1.5'>
+              <span className={LABEL_CLASS}>شمارهٔ من برای پیامک سفارش</span>
+              <input
+                value={notifyMobile}
+                onChange={(event) => {
+                  setNotifyMobile(event.target.value);
+                  setNotice(null);
+                }}
+                dir='ltr'
+                inputMode='tel'
+                placeholder='۰۹۱۲۱۲۳۴۵۶۷ — خالی = پیامکی برای من نمی‌رود'
+                className={`${FIELD_CLASS} font-mono text-xs`}
+              />
+              <span className='text-[0.6875rem] leading-relaxed font-medium text-indigo-light'>
+                هر بار که کسی فرم تماس را بفرستد، یک پیامک کوتاه با نام، راه
+                ارتباط و کد پیگیری به این شماره می‌رود.
+              </span>
+            </label>
+
             <label className='flex items-start gap-2 rounded-sm border-[1.5px] border-dashed border-indigo-ink/30 bg-paper px-3 py-2'>
               <input
                 type='checkbox'
@@ -190,9 +213,9 @@ export function SmsSettingsPanel({
                   ارسال خودکار پیامک فعال باشد
                 </span>
                 <span className='text-[0.6875rem] leading-relaxed font-medium text-indigo-light'>
-                  درخواست جدید و تغییر وضعیت پروژه پیامک می‌شود. خاموش کردن این
-                  گزینه فقط ارسال را متوقف می‌کند؛ پروژه‌ها و درخواست‌ها مثل
-                  همیشه ذخیره می‌شوند.
+                  درخواست جدید (هم برای کارفرما و هم برای شما) و تغییر وضعیت
+                  پروژه پیامک می‌شود. خاموش کردن این گزینه فقط ارسال را متوقف
+                  می‌کند؛ پروژه‌ها و درخواست‌ها مثل همیشه ذخیره می‌شوند.
                 </span>
               </span>
             </label>

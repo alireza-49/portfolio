@@ -1608,6 +1608,7 @@ const SETTINGS_ID = "default";
 export type SmsCredentials = {
   enabled: boolean;
   sender: string;
+  notifyMobile: string;
   token: string;
   hasStoredToken: boolean;
   tokenUnreadable: boolean;
@@ -1615,7 +1616,7 @@ export type SmsCredentials = {
 
 export async function readSmsCredentials(): Promise<SmsCredentials> {
   const row = await queryOne<Row>(
-    `SELECT amootsms_token, amootsms_line, sms_enabled
+    `SELECT amootsms_token, amootsms_line, notify_mobile, sms_enabled
        FROM app_settings WHERE id = $1`,
     [SETTINGS_ID],
   );
@@ -1625,6 +1626,7 @@ export async function readSmsCredentials(): Promise<SmsCredentials> {
   return {
     enabled: row ? bool(row.sms_enabled) : false,
     sender: text(row?.amootsms_line),
+    notifyMobile: text(row?.notify_mobile),
     token: token ?? "",
     hasStoredToken: Boolean(stored),
     tokenUnreadable: Boolean(stored) && token === null,
@@ -1633,7 +1635,7 @@ export async function readSmsCredentials(): Promise<SmsCredentials> {
 
 export async function getSmsSettings(): Promise<SmsSettings> {
   const row = await queryOne<Row>(
-    `SELECT amootsms_token, amootsms_line, sms_enabled, updated_at
+    `SELECT amootsms_token, amootsms_line, notify_mobile, sms_enabled, updated_at
        FROM app_settings WHERE id = $1`,
     [SETTINGS_ID],
   );
@@ -1642,6 +1644,7 @@ export async function getSmsSettings(): Promise<SmsSettings> {
   return {
     enabled: row ? bool(row.sms_enabled) : false,
     sender: text(row?.amootsms_line),
+    notifyMobile: text(row?.notify_mobile),
     hasToken: Boolean(stored) && decryptSecret(stored) !== null,
     tokenUnreadable: Boolean(stored) && decryptSecret(stored) === null,
     updatedAt: row ? iso(row.updated_at) : null,
@@ -1656,6 +1659,7 @@ export async function getSmsSettings(): Promise<SmsSettings> {
 export async function saveSmsSettings(input: {
   enabled: boolean;
   sender: string;
+  notifyMobile: string;
   token?: string;
   clearToken?: boolean;
 }): Promise<void> {
@@ -1674,14 +1678,21 @@ export async function saveSmsSettings(input: {
 
   await query(
     `INSERT INTO app_settings
-       (id, amootsms_token, amootsms_line, sms_enabled, updated_at)
-     VALUES ($1, $2, $3, $4, NOW())
+       (id, amootsms_token, amootsms_line, notify_mobile, sms_enabled, updated_at)
+     VALUES ($1, $2, $3, $4, $5, NOW())
      ON CONFLICT (id) DO UPDATE SET
        amootsms_token = EXCLUDED.amootsms_token,
        amootsms_line = EXCLUDED.amootsms_line,
+       notify_mobile = EXCLUDED.notify_mobile,
        sms_enabled = EXCLUDED.sms_enabled,
        updated_at = NOW()`,
-    [SETTINGS_ID, nextToken, input.sender.trim(), input.enabled],
+    [
+      SETTINGS_ID,
+      nextToken,
+      input.sender.trim(),
+      input.notifyMobile.trim(),
+      input.enabled,
+    ],
   );
 }
 

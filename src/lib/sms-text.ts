@@ -76,6 +76,25 @@ export function buildSubmissionSms(input: {
   return `${SMS_BRAND}: درخواست شما در ${when} ثبت شد. کد پیگیری ${input.reference} — پیگیری: ${input.link}`;
 }
 
+/**
+ * The owner's copy of the same event: who wrote, how to reach them, the
+ * reference. No link on purpose — one URL would spend the whole 70-character
+ * budget and turn every order into two billed parts.
+ */
+export function buildSubmissionAlertSms(input: {
+  name: string;
+  contact: string;
+  reference: string;
+}): string {
+  // 70 is the UCS-2 single-part limit `smsSegments` already knows about.
+  const SINGLE_PART = 70;
+  const head = `${SMS_BRAND}: سفارش `;
+  const tail = ` — ${truncateForSms(input.contact, 20)} — ${input.reference}`;
+  const budget = Math.max(6, SINGLE_PART - head.length - tail.length);
+  const who = truncateForSms(input.name, budget) || "مهمان";
+  return `${head}${who}${tail}`;
+}
+
 /** Sent automatically, once, when a project's status really changes. */
 export function buildProjectStatusSms(input: {
   title: string;

@@ -266,9 +266,14 @@ CREATE TABLE IF NOT EXISTS app_settings (
   id TEXT PRIMARY KEY,
   amootsms_token TEXT NOT NULL DEFAULT '',
   amootsms_line TEXT NOT NULL DEFAULT '',
+  notify_mobile TEXT NOT NULL DEFAULT '',
   sms_enabled BOOLEAN NOT NULL DEFAULT FALSE,
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+/* The owner's own "an order arrived" number arrived after the first databases. */
+ALTER TABLE app_settings
+  ADD COLUMN IF NOT EXISTS notify_mobile TEXT NOT NULL DEFAULT '';
 
 /*
  * A database created before the switch still has the Kavenegar columns. Rename
@@ -297,7 +302,13 @@ END $$;
 CREATE TABLE IF NOT EXISTS sms_log (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   kind TEXT NOT NULL CHECK (
-    kind IN ('submission', 'project_status', 'project_progress', 'test')
+    kind IN (
+      'submission',
+      'submission_alert',
+      'project_status',
+      'project_progress',
+      'test'
+    )
   ),
   receptor TEXT NOT NULL DEFAULT '',
   ref_id UUID,
@@ -307,6 +318,31 @@ CREATE TABLE IF NOT EXISTS sms_log (
   provider_message TEXT NOT NULL DEFAULT '',
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+/*
+ * A database created before the owner's copy existed still has the four-value
+ * CHECK, which would reject every `submission_alert` row. Recreate it once.
+ */
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM pg_constraint c
+     WHERE c.conrelid = 'sms_log'::regclass
+       AND c.conname = 'sms_log_kind_check'
+       AND pg_get_constraintdef(c.oid) NOT LIKE '%submission_alert%'
+  ) THEN
+    ALTER TABLE sms_log DROP CONSTRAINT sms_log_kind_check;
+    ALTER TABLE sms_log ADD CONSTRAINT sms_log_kind_check CHECK (
+      kind IN (
+        'submission',
+        'submission_alert',
+        'project_status',
+        'project_progress',
+        'test'
+      )
+    );
+  END IF;
+END $$;
 
 /* AmootSMS answers with status words ("Token_NotExists"), not HTTP codes. */
 DO $$

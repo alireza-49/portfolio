@@ -3,6 +3,7 @@ import {
   SMS_BRAND,
   buildProjectProgressSms,
   buildProjectStatusSms,
+  buildSubmissionAlertSms,
   buildSubmissionSms,
   buildTestSms,
   normalizeMobile,
@@ -109,5 +110,48 @@ describe("sms text", () => {
 
   it("keeps every body Persian-branded", () => {
     expect(buildTestSms().startsWith(`${SMS_BRAND}: `)).toBe(true);
+  });
+
+  it("builds the owner's alert as one part, name cut instead of the reference", () => {
+    const body = buildSubmissionAlertSms({
+      name: "علی رضایی",
+      contact: "09121234567",
+      reference: "REQ-1A2B3C4D",
+    });
+
+    expect(body.startsWith(`${SMS_BRAND}: `)).toBe(true);
+    expect(body).toContain("علی رضایی");
+    expect(body).toContain("09121234567");
+    expect(body).toContain("REQ-1A2B3C4D");
+    // No link: a URL alone would spend the single-part budget.
+    expect(body).not.toContain("http");
+    expect(smsSegments(body)).toBe(1);
+
+    // A long name is shortened so the message still bills as one part.
+    const longName = buildSubmissionAlertSms({
+      name: "محمد رضا کریمی نژاد اصفهانی".repeat(3),
+      contact: "09121234567",
+      reference: "REQ-1A2B3C4D",
+    });
+    expect(smsSegments(longName)).toBe(1);
+    expect(longName).toContain("REQ-1A2B3C4D");
+
+    // A long handle/email is cut too, and an empty name still reads as a sentence.
+    expect(
+      smsSegments(
+        buildSubmissionAlertSms({
+          name: "سارا",
+          contact: "some.long.telegram.handle.example".repeat(3),
+          reference: "REQ-1A2B3C4D",
+        }),
+      ),
+    ).toBe(1);
+    expect(
+      buildSubmissionAlertSms({
+        name: "",
+        contact: "@ali",
+        reference: "REQ-1A2B3C4D",
+      }),
+    ).toContain("مهمان");
   });
 });

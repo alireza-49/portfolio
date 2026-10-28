@@ -5,6 +5,7 @@ import { siteOrigin } from "./site-url";
 import {
   buildProjectProgressSms,
   buildProjectStatusSms,
+  buildSubmissionAlertSms,
   buildSubmissionSms,
   buildTestSms,
   normalizeMobile,
@@ -39,6 +40,8 @@ const TOKEN_UNREADABLE =
   "توکن آموت ذخیره‌شده خوانده نمی‌شود؛ آن را در تنظیمات دوباره وارد کنید.";
 const NO_MOBILE = "شمارهٔ موبایل معتبری برای این کارفرما ثبت نشده است.";
 const NO_PHONE = "درخواست بدون شمارهٔ موبایل ثبت شده است.";
+const NO_ALERT_MOBILE =
+  "شمارهٔ دریافت پیامک سفارش در تنظیمات پیامک ثبت نشده است.";
 
 async function log(input: {
   kind: SmsKind;
@@ -170,6 +173,32 @@ export async function notifySubmissionSms(
     body,
     skipMessage: NO_PHONE,
     // A visitor is waiting on the form: do not let a slow provider hold it.
+    timeoutMs: 5_000,
+  });
+}
+
+/**
+ * The owner's copy of the same event. Fired for *every* submission, phone or
+ * not: the point is knowing an order arrived, and the number lives in the SMS
+ * settings next to the token.
+ */
+export async function notifySubmissionAlertSms(
+  submission: Submission,
+): Promise<SmsOutcome> {
+  const credentials = await readSmsCredentials().catch(() => null);
+  const receptor = normalizeMobile(credentials?.notifyMobile);
+  const body = buildSubmissionAlertSms({
+    name: submission.name,
+    contact: submission.contact,
+    reference: contactRef(submission.id),
+  });
+
+  return deliver({
+    kind: "submission_alert",
+    refId: submission.id,
+    receptor,
+    body,
+    skipMessage: NO_ALERT_MOBILE,
     timeoutMs: 5_000,
   });
 }

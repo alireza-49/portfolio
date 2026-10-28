@@ -185,7 +185,9 @@ every preset and scenario.
   encrypted with `secrets.ts`, keyed from `ADMIN_SESSION_SECRET` — rotating that secret makes the
   stored token unreadable and the settings page says so. `src/lib/sms.ts` is the only sender:
   `notifySubmissionSms` (from `/api/contact`, only when `looksLikePhone`, 5 s timeout so the form is
-  never held), `notifyProjectStatusSms` (a real stored transition only, so a double click texts
+  never held), `notifySubmissionAlertSms` (the owner's own copy of every submission, to the
+  `notify_mobile` saved at `/admin/settings` — phone or not, one 70-char part, no link, same 5 s
+  budget), `notifyProjectStatusSms` (a real stored transition only, so a double click texts
   once) and `notifyProjectProgressSms` (the manual «ارسال پیام پیشرفت» button). Wording lives in
   `sms-text.ts`, never in the database: every body starts with `فیل وب دیزاین: `, dates/percent are
   Persian, links are omitted when `published = false`. A failed or skipped send never fails the

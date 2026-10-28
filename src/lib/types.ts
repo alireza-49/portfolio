@@ -335,6 +335,7 @@ export const PROJECT_TASK_SYNC_META: Record<
 /** What one text message was about — one row per attempt in `sms_log`. */
 export const SMS_KINDS = [
   "submission",
+  "submission_alert",
   "project_status",
   "project_progress",
   "test",
@@ -349,6 +350,8 @@ export type SmsKind = (typeof SMS_KINDS)[number];
 export type SmsSettings = {
   enabled: boolean;
   sender: string;
+  /** Where the owner's own "an order arrived" text goes; "" means none. */
+  notifyMobile: string;
   hasToken: boolean;
   tokenUnreadable: boolean;
   updatedAt: string | null;

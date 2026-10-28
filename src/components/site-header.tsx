@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Coffee, Menu } from "lucide-react";
 import Link from "next/link";
-import { LogoButton } from "@/assests/logo";
+import { BrandMarkButton } from "@/components/brand-mark";
 import {
   Sheet,
   SheetContent,
@@ -35,9 +35,9 @@ export function SiteHeader() {
       <div className='mx-auto flex h-15 max-w-7xl flex-nowrap items-center justify-between gap-4 px-4 sm:px-8'>
         <div className='flex shrink-0 items-center gap-3'>
           <div className='relative flex items-center'>
-            <LogoButton
+            <BrandMarkButton
               aria-label='وب دیزاین فیل'
-              logoClassName='size-full'
+              priority
               className='size-13 rounded-sm border-[1.5px] border-indigo-ink bg-mustard/30 p-1 text-indigo-ink shadow-craft-inset hover:bg-mustard/30 hover:text-indigo-ink'
             />
             <span className='absolute -top-1 -right-1 flex h-2.5 w-2.5'>

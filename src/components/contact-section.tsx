@@ -9,7 +9,16 @@ import {
 } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Calculator, Check, Info, Mail, Palette, Send } from "lucide-react";
+import {
+  Calculator,
+  Check,
+  Info,
+  Mail,
+  MessageCircle,
+  Palette,
+  Phone,
+  Send,
+} from "lucide-react";
 import { cn } from "cn";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -38,10 +47,18 @@ import {
 } from "@/lib/contact-pending";
 
 const SOCIALS = [
-  { href: "https://github.com", label: "GitHub" },
-  { href: "https://linkedin.com", label: "LinkedIn" },
-  { href: "https://instagram.com", label: "Instagram" },
+  { href: "https://github.com/alireza49", label: "GitHub", handle: "alireza49" },
+  {
+    href: "https://instagram.com/phill.web",
+    label: "Instagram",
+    handle: "phill.web",
+  },
 ];
+
+/** Shown in Persian digits; `tel:` keeps the machine-readable Latin form. */
+const PHONE_NUMBER = "09130141812";
+const PHONE_HREF = `tel:+98${PHONE_NUMBER.slice(1)}`;
+const EITAA_URL = "https://eitaa.com/phillweb";
 
 const FIELD_CLASS =
   "h-auto rounded-sm border-[2px] border-indigo-ink bg-paper p-3 text-sm text-indigo-ink placeholder:text-indigo-ink/50 focus-visible:border-coral focus-visible:ring-2 focus-visible:ring-coral/30";
@@ -328,7 +345,11 @@ export function ContactSection() {
             </Button>
 
             <div className="flex flex-col gap-3">
-              <Link href="https://t.me" target="_blank" rel="noopener noreferrer">
+              <Link
+                href="https://t.me/phillweb"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <Card className="craft-card flex flex-row items-center justify-between gap-0 rounded-sm bg-paper-light p-3.5">
                   <div className="flex items-center gap-3">
                     <span className="flex h-10 w-10 items-center justify-center rounded-sm bg-indigo-ink text-paper">
@@ -347,7 +368,35 @@ export function ContactSection() {
                 </Card>
               </Link>
 
-              <Link href="mailto:hello@code-ecology.dev">
+              <Link
+                href={EITAA_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Card className="craft-card flex flex-row items-center justify-between gap-0 rounded-sm bg-paper-light p-3.5">
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-sm bg-mustard text-indigo-ink">
+                      <MessageCircle className="size-5" />
+                    </span>
+                    <div className="flex flex-col text-right">
+                      <span className="text-sm font-bold text-indigo-ink">
+                        پیام در ایتا
+                      </span>
+                      <span
+                        className="font-mono text-[0.6875rem] text-indigo-light"
+                        dir="ltr"
+                      >
+                        @phillweb
+                      </span>
+                    </div>
+                  </div>
+                  <span className="text-xs font-black text-indigo-ink">
+                    پیام دهید ←
+                  </span>
+                </Card>
+              </Link>
+
+              <Link href={`mailto:alirezafarasat@hotmail.com`}>
                 <Card className="craft-card flex flex-row items-center justify-between gap-0 rounded-sm bg-paper-light p-3.5">
                   <div className="flex items-center gap-3">
                     <span className="flex h-10 w-10 items-center justify-center rounded-sm bg-coral text-white">
@@ -358,12 +407,36 @@ export function ContactSection() {
                         ارسال ایمیل مستقیم
                       </span>
                       <span className="font-mono text-[0.6875rem] text-indigo-light">
-                        hello@code-ecology.dev
+                        alirezafarasat@hotmail.com
                       </span>
                     </div>
                   </div>
                   <span className="text-xs font-black text-indigo-ink">
                     ارسال نامه ←
+                  </span>
+                </Card>
+              </Link>
+
+              <Link href={PHONE_HREF}>
+                <Card className="craft-card flex flex-row items-center justify-between gap-0 rounded-sm bg-paper-light p-3.5">
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-sm bg-teal-craft text-white">
+                      <Phone className="size-5" />
+                    </span>
+                    <div className="flex flex-col text-right">
+                      <span className="text-sm font-bold text-indigo-ink">
+                        تماس تلفنی مستقیم
+                      </span>
+                      <span
+                        className="font-mono text-[0.6875rem] text-indigo-light"
+                        dir="ltr"
+                      >
+                        {toPersianDigits(PHONE_NUMBER)}
+                      </span>
+                    </div>
+                  </div>
+                  <span className="text-xs font-black text-teal-craft">
+                    تماس بگیرید ←
                   </span>
                 </Card>
               </Link>
@@ -373,7 +446,7 @@ export function ContactSection() {
               <span className="mb-2 block text-xs font-bold text-indigo-light">
                 شبکه‌های تخصصی و دفترچه کدها:
               </span>
-              <div className="grid grid-cols-3 gap-2" dir="ltr">
+              <div className="grid grid-cols-2 gap-2" dir="ltr">
                 {SOCIALS.map((social) => (
                   <Link
                     key={social.label}
@@ -385,7 +458,12 @@ export function ContactSection() {
                       "h-auto rounded-sm border-[2px] border-indigo-ink bg-paper p-2 text-center font-mono text-xs font-bold text-indigo-ink hover:bg-indigo-ink hover:text-paper",
                     )}
                   >
-                    {social.label}
+                    <span className="flex w-full flex-col items-center leading-tight">
+                      <span>{social.label}</span>
+                      <span className="text-[0.625rem] font-medium">
+                        {social.handle}
+                      </span>
+                    </span>
                   </Link>
                 ))}
               </div>

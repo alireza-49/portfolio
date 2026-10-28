@@ -27,6 +27,7 @@ import { sendProjectProgressSmsAction } from "@/app/admin/(console)/projects/act
 
 const KIND_LABEL: Record<SmsKind, string> = {
   submission: "درخواست سفارش",
+  submission_alert: "سفارش (برای من)",
   project_status: "تغییر وضعیت",
   project_progress: "پیشرفت دستی",
   test: "پیام آزمایشی",

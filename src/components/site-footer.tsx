@@ -1,5 +1,5 @@
-import { LogoButton } from "@/assests/logo";
-import { ArrowLeft, Leaf, Mail, Send } from "lucide-react";
+import { BrandMarkButton } from "@/components/brand-mark";
+import { ArrowLeft, Leaf, Mail, MessageCircle, Send } from "lucide-react";
 
 const QUICK_LINKS = [
   { href: "/#projects-container", label: "نمونه‌کارها" },
@@ -11,17 +11,27 @@ const QUICK_LINKS = [
   { href: "/#contact-section", label: "مشاورهٔ رایگان ۳۰ دقیقه‌ای" },
 ];
 
+const CONTACT_EMAIL = "alirezafarasat@hotmail.com";
+const TELEGRAM_URL = "https://t.me/phillweb";
+const EITAA_URL = "https://eitaa.com/phillweb";
+
 const CHANNELS = [
   {
-    href: "https://t.me",
+    href: TELEGRAM_URL,
     label: "تلگرام",
-    handle: "@code_ecology",
+    handle: "@phillweb",
     icon: Send,
   },
   {
-    href: "mailto:hello@code-ecology.dev",
+    href: EITAA_URL,
+    label: "ایتا",
+    handle: "@phillweb",
+    icon: MessageCircle,
+  },
+  {
+    href: `mailto:${CONTACT_EMAIL}`,
     label: "ایمیل",
-    handle: "code-ecology.dev",
+    handle: CONTACT_EMAIL,
     icon: Mail,
   },
 ];
@@ -80,9 +90,8 @@ export function SiteFooter() {
         <div className='grid grid-cols-1 gap-7 md:grid-cols-2 md:gap-8 lg:grid-cols-12 lg:gap-10'>
           <div className='flex flex-col gap-4 text-right lg:col-span-4'>
             <div className='flex items-center gap-3'>
-              <LogoButton
+              <BrandMarkButton
                 aria-label='وب دیزاین فیل'
-                logoClassName='size-full'
                 className='size-13 rounded-sm border-[1.5px] border-indigo-ink bg-mustard/30 p-1 text-indigo-ink shadow-craft-inset hover:bg-mustard/30 hover:text-indigo-ink'
               />
               <div className='flex flex-col'>
@@ -166,11 +175,10 @@ export function SiteFooter() {
                   </span>
                 </a>
               ))}
-              <div className='col-span-2 grid grid-cols-3 gap-1.5 pt-1 md:col-span-1' dir='ltr'>
+              <div className='col-span-2 grid grid-cols-2 gap-1.5 pt-1 md:col-span-1' dir='ltr'>
                 {[
-                  { href: "https://github.com", label: "GH" },
-                  { href: "https://linkedin.com", label: "IN" },
-                  { href: "https://instagram.com", label: "IG" },
+                  { href: "https://github.com/alireza49", label: "GH" },
+                  { href: "https://instagram.com/phill.web", label: "IG" },
                 ].map((social) => (
                   <a
                     key={social.label}

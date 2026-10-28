@@ -2,7 +2,13 @@
 
 import { useCallback, useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
-import { Calculator, Coffee, Palette, Rocket, type LucideIcon } from "lucide-react";
+import {
+  Calculator,
+  Coffee,
+  Palette,
+  Rocket,
+  type LucideIcon,
+} from "lucide-react";
 import { cn } from "cn";
 import { Card } from "@/components/ui/card";
 import { HeroSpecSheet } from "@/components/hero-spec-sheet";
@@ -212,7 +218,7 @@ export function HeroSection() {
               </svg>
 
               <span className='ink-text-target z-10 inline-block px-1 font-black tracking-normal'>
-                سریع، سئو عالی و منصفانه قیمت
+                سریع، سئو عالی و  قیمت منصفانه
               </span>
 
               <span className='absolute inset-x-0 bottom-0 h-[0.1875rem] rounded-full bg-coral transition-opacity duration-200 group-[.splashed]:opacity-0' />
@@ -232,7 +238,7 @@ export function HeroSection() {
             ایده را با هم می‌سنجیم.
           </p>
 
-          <p className='-mt-3 flex items-center gap-2 text-[0.8125rem] font-medium text-indigo-ink/60 sm:text-sm'>
+          <p className='-mt-3 flex items-center gap-2 text-[0.8125rem] font-medium text-indigo-black/60 sm:text-sm'>
             <span className='size-1.5 shrink-0 rounded-full bg-teal-craft' />
             بیش از ۴ سال توسعهٔ فرانت‌اند در تیم‌های محصول
           </p>

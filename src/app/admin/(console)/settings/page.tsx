@@ -4,6 +4,7 @@ import { getSmsSettings, listSmsLog } from "@/lib/content";
 import {
   buildProjectProgressSms,
   buildProjectStatusSms,
+  buildSubmissionAlertSms,
   buildSubmissionSms,
   buildTestSms,
   smsSegments,
@@ -32,6 +33,16 @@ export default async function SettingsPage() {
         createdAt: now,
         reference: "REQ-1A2B3C4D",
         link: `${origin}/track?ref=<id>`,
+      }),
+    },
+    {
+      id: "submission_alert",
+      label: "پیامک سفارش برای من",
+      when: "هر بار که کسی فرم تماس را بفرستد — با یا بدون شمارهٔ موبایل.",
+      body: buildSubmissionAlertSms({
+        name: "علی رضایی",
+        contact: "09121234567",
+        reference: "REQ-1A2B3C4D",
       }),
     },
     {
