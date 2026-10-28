@@ -11,23 +11,23 @@ const PROJECT_TYPES = [
   {
     value: "landing",
     label: "لندینگ‌پیج معرفی و تبلیغاتی",
-    base: "پایه ۴ م.ت",
+    base: "پایه ۱ م.ت",
   },
   {
     value: "wordpress",
     label: "سایت وردپرسی و قالب آماده",
-    base: "پایه ۴ م.ت",
+    base: "پایه ۲ م.ت",
   },
   {
     value: "ecommerce",
     label: "آنلاین شاپ (همراه با صفحه معرفی و لندینگ رایگان)",
-    base: "پایه ۱۱ م.ت",
+    base: "پایه ۵ م.ت",
   },
   {
     value: "webapp",
     label:
       "اپلیکیشن بر پایه وب / داشبورد مدیریتی (همراه با صفحه معرفی و لندینگ رایگان)",
-    base: "پایه ۱۴ م.ت",
+    base: "پایه ۶ م.ت",
   },
 ] as const;
 
@@ -43,10 +43,30 @@ const SPEEDS = [
 ] as const;
 
 const ADDONS = [
-  { value: "cms", label: "پنل مدیریت محتوای (وبلاگ اختصاصی) (+۲ م.ت)" },
-  { value: "support", label: "پشتیبانی و مراقبت ۶ ماهه (+۲ م.ت)" },
-  { value: "motion", label: "انیمیشن‌های اضافه (۰.۵ م.ت)" },
-  { value: "payportal", label: "پرتال پرداخت (رایگان)" },
+  {
+    value: "cms",
+    label: "پنل مدیریت محتوای (وبلاگ اختصاصی)",
+    price: "+۱ م.ت",
+    struckPrice: "",
+  },
+  {
+    value: "support",
+    label: "پشتیبانی و مراقبت ۶ ماهه",
+    price: "+۱ م.ت",
+    struckPrice: "",
+  },
+  {
+    value: "motion",
+    label: "انیمیشن‌های اضافه",
+    price: "رایگان",
+    struckPrice: "۰٫۵ م.ت",
+  },
+  {
+    value: "payportal",
+    label: "پرتال پرداخت",
+    price: "رایگان",
+    struckPrice: "",
+  },
 ] as const;
 
 type ProjectType = (typeof PROJECT_TYPES)[number]["value"];
@@ -95,16 +115,16 @@ const MODULES: Record<ProjectType, readonly Addon[]> = {
 
 const PRICES: Record<ProjectType, { min: number; max: number; title: string }> =
   {
-    landing: { min: 4, max: 6, title: "لندینگ‌پیج معرفی و تبلیغاتی" },
-    wordpress: { min: 4, max: 5, title: "سایت وردپرسی و قالب آماده" },
+    landing: { min: 1, max: 2, title: "لندینگ‌پیج معرفی و تبلیغاتی" },
+    wordpress: { min: 2, max: 3, title: "سایت وردپرسی و قالب آماده" },
     ecommerce: {
-      min: 11,
-      max: 15,
+      min: 5,
+      max: 7,
       title: "آنلاین شاپ (همراه با صفحه معرفی و لندینگ رایگان)",
     },
     webapp: {
-      min: 14,
-      max: 22,
+      min: 6,
+      max: 8,
       title:
         "اپلیکیشن بر پایه وب / داشبورد مدیریتی (همراه با صفحه معرفی و لندینگ رایگان)",
     },
@@ -121,9 +141,9 @@ const SPEED_TIMELINES: Record<Speed, string> = {
 };
 
 const ADDON_PRICES: Record<Addon, number> = {
-  cms: 2,
-  support: 2,
-  motion: 0.5,
+  cms: 1,
+  support: 1,
+  motion: 0,
   payportal: 0,
 };
 
@@ -134,6 +154,11 @@ function toPersianDigits(value: string | number) {
   return String(value)
     .replace(/\d/g, (digit) => PERSIAN_DIGITS[Number(digit)])
     .replace(/\./g, "٫");
+}
+
+/** A whole price reads `۴`, not `۴٫۰`; a real half keeps its decimal. */
+function trimZero(value: string) {
+  return value.replace(/\.0$/, "");
 }
 
 export function EstimatorSection() {
@@ -149,8 +174,8 @@ export function EstimatorSection() {
     );
 
     return {
-      min: (base.min + addonSum).toFixed(1),
-      max: (base.max + addonSum).toFixed(1),
+      min: trimZero((base.min + addonSum).toFixed(1)),
+      max: trimZero((base.max + addonSum).toFixed(1)),
       typeTitle: base.title,
       timeline: SPEED_TIMELINES[speed],
       addonsCount: addons.length,
@@ -346,15 +371,25 @@ export function EstimatorSection() {
                         disabled={!available}
                         onCheckedChange={() => toggleAddon(addon.value)}
                       />
-                      <span
-                        className={cn(
-                          "text-xs font-medium sm:text-sm",
-                          !available
-                            ? "text-indigo-ink/45 line-through decoration-indigo-ink/40"
-                            : "text-indigo-ink",
-                        )}
-                      >
-                        {addon.label}
+                      <span className='flex items-baseline gap-1.5'>
+                        <span
+                          className={cn(
+                            "text-xs font-medium sm:text-sm",
+                            !available
+                              ? "text-indigo-ink/45 line-through decoration-indigo-ink/40"
+                              : "text-indigo-ink",
+                          )}
+                        >
+                          {addon.label}
+                        </span>
+                        <span className='shrink-0 whitespace-nowrap font-mono text-[0.6875rem] font-bold text-coral'>
+                          {addon.struckPrice ? (
+                            <s className='me-1 text-indigo-light'>
+                              {addon.struckPrice}
+                            </s>
+                          ) : null}
+                          {addon.price}
+                        </span>
                       </span>
                     </label>
                   );
@@ -408,26 +443,33 @@ export function EstimatorSection() {
                 </div>
               </div>
 
-              <Card className='my-2 flex flex-col gap-1 rounded-sm border-[2px] border-indigo-ink bg-mustard/20 p-4 text-center shadow-craft-inset'>
-                <span className='text-xs font-bold text-indigo-ink'>
-                  محدوده سرمایه‌گذاری تقریبی
+              <div className='my-2 flex flex-col items-center gap-2'>
+                <span className='inline-flex items-center rounded-full border-[2px] border-indigo-ink bg-coral px-3 py-1 text-[0.6875rem] font-black text-white shadow-craft-sm'>
+                  ۲۰٪ تخفیف — فقط برای مدت محدود
                 </span>
-                <div className='flex items-baseline justify-center gap-1.5'>
-                  <span className='font-display text-[2.125rem] font-black text-coral'>
-                    {toPersianDigits(estimate.min)}
+                <Card className='flex w-full flex-col gap-1 rounded-sm border-[2px] border-indigo-ink bg-mustard/20 p-4 text-center shadow-craft-inset'>
+                  <span className='text-xs font-bold text-indigo-ink'>
+                    محدوده سرمایه‌گذاری تقریبی
                   </span>
-                  <span className='text-lg font-black text-indigo-ink'>تا</span>
-                  <span className='font-display text-[2.125rem] font-black text-coral'>
-                    {toPersianDigits(estimate.max)}
+                  <div className='flex items-baseline justify-center gap-1.5'>
+                    <span className='font-display text-[2.125rem] font-black text-coral'>
+                      {toPersianDigits(estimate.min)}
+                    </span>
+                    <span className='text-lg font-black text-indigo-ink'>
+                      تا
+                    </span>
+                    <span className='font-display text-[2.125rem] font-black text-coral'>
+                      {toPersianDigits(estimate.max)}
+                    </span>
+                    <span className='text-sm font-bold text-indigo-ink'>
+                      میلیون تومان
+                    </span>
+                  </div>
+                  <span className='text-[0.6875rem] text-indigo-light'>
+                    شامل صفر تا صد کدنویسی، رسپانسیو و تحویل نهایی
                   </span>
-                  <span className='text-sm font-bold text-indigo-ink'>
-                    میلیون تومان
-                  </span>
-                </div>
-                <span className='text-[0.6875rem] text-indigo-light'>
-                  شامل صفر تا صد کدنویسی، رسپانسیو و تحویل نهایی
-                </span>
-              </Card>
+                </Card>
+              </div>
             </div>
 
             <div className='pt-4'>
