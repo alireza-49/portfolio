@@ -55,7 +55,7 @@ export function HeroOffer({
         </span>
 
         <span className='flex min-w-0 flex-1 flex-col gap-0.5'>
-          <span className='flex items-center gap-1 text-[11px] font-bold text-[color:var(--cc-surface-foreground)]'>
+          <span className='flex items-center gap-1 text-[0.6875rem] font-bold text-[color:var(--cc-surface-foreground)]'>
             <span className='truncate'>{product.name}</span>
             {discount > 0 ? (
               <Badge variant='danger' className='shrink-0 px-1 py-0'>
@@ -71,7 +71,7 @@ export function HeroOffer({
               )}
             >
               {formatNumber(product.price)}
-              <span className='ms-1 text-[11px] font-normal text-[color:var(--cc-muted-foreground)]'>
+              <span className='ms-1 text-[0.6875rem] font-normal text-[color:var(--cc-muted-foreground)]'>
                 تومان
               </span>
             </span>
@@ -100,12 +100,12 @@ export function HeroOffer({
             />
           );
         })}
-        <span className='truncate text-[11px] text-[color:var(--cc-muted-foreground)]'>
+        <span className='truncate text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'>
           {activeColor.name}
         </span>
         <Button
           size='sm'
-          className='ms-auto h-7 px-2 text-[11px]'
+          className='ms-auto h-7 px-2 text-[0.6875rem]'
           onClick={onAdd}
         >
           <Icon name='plus' className='size-3' />

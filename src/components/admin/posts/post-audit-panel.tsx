@@ -14,14 +14,14 @@ export function PostAuditPanel({ issues }: { issues: PostIssue[] }) {
       />
       <div className='p-3.5'>
         {issues.length === 0 ? (
-          <p className='flex items-center gap-1.5 text-[10px] font-bold text-teal-craft'>
+          <p className='flex items-center gap-1.5 text-[0.625rem] font-bold text-teal-craft'>
             <CheckCircle2 className='size-3.5' />
             موردی برای یادآوری نیست.
           </p>
         ) : (
           <ul className='flex flex-col gap-1.5'>
             {issues.map((issue) => (
-              <li key={issue.id} className='flex items-start gap-1.5 text-[10px] leading-relaxed font-medium text-indigo-ink'>
+              <li key={issue.id} className='flex items-start gap-1.5 text-[0.625rem] leading-relaxed font-medium text-indigo-ink'>
                 <TriangleAlert className={issue.severity === "warning" ? "size-3.5 shrink-0 text-coral" : "size-3.5 shrink-0 text-mustard-deep"} />
                 <span>{issue.message}</span>
               </li>

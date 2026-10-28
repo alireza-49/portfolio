@@ -161,13 +161,13 @@ export function PlanWorkspace({
       />
 
       <div className='flex flex-wrap items-center gap-2 rounded-sm border-[2px] border-indigo-ink bg-paper-dim px-3 py-2'>
-        <span className='rounded-sm border border-indigo-ink/30 bg-paper px-2 py-0.5 font-mono text-[11px] font-black text-indigo-ink'>
+        <span className='rounded-sm border border-indigo-ink/30 bg-paper px-2 py-0.5 font-mono text-[0.6875rem] font-black text-indigo-ink'>
           {JALALI_MONTHS[month.jm - 1]} {toPersianDigits(month.jy)}
         </span>
-        <span className='font-mono text-[11px] font-bold text-indigo-light'>
+        <span className='font-mono text-[0.6875rem] font-bold text-indigo-light'>
           امروز: {faDate(today, { withYear: true })}
         </span>
-        <span className='ms-auto font-mono text-[11px] font-bold text-indigo-light'>
+        <span className='ms-auto font-mono text-[0.6875rem] font-bold text-indigo-light'>
           {faDigits(monthTasks.length)} کار در این ماه
         </span>
       </div>
@@ -251,7 +251,7 @@ export function PlanWorkspace({
           description='هر ردیف یک پروژه است؛ نوارها بازهٔ کارها و رویدادهای گوگل را روی روزهای ماه نشان می‌دهند. برای افزودن کار، + کنار نام پروژه را بزنید.'
           actions={
             <>
-              <label className='flex items-center gap-1.5 rounded-sm border border-indigo-ink/30 bg-paper px-2 py-1 text-[10px] font-bold text-indigo-ink'>
+              <label className='flex items-center gap-1.5 rounded-sm border border-indigo-ink/30 bg-paper px-2 py-1 text-[0.625rem] font-bold text-indigo-ink'>
                 <input
                   type='checkbox'
                   checked={showImported}
@@ -288,7 +288,7 @@ export function PlanWorkspace({
         />
       </Panel>
 
-      <div className='grid gap-3 lg:grid-cols-[minmax(0,1fr)_340px]'>
+      <div className='grid gap-3 lg:grid-cols-[minmax(0,1fr)_21.25rem]'>
         <Panel>
           <PanelHeading
             eyebrow='MONTH'

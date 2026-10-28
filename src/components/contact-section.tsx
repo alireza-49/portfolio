@@ -8,6 +8,7 @@ import {
   type FormEvent,
 } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Calculator, Check, Info, Mail, Palette, Send } from "lucide-react";
 import { cn } from "cn";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -30,6 +31,11 @@ import {
   getCustomFontsSnapshot,
   subscribeCustomFonts,
 } from "@/components/create-studio-custom-fonts";
+import {
+  readPendingContact,
+  sendLockRemaining,
+  writePendingContact,
+} from "@/lib/contact-pending";
 
 const SOCIALS = [
   { href: "https://github.com", label: "GitHub" },
@@ -52,6 +58,14 @@ function toPersianDigits(value: string | number) {
 /** Hex colours and font stacks stay machine-readable; everything else reads in Persian. */
 function displayValue(value: string) {
   return /^#/.test(value) ? value : toPersianDigits(value);
+}
+
+/** `mm:ss` for the send lock, in Persian digits. */
+function formatLockCountdown(ms: number) {
+  const total = Math.max(0, Math.ceil(ms / 1000));
+  const minutes = String(Math.floor(total / 60)).padStart(2, "0");
+  const seconds = String(total % 60).padStart(2, "0");
+  return toPersianDigits(`${minutes}:${seconds}`);
 }
 
 /**
@@ -86,11 +100,12 @@ const STUDIO_BADGE_LABEL: Record<StudioThemeStatus | "delegated", string> = {
 };
 
 export function ContactSection() {
-  const [sent, setSent] = useState(false);
+  const router = useRouter();
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
+  const [lockRemaining, setLockRemaining] = useState(0);
   const [attachStudioConfig, setAttachStudioConfig] = useState(true);
   const [delegateDesign, setDelegateDesign] = useState(false);
   const estimate = useEstimate();
@@ -173,6 +188,20 @@ export function ContactSection() {
           : "هنوز تمی در استودیو نساخته‌اید؛ می‌توانید خودتان بسازید یا انتخاب ظاهر را به من بسپارید.";
 
   const canSubmit = name.trim().length > 0 && contact.trim().length > 0;
+  const locked = lockRemaining > 0;
+
+  /*
+   * One send per browser every ten minutes. The stored timestamp is re-read
+   * each second, so a send from another tab locks this one too, and a reload
+   * keeps counting instead of handing out a fresh attempt.
+   */
+  useEffect(() => {
+    const tick = () =>
+      setLockRemaining(sendLockRemaining(readPendingContact()));
+    tick();
+    const timer = window.setInterval(tick, 1000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   // The studio CTA navigates to `/#contact-section`; scroll once the home page
   // has painted so the visitor lands on the form, not the hero.
@@ -194,10 +223,9 @@ export function ContactSection() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!canSubmit || sending) return;
+    if (!canSubmit || sending || locked) return;
 
-    const form = event.currentTarget;
-    const formData = new FormData(form);
+    const formData = new FormData(event.currentTarget);
     const text = (key: string) => String(formData.get(key) ?? "").trim();
     const parseJson = (key: string): Record<string, unknown> | null => {
       const raw = formData.get(key);
@@ -239,17 +267,22 @@ export function ContactSection() {
         throw new Error(payload?.error || "ارسال پیام ناموفق بود.");
       }
 
-      setSent(true);
-      setName("");
-      setContact("");
-      // The optional fields are uncontrolled. Clearing them individually (instead
-      // of `form.reset()`) keeps the controlled hidden hand-off fields intact for
-      // a follow-up submission.
-      const business = form.elements.namedItem("business");
-      const message = form.elements.namedItem("message");
-      if (business instanceof HTMLInputElement) business.value = "";
-      if (message instanceof HTMLTextAreaElement) message.value = "";
-      window.setTimeout(() => setSent(false), 8000);
+      const payload = (await response.json().catch(() => null)) as {
+        id?: string;
+      } | null;
+
+      if (!payload?.id) {
+        throw new Error(
+          "پاسخ سرور شناسهٔ درخواست را برنگرداند؛ لطفاً دوباره تلاش کنید.",
+        );
+      }
+
+      // Remember the id so this browser is locked for ten minutes, then hand
+      // the visitor to the tracking page. That page stays locked until the
+      // workshop moves the request out of `new`.
+      const pending = writePendingContact(payload.id);
+      setLockRemaining(sendLockRemaining(pending));
+      router.replace(`/track?ref=${encodeURIComponent(payload.id)}`);
     } catch (submitError) {
       setError(
         submitError instanceof Error
@@ -268,7 +301,7 @@ export function ContactSection() {
     >
       <div className="mx-auto flex max-w-7xl flex-col gap-10">
         <div className="flex flex-col justify-between gap-4 border-b-[2px] border-indigo-ink pb-6 sm:flex-row sm:items-end">
-          <h2 className="text-[26px] font-black text-indigo-ink sm:text-[34px]">
+          <h2 className="text-[1.625rem] font-black text-indigo-ink sm:text-[2.125rem]">
             شروع گفتگو و هماهنگی جلسه مشاوره رایگان
           </h2>
           <div className="riso-stamp self-start text-xs font-bold sm:self-auto">
@@ -305,7 +338,7 @@ export function ContactSection() {
                       <span className="text-sm font-bold text-indigo-ink">
                         پیام مستقیم در تلگرام
                       </span>
-                      <span className="text-[11px] text-indigo-light">
+                      <span className="text-[0.6875rem] text-indigo-light">
                         پاسخگویی سریع روزانه
                       </span>
                     </div>
@@ -324,7 +357,7 @@ export function ContactSection() {
                       <span className="text-sm font-bold text-indigo-ink">
                         ارسال ایمیل مستقیم
                       </span>
-                      <span className="font-mono text-[11px] text-indigo-light">
+                      <span className="font-mono text-[0.6875rem] text-indigo-light">
                         hello@code-ecology.dev
                       </span>
                     </div>
@@ -363,7 +396,7 @@ export function ContactSection() {
             <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="form-name" className="text-[13px] font-bold text-indigo-ink">
+                  <Label htmlFor="form-name" className="text-[0.8125rem] font-bold text-indigo-ink">
                     نام و نام خانوادگی شما *
                   </Label>
                   <Input
@@ -378,7 +411,7 @@ export function ContactSection() {
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="form-contact" className="text-[13px] font-bold text-indigo-ink">
+                  <Label htmlFor="form-contact" className="text-[0.8125rem] font-bold text-indigo-ink">
                     شماره تماس یا آیدی تلگرام *
                   </Label>
                   <Input
@@ -395,7 +428,7 @@ export function ContactSection() {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="form-biz" className="text-[13px] font-bold text-indigo-ink">
+                <Label htmlFor="form-biz" className="text-[0.8125rem] font-bold text-indigo-ink">
                   نام کسب‌وکار یا ایده
                 </Label>
                 <Input
@@ -408,7 +441,7 @@ export function ContactSection() {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="form-msg" className="text-[13px] font-bold text-indigo-ink">
+                <Label htmlFor="form-msg" className="text-[0.8125rem] font-bold text-indigo-ink">
                   توضیح کوتاه درباره نیازمندی‌های پروژه
                 </Label>
                 <Textarea
@@ -431,7 +464,7 @@ export function ContactSection() {
                 <div className="mb-2 flex flex-wrap items-center justify-between gap-1.5 border-b border-indigo-ink/20 pb-1.5">
                   <span
                     className={cn(
-                      "flex items-center gap-1.5 text-[13px] font-black",
+                      "flex items-center gap-1.5 text-[0.8125rem] font-black",
                       THEME_CARD_TONE[themeTone].title,
                     )}
                   >
@@ -441,7 +474,7 @@ export function ContactSection() {
                   <span
                     aria-live="polite"
                     className={cn(
-                      "rounded-sm border px-1.5 py-0.5 text-[10px] font-black",
+                      "rounded-sm border px-1.5 py-0.5 text-[0.625rem] font-black",
                       STUDIO_BADGE[badgeState],
                     )}
                   >
@@ -449,7 +482,7 @@ export function ContactSection() {
                   </span>
                 </div>
 
-                <p className="mb-2 text-[11px] leading-relaxed font-bold text-indigo-ink">
+                <p className="mb-2 text-[0.6875rem] leading-relaxed font-bold text-indigo-ink">
                   {themeStatusText}
                 </p>
 
@@ -457,13 +490,13 @@ export function ContactSection() {
                     solid mustard block with a hard ink edge so it reads as a
                     warning, not as fine print. */}
                 <div className="mb-3 rounded-sm border-[2px] border-indigo-ink bg-mustard p-2.5 shadow-craft-sm">
-                  <p className="flex items-start gap-1.5 text-[13px] leading-tight font-black text-indigo-ink">
+                  <p className="flex items-start gap-1.5 text-[0.8125rem] leading-tight font-black text-indigo-ink">
                     <span className="inline-flex size-5 shrink-0 items-center justify-center rounded-full border-[1.5px] border-indigo-ink bg-coral text-white">
                       <Info aria-hidden="true" className="size-3.5" />
                     </span>
                     این تم، چیدمان و عملکرد سایت را تغییر نمی‌دهد
                   </p>
-                  <p className="mt-1.5 text-[12px] leading-relaxed font-bold text-indigo-ink">
+                  <p className="mt-1.5 text-[0.75rem] leading-relaxed font-bold text-indigo-ink">
                     استودیو فقط رنگ، پالت، فونت و سبک بصری را می‌سازد؛ چیدمان،
                     بخش‌ها و عملکرد سایت کاملاً سفارشی و از صفر بر اساس نیاز شما
                     طراحی می‌شود.
@@ -473,7 +506,7 @@ export function ContactSection() {
                 {studioConfig ? (
                   <>
                     <div className="mb-2 flex flex-wrap items-center gap-1.5">
-                      <span className="text-[10px] font-bold text-indigo-light">
+                      <span className="text-[0.625rem] font-bold text-indigo-light">
                         رنگ‌های پالت شما:
                       </span>
                       {roleSwatches.map((item) => (
@@ -486,7 +519,7 @@ export function ContactSection() {
                           style={{ backgroundColor: item.swatch }}
                         />
                       ))}
-                      <span className="text-[10px] font-black text-indigo-ink">
+                      <span className="text-[0.625rem] font-black text-indigo-ink">
                         «{attachedPalette}»
                       </span>
                     </div>
@@ -494,7 +527,7 @@ export function ContactSection() {
                       {studioSummary.map((item) => (
                         <span
                           key={item.label}
-                          className="rounded-sm border border-indigo-ink/30 bg-paper-light px-1.5 py-0.5 text-[10px] font-bold text-indigo-ink"
+                          className="rounded-sm border border-indigo-ink/30 bg-paper-light px-1.5 py-0.5 text-[0.625rem] font-bold text-indigo-ink"
                         >
                           <span className="text-indigo-light">{item.label}:</span>{" "}
                           {displayValue(item.value)}
@@ -502,21 +535,21 @@ export function ContactSection() {
                       ))}
                     </div>
                     <details className="mb-2 rounded-sm border border-dashed border-indigo-ink/50 bg-paper-light p-2">
-                      <summary className="cursor-pointer text-[11px] font-black text-indigo-ink">
+                      <summary className="cursor-pointer text-[0.6875rem] font-black text-indigo-ink">
                         همهٔ {toPersianDigits(optionCount)} گزینهٔ انتخاب‌شده را
                         ببینید
                       </summary>
                       <div className="mt-2 flex flex-col gap-2">
                         {studioOptions.map((group) => (
                           <div key={group.id}>
-                            <span className="text-[10px] font-black text-coral">
+                            <span className="text-[0.625rem] font-black text-coral">
                               {group.label}
                             </span>
                             <dl className="mt-1 grid grid-cols-1 gap-1 sm:grid-cols-2">
                               {group.items.map((item) => (
                                 <div
                                   key={`${group.id}-${item.label}`}
-                                  className="flex items-center justify-between gap-2 rounded-sm bg-paper px-1.5 py-1 text-[10px]"
+                                  className="flex items-center justify-between gap-2 rounded-sm bg-paper px-1.5 py-1 text-[0.625rem]"
                                 >
                                   <dt className="font-bold text-indigo-light">
                                     {item.label}
@@ -551,7 +584,7 @@ export function ContactSection() {
                     onClick={() => setDelegateDesign(false)}
                     aria-pressed={!delegateDesign}
                     className={cn(
-                      "flex items-center justify-center gap-1.5 rounded-sm border-[2px] border-indigo-ink px-2 py-2 text-[11px] font-black transition-colors",
+                      "flex items-center justify-center gap-1.5 rounded-sm border-[2px] border-indigo-ink px-2 py-2 text-[0.6875rem] font-black transition-colors",
                       delegateDesign
                         ? "bg-paper text-indigo-ink hover:bg-mustard/30"
                         : "bg-indigo-ink text-paper",
@@ -565,7 +598,7 @@ export function ContactSection() {
                     onClick={() => setDelegateDesign(true)}
                     aria-pressed={delegateDesign}
                     className={cn(
-                      "flex items-center justify-center gap-1.5 rounded-sm border-[2px] border-indigo-ink px-2 py-2 text-[11px] font-black transition-colors",
+                      "flex items-center justify-center gap-1.5 rounded-sm border-[2px] border-indigo-ink px-2 py-2 text-[0.6875rem] font-black transition-colors",
                       delegateDesign
                         ? "bg-teal-craft text-white"
                         : "bg-paper text-indigo-ink hover:bg-teal-light",
@@ -578,7 +611,7 @@ export function ContactSection() {
 
                 <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
                   {studioConfig && !delegateDesign ? (
-                    <label className="flex cursor-pointer items-center gap-1.5 text-[11px] font-bold text-indigo-ink">
+                    <label className="flex cursor-pointer items-center gap-1.5 text-[0.6875rem] font-bold text-indigo-ink">
                       <input
                         type="checkbox"
                         checked={attachStudioConfig}
@@ -593,7 +626,7 @@ export function ContactSection() {
                   ) : null}
                   <Link
                     href="/create"
-                    className="ms-auto text-[11px] font-black text-coral underline underline-offset-4 hover:text-coral-dark"
+                    className="ms-auto text-[0.6875rem] font-black text-coral underline underline-offset-4 hover:text-coral-dark"
                   >
                     {studioConfig ? "ویرایش در استودیو ←" : "ساخت تم در استودیو ←"}
                   </Link>
@@ -695,13 +728,13 @@ export function ContactSection() {
               {estimate ? (
                 <div className="rounded-sm border-[2px] border-indigo-ink bg-mustard/20 p-3">
                   <div className="mb-2 flex items-center justify-between border-b border-indigo-ink/20 pb-1.5">
-                    <span className="text-[13px] font-black text-indigo-ink">
+                    <span className="text-[0.8125rem] font-black text-indigo-ink">
                       برآورد انتخابی شما
                     </span>
                     <button
                       type="button"
                       onClick={scrollToEstimator}
-                      className="text-[11px] font-black text-coral underline underline-offset-4 hover:text-coral-dark"
+                      className="text-[0.6875rem] font-black text-coral underline underline-offset-4 hover:text-coral-dark"
                     >
                       تغییر برآورد ←
                     </button>
@@ -749,13 +782,15 @@ export function ContactSection() {
               <Button
                 type="submit"
                 variant="default"
-                disabled={!canSubmit || sending}
+                disabled={!canSubmit || sending || locked}
                 className="craft-btn flex h-auto w-full items-center justify-center gap-2 rounded-sm border-[2.5px] border-indigo-ink py-3.5 text-base font-black disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <span>
                   {sending
                     ? "در حال ارسال و ثبت در کارگاه…"
-                    : "ارسال پیام و هماهنگی گفتگوی رایگان"}
+                    : locked
+                      ? `ارسال بعدی تا ${formatLockCountdown(lockRemaining)}`
+                      : "ارسال پیام و هماهنگی گفتگوی رایگان"}
                 </span>
                 <Send className={sending ? "size-5 animate-pulse" : "size-5"} />
               </Button>
@@ -771,37 +806,18 @@ export function ContactSection() {
               ) : null}
 
               {!canSubmit ? (
-                <p className="text-center text-[11px] font-bold text-coral">
+                <p className="text-center text-[0.6875rem] font-bold text-coral">
                   برای فعال شدن دکمه ارسال، فیلدهای ستاره‌دار (نام و راه
                   ارتباطی) را تکمیل کنید.
                 </p>
               ) : null}
 
-              {sent ? (
-                <div className="rounded-sm border-[2px] border-teal-craft bg-teal-light p-3 text-center text-sm font-bold text-teal-craft">
-                  ✓ پیام شما با مهر کارگاه دریافت شد و در صندوق درخواست‌های
-                  کنسول ثبت شد. ظرف ۲ ساعت آینده جهت هماهنگی جلسه با شما تماس
-                  می‌گیرم.
-                  {attachSummary ? (
-                    <span className="mt-1 block text-[11px] font-black">
-                      {themeTone === "custom"
-                        ? `تم سفارشی «${attachedStyle}» با پالت «${attachedPalette}»، ${toPersianDigits(optionCount)} گزینه و کد CSS کامل ضمیمه شد.`
-                        : `ترکیب پیش‌فرض «${attachedStyle}» با پالت «${attachedPalette}» و ${toPersianDigits(optionCount)} گزینه ضمیمه شد.`}
-                    </span>
-                  ) : null}
-                  {!attachSummary && !delegateDesign ? (
-                    <span className="mt-1 block text-[11px] font-black">
-                      بدون پیکربندی استودیو ارسال شد؛ می‌توانید هر وقت خواستید
-                      تم بسازید و دوباره بفرستید.
-                    </span>
-                  ) : null}
-                  {delegateDesign ? (
-                    <span className="mt-1 block text-[11px] font-black">
-                      درخواست «انتخاب ظاهر با شما» ثبت شد؛ پیشنهاد بصری را من
-                      آماده می‌کنم.
-                    </span>
-                  ) : null}
-                </div>
+              {locked ? (
+                <p className="text-center text-[0.6875rem] font-bold text-indigo-light">
+                  برای جلوگیری از ارسال تکراری، هر ۱۰ دقیقه یک پیام می‌توانید
+                  بفرستید؛ پیام قبلی در صندوق کارگاه ثبت شده است. بعد از تغییر
+                  وضعیت در کنسول، صفحهٔ پیگیری خودکار باز می‌شود.
+                </p>
               ) : null}
             </form>
           </Card>

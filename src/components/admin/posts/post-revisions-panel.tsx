@@ -93,21 +93,21 @@ export function PostRevisionsPanel({
       />
       <div className='flex flex-col gap-2 p-3.5'>
         {message ? (
-          <p className='rounded-sm border border-coral/30 bg-coral/10 px-2 py-1 text-[10px] font-bold text-coral-dark'>
+          <p className='rounded-sm border border-coral/30 bg-coral/10 px-2 py-1 text-[0.625rem] font-bold text-coral-dark'>
             {message}
           </p>
         ) : null}
         {!postId ? (
-          <p className='rounded-sm border border-dashed border-indigo-ink/25 px-2 py-3 text-[10px] leading-relaxed font-medium text-indigo-light'>
+          <p className='rounded-sm border border-dashed border-indigo-ink/25 px-2 py-3 text-[0.625rem] leading-relaxed font-medium text-indigo-light'>
             برای دیدن تاریخچه، ابتدا پیش‌نویس را ذخیره کنید.
           </p>
         ) : loading ? (
-          <p className='flex items-center gap-1.5 text-[10px] font-bold text-indigo-light'>
+          <p className='flex items-center gap-1.5 text-[0.625rem] font-bold text-indigo-light'>
             <LoaderCircle className='size-3 animate-spin' />
             خواندن تاریخچه…
           </p>
         ) : revisions.length === 0 ? (
-          <p className='text-[10px] font-medium text-indigo-light'>هنوز نسخه‌ای ذخیره نشده است.</p>
+          <p className='text-[0.625rem] font-medium text-indigo-light'>هنوز نسخه‌ای ذخیره نشده است.</p>
         ) : (
           <ol className='flex max-h-64 flex-col gap-1 overflow-y-auto pe-1'>
             {revisions.map((revision) => (
@@ -116,21 +116,21 @@ export function PostRevisionsPanel({
                   type='button'
                   onClick={() => void open(revision.id)}
                   disabled={reading}
-                  className='flex w-full items-center gap-2 rounded-sm border border-indigo-ink/15 bg-paper px-2 py-1.5 text-start text-[10px] font-bold text-indigo-ink transition-colors hover:border-coral/40 hover:bg-mustard/20 disabled:opacity-60'
+                  className='flex w-full items-center gap-2 rounded-sm border border-indigo-ink/15 bg-paper px-2 py-1.5 text-start text-[0.625rem] font-bold text-indigo-ink transition-colors hover:border-coral/40 hover:bg-mustard/20 disabled:opacity-60'
                 >
                   <History className='size-3.5 shrink-0 text-coral' />
                   <span>{KIND_LABEL[revision.kind] ?? revision.kind}</span>
-                  <span className='ms-auto font-mono text-[9px] text-indigo-light'>
+                  <span className='ms-auto font-mono text-[0.5625rem] text-indigo-light'>
                     {faDateTime(revision.createdAt)}
                   </span>
-                  <span className='font-mono text-[9px] text-indigo-light'>{formatBytes(revision.sizeBytes)}</span>
+                  <span className='font-mono text-[0.5625rem] text-indigo-light'>{formatBytes(revision.sizeBytes)}</span>
                 </button>
               </li>
             ))}
           </ol>
         )}
         {postId ? (
-          <button type='button' onClick={() => void load()} disabled={loading} className={`${BTN_SECONDARY} w-full justify-center text-[10px]`}>
+          <button type='button' onClick={() => void load()} disabled={loading} className={`${BTN_SECONDARY} w-full justify-center text-[0.625rem]`}>
             به‌روزرسانی تاریخچه
           </button>
         ) : null}
@@ -150,7 +150,7 @@ export function PostRevisionsPanel({
             ) : null}
           </div>
           <DialogFooter className='flex flex-wrap items-center justify-between gap-2'>
-            <span className='text-[10px] font-medium text-indigo-light'>
+            <span className='text-[0.625rem] font-medium text-indigo-light'>
               نسخهٔ فعلی پیش از بازگردانی هم به‌صورت خودکار ذخیره می‌شود.
             </span>
             <div className='flex gap-2'>

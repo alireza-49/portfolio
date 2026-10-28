@@ -137,7 +137,7 @@ export function JalaliDateTimeField({
               {PERSIAN_WEEKDAYS.map((weekday) => (
                 <span
                   key={weekday}
-                  className='font-mono text-[9px] font-bold text-indigo-light'
+                  className='font-mono text-[0.5625rem] font-bold text-indigo-light'
                 >
                   {weekday}
                 </span>
@@ -149,7 +149,7 @@ export function JalaliDateTimeField({
                   onClick={() => onChange(tehranInstant(cell.day, wall.time))}
                   aria-current={cell.day === wall.date ? "date" : undefined}
                   className={cn(
-                    "rounded-sm border py-1 font-mono text-[11px] font-bold transition-colors",
+                    "rounded-sm border py-1 font-mono text-[0.6875rem] font-bold transition-colors",
                     cell.inMonth
                       ? "border-transparent text-indigo-ink hover:bg-mustard/30"
                       : "border-transparent text-indigo-light/50 hover:bg-mustard/20",
@@ -205,7 +205,7 @@ export function JalaliDateTimeField({
                   </option>
                 ))}
               </select>
-              <span className='ms-auto text-[10px] font-bold text-indigo-light'>
+              <span className='ms-auto text-[0.625rem] font-bold text-indigo-light'>
                 {faTime(value)} به وقت تهران
               </span>
             </div>
@@ -214,7 +214,7 @@ export function JalaliDateTimeField({
       </div>
 
       {hint ? (
-        <p className='text-[10px] font-medium text-indigo-light'>{hint}</p>
+        <p className='text-[0.625rem] font-medium text-indigo-light'>{hint}</p>
       ) : null}
     </div>
   );
@@ -224,7 +224,7 @@ function ClockIcon() {
   return (
     <span
       aria-hidden
-      className='font-mono text-[10px] font-black text-indigo-light'
+      className='font-mono text-[0.625rem] font-black text-indigo-light'
     >
       HH:MM
     </span>

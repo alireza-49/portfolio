@@ -1,6 +1,8 @@
 import { randomUUID } from "node:crypto";
 import { query, queryOne, type SqlValue } from "./db";
 import { buildIncomeSummary, type IncomeSummary } from "./income";
+import { decryptSecret, encryptSecret } from "./secrets";
+import { SMS_KINDS, type SmsKind, type SmsLogEntry, type SmsSettings } from "./types";
 import type {
   ImportedCalendarEvent,
   MediaAsset,
@@ -1591,4 +1593,162 @@ export async function deletePostComments(ids: string[]): Promise<number> {
     [valid as unknown as SqlValue],
   );
   return rows.length;
+}
+
+/* --------------------------------------------------------------------------
+ * Outbound SMS (AmootSMS)
+ *
+ * `getSmsSettings` is the browser-safe shape (never the token);
+ * `readSmsCredentials` is the only function that decrypts it, for the sender.
+ * `sms_log` records every attempt — including the ones we never sent.
+ * ------------------------------------------------------------------------ */
+
+const SETTINGS_ID = "default";
+
+export type SmsCredentials = {
+  enabled: boolean;
+  sender: string;
+  token: string;
+  hasStoredToken: boolean;
+  tokenUnreadable: boolean;
+};
+
+export async function readSmsCredentials(): Promise<SmsCredentials> {
+  const row = await queryOne<Row>(
+    `SELECT amootsms_token, amootsms_line, sms_enabled
+       FROM app_settings WHERE id = $1`,
+    [SETTINGS_ID],
+  );
+  const stored = text(row?.amootsms_token);
+  const token = stored ? decryptSecret(stored) : null;
+
+  return {
+    enabled: row ? bool(row.sms_enabled) : false,
+    sender: text(row?.amootsms_line),
+    token: token ?? "",
+    hasStoredToken: Boolean(stored),
+    tokenUnreadable: Boolean(stored) && token === null,
+  };
+}
+
+export async function getSmsSettings(): Promise<SmsSettings> {
+  const row = await queryOne<Row>(
+    `SELECT amootsms_token, amootsms_line, sms_enabled, updated_at
+       FROM app_settings WHERE id = $1`,
+    [SETTINGS_ID],
+  );
+  const stored = text(row?.amootsms_token);
+
+  return {
+    enabled: row ? bool(row.sms_enabled) : false,
+    sender: text(row?.amootsms_line),
+    hasToken: Boolean(stored) && decryptSecret(stored) !== null,
+    tokenUnreadable: Boolean(stored) && decryptSecret(stored) === null,
+    updatedAt: row ? iso(row.updated_at) : null,
+  };
+}
+
+/**
+ * A blank/omitted `token` keeps the stored one (the console never echoes it
+ * back), `clearToken` removes it, and anything else is encrypted before it is
+ * written.
+ */
+export async function saveSmsSettings(input: {
+  enabled: boolean;
+  sender: string;
+  token?: string;
+  clearToken?: boolean;
+}): Promise<void> {
+  const current = await queryOne<Row>(
+    `SELECT amootsms_token FROM app_settings WHERE id = $1`,
+    [SETTINGS_ID],
+  );
+  const stored = text(current?.amootsms_token);
+  const provided = input.token?.trim() ?? "";
+
+  const nextToken = input.clearToken
+    ? ""
+    : provided
+      ? encryptSecret(provided)
+      : stored;
+
+  await query(
+    `INSERT INTO app_settings
+       (id, amootsms_token, amootsms_line, sms_enabled, updated_at)
+     VALUES ($1, $2, $3, $4, NOW())
+     ON CONFLICT (id) DO UPDATE SET
+       amootsms_token = EXCLUDED.amootsms_token,
+       amootsms_line = EXCLUDED.amootsms_line,
+       sms_enabled = EXCLUDED.sms_enabled,
+       updated_at = NOW()`,
+    [SETTINGS_ID, nextToken, input.sender.trim(), input.enabled],
+  );
+}
+
+const smsKindOf = (value: unknown): SmsKind =>
+  typeof value === "string" && (SMS_KINDS as readonly string[]).includes(value)
+    ? (value as SmsKind)
+    : "test";
+
+/**
+ * `provider_status` is TEXT (AmootSMS answers with words, not HTTP codes); an
+ * empty value must stay NULL instead of printing an empty pair of brackets.
+ */
+function mapSmsLog(row: Row): SmsLogEntry {
+  return {
+    id: text(row.id),
+    kind: smsKindOf(row.kind),
+    receptor: text(row.receptor),
+    refId: nullableText(row.ref_id),
+    body: text(row.body),
+    ok: bool(row.ok),
+    providerStatus: nullableText(row.provider_status),
+    providerMessage: text(row.provider_message),
+    createdAt: iso(row.created_at) ?? new Date().toISOString(),
+  };
+}
+
+export async function recordSmsLog(input: {
+  kind: SmsKind;
+  receptor: string;
+  refId: string | null;
+  body: string;
+  ok: boolean;
+  providerStatus: string | null;
+  providerMessage: string;
+}): Promise<void> {
+  await query(
+    `INSERT INTO sms_log
+       (kind, receptor, ref_id, body, ok, provider_status, provider_message)
+     VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+    [
+      input.kind,
+      input.receptor,
+      input.refId && isUuid(input.refId) ? input.refId : null,
+      input.body,
+      input.ok,
+      input.providerStatus,
+      input.providerMessage,
+    ],
+  );
+}
+
+export async function listSmsLog(limit = 20): Promise<SmsLogEntry[]> {
+  const rows = await query<Row>(
+    `SELECT * FROM sms_log ORDER BY created_at DESC LIMIT $1`,
+    [Math.min(Math.max(limit, 1), 100)],
+  );
+  return rows.map(mapSmsLog);
+}
+
+export async function listSmsLogForRef(
+  refId: string,
+  limit = 4,
+): Promise<SmsLogEntry[]> {
+  if (!isUuid(refId)) return [];
+  const rows = await query<Row>(
+    `SELECT * FROM sms_log WHERE ref_id = $1 ORDER BY created_at DESC LIMIT $2`,
+    [refId, Math.min(Math.max(limit, 1), 20)],
+  );
+  return rows.map(mapSmsLog);
 }

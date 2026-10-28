@@ -114,7 +114,7 @@ export default async function IncomePage() {
 
       <p
         role='note'
-        className='rounded-sm border-[2px] border-dashed border-mustard-deep bg-mustard/20 px-4 py-3 text-[11px] leading-relaxed font-bold text-indigo-ink'
+        className='rounded-sm border-[2px] border-dashed border-mustard-deep bg-mustard/20 px-4 py-3 text-[0.6875rem] leading-relaxed font-bold text-indigo-ink'
       >
         مبنای گروه‌بندی: هر پروژه با تاریخ شروع خودش (و اگر خالی باشد، با تاریخ
         ثبت در کنسول) در ماه و هفتهٔ شمسی حساب می‌شود؛ چون پایگاه داده تاریخ

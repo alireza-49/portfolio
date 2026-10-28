@@ -129,7 +129,7 @@ function SectionHeading({
   return (
     <div className='flex flex-wrap items-end justify-between gap-3'>
       <div className='flex flex-col gap-1.5'>
-        <span className={cn("text-[11px] font-bold text-[color:var(--cc-primary)]", labelType)}>
+        <span className={cn("text-[0.6875rem] font-bold text-[color:var(--cc-primary)]", labelType)}>
           {eyebrow}
         </span>
         <h2
@@ -334,7 +334,7 @@ export function ClinicReservationView() {
               <span className='text-sm font-bold text-[color:var(--cc-surface-foreground)]'>
                 درمانگاه تخصصی حکیم
               </span>
-              <span className='text-[10px] text-[color:var(--cc-muted-foreground)]'>
+              <span className='text-[0.625rem] text-[color:var(--cc-muted-foreground)]'>
                 نوبت‌دهی آنلاین · شبانه‌روزی
               </span>
             </span>
@@ -387,7 +387,7 @@ export function ClinicReservationView() {
             <a
               key={item.href}
               href={item.href}
-              className='shrink-0 rounded-[var(--cc-radius-sm)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] px-2.5 py-1 text-[11px] text-[color:var(--cc-muted-foreground)]'
+              className='shrink-0 rounded-[var(--cc-radius-sm)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] px-2.5 py-1 text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'
             >
               {item.label}
             </a>
@@ -436,15 +436,15 @@ export function ClinicReservationView() {
             </div>
 
             <div className='flex flex-wrap items-center gap-3 rounded-[var(--cc-radius)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-muted)] p-2.5'>
-              <span className='flex items-center gap-1.5 text-[10px] text-[color:var(--cc-surface-foreground)]'>
+              <span className='flex items-center gap-1.5 text-[0.625rem] text-[color:var(--cc-surface-foreground)]'>
                 <Icon name='shield-check' className='size-3.5 text-[color:var(--cc-primary)]' />
                 بیمهٔ تأمین اجتماعی و سلامت
               </span>
-              <span className='flex items-center gap-1.5 text-[10px] text-[color:var(--cc-surface-foreground)]'>
+              <span className='flex items-center gap-1.5 text-[0.625rem] text-[color:var(--cc-surface-foreground)]'>
                 <Icon name='clock' className='size-3.5 text-[color:var(--cc-primary)]' />
                 لغو رایگان تا {formatNumber(CANCEL_WINDOW_HOURS)} ساعت قبل
               </span>
-              <span className='flex items-center gap-1.5 text-[10px] text-[color:var(--cc-surface-foreground)]'>
+              <span className='flex items-center gap-1.5 text-[0.625rem] text-[color:var(--cc-surface-foreground)]'>
                 <Icon name='wallet' className='size-3.5 text-[color:var(--cc-primary)]' />
                 پرداخت در محل یا آنلاین
               </span>
@@ -461,7 +461,7 @@ export function ClinicReservationView() {
                   >
                     {item.value}
                   </span>
-                  <span className='text-[10px] text-[color:var(--cc-muted-foreground)]'>
+                  <span className='text-[0.625rem] text-[color:var(--cc-muted-foreground)]'>
                     {item.label}
                   </span>
                 </div>
@@ -469,7 +469,7 @@ export function ClinicReservationView() {
             </div>
           </div>
 
-          <div className='relative min-h-[320px] overflow-hidden border-t-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-muted)] @3xl:min-h-[430px] @3xl:border-s @3xl:border-t-0'>
+          <div className='relative min-h-[20rem] overflow-hidden border-t-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-muted)] @3xl:min-h-[26.875rem] @3xl:border-s @3xl:border-t-0'>
             <ClinicScene className='absolute inset-0 size-full' />
             <div className='absolute start-3 top-3'>
               <Badge variant='success' className='gap-1'>
@@ -556,7 +556,7 @@ export function ClinicReservationView() {
                           key={row.label}
                           className='flex items-center justify-between gap-2 border-b-[length:var(--cc-border-width)] border-[color:var(--cc-border)] pb-1 last:border-b-0'
                         >
-                          <span className='text-[10px] text-[color:var(--cc-muted-foreground)]'>
+                          <span className='text-[0.625rem] text-[color:var(--cc-muted-foreground)]'>
                             {row.label}
                           </span>
                           <span
@@ -606,7 +606,7 @@ export function ClinicReservationView() {
 
                       <Separator />
 
-                      <div className='grid gap-2 @xl:grid-cols-2'>
+                      <div className='grid grid-cols-1 gap-2 @xl:grid-cols-2'>
                         {filteredDoctors.map((entry) => {
                           const selected = entry.id === doctorId;
                           const firstFree = Object.entries(
@@ -635,13 +635,13 @@ export function ClinicReservationView() {
                                   <span className='text-xs font-bold text-[color:var(--cc-surface-foreground)]'>
                                     {entry.name}
                                   </span>
-                                  <span className='text-[10px] text-[color:var(--cc-muted-foreground)]'>
+                                  <span className='text-[0.625rem] text-[color:var(--cc-muted-foreground)]'>
                                     {entry.title} · {toPersianDigits(entry.years)}{" "}
                                     سال تجربه
                                   </span>
-                                  <div className='flex items-center gap-2'>
+                                  <div className='flex flex-wrap items-center gap-x-2 gap-y-0.5'>
                                     <StarRating value={entry.rating} />
-                                    <span className='text-[9px] text-[color:var(--cc-muted-foreground)]'>
+                                    <span className='whitespace-nowrap text-[0.5625rem] text-[color:var(--cc-muted-foreground)]'>
                                       ({formatNumber(entry.reviews)} نظر)
                                     </span>
                                   </div>
@@ -670,13 +670,13 @@ export function ClinicReservationView() {
                               <div className='mt-auto flex items-center justify-between gap-2 border-t-[length:var(--cc-border-width)] border-[color:var(--cc-border)] pt-1.5'>
                                 <span
                                   className={cn(
-                                    "text-[11px] font-bold text-[color:var(--cc-surface-foreground)]",
+                                    "text-[0.6875rem] font-bold text-[color:var(--cc-surface-foreground)]",
                                     monoType,
                                   )}
                                 >
                                   {formatToman(entry.fee)}
                                 </span>
-                                <span className='text-[9px] text-[color:var(--cc-muted-foreground)]'>
+                                <span className='text-[0.5625rem] text-[color:var(--cc-muted-foreground)]'>
                                   {firstFree
                                     ? `اولین نوبت: ${formatJalali(firstFree[0])}`
                                     : "ظرفیت تکمیل"}
@@ -695,7 +695,7 @@ export function ClinicReservationView() {
                         <div className='flex flex-col gap-1.5'>
                           <span
                             className={cn(
-                              "text-[10px] text-[color:var(--cc-muted-foreground)]",
+                              "text-[0.625rem] text-[color:var(--cc-muted-foreground)]",
                               labelType,
                             )}
                           >
@@ -712,7 +712,7 @@ export function ClinicReservationView() {
                         <div className='flex flex-col gap-2.5'>
                           <span
                             className={cn(
-                              "text-[10px] text-[color:var(--cc-muted-foreground)]",
+                              "text-[0.625rem] text-[color:var(--cc-muted-foreground)]",
                               labelType,
                             )}
                           >
@@ -750,7 +750,7 @@ export function ClinicReservationView() {
                               <span className='text-xs font-bold text-[color:var(--cc-surface-foreground)]'>
                                 نوبت اول من است
                               </span>
-                              <span className='text-[10px] text-[color:var(--cc-muted-foreground)]'>
+                              <span className='text-[0.625rem] text-[color:var(--cc-muted-foreground)]'>
                                 ویزیت {formatNumber(CLINIC_PRICING.firstVisitMinutes)} دقیقه‌ای + بررسی سوابق
                               </span>
                             </div>
@@ -768,7 +768,7 @@ export function ClinicReservationView() {
                             aria-live='polite'
                           >
                             <div className='flex items-center justify-between gap-2'>
-                              <span className='text-[10px] text-[color:var(--cc-muted-foreground)]'>
+                              <span className='text-[0.625rem] text-[color:var(--cc-muted-foreground)]'>
                                 {dayLabel}
                               </span>
                               <Badge
@@ -786,7 +786,7 @@ export function ClinicReservationView() {
                             <Progress
                               value={((SLOT_CAPACITY - freeSlots) / SLOT_CAPACITY) * 100}
                             />
-                            <span className='text-[9px] text-[color:var(--cc-muted-foreground)]'>
+                            <span className='text-[0.5625rem] text-[color:var(--cc-muted-foreground)]'>
                               ظرفیت روز {formatNumber(SLOT_CAPACITY)} نوبت است
                             </span>
                           </div>
@@ -804,7 +804,7 @@ export function ClinicReservationView() {
                             />
                             این روز نوبت آزاد ندارد
                           </span>
-                          <span className='text-[10px] leading-relaxed text-[color:var(--cc-muted-foreground)]'>
+                          <span className='text-[0.625rem] leading-relaxed text-[color:var(--cc-muted-foreground)]'>
                             {nearestFree
                               ? `نزدیک‌ترین روز آزاد ${formatWeekday(nearestFree)} ${formatJalali(nearestFree)} است.`
                               : "برای روزهای بعد با پذیرش تماس بگیر."}
@@ -835,13 +835,13 @@ export function ClinicReservationView() {
                                   <div className='flex items-center justify-between'>
                                     <span
                                       className={cn(
-                                        "text-[10px] text-[color:var(--cc-surface-foreground)]",
+                                        "text-[0.625rem] text-[color:var(--cc-surface-foreground)]",
                                         labelType,
                                       )}
                                     >
                                       {PERIOD_LABELS[period]}
                                     </span>
-                                    <span className='text-[9px] text-[color:var(--cc-muted-foreground)]'>
+                                    <span className='text-[0.5625rem] text-[color:var(--cc-muted-foreground)]'>
                                       {formatNumber(
                                         group.filter((slot) => !slot.taken).length,
                                       )}{" "}
@@ -862,10 +862,10 @@ export function ClinicReservationView() {
                                         onClick={() => setSlotId(slot.id)}
                                         className='flex flex-col gap-0 py-1 leading-none'
                                       >
-                                        <span className={cn("text-[11px]", monoType)}>
+                                        <span className={cn("text-[0.6875rem]", monoType)}>
                                           {slot.time}
                                         </span>
-                                        <span className='text-[8px] opacity-70'>
+                                        <span className='text-[0.5rem] opacity-70'>
                                           {slot.taken ? "تکمیل" : "آزاد"}
                                         </span>
                                       </Button>
@@ -986,7 +986,7 @@ export function ClinicReservationView() {
                           }
                         />
                         {errors.consent ? (
-                          <span className='text-[10px] font-bold text-[color:var(--cc-danger)]'>
+                          <span className='text-[0.625rem] font-bold text-[color:var(--cc-danger)]'>
                             {errors.consent}
                           </span>
                         ) : null}
@@ -1000,7 +1000,7 @@ export function ClinicReservationView() {
                         <div className='flex flex-col gap-2 rounded-[var(--cc-radius)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] p-2.5'>
                           <span
                             className={cn(
-                              "text-[10px] text-[color:var(--cc-muted-foreground)]",
+                              "text-[0.625rem] text-[color:var(--cc-muted-foreground)]",
                               labelType,
                             )}
                           >
@@ -1020,7 +1020,7 @@ export function ClinicReservationView() {
                               key={label}
                               className='flex items-start justify-between gap-2 border-b-[length:var(--cc-border-width)] border-[color:var(--cc-border)] pb-1 last:border-b-0 last:pb-0'
                             >
-                              <span className='text-[10px] text-[color:var(--cc-muted-foreground)]'>
+                              <span className='text-[0.625rem] text-[color:var(--cc-muted-foreground)]'>
                                 {label}
                               </span>
                               <span className='text-xs font-bold text-[color:var(--cc-surface-foreground)]'>
@@ -1033,7 +1033,7 @@ export function ClinicReservationView() {
                         <div className='flex flex-col gap-2 rounded-[var(--cc-radius)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] p-2.5'>
                           <span
                             className={cn(
-                              "text-[10px] text-[color:var(--cc-muted-foreground)]",
+                              "text-[0.625rem] text-[color:var(--cc-muted-foreground)]",
                               labelType,
                             )}
                           >
@@ -1048,7 +1048,7 @@ export function ClinicReservationView() {
                               key={label}
                               className='flex items-center justify-between gap-2 border-b-[length:var(--cc-border-width)] border-[color:var(--cc-border)] pb-1 last:border-b-0'
                             >
-                              <span className='text-[10px] text-[color:var(--cc-muted-foreground)]'>
+                              <span className='text-[0.625rem] text-[color:var(--cc-muted-foreground)]'>
                                 {label}
                               </span>
                               <span
@@ -1060,7 +1060,7 @@ export function ClinicReservationView() {
                             </div>
                           ))}
                           <Progress value={completion} />
-                          <span className='text-[9px] text-[color:var(--cc-muted-foreground)]'>
+                          <span className='text-[0.5625rem] text-[color:var(--cc-muted-foreground)]'>
                             {completion === 100
                               ? "اطلاعات کامل است"
                               : `${formatNumber(completion)}٪ اطلاعات کامل است`}
@@ -1071,7 +1071,7 @@ export function ClinicReservationView() {
                       <div className='flex flex-col gap-2 rounded-[var(--cc-radius)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] p-2.5'>
                         <span
                           className={cn(
-                            "text-[10px] text-[color:var(--cc-muted-foreground)]",
+                            "text-[0.625rem] text-[color:var(--cc-muted-foreground)]",
                             labelType,
                           )}
                         >
@@ -1115,7 +1115,7 @@ export function ClinicReservationView() {
                   مرحلهٔ قبل
                 </Button>
   
-                <span className='text-[9px] text-[color:var(--cc-muted-foreground)]'>
+                <span className='text-[0.5625rem] text-[color:var(--cc-muted-foreground)]'>
                   {step === 1 && !selectedSlot
                     ? freeSlots === 0
                       ? "این روز پر است؛ روز دیگری را انتخاب کن"
@@ -1150,7 +1150,7 @@ export function ClinicReservationView() {
               <div className='flex items-center justify-between gap-2'>
                 <span
                   className={cn(
-                    "text-[10px] text-[color:var(--cc-muted-foreground)]",
+                    "text-[0.625rem] text-[color:var(--cc-muted-foreground)]",
                     labelType,
                   )}
                 >
@@ -1170,7 +1170,7 @@ export function ClinicReservationView() {
                   <span className='text-xs font-bold text-[color:var(--cc-surface-foreground)]'>
                     {doctor.name}
                   </span>
-                  <span className='text-[9px] text-[color:var(--cc-muted-foreground)]'>
+                  <span className='text-[0.5625rem] text-[color:var(--cc-muted-foreground)]'>
                     {doctor.title}
                   </span>
                 </div>
@@ -1200,7 +1200,7 @@ export function ClinicReservationView() {
                 ].map((row) => (
                   <span
                     key={row.label}
-                    className='flex items-center gap-1.5 text-[10px] text-[color:var(--cc-surface-foreground)]'
+                    className='flex items-center gap-1.5 text-[0.625rem] text-[color:var(--cc-surface-foreground)]'
                   >
                     <span className='text-[color:var(--cc-primary)]'>
                       {row.icon}
@@ -1224,7 +1224,7 @@ export function ClinicReservationView() {
                 ].map(([label, value]) => (
                   <div
                     key={label}
-                    className='flex items-center justify-between gap-2 text-[10px] text-[color:var(--cc-muted-foreground)]'
+                    className='flex items-center justify-between gap-2 text-[0.625rem] text-[color:var(--cc-muted-foreground)]'
                   >
                     <span>{label}</span>
                     <span className={monoType}>{value}</span>
@@ -1236,7 +1236,7 @@ export function ClinicReservationView() {
                 className='flex items-baseline justify-between gap-2 border-t-[length:var(--cc-border-width)] border-[color:var(--cc-border)] pt-1.5'
                 aria-live='polite'
               >
-                <span className='text-[10px] text-[color:var(--cc-muted-foreground)]'>
+                <span className='text-[0.625rem] text-[color:var(--cc-muted-foreground)]'>
                   مبلغ نهایی
                 </span>
                 <Bump
@@ -1263,12 +1263,12 @@ export function ClinicReservationView() {
                   <span className='text-xs font-bold text-[color:var(--cc-surface-foreground)]'>
                     تضمین خدمات
                   </span>
-                  <span className='text-[9px] text-[color:var(--cc-muted-foreground)]'>
+                  <span className='text-[0.5625rem] text-[color:var(--cc-muted-foreground)]'>
                     لغو رایگان تا {formatNumber(CANCEL_WINDOW_HOURS)} ساعت قبل
                   </span>
                 </div>
               </div>
-              <p className='text-[10px] leading-relaxed text-[color:var(--cc-muted-foreground)]'>
+              <p className='text-[0.625rem] leading-relaxed text-[color:var(--cc-muted-foreground)]'>
                 اگر پزشک در زمان مقرر حاضر نشود، هزینه به‌صورت کامل بازگردانده
                 می‌شود.
               </p>
@@ -1303,35 +1303,36 @@ export function ClinicReservationView() {
             trailing={<Ornament />}
           />
 
-          <div className='grid gap-3 @xl:grid-cols-3'>
+          <div className='grid grid-cols-1 gap-3 @xl:grid-cols-3'>
             {DOCTORS.map((entry) => (
               <Lift key={entry.id} className='h-full'>
                 <Card className='h-full gap-2.5'>
-                  <div className='flex items-start gap-2.5'>
+                  <div className='flex flex-wrap items-start gap-x-2.5 gap-y-2'>
                     <Portrait
                       variant={entry.portrait}
                       className='size-14 shrink-0 overflow-hidden rounded-[var(--cc-radius)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)]'
                     />
-                    <div className='flex min-w-0 flex-col gap-0.5'>
+                    <div className='flex min-w-0 flex-1 basis-[6.5rem] flex-col gap-0.5'>
                       <span className='text-sm font-bold text-[color:var(--cc-surface-foreground)]'>
                         {entry.name}
                       </span>
-                      <span className='text-[10px] text-[color:var(--cc-muted-foreground)]'>
+                      <span className='text-[0.625rem] text-[color:var(--cc-muted-foreground)]'>
                         {entry.title}
                       </span>
-                      <div className='flex items-center gap-2'>
-                        <StarRating value={entry.rating} />
-                        <span className='text-[9px] text-[color:var(--cc-muted-foreground)]'>
-                          {formatNumber(entry.reviews)} نظر
-                        </span>
-                      </div>
                     </div>
-                    <Badge variant='outline' className='ms-auto shrink-0'>
+                    <Badge variant='outline' className='shrink-0'>
                       <span className={monoType}>{formatToman(entry.fee)}</span>
                     </Badge>
                   </div>
 
-                  <p className='text-[10px] leading-relaxed text-[color:var(--cc-muted-foreground)]'>
+                  <div className='flex flex-wrap items-center gap-x-2 gap-y-0.5'>
+                    <StarRating value={entry.rating} />
+                    <span className='whitespace-nowrap text-[0.5625rem] text-[color:var(--cc-muted-foreground)]'>
+                      {formatNumber(entry.reviews)} نظر
+                    </span>
+                  </div>
+
+                  <p className='text-[0.625rem] leading-relaxed text-[color:var(--cc-muted-foreground)]'>
                     {entry.bio}
                   </p>
 
@@ -1388,44 +1389,92 @@ export function ClinicReservationView() {
               />
             </CardHeader>
             <CardContent>
-              <Table className='text-right'>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className='text-right'>خدمت</TableHead>
-                    <TableHead className='text-right'>مدت</TableHead>
-                    <TableHead className='text-right'>تعرفه</TableHead>
-                    <TableHead className='text-right'>توضیح</TableHead>
-                    <TableHead className='text-right'>اقدام</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {CLINIC_SERVICES.map((service) => (
-                    <TableRow key={service.name}>
-                      <TableCell className='text-xs font-bold'>
+              {/* Narrow canvases read this as stacked rows; a five-column
+                  tariff table only starts to breathe from @xl up. */}
+              <ul className='flex flex-col gap-2 @xl:hidden'>
+                {CLINIC_SERVICES.map((service) => (
+                  <li
+                    key={service.name}
+                    className='flex flex-col gap-1 rounded-[var(--cc-radius-sm)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-surface)] p-2.5'
+                  >
+                    <div className='flex items-start justify-between gap-2'>
+                      <span className='text-xs font-bold text-[color:var(--cc-surface-foreground)]'>
                         {service.name}
-                      </TableCell>
-                      <TableCell
-                        className={cn("text-[10px]", monoType)}
-                      >
-                        {service.duration}
-                      </TableCell>
-                      <TableCell
-                        className={cn("whitespace-nowrap text-[10px]", monoType)}
+                      </span>
+                      <span
+                        className={cn(
+                          "shrink-0 whitespace-nowrap text-[0.625rem] text-[color:var(--cc-surface-foreground)]",
+                          monoType,
+                        )}
                       >
                         {formatToman(service.price)}
-                      </TableCell>
-                      <TableCell className='text-[10px] text-[color:var(--cc-muted-foreground)]'>
+                      </span>
+                    </div>
+                    <div className='flex items-center justify-between gap-2'>
+                      <p className='text-[0.625rem] leading-relaxed text-[color:var(--cc-muted-foreground)]'>
+                        <span className={monoType}>{service.duration}</span>
+                        {" · "}
                         {service.note}
-                      </TableCell>
-                      <TableCell className='text-end'>
-                        <Button size='sm' variant='outline' onClick={startBooking}>
-                          رزرو
-                        </Button>
-                      </TableCell>
+                      </p>
+                      <Button
+                        size='sm'
+                        variant='outline'
+                        className='shrink-0'
+                        onClick={startBooking}
+                      >
+                        رزرو
+                      </Button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              <div className='hidden @xl:block'>
+                <Table className='text-right'>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className='text-right'>خدمت</TableHead>
+                      <TableHead className='text-right'>مدت</TableHead>
+                      <TableHead className='text-right'>تعرفه</TableHead>
+                      <TableHead className='text-right'>توضیح</TableHead>
+                      <TableHead className='text-right'>اقدام</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {CLINIC_SERVICES.map((service) => (
+                      <TableRow key={service.name}>
+                        <TableCell className='text-xs font-bold'>
+                          {service.name}
+                        </TableCell>
+                        <TableCell
+                          className={cn("text-[0.625rem]", monoType)}
+                        >
+                          {service.duration}
+                        </TableCell>
+                        <TableCell
+                          className={cn(
+                            "whitespace-nowrap text-[0.625rem]",
+                            monoType,
+                          )}
+                        >
+                          {formatToman(service.price)}
+                        </TableCell>
+                        <TableCell className='text-[0.625rem] text-[color:var(--cc-muted-foreground)]'>
+                          {service.note}
+                        </TableCell>
+                        <TableCell className='text-end'>
+                          <Button
+                            size='sm'
+                            variant='outline'
+                            onClick={startBooking}
+                          >
+                            رزرو
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </CardContent>
           </Card>
         </section>
@@ -1462,7 +1511,7 @@ export function ClinicReservationView() {
                       <span className='text-xs font-bold text-[color:var(--cc-surface-foreground)]'>
                         {story.name}
                       </span>
-                      <span className='text-[10px] text-[color:var(--cc-muted-foreground)]'>
+                      <span className='text-[0.625rem] text-[color:var(--cc-muted-foreground)]'>
                         {story.subject}
                       </span>
                     </div>
@@ -1503,7 +1552,7 @@ export function ClinicReservationView() {
                     <Icon name='chevron-left' className='size-4' />
                   </Button>
                   <span
-                    className='ms-1 text-[10px] text-[color:var(--cc-muted-foreground)]'
+                    className='ms-1 text-[0.625rem] text-[color:var(--cc-muted-foreground)]'
                     aria-live='polite'
                   >
                     {toPersianDigits(testimonial + 1)} از{" "}
@@ -1521,10 +1570,10 @@ export function ClinicReservationView() {
                     <span className='flex size-6 items-center justify-center rounded-full bg-[var(--cc-muted)] text-[color:var(--cc-primary)]'>
                       {GUARANTEE_ICONS[item.id]}
                     </span>
-                    <span className='text-[10px] font-bold text-[color:var(--cc-surface-foreground)]'>
+                    <span className='text-[0.625rem] font-bold text-[color:var(--cc-surface-foreground)]'>
                       {item.title}
                     </span>
-                    <span className='text-[9px] leading-relaxed text-[color:var(--cc-muted-foreground)]'>
+                    <span className='text-[0.5625rem] leading-relaxed text-[color:var(--cc-muted-foreground)]'>
                       {item.note}
                     </span>
                   </div>
@@ -1579,7 +1628,7 @@ export function ClinicReservationView() {
                       </span>
                       <span
                         className={cn(
-                          "min-w-14 text-end text-[10px] text-[color:var(--cc-muted-foreground)]",
+                          "min-w-14 text-end text-[0.625rem] text-[color:var(--cc-muted-foreground)]",
                           monoType,
                         )}
                       >
@@ -1593,7 +1642,7 @@ export function ClinicReservationView() {
               </div>
 
               <div className='mt-3 flex flex-col gap-2 rounded-[var(--cc-radius)] bg-[var(--cc-muted)] p-2.5'>
-                <span className='text-[10px] leading-relaxed text-[color:var(--cc-muted-foreground)]'>
+                <span className='text-[0.625rem] leading-relaxed text-[color:var(--cc-muted-foreground)]'>
                   بیمهٔ آزاد تعرفهٔ کامل را پرداخت می‌کند؛ برای خدمات پاراکلینیک
                   تعرفهٔ مصوب به‌صورت جداگانه محاسبه می‌شود.
                 </span>
@@ -1646,7 +1695,7 @@ export function ClinicReservationView() {
           <Card className='gap-0 overflow-hidden p-0'>
             <div className='grid @2xl:grid-cols-[1.1fr_0.9fr]'>
               <div className='flex flex-col gap-3 p-4'>
-                <span className={cn("text-[11px] font-bold text-[color:var(--cc-primary)]", labelType)}>
+                <span className={cn("text-[0.6875rem] font-bold text-[color:var(--cc-primary)]", labelType)}>
                   آدرس و ساعات کاری
                 </span>
                 <div className='flex items-start gap-2'>
@@ -1663,7 +1712,7 @@ export function ClinicReservationView() {
                   {CLINIC_HOURS.map((row) => (
                     <div
                       key={row.day}
-                      className='flex items-center justify-between gap-2 border-b-[length:var(--cc-border-width)] border-[color:var(--cc-border)] pb-1 text-[10px] last:border-b-0'
+                      className='flex items-center justify-between gap-2 border-b-[length:var(--cc-border-width)] border-[color:var(--cc-border)] pb-1 text-[0.625rem] last:border-b-0'
                     >
                       <span className='text-[color:var(--cc-surface-foreground)]'>
                         {row.day}
@@ -1722,7 +1771,7 @@ export function ClinicReservationView() {
                 درمانگاه حکیم
               </span>
             </div>
-            <p className='text-[10px] leading-relaxed text-[color:var(--cc-muted-foreground)]'>
+            <p className='text-[0.625rem] leading-relaxed text-[color:var(--cc-muted-foreground)]'>
               مرکز تخصصی چند‌تخصصی با نوبت‌دهی آنلاین، پذیرش شبانه‌روزی و پروندهٔ
               الکترونیک.
             </p>
@@ -1764,7 +1813,7 @@ export function ClinicReservationView() {
                 <a
                   key={link.label}
                   href={link.href}
-                  className='text-[10px] text-[color:var(--cc-muted-foreground)] transition-colors hover:text-[color:var(--cc-primary)]'
+                  className='text-[0.625rem] text-[color:var(--cc-muted-foreground)] transition-colors hover:text-[color:var(--cc-primary)]'
                 >
                   {link.label}
                 </a>
@@ -1774,7 +1823,7 @@ export function ClinicReservationView() {
         </div>
 
         <div className='flex flex-wrap items-center justify-between gap-2 border-t-[length:var(--cc-border-width)] border-[color:var(--cc-border)] pt-2'>
-          <span className='text-[10px] text-[color:var(--cc-muted-foreground)]'>
+          <span className='text-[0.625rem] text-[color:var(--cc-muted-foreground)]'>
             © ۱۴۰۵ درمانگاه حکیم · ساخته‌شده با کامپوننت‌های استودیو
           </span>
           <div className='flex flex-wrap items-center gap-1'>

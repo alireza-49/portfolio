@@ -87,14 +87,14 @@ const RAIL_PANEL = [
   "[background-size:var(--cc-surface-pattern-size)] [box-shadow:var(--cc-shadow)]",
 ].join(" ");
 
-const RAIL_HEADING = "text-[11px] font-bold text-[color:var(--cc-muted-foreground)]";
+const RAIL_HEADING = "text-[0.6875rem] font-bold text-[color:var(--cc-muted-foreground)]";
 const RAIL_SECTION =
   "flex flex-col gap-1.5 border-t-[length:var(--cc-border-width)] border-[color:var(--cc-border)] pt-3";
 
 /** Toggle chip shared by the category, size and colour rows. */
 function chipClass(active: boolean) {
   return cn(
-    "rounded-[var(--cc-radius-sm)] border-[length:var(--cc-border-width)] px-2 py-0.5 text-[11px] transition-colors",
+    "rounded-[var(--cc-radius-sm)] border-[length:var(--cc-border-width)] px-2 py-0.5 text-[0.6875rem] transition-colors",
     active
       ? "border-transparent bg-[var(--cc-primary)] text-[color:var(--cc-primary-foreground)]"
       : "border-[color:var(--cc-border)] text-[color:var(--cc-surface-foreground)] hover:bg-[var(--cc-muted)]",
@@ -136,7 +136,7 @@ function FilterRail({
                 )}
               >
                 <span>{category.label}</span>
-                <span className={cn("text-[11px] opacity-75", monoType)}>
+                <span className={cn("text-[0.6875rem] opacity-75", monoType)}>
                   {formatNumber(CATEGORY_COUNTS[category.value] ?? 0)}
                 </span>
               </button>
@@ -398,7 +398,7 @@ export function ShopCatalog({
         </div>
 
         <div className='flex items-center gap-2'>
-          <span className='hidden text-[11px] text-[color:var(--cc-muted-foreground)] @2xl:inline'>
+          <span className='hidden text-[0.6875rem] text-[color:var(--cc-muted-foreground)] @2xl:inline'>
             مرتب‌سازی
           </span>
           <Select
@@ -440,7 +440,7 @@ export function ShopCatalog({
 
       {chips.length ? (
         <div className='flex flex-wrap items-center gap-1.5'>
-          <span className='text-[11px] text-[color:var(--cc-muted-foreground)]'>
+          <span className='text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'>
             فیلترها:
           </span>
           {chips.map((chip) => (
@@ -460,7 +460,7 @@ export function ShopCatalog({
         </div>
       ) : null}
 
-      <div className='grid gap-4 @4xl:grid-cols-[224px_1fr]'>
+      <div className='grid gap-4 @4xl:grid-cols-[14rem_1fr]'>
         <div className='hidden @4xl:block'>
           <div className='sticky top-2'>
             <FilterRail
@@ -476,7 +476,7 @@ export function ShopCatalog({
             <Badge variant='soft'>
               {formatNumber(visibleProducts.length)} کالا
             </Badge>
-            <span className='text-[11px] text-[color:var(--cc-muted-foreground)]'>
+            <span className='text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'>
               از {formatNumber(SHOP_PRODUCTS.length)} قطعه
             </span>
           </div>
@@ -507,7 +507,7 @@ export function ShopCatalog({
               <span className='text-sm font-bold text-[color:var(--cc-surface-foreground)]'>
                 کالایی با این فیلترها پیدا نشد
               </span>
-              <p className='max-w-sm text-[11px] text-[color:var(--cc-muted-foreground)]'>
+              <p className='max-w-sm text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'>
                 سقف قیمت را بالاتر ببر، سایز یا رنگ را تغییر بده یا فیلترها را
                 پاک کن.
               </p>

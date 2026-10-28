@@ -25,7 +25,7 @@ export function SectionHeading({
       <div className='flex flex-col gap-1.5'>
         <span
           className={cn(
-            "text-[11px] font-bold text-[color:var(--cc-primary)]",
+            "text-[0.6875rem] font-bold text-[color:var(--cc-primary)]",
             labelType,
           )}
         >

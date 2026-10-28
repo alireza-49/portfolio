@@ -45,11 +45,19 @@ function wallParts(iso: string) {
   };
 }
 
-/** Tehran wall clock for an instant: `{ date: '2026-10-26', time: '15:00' }`. */
-export function tehranWall(iso: string): { date: string; time: string } {
+/**
+ * Tehran wall clock for an instant: `{ date: '2026-10-26', time: '15:00', seconds: '42' }`.
+ * `seconds` exists for providers that want a full timestamp (AmootSMS); the UI
+ * only ever reads `date` and `time`.
+ */
+export function tehranWall(iso: string): { date: string; time: string; seconds: string } {
   const parts = wallParts(iso);
-  if (!parts) return { date: "1970-01-01", time: "00:00" };
-  return { date: parts.date, time: `${parts.hour}:${parts.minute}` };
+  if (!parts) return { date: "1970-01-01", time: "00:00", seconds: "00" };
+  return {
+    date: parts.date,
+    time: `${parts.hour}:${parts.minute}`,
+    seconds: parts.second,
+  };
 }
 
 /**

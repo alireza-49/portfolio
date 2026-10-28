@@ -42,6 +42,7 @@ every preset and scenario.
 | `/admin/inbox` | contact submissions (filters, bulk status, CSV, slide-over) |
 | `/admin/posts`, `/admin/posts/new`, `/admin/posts/[id]` | post list + Tiptap editor |
 | `/admin/comments` | reader comments for every post (bulk delete) |
+| `/admin/settings` | AmootSMS token/line, SMS on-off, test send, send log |
 | `/api/contact` | validates, throttles and stores a submission |
 | `/api/google/start`, `/api/google/callback` | OAuth handshake for the planner's calendar account |
 | `/api/google/sync` | pull-run, admin cookie or `Authorization: Bearer $CRON_SECRET` |
@@ -61,7 +62,9 @@ every preset and scenario.
 - `src/lib/` — `db.ts`, `content.ts` (the only DB module), `auth.ts`, `sanitize.ts`, `fa.ts`
   (Tehran-aware Jalali dates, Persian digits), `schedule.ts` (Tehran wall-time math, month grid,
   timeline geometry), `secrets.ts` (AES-256-GCM at-rest encryption), `google-calendar.ts`
-  (OAuth + Calendar REST), `calendar-sync.ts` (push/pull rules), `text.ts` + `post-html.ts` +
+  (OAuth + Calendar REST), `calendar-sync.ts` (push/pull rules), `amootsms.ts` (the REST call),
+  `sms.ts` (who gets texted and when), `sms-text.ts` (message copy, client-safe), `site-url.ts`
+  (public origin for links), `text.ts` + `post-html.ts` +
   `inquiry-csv.ts` (client-safe), `types.ts`, `schema.sql`.
 - `src/app/admin/(console)/{projects,posts}/validation.ts` — JSONB re-validation.
 - `scripts/db-setup.mjs` + `scripts/seed/*.mjs`; `public/fonts` (20 files) and
@@ -164,12 +167,48 @@ every preset and scenario.
   Arvan S3 bucket when `ARVAN_S3_*` is configured. Never hotlink the Stitch exports.
 - `/api/contact` validates, throttles and stores the hand-off JSONB exactly as sent; `/admin/inbox`
   only reads that row and never invents a submission.
-- Admin UI never uses fake controls: no SMS/OTP, no email sending, no password reset. Media uploads
+- The contact form locks its send button for ten minutes per browser
+  (`cc-contact-pending-v1` in `localStorage`, server keeps the 6-per-IP throttle) and on success
+  replaces the page with `/track?ref=<submission id>`. While that submission is `status = 'new'`
+  the whole track page is `inert` and greyed behind `<PendingNotice>`; `<PendingWatcher>` polls
+  `/api/contact/status` every 20 s and the page unlocks itself when the console changes the status.
+  `<TrackLockSync>` re-attaches the lock on a plain `/track` visit and forgets a deleted reference.
+  The notice is the only receipt copy now (no “two hours” call promise, «تا ساعاتی دیگر…»), shows the
+  masked mobile number and a `REQ-XXXXXXXX` reference derived from the id; a real mobile also gets
+  the submission SMS (see below).
+- Client SMS goes through AmootSMS (`POST /rest/SendWithBackupLine` — free text with the
+  advertising-line guarantee, never pattern/verify; `Authorization: <token>`, `Mobiles` as a
+  comma-separated string because the live endpoint rejects a JSON array, and `BackupLineNumber`
+  defaulting to `98` because `public` is not a valid backup line). The token, sender line and the
+  on/off switch live in `app_settings`
+  (`/admin/settings`); `amootsms_line` empty means the public line (`public`). The token is
+  encrypted with `secrets.ts`, keyed from `ADMIN_SESSION_SECRET` — rotating that secret makes the
+  stored token unreadable and the settings page says so. `src/lib/sms.ts` is the only sender:
+  `notifySubmissionSms` (from `/api/contact`, only when `looksLikePhone`, 5 s timeout so the form is
+  never held), `notifyProjectStatusSms` (a real stored transition only, so a double click texts
+  once) and `notifyProjectProgressSms` (the manual «ارسال پیام پیشرفت» button). Wording lives in
+  `sms-text.ts`, never in the database: every body starts with `فیل وب دیزاین: `, dates/percent are
+  Persian, links are omitted when `published = false`. A failed or skipped send never fails the
+  write — it becomes a `sms_log` row plus `withSmsNote` on the action's message. Muted unless the
+  switch is on, and a progress button sends the stored row, never the unsaved draft.
+- Admin UI never uses fake controls: no OTP, no email sending, no password reset. Media uploads
   appear only when `ARVAN_S3_*` is configured; URL paste always works.
   Known limits: media is URL/S3-only (no binary in Postgres), one admin account, in-memory throttles
   per instance, and missing content answers with the themed 404 plus a 200 status and `noindex`.
 
 ## Rules
+
+### Sizing
+
+- Every size on the site is `rem`, never an arbitrary px: `text-[0.8125rem]`, not `text-[13px]`.
+  The one knob is the «Design-space scale» rule in `src/app/globals.css` (`@layer base`):
+  `html { font-size: clamp(12px, min(1.1111vw, 1.7778vh), 16px) }` from 768px up, i.e.
+  `scale = min(width/1440, height/900)` clamped to 0.75–1.0, so a 150%-scaled Windows laptop
+  (1280×610) and a 4K desktop at 200% see the same proportions. Add a size as rem and it joins
+  the scale for free; the browser exposes no OS-scale factor to read (`devicePixelRatio` is OS
+  scale × browser zoom, 2.0 on a Retina Mac at 100%).
+- Hairlines (`border-*`), hard shadows, `ring-*`, `backdrop-blur`, fixed SVG geometry and
+  `@media` breakpoints stay px on purpose — crisp riso edges, fixed layout breakpoints.
 
 ### Studio frame
 
@@ -180,6 +219,13 @@ every preset and scenario.
   `mustard` so it never matches a preset background) and the status bar sit outside it — never
   sticky, never a second scroller. The viewport is `dir="ltr"` only to put the scrollbar on the
   right; the site content wrapper restores `dir="rtl"`, never the chrome.
+- Below `lg` the sidebar is a **drawer, never a stacked section**: `create-studio-sidebar.tsx` is
+  `max-lg:fixed max-lg:inset-y-0 max-lg:start-0` (closed: `invisible translate-x-full
+  pointer-events-none`, open: `visible translate-x-0`) with its own sticky «تنظیمات استودیو» header
+  and close button; `create-studio.tsx` owns `settingsOpen` plus the header trigger
+  (`aria-controls="studio-settings"`), the backdrop, Escape, the Tab focus trap and restoring focus
+  to the trigger. The canvas section and preview window are `min-h-0 flex-1` at every width, so the
+  sheet overlays the canvas instead of pushing it down and the page itself never scrolls.
 - Scenario order and the scenario default are separate declarations: `ARCHETYPES` drives the tab
   strip and its RTL arrow-key path, while `useState<ArchetypeId>("landing")` in
   `create-studio.tsx` decides what `/create` opens on. Keep `landing` first, `components` last; the
@@ -290,6 +336,11 @@ every preset and scenario.
   `radius`, `shadow`, `typography`, `canvas-chrome`, `canvas-status`, `submit-config`) and is
   keyboard-first: focus moves to the popover's next button in a microtask, Space advances even after
   a click dropped focus, and `preventScroll` keeps the sidebar still.
+- On compact the tour owns the settings sheet: sidebar steps carry `data: { panel: 'sidebar' }`, so
+  config-level `onNextClick`/`onPrevClick` call `onSettingsChange` (open for the sheet, closed for
+  the canvas), wait one drawer transition (~260 ms) and only then `moveTo()`. That is also why
+  driver's arrow-key control is off below `lg` (it would step onto hidden targets) and why the
+  sheet's Tab trap yields while focus is inside `.driver-popover`.
 
 ## Verify
 

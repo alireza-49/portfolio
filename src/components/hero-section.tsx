@@ -96,8 +96,14 @@ export function HeroSection() {
     }, 700);
   }, []);
 
+  // Touch screens never fire mouseleave, so a tap has to clean up after itself.
+  const tap = useCallback(() => {
+    splatter();
+    if (window.matchMedia("(hover: none)").matches) reset();
+  }, [splatter, reset]);
+
   return (
-    <section className='dot-grid relative w-full overflow-hidden border-b-[2.5px] border-indigo-ink bg-paper px-4 pt-12 pb-20 sm:px-8 lg:px-12'>
+    <section className='dot-grid relative w-full overflow-hidden border-b-[2.5px] border-indigo-ink bg-paper px-4 pt-8 pb-12 sm:px-8 sm:pt-12 sm:pb-20 lg:px-12'>
       <div
         aria-hidden
         className='pointer-events-none absolute -top-10 left-10 h-72 w-72 rounded-full bg-mustard/25 blur-3xl'
@@ -107,18 +113,18 @@ export function HeroSection() {
         className='pointer-events-none absolute right-10 bottom-4 h-80 w-80 rounded-full bg-coral/15 blur-3xl'
       />
 
-      <div className='relative z-10 mx-auto flex max-w-7xl flex-col items-center gap-12 lg:flex-row'>
+      <div className='relative z-10 mx-auto flex max-w-7xl flex-col items-center gap-8 sm:gap-12 lg:flex-row'>
         <div className='flex w-full flex-col gap-6 text-right lg:w-7/12'>
-          <h1 className='font-display text-[32px] leading-[1.3] font-black text-indigo-ink sm:text-[40px] lg:text-[clamp(38px,3.4vw,46px)]'>
+          <h1 className='font-display text-[1.75rem] leading-[1.45] font-black text-indigo-ink sm:text-[2.125rem] sm:leading-[1.35] md:text-[2.5rem] md:leading-[1.3] lg:text-[clamp(2.375rem,3.4vw,2.875rem)]'>
             طراحی وب{" "}
             <span
-              className={`ink-splash-wrapper group mx-1.5 inline-block px-3 py-1 align-baseline text-coral ${
+              className={`ink-splash-wrapper group mx-1.5 inline-block max-sm:mx-0 max-sm:block max-sm:w-fit max-sm:whitespace-nowrap max-sm:text-[clamp(1rem,6.3vw,1.75rem)] px-0 py-0 align-baseline text-coral sm:px-3 sm:py-1 ${
                 splashed ? "splashed" : ""
               }`}
               title='برای پاشش جوهر ریزوگراف کلیک یا هاور کنید!'
               onMouseEnter={splatter}
               onMouseLeave={reset}
-              onClick={splatter}
+              onClick={tap}
             >
               <span className='ink-blot-backdrop flex items-center justify-center'>
                 <svg
@@ -173,7 +179,7 @@ export function HeroSection() {
               </span>
 
               <svg
-                className='ink-droplet-svg -inset-6 h-[calc(100%+48px)] w-[calc(100%+48px)] transition-all duration-300'
+                className='ink-droplet-svg -inset-6 block h-[calc(100%+3rem)] w-[calc(100%+3rem)] transition-all duration-300'
                 viewBox='0 0 200 90'
                 aria-hidden
                 style={
@@ -209,12 +215,12 @@ export function HeroSection() {
                 سریع، سئو عالی و منصفانه قیمت
               </span>
 
-              <span className='absolute inset-x-0 bottom-0 h-[3px] rounded-full bg-coral transition-opacity duration-200 group-[.splashed]:opacity-0' />
+              <span className='absolute inset-x-0 bottom-0 h-[0.1875rem] rounded-full bg-coral transition-opacity duration-200 group-[.splashed]:opacity-0' />
             </span>
             <span className='block'>برای کسب‌وکارهای کوچک </span>
           </h1>
 
-          <p className='max-w-2xl text-[17px] leading-[1.85] font-medium text-indigo-light sm:text-[18px]'>
+          <p className='max-w-2xl text-[1.0625rem] leading-[1.85] font-medium text-indigo-light sm:text-[1.125rem]'>
             مستقیم با خودم کار می‌کنید؛{" "}
             <strong className='font-bold text-indigo-ink'>
               بدون واسطه و بدون هزینهٔ پنهان
@@ -226,7 +232,7 @@ export function HeroSection() {
             ایده را با هم می‌سنجیم.
           </p>
 
-          <p className='-mt-3 flex items-center gap-2 text-[13px] font-medium text-indigo-ink/60 sm:text-sm'>
+          <p className='-mt-3 flex items-center gap-2 text-[0.8125rem] font-medium text-indigo-ink/60 sm:text-sm'>
             <span className='size-1.5 shrink-0 rounded-full bg-teal-craft' />
             بیش از ۴ سال توسعهٔ فرانت‌اند در تیم‌های محصول
           </p>
@@ -269,21 +275,21 @@ export function HeroSection() {
           <div className='flex flex-wrap items-center gap-4 pt-3'>
             <Link
               href='#contact-section'
-              className='craft-btn inline-flex h-auto items-center justify-center gap-2 rounded-sm border-[2.5px] border-indigo-ink bg-coral px-6 py-3.5 text-base font-bold text-white shadow-craft-sm transition-colors hover:bg-coral-dark'
+              className='craft-btn inline-flex h-auto w-full items-center justify-center gap-2 rounded-sm border-[2.5px] border-indigo-ink bg-coral px-6 py-3.5 text-base font-bold text-white shadow-craft-sm transition-colors hover:bg-coral-dark sm:w-auto'
             >
               <span>رزرو مشاورهٔ رایگان</span>
               <Coffee className='size-5' />
             </Link>
             <Link
               href='#estimator-section'
-              className='craft-btn inline-flex h-auto items-center justify-center gap-2 rounded-sm border-[2.5px] border-indigo-ink bg-mustard px-6 py-3.5 text-base font-bold text-indigo-ink shadow-craft-sm transition-colors hover:bg-mustard-deep'
+              className='craft-btn inline-flex h-auto w-full items-center justify-center gap-2 rounded-sm border-[2.5px] border-indigo-ink bg-mustard px-6 py-3.5 text-base font-bold text-indigo-ink shadow-craft-sm transition-colors hover:bg-mustard-deep sm:w-auto'
             >
               <span>محاسبهٔ قیمت و زمان</span>
               <Calculator className='size-5' />
             </Link>
           </div>
 
-          <p className='-mt-1 text-[13px] font-medium text-indigo-light'>
+          <p className='-mt-1 text-[0.8125rem] font-medium text-indigo-light'>
             همان روز جواب می‌دهم، بدون پیش‌پرداخت.
           </p>
         </div>

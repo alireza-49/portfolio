@@ -112,13 +112,13 @@ export function ProjectSchedulePanel({
   return (
     <div className='flex flex-col gap-3 px-4 py-4'>
       <div className='flex flex-wrap items-center gap-2 rounded-sm border border-indigo-ink/20 bg-paper-dim px-3 py-2'>
-        <span className='text-[11px] font-black text-indigo-ink'>
+        <span className='text-[0.6875rem] font-black text-indigo-ink'>
           بازهٔ پروژه:
         </span>
-        <span className='font-mono text-[11px] font-bold text-indigo-light'>
+        <span className='font-mono text-[0.6875rem] font-bold text-indigo-light'>
           {faDate(startDate, { withYear: true })} → {faDate(dueDate, { withYear: true })}
         </span>
-        <span className='ms-auto font-mono text-[11px] font-bold text-indigo-light'>
+        <span className='ms-auto font-mono text-[0.6875rem] font-bold text-indigo-light'>
           {faDigits(ordered.length)} کار
         </span>
       </div>
@@ -135,7 +135,7 @@ export function ProjectSchedulePanel({
           ) : null,
         )}
         {syncedTotal === 0 ? (
-          <span className='text-[11px] font-bold text-indigo-light'>
+          <span className='text-[0.6875rem] font-bold text-indigo-light'>
             هنوز کاری برای این پروژه زمان‌بندی نشده است.
           </span>
         ) : null}
@@ -150,13 +150,13 @@ export function ProjectSchedulePanel({
 
       {upcoming ? (
         <div className='flex flex-wrap items-center gap-2 rounded-sm border-[1.5px] border-teal-craft bg-teal-craft/10 px-3 py-2'>
-          <span className='text-[10px] font-black text-teal-craft'>
+          <span className='text-[0.625rem] font-black text-teal-craft'>
             کار بعدی
           </span>
-          <span className='text-[11px] font-black text-indigo-ink'>
+          <span className='text-[0.6875rem] font-black text-indigo-ink'>
             {upcoming.title}
           </span>
-          <span className='font-mono text-[10px] font-bold text-indigo-light'>
+          <span className='font-mono text-[0.625rem] font-bold text-indigo-light'>
             {faDate(upcoming.startsAt, { withYear: true })} •{" "}
             {faTimeRange(upcoming.startsAt, upcoming.endsAt)}
           </span>
@@ -186,18 +186,18 @@ export function ProjectSchedulePanel({
                   task.done && "opacity-70",
                 )}
               >
-                <span className='shrink-0 font-mono text-[10px] font-bold text-indigo-light'>
+                <span className='shrink-0 font-mono text-[0.625rem] font-bold text-indigo-light'>
                   {faDate(task.startsAt)}
                 </span>
                 <span
                   className={cn(
-                    "min-w-0 flex-1 truncate text-[11px] font-black text-indigo-ink",
+                    "min-w-0 flex-1 truncate text-[0.6875rem] font-black text-indigo-ink",
                     task.done && "line-through",
                   )}
                 >
                   {task.title}
                 </span>
-                <span className='shrink-0 font-mono text-[10px] font-bold text-indigo-light'>
+                <span className='shrink-0 font-mono text-[0.625rem] font-bold text-indigo-light'>
                   {faTimeRange(task.startsAt, task.endsAt)}
                 </span>
                 <StatusPill tone={meta.tone} dot={false} className='shrink-0'>
@@ -212,14 +212,14 @@ export function ProjectSchedulePanel({
       {ordered.length > 6 ? (
         <Link
           href={`/admin/plan?project=${projectId}`}
-          className='w-fit text-[11px] font-bold text-coral hover:underline'
+          className='w-fit text-[0.6875rem] font-bold text-coral hover:underline'
         >
           {faDigits(ordered.length - 6)} کار دیگر در برنامه‌ریز
         </Link>
       ) : null}
 
       <div className='flex flex-col gap-2 rounded-sm border-[1.5px] border-dashed border-indigo-ink/30 bg-paper px-3 py-3'>
-        <span className='text-[11px] font-black text-indigo-ink'>
+        <span className='text-[0.6875rem] font-black text-indigo-ink'>
           افزودن سریع کار
         </span>
 
@@ -285,7 +285,7 @@ export function ProjectSchedulePanel({
             role='status'
             aria-live='polite'
             className={cn(
-              "rounded-sm border-[1.5px] px-3 py-2 text-[11px] font-bold",
+              "rounded-sm border-[1.5px] px-3 py-2 text-[0.6875rem] font-bold",
               notice.ok
                 ? "border-teal-craft bg-teal-craft/10 text-teal-craft"
                 : "border-coral bg-coral/10 text-coral-dark",

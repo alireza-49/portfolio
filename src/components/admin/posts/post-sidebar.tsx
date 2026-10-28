@@ -58,7 +58,7 @@ export function PostSidebar({
         />
         <div className='p-3.5'>
           {outline.length === 0 ? (
-            <p className='text-[11px] font-medium text-indigo-light'>
+            <p className='text-[0.6875rem] font-medium text-indigo-light'>
               هنوز تیتری در متن نیست.
             </p>
           ) : (
@@ -66,10 +66,10 @@ export function PostSidebar({
               {outline.map((item, index) => (
                 <li
                   key={`${item.text}-${index}`}
-                  className='flex items-start gap-1.5 text-[11px] font-bold text-indigo-ink'
+                  className='flex items-start gap-1.5 text-[0.6875rem] font-bold text-indigo-ink'
                   style={{ paddingInlineStart: `${(item.level - 1) * 10}px` }}
                 >
-                  <span className='font-mono text-[9px] text-coral'>
+                  <span className='font-mono text-[0.5625rem] text-coral'>
                     {faNumber(index + 1)}
                   </span>
                   <span className='min-w-0 truncate'>{item.text}</span>

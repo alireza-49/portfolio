@@ -70,7 +70,7 @@ export function InquiryToolbar({
             className={`${FIELD_CLASS} pr-9`}
           />
         </div>
-        <span className='font-mono text-[10px] font-bold text-indigo-light'>
+        <span className='font-mono text-[0.625rem] font-bold text-indigo-light'>
           {faNumber(filteredCount)} از {faNumber(total)} درخواست
         </span>
       </div>
@@ -87,12 +87,12 @@ export function InquiryToolbar({
               onClick={() => onFilter(item.id)}
               className={
                 active
-                  ? "rounded-sm border-[2px] border-indigo-ink bg-indigo-ink px-2.5 py-1 text-[11px] font-black text-paper"
-                  : "rounded-sm border-[2px] border-indigo-ink/25 bg-paper px-2.5 py-1 text-[11px] font-bold text-indigo-ink/80 transition-colors hover:border-indigo-ink hover:text-indigo-ink"
+                  ? "rounded-sm border-[2px] border-indigo-ink bg-indigo-ink px-2.5 py-1 text-[0.6875rem] font-black text-paper"
+                  : "rounded-sm border-[2px] border-indigo-ink/25 bg-paper px-2.5 py-1 text-[0.6875rem] font-bold text-indigo-ink/80 transition-colors hover:border-indigo-ink hover:text-indigo-ink"
               }
             >
               {item.label}
-              <span className='pr-1 font-mono text-[10px] opacity-70'>
+              <span className='pr-1 font-mono text-[0.625rem] opacity-70'>
                 {faNumber(count)}
               </span>
             </button>
@@ -102,7 +102,7 @@ export function InquiryToolbar({
 
       {selectedCount > 0 ? (
         <div className='flex flex-wrap items-center gap-2 rounded-sm border-[1.5px] border-mustard-deep bg-mustard/20 px-2.5 py-2'>
-          <span className='text-[11px] font-black text-indigo-ink'>
+          <span className='text-[0.6875rem] font-black text-indigo-ink'>
             {faNumber(selectedCount)} درخواست انتخاب شده
           </span>
           <select
@@ -111,7 +111,7 @@ export function InquiryToolbar({
               onBulkStatus(event.target.value as SubmissionStatus)
             }
             aria-label='وضعیت گروهی'
-            className='rounded-sm border-[1.5px] border-indigo-ink bg-paper px-2 py-1 text-[11px] font-bold text-indigo-ink'
+            className='rounded-sm border-[1.5px] border-indigo-ink bg-paper px-2 py-1 text-[0.6875rem] font-bold text-indigo-ink'
           >
             {SUBMISSION_STATUSES.map((status) => (
               <option key={status} value={status}>
@@ -123,7 +123,7 @@ export function InquiryToolbar({
             type='button'
             onClick={onApplyBulk}
             disabled={pending}
-            className='rounded-sm border-[1.5px] border-indigo-ink bg-coral px-2.5 py-1 text-[11px] font-black text-white disabled:opacity-60'
+            className='rounded-sm border-[1.5px] border-indigo-ink bg-coral px-2.5 py-1 text-[0.6875rem] font-black text-white disabled:opacity-60'
           >
             اعمال وضعیت
           </button>
@@ -140,8 +140,8 @@ export function InquiryToolbar({
             }}
             className={
               armed
-                ? "inline-flex items-center gap-1 rounded-sm border-[1.5px] border-coral bg-coral px-2.5 py-1 text-[11px] font-black text-white transition-colors disabled:opacity-60"
-                : "inline-flex items-center gap-1 rounded-sm border-[1.5px] border-coral bg-paper px-2.5 py-1 text-[11px] font-black text-coral transition-colors hover:bg-coral hover:text-white disabled:opacity-60"
+                ? "inline-flex items-center gap-1 rounded-sm border-[1.5px] border-coral bg-coral px-2.5 py-1 text-[0.6875rem] font-black text-white transition-colors disabled:opacity-60"
+                : "inline-flex items-center gap-1 rounded-sm border-[1.5px] border-coral bg-paper px-2.5 py-1 text-[0.6875rem] font-black text-coral transition-colors hover:bg-coral hover:text-white disabled:opacity-60"
             }
           >
             <Trash2 className='size-3' />
@@ -153,7 +153,7 @@ export function InquiryToolbar({
               setArmCount(null);
               onClearSelection();
             }}
-            className='inline-flex items-center gap-1 text-[11px] font-bold text-indigo-ink/70 hover:text-coral'
+            className='inline-flex items-center gap-1 text-[0.6875rem] font-bold text-indigo-ink/70 hover:text-coral'
           >
             <X className='size-3' />
             لغو انتخاب
@@ -165,7 +165,7 @@ export function InquiryToolbar({
         <p
           role='status'
           aria-live='polite'
-          className='rounded-sm border border-teal-craft/40 bg-teal-craft/10 px-2.5 py-1.5 text-[11px] font-bold text-teal-craft'
+          className='rounded-sm border border-teal-craft/40 bg-teal-craft/10 px-2.5 py-1.5 text-[0.6875rem] font-bold text-teal-craft'
         >
           {notice}
         </p>

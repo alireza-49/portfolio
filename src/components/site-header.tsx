@@ -52,13 +52,13 @@ export function SiteHeader() {
             >
               وب دیزاین فیل
             </Link>
-            <span className='mt-0.5 text-[11px] leading-none font-medium text-indigo-light'>
+            <span className='mt-0.5 text-[0.6875rem] leading-none font-medium text-indigo-light'>
               توسعه فرانت‌اند دست‌ساز
             </span>
           </div>
         </div>
 
-        <nav className='hidden shrink items-center gap-3 text-[13px] font-bold whitespace-nowrap text-indigo-ink lg:flex'>
+        <nav className='hidden shrink items-center gap-3 text-[0.8125rem] font-bold whitespace-nowrap text-indigo-ink lg:flex'>
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
@@ -73,13 +73,13 @@ export function SiteHeader() {
         <div className='flex shrink-0 items-center gap-2.5 whitespace-nowrap'>
           <Link
             href={CREATE_LINK.href}
-            className='craft-btn hidden items-center justify-center rounded-sm border-[2.5px] border-indigo-ink bg-mustard/60 px-3.5 py-1.5 text-xs font-black whitespace-nowrap text-indigo-ink shadow-craft-sm transition-colors hover:bg-mustard hover:text-coral sm:inline-flex sm:text-[13px]'
+            className='craft-btn hidden items-center justify-center rounded-sm border-[2.5px] border-indigo-ink bg-mustard/60 px-3.5 py-1.5 text-xs font-black whitespace-nowrap text-indigo-ink shadow-craft-sm transition-colors hover:bg-mustard hover:text-coral sm:inline-flex sm:text-[0.8125rem]'
           >
             {CREATE_LINK.label}
           </Link>
           <Link
             href='#contact-section'
-            className='craft-btn hidden h-auto items-center justify-center gap-1 rounded-sm border-[2.5px] border-indigo-ink bg-coral px-3.5 py-1.5 text-xs font-bold whitespace-nowrap text-white shadow-craft-sm transition-colors hover:bg-coral-dark sm:inline-flex sm:text-[13px]'
+            className='craft-btn hidden h-auto items-center justify-center gap-1 rounded-sm border-[2.5px] border-indigo-ink bg-coral px-3.5 py-1.5 text-xs font-bold whitespace-nowrap text-white shadow-craft-sm transition-colors hover:bg-coral-dark sm:inline-flex sm:text-[0.8125rem]'
           >
             <Coffee className='size-4' />
             <span>مشاوره و سفارش</span>

@@ -83,7 +83,7 @@ export function PlanCalendar({
         {PERSIAN_WEEKDAYS.map((weekday) => (
           <span
             key={weekday}
-            className='text-center font-mono text-[9px] font-bold text-indigo-light'
+            className='text-center font-mono text-[0.5625rem] font-bold text-indigo-light'
           >
             {weekday}
           </span>
@@ -113,7 +113,7 @@ export function PlanCalendar({
             >
               <span
                 className={cn(
-                  "font-mono text-[11px] font-black",
+                  "font-mono text-[0.6875rem] font-black",
                   cell.inMonth ? "text-indigo-ink" : "text-indigo-light/60",
                   isToday && "text-coral-dark",
                 )}

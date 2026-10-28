@@ -56,17 +56,17 @@ export function ProgressCard({ project }: { project: Project }) {
       <div className='flex flex-wrap items-start justify-between gap-2'>
         <div className='flex min-w-0 flex-col gap-1'>
           <div className='flex flex-wrap items-center gap-1.5'>
-            <span className='rounded-sm border border-indigo-ink/30 bg-paper-dim px-1.5 py-0.5 font-mono text-[10px] font-black text-indigo-ink'>
+            <span className='rounded-sm border border-indigo-ink/30 bg-paper-dim px-1.5 py-0.5 font-mono text-[0.625rem] font-black text-indigo-ink'>
               {project.code}
             </span>
-            <span className='text-[13px] font-black text-indigo-ink'>
+            <span className='text-[0.8125rem] font-black text-indigo-ink'>
               {project.title}
             </span>
             <StatusPill tone={PROJECT_STATUS_META[status].tone}>
               {PROJECT_STATUS_META[status].short}
             </StatusPill>
           </div>
-          <span className='text-[11px] font-medium text-indigo-light'>
+          <span className='text-[0.6875rem] font-medium text-indigo-light'>
             {project.clientName || "بدون کارفرما"}
             {project.clientOrg ? ` • ${project.clientOrg}` : ""}
           </span>
@@ -92,7 +92,7 @@ export function ProgressCard({ project }: { project: Project }) {
 
       <div className='grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto]'>
         <div className='flex flex-col gap-2'>
-          <label className='flex items-center gap-2 text-[11px] font-bold text-indigo-ink'>
+          <label className='flex items-center gap-2 text-[0.6875rem] font-bold text-indigo-ink'>
             پیشرفت
             <input
               type='range'
@@ -121,7 +121,7 @@ export function ProgressCard({ project }: { project: Project }) {
 
           <div className='grid grid-cols-1 gap-2 sm:grid-cols-2'>
             <label className='flex flex-col gap-1'>
-              <span className='text-[10px] font-bold text-indigo-light'>
+              <span className='text-[0.625rem] font-bold text-indigo-light'>
                 فاز فعال
               </span>
               <input
@@ -131,7 +131,7 @@ export function ProgressCard({ project }: { project: Project }) {
               />
             </label>
             <label className='flex flex-col gap-1'>
-              <span className='text-[10px] font-bold text-indigo-light'>
+              <span className='text-[0.625rem] font-bold text-indigo-light'>
                 وضعیت
               </span>
               <select
@@ -152,7 +152,7 @@ export function ProgressCard({ project }: { project: Project }) {
         </div>
 
         <div className='flex flex-col justify-between gap-2 rounded-sm border border-indigo-ink/15 bg-paper p-2.5 sm:min-w-44'>
-          <div className='flex flex-col gap-1 text-[10px] font-bold text-indigo-light'>
+          <div className='flex flex-col gap-1 text-[0.625rem] font-bold text-indigo-light'>
             <span>
               گام‌ها: {faNumber(doneSteps)} از {faNumber(project.steps.length)}{" "}
               تکمیل
@@ -183,7 +183,7 @@ export function ProgressCard({ project }: { project: Project }) {
           role='status'
           aria-live='polite'
           className={cn(
-            "rounded-sm border px-2 py-1 text-[11px] font-bold",
+            "rounded-sm border px-2 py-1 text-[0.6875rem] font-bold",
             notice.ok
               ? "border-teal-craft/40 bg-teal-craft/10 text-teal-craft"
               : "border-coral/40 bg-coral/10 text-coral-dark",

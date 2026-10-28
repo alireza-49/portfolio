@@ -78,6 +78,7 @@ export function CreateStudioCanvas({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [expanded]);
 
+
   // The sidebar owns the colour layer (roles always, neutrals/charts when the
   // visitor edited them), radius, body font and, when pinned, the elevation;
   // the rest of the visual identity — geometry, typography voice, texture —
@@ -97,7 +98,7 @@ export function CreateStudioCanvas({
       id='studio-canvas'
       role='tabpanel'
       aria-labelledby={`scenario-tab-${archetype}`}
-      className={`studio-desk order-1 flex w-full shrink-0 flex-col gap-3 overflow-x-clip p-3 sm:p-5 lg:order-2 lg:min-h-0 lg:shrink lg:flex-1 lg:gap-4 lg:overflow-hidden lg:p-8 xl:p-10 ${
+      className={`studio-desk order-1 flex min-h-0 w-full flex-1 flex-col gap-3 overflow-x-clip p-3 sm:p-5 lg:order-2 lg:gap-4 lg:overflow-hidden lg:p-8 xl:p-10 ${
         expanded ? "fixed inset-0 z-[60] overflow-hidden" : ""
       }`}
     >
@@ -107,11 +108,7 @@ export function CreateStudioCanvas({
 
       <div
         data-preview-window=''
-        className={`relative flex w-full flex-col overflow-hidden rounded-sm border-[2.5px] border-indigo-ink bg-paper-dim ${
-          expanded
-            ? "min-h-0 flex-1"
-            : "h-[72dvh] min-h-[420px] sm:h-[76dvh] lg:h-auto lg:min-h-0 lg:flex-1"
-        }`}
+        className='relative flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-sm border-[2.5px] border-indigo-ink bg-paper-dim'
       >
         {/* Scope alert: the preset restyles a theme, never the layout. It is a
             deliberate dark band (ink + paper) so it cannot be skimmed past, and
@@ -120,9 +117,9 @@ export function CreateStudioCanvas({
         <div
           role='note'
           aria-label='دامنهٔ استودیو'
-          className='flex shrink-0 items-start gap-2 border-b-[2.5px] border-coral bg-indigo-ink px-2.5 py-2 text-[11.5px] leading-snug font-black text-paper-light sm:items-center sm:gap-2.5 sm:px-3 sm:py-2.5 sm:text-[13px]'
+          className='flex shrink-0 items-start gap-2 border-b-[2.5px] border-coral bg-indigo-ink px-2.5 py-2 text-[0.71875rem] leading-snug font-black text-paper-light sm:items-center sm:gap-2.5 sm:px-3 sm:py-2.5 sm:text-[0.8125rem]'
         >
-          <span className='inline-flex shrink-0 items-center gap-1 rounded-sm border-[1.5px] border-indigo-ink bg-mustard px-1.5 py-0.5 text-[10px] font-black text-indigo-ink sm:text-[11px]'>
+          <span className='inline-flex shrink-0 items-center gap-1 rounded-sm border-[1.5px] border-indigo-ink bg-mustard px-1.5 py-0.5 text-[0.625rem] font-black text-indigo-ink sm:text-[0.6875rem]'>
             <TriangleAlert aria-hidden='true' className='size-3.5' />
             مهم
           </span>
@@ -148,7 +145,7 @@ export function CreateStudioCanvas({
             aria-pressed={expanded}
             aria-label={expanded ? "بستن بزرگ‌نمایی بوم" : "بزرگ‌نمایی بوم"}
             title={expanded ? "بستن بزرگ‌نمایی بوم" : "بزرگ‌نمایی بوم"}
-            className='flex shrink-0 items-center gap-1 rounded-sm border-[1.5px] border-indigo-ink bg-indigo-ink px-2 py-1 text-[10px] font-bold whitespace-nowrap text-paper shadow-craft-sm transition-colors hover:bg-coral active:translate-x-px active:translate-y-px'
+            className='flex shrink-0 items-center gap-1 rounded-sm border-[1.5px] border-indigo-ink bg-indigo-ink px-2 py-1 text-[0.625rem] font-bold whitespace-nowrap text-paper shadow-craft-sm transition-colors hover:bg-coral active:translate-x-px active:translate-y-px'
           >
             {expanded ? (
               <Minimize2 className='size-3.5' />
@@ -173,7 +170,7 @@ export function CreateStudioCanvas({
               aria-hidden='true'
               className='size-4 shrink-0 text-coral'
             />
-            <span className='truncate font-display text-[13px] font-black text-indigo-ink'>
+            <span className='truncate font-display text-[0.8125rem] font-black text-indigo-ink'>
               {activeScenario.label}
             </span>
           </div>
@@ -187,19 +184,19 @@ export function CreateStudioCanvas({
               aria-hidden='true'
               className='size-3.5 shrink-0 text-teal-craft'
             />
-            <span className='truncate font-mono text-[10px] font-bold text-indigo-ink/80 sm:text-[11px]'>
+            <span className='truncate font-mono text-[0.625rem] font-bold text-indigo-ink/80 sm:text-[0.6875rem]'>
               https://{activeScenario.demoHost}
             </span>
           </div>
 
           <div className='flex shrink-0 items-center gap-1.5 sm:gap-2'>
-            <span className='hidden items-center gap-1 rounded-full border-[1.5px] border-indigo-ink bg-teal-light px-2 py-0.5 text-[10px] font-bold whitespace-nowrap text-indigo-ink xl:inline-flex'>
+            <span className='hidden items-center gap-1 rounded-full border-[1.5px] border-indigo-ink bg-teal-light px-2 py-0.5 text-[0.625rem] font-bold whitespace-nowrap text-indigo-ink xl:inline-flex'>
               <span className='size-1.5 animate-pulse rounded-full bg-teal-craft' />
               پیش‌نمایش زنده
             </span>
             <span
               title='سبک فعال استودیو'
-              className='hidden items-center gap-1 rounded-sm border-[1.5px] border-indigo-ink bg-paper-light px-2 py-0.5 text-[10px] font-bold whitespace-nowrap text-indigo-ink shadow-craft-sm lg:inline-flex'
+              className='hidden items-center gap-1 rounded-sm border-[1.5px] border-indigo-ink bg-paper-light px-2 py-0.5 text-[0.625rem] font-bold whitespace-nowrap text-indigo-ink shadow-craft-sm lg:inline-flex'
             >
               سبک:{" "}
               {STYLES.find((style) => style.id === styleId)?.label ?? styleId}
@@ -238,7 +235,7 @@ export function CreateStudioCanvas({
         {/* Browser status bar: repeats the "separate site" contract. */}
         <div
           data-tour='canvas-status'
-          className='flex shrink-0 items-center justify-between gap-2 border-t-[2.5px] border-indigo-ink bg-paper px-2.5 py-1 text-[9px] font-bold text-indigo-ink/65 sm:text-[10px]'
+          className='flex shrink-0 items-center justify-between gap-2 border-t-[2.5px] border-indigo-ink bg-paper px-2.5 py-1 text-[0.5625rem] font-bold text-indigo-ink/65 sm:text-[0.625rem]'
         >
           <span className='flex min-w-0 items-center gap-1.5'>
             <ExternalLink
@@ -251,7 +248,7 @@ export function CreateStudioCanvas({
           </span>
           <span
             dir='ltr'
-            className='hidden shrink-0 font-mono text-[9px] text-indigo-ink/45 sm:inline'
+            className='hidden shrink-0 font-mono text-[0.5625rem] text-indigo-ink/45 sm:inline'
           >
             {activeScenario.demoHost}
           </span>

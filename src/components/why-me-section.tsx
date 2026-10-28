@@ -58,11 +58,11 @@ export function WhyMeSection() {
   return (
     <section
       id='why-me-section'
-      className='w-full border-b-[2.5px] border-indigo-ink bg-paper-dim px-4 py-12 sm:px-8 lg:px-12'
+      className='w-full scroll-mt-16 border-b-[2.5px] border-indigo-ink bg-paper-dim px-4 py-12 sm:px-8 lg:px-12'
     >
       <div className='mx-auto flex max-w-7xl flex-col gap-10'>
         <div className='flex flex-col justify-between gap-4 border-b-[2px] border-indigo-ink pb-6 md:flex-row md:items-end'>
-          <h2 className='text-[26px] font-black text-indigo-ink sm:text-[34px]'>
+          <h2 className='text-[1.625rem] font-black text-indigo-ink sm:text-[2.125rem]'>
             چرا کار با یک سازنده مستقل بهتر و کم هزینه تر است؟
           </h2>
           <div className='riso-stamp-mustard self-start text-xs font-bold md:self-auto p-1 rounded-4xl'>
@@ -90,9 +90,9 @@ export function WhyMeSection() {
                     reason.iconBox,
                   )}
                 >
-                  <reason.icon className='size-[26px]' />
+                  <reason.icon className='size-[1.625rem]' />
                 </div>
-                <h3 className='pb-2 text-[19px] font-extrabold text-indigo-ink'>
+                <h3 className='pb-2 text-[1.1875rem] font-extrabold text-indigo-ink'>
                   {reason.title}
                 </h3>
                 <p className='text-sm leading-relaxed text-indigo-light'>

@@ -80,7 +80,7 @@ export function PostEngagement({
 
   return (
     <section className='border-b-[2px] border-indigo-ink bg-paper-dim/40 px-4 py-3 sm:px-8 lg:px-12'>
-      <div className='mx-auto flex max-w-7xl flex-wrap items-center gap-2 text-[11px] font-black text-indigo-ink'>
+      <div className='mx-auto flex max-w-7xl flex-wrap items-center gap-2 text-[0.6875rem] font-black text-indigo-ink'>
         <button
           type='button'
           onClick={toggleLike}
@@ -109,7 +109,7 @@ export function PostEngagement({
         </a>
 
         {error ? (
-          <span role='alert' className='text-[10px] font-bold text-coral'>
+          <span role='alert' className='text-[0.625rem] font-bold text-coral'>
             {error}
           </span>
         ) : null}

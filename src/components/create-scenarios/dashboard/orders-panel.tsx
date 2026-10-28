@@ -229,7 +229,7 @@ export function OrdersPanel() {
       <CardContent className='gap-2'>
         {visibleSelected.length > 0 ? (
           <div className='flex flex-wrap items-center justify-between gap-2 rounded-[var(--cc-radius)] border-[length:var(--cc-border-width)] border-[color:var(--cc-primary)] bg-[color:color-mix(in_srgb,var(--cc-primary)_8%,var(--cc-surface))] px-2 py-1.5'>
-            <span className='text-[10px] font-bold text-[color:var(--cc-surface-foreground)]'>
+            <span className='text-[0.625rem] font-bold text-[color:var(--cc-surface-foreground)]'>
               {formatNumber(visibleSelected.length)} سفارش انتخاب شده
             </span>
             <div className='flex flex-wrap items-center gap-1'>
@@ -331,12 +331,12 @@ export function OrdersPanel() {
                   <div className='flex items-center gap-2'>
                     <Avatar size='sm' alt={order.customer} />
                     <div className='flex flex-col'>
-                      <span className='text-[10px] font-bold'>
+                      <span className='text-[0.625rem] font-bold'>
                         {order.customer}
                       </span>
                       <span
                         className={cn(
-                          "text-[9px] text-[color:var(--cc-muted-foreground)]",
+                          "text-[0.5625rem] text-[color:var(--cc-muted-foreground)]",
                           monoType,
                         )}
                       >
@@ -345,15 +345,15 @@ export function OrdersPanel() {
                     </div>
                   </div>
                 </TableCell>
-                <TableCell className='text-[10px]'>{order.plan}</TableCell>
-                <TableCell className='text-[10px]'>{order.city}</TableCell>
+                <TableCell className='text-[0.625rem]'>{order.plan}</TableCell>
+                <TableCell className='text-[0.625rem]'>{order.city}</TableCell>
                 <TableCell
-                  className={cn("whitespace-nowrap text-[10px]", monoType)}
+                  className={cn("whitespace-nowrap text-[0.625rem]", monoType)}
                 >
                   {order.date}
                 </TableCell>
                 <TableCell
-                  className={cn("whitespace-nowrap text-[10px]", monoType)}
+                  className={cn("whitespace-nowrap text-[0.625rem]", monoType)}
                 >
                   {formatToman(order.amount)}
                 </TableCell>
@@ -368,7 +368,7 @@ export function OrdersPanel() {
               <TableRow>
                 <TableCell
                   colSpan={7}
-                  className='py-6 text-center text-[10px] text-[color:var(--cc-muted-foreground)]'
+                  className='py-6 text-center text-[0.625rem] text-[color:var(--cc-muted-foreground)]'
                 >
                   سفارشی با این فیلتر پیدا نشد.
                 </TableCell>
@@ -379,7 +379,7 @@ export function OrdersPanel() {
 
 
         <div className='flex flex-wrap items-center justify-between gap-2 border-t-[length:var(--cc-border-width)] border-[color:var(--cc-border)] pt-2'>
-          <span className='text-[10px] text-[color:var(--cc-muted-foreground)]'>
+          <span className='text-[0.625rem] text-[color:var(--cc-muted-foreground)]'>
             جمع این صفحه: {formatToman(pageTotal)}
           </span>
           <div className='flex items-center gap-1'>
@@ -400,7 +400,7 @@ export function OrdersPanel() {
                 onClick={() => setPage(index)}
                 aria-label={`صفحهٔ ${formatNumber(index + 1)}`}
                 aria-current={index === safePage ? "page" : undefined}
-                className={cn("min-w-7 px-0 text-[10px]", monoType)}
+                className={cn("min-w-7 px-0 text-[0.625rem]", monoType)}
               >
                 {formatNumber(index + 1)}
               </Button>

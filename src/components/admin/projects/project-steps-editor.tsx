@@ -52,7 +52,7 @@ export function ProjectStepsEditor({
   return (
     <div className='flex flex-col gap-3 p-4 sm:p-5'>
       <div className='flex flex-wrap items-center justify-between gap-2'>
-        <div className='flex flex-wrap items-center gap-2 text-[11px] font-bold text-indigo-light'>
+        <div className='flex flex-wrap items-center gap-2 text-[0.6875rem] font-bold text-indigo-light'>
           <span className='rounded-sm border border-indigo-ink/25 bg-paper-dim px-2 py-0.5 font-mono'>
             {faNumber(steps.length)} گام
           </span>

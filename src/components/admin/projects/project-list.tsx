@@ -179,9 +179,9 @@ export function ProjectList({ projects }: { projects: Project[] }) {
           </div>
         ) : (
           <div className='overflow-x-auto'>
-            <table className='w-full min-w-[980px] border-collapse text-right'>
+            <table className='w-full min-w-[61.25rem] border-collapse text-right'>
               <thead>
-                <tr className='border-b-[2px] border-indigo-ink bg-paper-dim text-[11px] font-black text-indigo-ink'>
+                <tr className='border-b-[2px] border-indigo-ink bg-paper-dim text-[0.6875rem] font-black text-indigo-ink'>
                   <th scope='col' className='px-3 py-2'>پروژه</th>
                   <th scope='col' className='px-3 py-2'>وضعیت</th>
                   <th scope='col' className='px-3 py-2'>پیشرفت</th>

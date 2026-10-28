@@ -79,7 +79,7 @@ export function CustomersPage({ data }: { data: DashboardData }) {
                 <span
                   dir='ltr'
                   className={cn(
-                    "text-[10px] text-[color:var(--cc-surface-foreground)]",
+                    "text-[0.625rem] text-[color:var(--cc-surface-foreground)]",
                     monoType,
                   )}
                 >
@@ -87,7 +87,7 @@ export function CustomersPage({ data }: { data: DashboardData }) {
                 </span>
                 <span
                   className={cn(
-                    "flex items-center gap-1.5 text-[10px] text-[color:var(--cc-muted-foreground)]",
+                    "flex items-center gap-1.5 text-[0.625rem] text-[color:var(--cc-muted-foreground)]",
                     monoType,
                   )}
                 >

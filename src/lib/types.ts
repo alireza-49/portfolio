@@ -331,3 +331,38 @@ export const PROJECT_TASK_SYNC_META: Record<
   error: { label: "خطای همگام‌سازی", tone: "coral" },
   skipped: { label: "بدون رویداد", tone: "muted" },
 };
+
+/** What one text message was about — one row per attempt in `sms_log`. */
+export const SMS_KINDS = [
+  "submission",
+  "project_status",
+  "project_progress",
+  "test",
+] as const;
+export type SmsKind = (typeof SMS_KINDS)[number];
+
+/**
+ * The SMS settings as the browser is allowed to see them: never the API token,
+ * only whether one is stored and whether it is still readable after a secret
+ * rotation.
+ */
+export type SmsSettings = {
+  enabled: boolean;
+  sender: string;
+  hasToken: boolean;
+  tokenUnreadable: boolean;
+  updatedAt: string | null;
+};
+
+export type SmsLogEntry = {
+  id: string;
+  kind: SmsKind;
+  receptor: string;
+  refId: string | null;
+  body: string;
+  ok: boolean;
+  /** AmootSMS' `Status` word, e.g. `Success` or `Token_NotExists`. */
+  providerStatus: string | null;
+  providerMessage: string;
+  createdAt: string;
+};

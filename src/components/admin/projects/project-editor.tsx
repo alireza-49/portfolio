@@ -21,19 +21,25 @@ import {
   type Project,
   type ProjectInput,
   type ProjectTask,
+  type SmsLogEntry,
 } from "@/lib/types";
 import { updateProjectAction } from "@/app/admin/(console)/projects/actions";
 import { projectToDraft } from "./draft";
 import { ProjectEditorPanels } from "./project-editor-panels";
+import { ProjectSmsCard } from "./project-sms-card";
 
 export function ProjectEditor({
   project,
   tasks,
   now,
+  origin,
+  smsLog,
 }: {
   project: Project;
   tasks: ProjectTask[];
   now: string;
+  origin: string;
+  smsLog: SmsLogEntry[];
 }) {
   const router = useRouter();
   const [draft, setDraft] = useState<ProjectInput>(() =>
@@ -123,17 +129,17 @@ export function ProjectEditor({
       />
 
       <div className='flex flex-wrap items-center gap-2 rounded-sm border-[2px] border-indigo-ink bg-paper-dim px-3 py-2'>
-        <span className='rounded-sm border border-indigo-ink/30 bg-paper px-2 py-0.5 font-mono text-[11px] font-black text-indigo-ink'>
+        <span className='rounded-sm border border-indigo-ink/30 bg-paper px-2 py-0.5 font-mono text-[0.6875rem] font-black text-indigo-ink'>
           {draft.code}
         </span>
         <StatusPill tone={statusMeta.tone}>{statusMeta.label}</StatusPill>
-        <span className='font-mono text-[11px] font-bold text-indigo-light'>
+        <span className='font-mono text-[0.6875rem] font-bold text-indigo-light'>
           پیشرفت {faNumber(draft.progress)}٪
         </span>
-        <span className='text-[11px] font-bold text-indigo-light'>
+        <span className='text-[0.6875rem] font-bold text-indigo-light'>
           شروع: {faDate(draft.startDate)} • موعد: {faDate(draft.dueDate)}
         </span>
-        <span className='ms-auto text-[11px] font-bold text-indigo-light'>
+        <span className='ms-auto text-[0.6875rem] font-bold text-indigo-light'>
           {draft.published ? "منتشرشده در صفحهٔ عمومی" : "پیش‌نویس / منتشرنشده"}
         </span>
       </div>
@@ -152,6 +158,13 @@ export function ProjectEditor({
         </p>
       ) : null}
 
+      <ProjectSmsCard
+        project={project}
+        origin={origin}
+        log={smsLog}
+        dirty={dirty}
+      />
+
       <ProjectEditorPanels
         draft={draft}
         patch={patch}
@@ -161,7 +174,7 @@ export function ProjectEditor({
       />
 
       <div className='sticky bottom-2 z-10 flex flex-wrap items-center justify-between gap-2 rounded-md border-[2px] border-indigo-ink bg-paper-light px-3 py-2 shadow-craft'>
-        <span className='text-[11px] font-bold text-indigo-light'>
+        <span className='text-[0.6875rem] font-bold text-indigo-light'>
           {dirty
             ? "تغییرات ذخیره‌نشده دارید؛ پیش از خروج ذخیره کنید."
             : `آخرین ذخیره: ${faDate(project.updatedAt)}`}

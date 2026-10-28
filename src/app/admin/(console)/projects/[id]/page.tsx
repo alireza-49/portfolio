@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getProject, listTasks } from "@/lib/content";
+import { getProject, listSmsLogForRef, listTasks } from "@/lib/content";
+import { siteOrigin } from "@/lib/site-url";
 import { ProjectEditor } from "@/components/admin/projects/project-editor";
 import { requireConsolePage } from "@/lib/auth";
 
@@ -18,8 +19,20 @@ export default async function ProjectEditorPage({
 
   if (!project) notFound();
 
-  const tasks = await listTasks({ projectId: project.id });
+  const [tasks, smsLog, origin] = await Promise.all([
+    listTasks({ projectId: project.id }),
+    listSmsLogForRef(project.id, 4),
+    siteOrigin(),
+  ]);
   const now = new Date().toISOString();
 
-  return <ProjectEditor project={project} tasks={tasks} now={now} />;
+  return (
+    <ProjectEditor
+      project={project}
+      tasks={tasks}
+      now={now}
+      origin={origin}
+      smsLog={smsLog}
+    />
+  );
 }

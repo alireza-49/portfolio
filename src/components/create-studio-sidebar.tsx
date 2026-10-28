@@ -25,6 +25,7 @@ import {
   TriangleAlert,
   Type,
   Upload,
+  X,
 } from "lucide-react";
 import { toPersianDigits } from "@/components/create-components/jalali";
 import {
@@ -130,6 +131,13 @@ type SidebarProps = {
   customFonts: CustomFont[];
   onAddCustomFont: (name: string, file: File) => Promise<void>;
   onRemoveCustomFont: (id: string) => Promise<void>;
+  /**
+   * Mobile drawer state. Below `lg` the panel is a fixed side sheet, so the
+   * studio bar hosts the trigger and owns open/close; on desktop the same
+   * markup is the always-visible column and both props are inert.
+   */
+  open: boolean;
+  onClose: () => void;
 };
 
 export function CreateStudioSidebar({
@@ -158,6 +166,8 @@ export function CreateStudioSidebar({
   customFonts,
   onAddCustomFont,
   onRemoveCustomFont,
+  open,
+  onClose,
 }: SidebarProps) {
   const [radiusDraft, setRadiusDraft] = useState({
     source: radius,
@@ -290,7 +300,34 @@ export function CreateStudioSidebar({
   };
 
   return (
-    <aside className='order-2 z-20 flex w-full shrink-0 flex-col gap-4 border-b-[2.5px] border-indigo-ink bg-paper-light p-4 lg:order-1 lg:h-full lg:min-h-0 lg:w-80 lg:overflow-y-auto lg:border-b-0 lg:border-l-[2.5px] scroll-smooth'>
+    <aside
+      id='studio-settings'
+      data-open={open ? "true" : "false"}
+      aria-label='تنظیمات استودیو'
+      className={`order-2 z-20 flex w-full shrink-0 flex-col gap-4 border-b-[2.5px] border-indigo-ink bg-paper-light p-4 scroll-smooth max-lg:fixed max-lg:inset-y-0 max-lg:start-0 max-lg:z-50 max-lg:w-[min(21rem,calc(100vw-3rem))] max-lg:overflow-y-auto max-lg:overscroll-contain max-lg:border-b-0 max-lg:border-e-[2.5px] max-lg:shadow-[-8px_0_0_0_var(--color-indigo-ink)] max-lg:transition-[transform,visibility] max-lg:duration-200 max-lg:ease-out lg:order-1 lg:h-full lg:min-h-0 lg:w-80 lg:overflow-y-auto lg:border-b-0 lg:border-l-[2.5px] ${
+        open
+          ? "max-lg:visible max-lg:translate-x-0 max-lg:transition-[transform,visibility] max-lg:duration-200 max-lg:ease-out"
+          : "max-lg:invisible max-lg:pointer-events-none max-lg:translate-x-full max-lg:delay-[0s,200ms]"
+      }`}
+    >
+      <div className='sticky top-0 z-10 -mx-4 -mt-4 flex items-center justify-between gap-2 border-b-[1.5px] border-indigo-ink bg-paper-dim px-3 py-2 lg:hidden'>
+        <span className='flex items-center gap-1.5'>
+          <SlidersHorizontal className='size-4 text-coral' />
+          <span className='text-xs font-black text-indigo-ink'>
+            تنظیمات استودیو
+          </span>
+        </span>
+        <button
+          type='button'
+          onClick={onClose}
+          data-settings-close
+          aria-label='بستن تنظیمات'
+          title='بستن تنظیمات'
+          className='flex size-8 items-center justify-center rounded-sm border-[1.5px] border-indigo-ink bg-paper-light text-indigo-ink shadow-craft-sm transition-transform active:translate-x-0.5 active:translate-y-0.5'
+        >
+          <X className='size-4' />
+        </button>
+      </div>
       <div className='flex flex-col gap-1 border-b border-indigo-ink/20 pb-3'>
         <button
           type='button'
@@ -298,10 +335,10 @@ export function CreateStudioSidebar({
           title='تولید تصادفی سبک، پالت رنگ، فونت، سایه، گردی گوشه و آیکون‌ها'
           className='craft-btn flex w-full items-center justify-center gap-2 rounded-sm bg-coral px-3 py-2.5 text-xs font-black text-white'
         >
-          <Dices className='size-[18px]' />
+          <Dices className='size-[1.125rem]' />
           <span>بر زدن و ترکیب تصادفی تم</span>
         </button>
-        <span className='text-center text-[9px] leading-relaxed text-indigo-light'>
+        <span className='text-center text-[0.5625rem] leading-relaxed text-indigo-light'>
           هر بار سبک، پالت، فونت، سایه، گردی و آیکون‌ها با هم عوض می‌شوند.
         </span>
         <button
@@ -309,7 +346,7 @@ export function CreateStudioSidebar({
           onClick={handleReset}
           onBlur={() => setResetArmed(false)}
           title='بازگردانی سبک، پالت، گردی گوشه، سایه، فونت و آیکون‌ها به مقادیر اولیه'
-          className={`mt-1 flex w-full items-center justify-center gap-1.5 rounded-sm border px-3 py-1.5 text-[11px] font-bold shadow-craft-sm transition-all active:translate-x-0.5 active:translate-y-0.5 ${
+          className={`mt-1 flex w-full items-center justify-center gap-1.5 rounded-sm border px-3 py-1.5 text-[0.6875rem] font-bold shadow-craft-sm transition-all active:translate-x-0.5 active:translate-y-0.5 ${
             resetArmed
               ? "border-indigo-ink bg-coral text-white hover:bg-coral-dark"
               : "border-dashed border-indigo-ink bg-paper-dim text-indigo-ink hover:bg-paper-light"
@@ -328,11 +365,11 @@ export function CreateStudioSidebar({
         <div className='flex items-center justify-between text-xs font-bold'>
           <span className='flex items-center gap-1 text-indigo-ink'>
             <span>سبک‌های بصری</span>
-            <span className='text-[10px] font-normal text-indigo-light'>
+            <span className='text-[0.625rem] font-normal text-indigo-light'>
               (Style)
             </span>
           </span>
-          <span className='font-mono text-[11px] font-bold text-coral'>
+          <span className='font-mono text-[0.6875rem] font-bold text-coral'>
             {currentStyleLabel}
           </span>
         </div>
@@ -394,10 +431,10 @@ export function CreateStudioSidebar({
                   </span>
                 </span>
                 <span className='flex flex-col gap-0.5'>
-                  <span className='text-[10px] leading-tight'>
+                  <span className='text-[0.625rem] leading-tight'>
                     {option.label}
                   </span>
-                  <span className='truncate font-mono text-[8px] opacity-60'>
+                  <span className='truncate font-mono text-[0.5rem] opacity-60'>
                     {fontLabel} ·{" "}
                     {preset.tone === "dark" ? "DARK" : "LIGHT"} ·{" "}
                     {tokens.radius ?? 0}px
@@ -407,7 +444,7 @@ export function CreateStudioSidebar({
             );
           })}
         </div>
-        <p className='text-[10px] leading-relaxed text-indigo-light'>
+        <p className='text-[0.625rem] leading-relaxed text-indigo-light'>
           هر سبک پالت رنگ، تایپوگرافی، بافت و فرم کنترل‌ها را عوض می‌کند و پالت،
           شعاع گوشه و فونت را با خودش همگام می‌سازد؛ بعد از آن هر چهار مورد را
           می‌توانید دستی تغییر بدهید.
@@ -420,15 +457,15 @@ export function CreateStudioSidebar({
       >
         <div className='flex items-center justify-between text-xs font-bold'>
           <span className='flex items-center gap-1 text-indigo-ink'>
-            <Palette className='size-[15px] text-coral' />
+            <Palette className='size-[0.9375rem] text-coral' />
             <span>پالت و نقش رنگ‌ها</span>
           </span>
-          <span className='max-w-[52%] truncate rounded-sm border border-indigo-ink bg-paper-dim px-1.5 py-0.5 font-mono text-[10px] text-indigo-ink'>
+          <span className='max-w-[52%] truncate rounded-sm border border-indigo-ink bg-paper-dim px-1.5 py-0.5 font-mono text-[0.625rem] text-indigo-ink'>
             {paletteLabel(palette)}
           </span>
         </div>
 
-        <div className='grid grid-cols-2 rounded-sm border border-indigo-ink bg-paper-dim p-0.5 text-[11px] font-bold shadow-craft-sm'>
+        <div className='grid grid-cols-2 rounded-sm border border-indigo-ink bg-paper-dim p-0.5 text-[0.6875rem] font-bold shadow-craft-sm'>
           <button
             type='button'
             onClick={() => setColorMode("presets")}
@@ -439,7 +476,7 @@ export function CreateStudioSidebar({
                 : "text-indigo-light hover:bg-paper-light hover:text-indigo-ink"
             }`}
           >
-            <Sparkles className='size-[13px]' />
+            <Sparkles className='size-[0.8125rem]' />
             <span>پالت‌های آماده</span>
           </button>
           <button
@@ -452,7 +489,7 @@ export function CreateStudioSidebar({
                 : "text-indigo-light hover:bg-paper-light hover:text-indigo-ink"
             }`}
           >
-            <Pipette className='size-[13px]' />
+            <Pipette className='size-[0.8125rem]' />
             <span>پالت سفارشی</span>
           </button>
         </div>
@@ -477,7 +514,7 @@ export function CreateStudioSidebar({
                       : "bg-paper-dim hover:bg-paper-light"
                   }`}
                 >
-                  <span className='flex h-3 w-full overflow-hidden rounded-[1px] border border-indigo-ink/30'>
+                  <span className='flex h-3 w-full overflow-hidden rounded-[0.0625rem] border border-indigo-ink/30'>
                     {ROLE_IDS.map((role) => (
                       <span
                         key={role}
@@ -487,7 +524,7 @@ export function CreateStudioSidebar({
                     ))}
                   </span>
                   <span className='flex items-center justify-between gap-1'>
-                    <span className='truncate text-[10px] font-bold text-indigo-ink'>
+                    <span className='truncate text-[0.625rem] font-bold text-indigo-ink'>
                       {preset.name}
                     </span>
                     {active ? (
@@ -497,7 +534,7 @@ export function CreateStudioSidebar({
                   {styleMatch ? (
                     <span
                       title={`پالت هم‌سبک با سبک فعال (${currentStyleLabel})`}
-                      className='shrink-0 self-start rounded-[1px] border border-teal-craft bg-teal-craft/15 px-1 text-[7px] leading-[1.6] font-black text-indigo-ink'
+                      className='shrink-0 self-start rounded-[0.0625rem] border border-teal-craft bg-teal-craft/15 px-1 text-[0.4375rem] leading-[1.6] font-black text-indigo-ink'
                     >
                       هم‌سبک
                     </span>
@@ -511,7 +548,7 @@ export function CreateStudioSidebar({
         {colorMode === "custom" ? (
           <div className='flex flex-col gap-2 rounded-sm border border-indigo-ink bg-paper-dim p-2 shadow-craft-sm'>
             <div className='flex items-center justify-between gap-1'>
-              <span className='flex items-center gap-1 text-[10px] font-bold text-indigo-ink'>
+              <span className='flex items-center gap-1 text-[0.625rem] font-bold text-indigo-ink'>
                 <SlidersHorizontal className='size-3 text-coral' />
                 <span>ویرایشگر پیشرفتهٔ رنگ</span>
               </span>
@@ -519,14 +556,14 @@ export function CreateStudioSidebar({
                 type='button'
                 onClick={() => onPalettePreset(basePreset)}
                 title={`بازگشت به ${basePreset.name}`}
-                className='flex items-center gap-1 rounded-sm border border-indigo-ink bg-paper-light px-1.5 py-0.5 text-[9px] font-bold text-indigo-ink shadow-craft-sm transition-colors hover:bg-paper-dim'
+                className='flex items-center gap-1 rounded-sm border border-indigo-ink bg-paper-light px-1.5 py-0.5 text-[0.5625rem] font-bold text-indigo-ink shadow-craft-sm transition-colors hover:bg-paper-dim'
               >
                 <RotateCcw className='size-3' />
                 <span>پالت پایه</span>
               </button>
             </div>
 
-            <div className='grid grid-cols-3 rounded-sm border border-indigo-ink bg-paper-light p-0.5 text-[10px] font-bold'>
+            <div className='grid grid-cols-3 rounded-sm border border-indigo-ink bg-paper-light p-0.5 text-[0.625rem] font-bold'>
               {PALETTE_GROUPS.map((group) => (
                 <button
                   key={group.id}
@@ -573,7 +610,7 @@ export function CreateStudioSidebar({
                 }}
               >
                 <div
-                  className='rounded-[2px] border p-1.5'
+                  className='rounded-[0.125rem] border p-1.5'
                   style={{
                     backgroundColor: resolvePaletteToken(
                       "surface",
@@ -592,11 +629,11 @@ export function CreateStudioSidebar({
                     ),
                   }}
                 >
-                  <span className='block text-[10px] font-bold'>
+                  <span className='block text-[0.625rem] font-bold'>
                     نمونهٔ متن اصلی
                   </span>
                   <span
-                    className='mt-0.5 block text-[9px]'
+                    className='mt-0.5 block text-[0.5625rem]'
                     style={{
                       color: resolvePaletteToken(
                         "mutedForeground",
@@ -608,7 +645,7 @@ export function CreateStudioSidebar({
                     توضیح کم‌رنگ روی سطح کارت
                   </span>
                   <span
-                    className='mt-1 inline-block rounded-[2px] px-1.5 py-0.5 text-[8px] font-bold'
+                    className='mt-1 inline-block rounded-[0.125rem] px-1.5 py-0.5 text-[0.5rem] font-bold'
                     style={{
                       backgroundColor: resolvePaletteToken(
                         "muted",
@@ -645,7 +682,7 @@ export function CreateStudioSidebar({
                     .map((token, index) => (
                       <span
                         key={token.id}
-                        className='flex-1 rounded-t-[1px]'
+                        className='flex-1 rounded-t-[0.0625rem]'
                         style={{
                           height: `${40 + index * 8}%`,
                           backgroundColor: resolvePaletteToken(
@@ -674,7 +711,7 @@ export function CreateStudioSidebar({
             {worstContrastIssue ? (
               <div
                 role='status'
-                className='flex items-start gap-1 rounded-sm border border-coral bg-paper-light px-1.5 py-1 text-[9px] leading-relaxed text-coral'
+                className='flex items-start gap-1 rounded-sm border border-coral bg-paper-light px-1.5 py-1 text-[0.5625rem] leading-relaxed text-coral'
               >
                 <TriangleAlert className='mt-0.5 size-3 shrink-0' />
                 <span>
@@ -705,7 +742,7 @@ export function CreateStudioSidebar({
             </div>
 
             <div className='flex items-start justify-between gap-1 border-t border-indigo-ink/20 pt-1'>
-              <span className='text-[9px] leading-relaxed text-indigo-light'>
+              <span className='text-[0.5625rem] leading-relaxed text-indigo-light'>
                 {customGroup === "roles"
                   ? "نقش‌ها روی همهٔ سبک‌ها اعمال می‌شوند."
                   : "روی سبک فعال سوار می‌شوند؛ با تغییر سبک مقدار جدید می‌آید مگر همین‌جا عوض شود."}
@@ -713,7 +750,7 @@ export function CreateStudioSidebar({
               <button
                 type='button'
                 onClick={() => onResetPaletteGroup(customGroup)}
-                className='flex shrink-0 items-center gap-1 rounded-sm border border-indigo-ink bg-paper-light px-1.5 py-0.5 text-[9px] font-bold text-indigo-ink shadow-craft-sm transition-colors hover:bg-paper-dim'
+                className='flex shrink-0 items-center gap-1 rounded-sm border border-indigo-ink bg-paper-light px-1.5 py-0.5 text-[0.5625rem] font-bold text-indigo-ink shadow-craft-sm transition-colors hover:bg-paper-dim'
               >
                 <RotateCcw className='size-3' />
                 <span>بازنشانی گروه</span>
@@ -733,7 +770,7 @@ export function CreateStudioSidebar({
               <Shapes className='size-3.5 text-coral' />
               <span>کتابخانه آیکون‌ها</span>
             </span>
-            <span className='font-mono text-[10px] text-indigo-light'>Icons</span>
+            <span className='font-mono text-[0.625rem] text-indigo-light'>Icons</span>
           </div>
 
           <div className='grid grid-cols-3 gap-1'>
@@ -766,9 +803,9 @@ export function CreateStudioSidebar({
                       />
                     ))}
                   </span>
-                  <span className='text-[10px] font-bold'>{library.label}</span>
+                  <span className='text-[0.625rem] font-bold'>{library.label}</span>
                   <span
-                    className={`font-mono text-[8px] ${
+                    className={`font-mono text-[0.5rem] ${
                       active ? "opacity-80" : "text-indigo-light"
                     }`}
                   >
@@ -781,13 +818,13 @@ export function CreateStudioSidebar({
 
           <div className='flex flex-col gap-1 rounded-sm border border-dashed border-indigo-ink/35 bg-paper-dim/70 p-1.5'>
             <div className='flex items-center justify-between gap-1'>
-              <span className='text-[10px] font-bold text-indigo-ink'>
+              <span className='text-[0.625rem] font-bold text-indigo-ink'>
                 ساخت و استایل آیکون
               </span>
               <button
                 type='button'
                 onClick={() => onIconStyleChange(DEFAULT_ICON_STYLE)}
-                className='flex items-center gap-0.5 rounded-sm border border-indigo-ink/40 bg-paper-light px-1 py-0.5 text-[9px] font-bold text-indigo-ink transition-colors hover:bg-paper-dim'
+                className='flex items-center gap-0.5 rounded-sm border border-indigo-ink/40 bg-paper-light px-1 py-0.5 text-[0.5625rem] font-bold text-indigo-ink transition-colors hover:bg-paper-dim'
               >
                 <RotateCcw className='size-2.5' />
                 <span>بازنشانی</span>
@@ -830,7 +867,7 @@ export function CreateStudioSidebar({
             />
 
             <div className='flex items-center justify-between gap-1 rounded-sm border border-indigo-ink/20 bg-paper-light px-1.5 py-1'>
-              <span className='text-[9px] text-indigo-light'>پیش‌نمایش</span>
+              <span className='text-[0.5625rem] text-indigo-light'>پیش‌نمایش</span>
               <span
                 className='flex items-center gap-2'
                 style={{ color: ICON_TONE_SWATCH[iconStyle.tone] }}
@@ -851,7 +888,7 @@ export function CreateStudioSidebar({
               </span>
             </div>
 
-            <span className='text-[9px] leading-relaxed text-indigo-light'>
+            <span className='text-[0.5625rem] leading-relaxed text-indigo-light'>
               {iconLibrary === "google"
                 ? "آیکون‌های متریال توپرند؛ ضخامت خط روی لوسید و تب‌لر دیده می‌شود."
                 : "همهٔ آیکون‌های بوم اندازه، ضخامت و رنگ را از همین‌جا می‌گیرند."}
@@ -867,15 +904,15 @@ export function CreateStudioSidebar({
         <div className='flex items-center justify-between text-xs font-bold'>
           <span className='flex items-center gap-1 text-indigo-ink'>
             <span>گردی گوشه‌ها</span>
-            <span className='text-[10px] font-normal text-indigo-light'>
+            <span className='text-[0.625rem] font-normal text-indigo-light'>
               (Radius)
             </span>
           </span>
-          <span className='font-mono text-[10px] font-bold text-coral'>
+          <span className='font-mono text-[0.625rem] font-bold text-coral'>
             {radiusLabel}
           </span>
         </div>
-        <div className='grid grid-cols-5 gap-1'>
+        <div className='grid grid-cols-3 gap-1 sm:grid-cols-5'>
           {RADII.map((option) => {
             const active = radius === option.value;
             return (
@@ -898,7 +935,7 @@ export function CreateStudioSidebar({
                 />
                 <span className='font-mono text-xs'>{option.label}</span>
                 <span
-                  className={`text-[8px] ${
+                  className={`text-[0.5rem] ${
                     active ? "text-white/90" : "text-indigo-light"
                   }`}
                 >
@@ -920,14 +957,14 @@ export function CreateStudioSidebar({
               placeholder='عدد دلخواه'
               className='w-full border-0 bg-transparent p-0 text-left font-mono text-xs font-bold text-indigo-ink outline-none'
             />
-            <span className='shrink-0 px-1 font-mono text-[10px] text-indigo-light'>
+            <span className='shrink-0 px-1 font-mono text-[0.625rem] text-indigo-light'>
               px
             </span>
           </div>
           <button
             type='button'
             onClick={applyRadius}
-            className='shrink-0 rounded-sm border border-indigo-ink bg-paper-dim px-2.5 py-1 text-[11px] font-bold text-indigo-ink shadow-craft-sm transition-all hover:bg-paper-light active:translate-x-0.5 active:translate-y-0.5'
+            className='shrink-0 rounded-sm border border-indigo-ink bg-paper-dim px-2.5 py-1 text-[0.6875rem] font-bold text-indigo-ink shadow-craft-sm transition-all hover:bg-paper-light active:translate-x-0.5 active:translate-y-0.5'
           >
             اعمال
           </button>
@@ -942,12 +979,12 @@ export function CreateStudioSidebar({
           <span className='flex items-center gap-1 text-indigo-ink'>
             <Layers className='size-3.5 text-coral' />
             <span>سایهٔ جعبه‌ها</span>
-            <span className='text-[10px] font-normal text-indigo-light'>
+            <span className='text-[0.625rem] font-normal text-indigo-light'>
               (Shadow)
             </span>
           </span>
           <span className='flex items-center gap-1'>
-            <span className='font-mono text-[10px] font-bold text-coral'>
+            <span className='font-mono text-[0.625rem] font-bold text-coral'>
               {shadowLabel}
             </span>
             {shadow !== DEFAULT_SHADOW ? (
@@ -989,11 +1026,11 @@ export function CreateStudioSidebar({
                     boxShadow: resolveShadowCss(option.shadow, shadowSwatch),
                   }}
                 />
-                <span className='text-[10px] leading-tight font-bold'>
+                <span className='text-[0.625rem] leading-tight font-bold'>
                   {option.label}
                 </span>
                 <span
-                  className={`text-[8px] leading-tight ${
+                  className={`text-[0.5rem] leading-tight ${
                     active ? "text-white/90" : "text-indigo-light"
                   }`}
                 >
@@ -1004,7 +1041,7 @@ export function CreateStudioSidebar({
           })}
         </div>
 
-        <p className='text-[10px] leading-relaxed text-indigo-light'>
+        <p className='text-[0.625rem] leading-relaxed text-indigo-light'>
           سایه روی کارت‌ها، دکمه‌ها، ورودی‌ها و پنل نمودارها می‌نشیند. «پیرو
           سبک» امضای سایهٔ سبک فعال را نگه می‌دارد.
         </p>
@@ -1019,7 +1056,7 @@ export function CreateStudioSidebar({
             <Type className='size-3.5 text-coral' />
             <span>انتخاب فونت</span>
           </span>
-          <span className='text-[10px] text-indigo-light'>
+          <span className='text-[0.625rem] text-indigo-light'>
             {toPersianDigits(fontChoices.length + 1 + customFonts.length)} فونت
           </span>
         </div>
@@ -1041,14 +1078,14 @@ export function CreateStudioSidebar({
                 className='size-3 shrink-0 accent-coral'
               />
               <span
-                className='truncate text-[13px] leading-6 text-indigo-ink'
+                className='truncate text-[0.8125rem] leading-6 text-indigo-ink'
                 style={{ fontFamily: FONT_STACKS[styleFontId] }}
               >
                 پیش‌فرض
               </span>
             </div>
             <span
-              className={`shrink-0 ps-2 text-[9px] ${
+              className={`shrink-0 ps-2 text-[0.5625rem] ${
                 font === styleFontId
                   ? "font-mono font-bold text-coral"
                   : "text-indigo-light"
@@ -1059,7 +1096,7 @@ export function CreateStudioSidebar({
           </label>
           {FONT_GROUPS.map((group) => (
             <div key={group.kind} className='flex flex-col gap-1'>
-              <span className='font-mono text-[9px] font-bold tracking-[0.12em] text-indigo-light uppercase'>
+              <span className='font-mono text-[0.5625rem] font-bold tracking-[0.12em] text-indigo-light uppercase'>
                 {group.label}
               </span>
               {FONTS.filter(
@@ -1086,14 +1123,14 @@ export function CreateStudioSidebar({
                         className='size-3 shrink-0 accent-coral'
                       />
                       <span
-                        className='truncate text-[13px] leading-6 text-indigo-ink'
+                        className='truncate text-[0.8125rem] leading-6 text-indigo-ink'
                         style={{ fontFamily: FONT_STACKS[option.id] }}
                       >
                         {option.label}
                       </span>
                     </div>
                     <span
-                      className={`shrink-0 ps-2 text-[9px] ${
+                      className={`shrink-0 ps-2 text-[0.5625rem] ${
                         active
                           ? "font-mono font-bold text-coral"
                           : "text-indigo-light"
@@ -1109,7 +1146,7 @@ export function CreateStudioSidebar({
 
           {customFonts.length > 0 ? (
             <div className='flex flex-col gap-1'>
-              <span className='font-mono text-[9px] font-bold tracking-[0.12em] text-indigo-light uppercase'>
+              <span className='font-mono text-[0.5625rem] font-bold tracking-[0.12em] text-indigo-light uppercase'>
                 فونت‌های من
               </span>
               {customFonts.map((customFont) => {
@@ -1133,7 +1170,7 @@ export function CreateStudioSidebar({
                         className='size-3 shrink-0 accent-coral'
                       />
                       <span
-                        className='truncate text-[13px] leading-6 text-indigo-ink'
+                        className='truncate text-[0.8125rem] leading-6 text-indigo-ink'
                         style={{
                           fontFamily: resolveFontStack(
                             customFont.id,
@@ -1146,7 +1183,7 @@ export function CreateStudioSidebar({
                     </label>
                     <span
                       dir='ltr'
-                      className={`shrink-0 font-mono text-[9px] ${
+                      className={`shrink-0 font-mono text-[0.5625rem] ${
                         active ? "font-bold text-coral" : "text-indigo-light"
                       }`}
                     >
@@ -1174,7 +1211,7 @@ export function CreateStudioSidebar({
             >
               <label
                 htmlFor='custom-font-name'
-                className='text-[10px] font-bold text-indigo-ink'
+                className='text-[0.625rem] font-bold text-indigo-ink'
               >
                 نام فونت
               </label>
@@ -1185,12 +1222,12 @@ export function CreateStudioSidebar({
                 onChange={(event) => setFontName(event.target.value)}
                 maxLength={28}
                 placeholder='مثلاً: فونت برند من'
-                className='w-full rounded-sm border border-indigo-ink bg-paper-light px-1.5 py-1 text-[11px] font-bold text-indigo-ink outline-none focus:ring-1 focus:ring-coral'
+                className='w-full rounded-sm border border-indigo-ink bg-paper-light px-1.5 py-1 text-[0.6875rem] font-bold text-indigo-ink outline-none focus:ring-1 focus:ring-coral'
               />
               <button
                 type='button'
                 onClick={() => fontInputRef.current?.click()}
-                className='flex w-full cursor-pointer items-center justify-between gap-1.5 rounded-sm border border-dashed border-indigo-ink bg-paper-light px-1.5 py-1 text-[10px] font-bold text-indigo-ink hover:bg-paper-dim'
+                className='flex w-full cursor-pointer items-center justify-between gap-1.5 rounded-sm border border-dashed border-indigo-ink bg-paper-light px-1.5 py-1 text-[0.625rem] font-bold text-indigo-ink hover:bg-paper-dim'
               >
                 <span className='flex min-w-0 items-center gap-1'>
                   <Upload className='size-3 shrink-0 text-coral' />
@@ -1198,7 +1235,7 @@ export function CreateStudioSidebar({
                     {fontFile ? fontFile.name : "woff2 / woff / ttf / otf"}
                   </span>
                 </span>
-                <span className='shrink-0 rounded-sm border border-indigo-ink bg-paper-dim px-1.5 py-0.5 text-[9px]'>
+                <span className='shrink-0 rounded-sm border border-indigo-ink bg-paper-dim px-1.5 py-0.5 text-[0.5625rem]'>
                   انتخاب فایل
                 </span>
               </button>
@@ -1217,7 +1254,7 @@ export function CreateStudioSidebar({
               {fontError ? (
                 <span
                   role='alert'
-                  className='text-[9px] leading-relaxed font-bold text-coral'
+                  className='text-[0.5625rem] leading-relaxed font-bold text-coral'
                 >
                   {fontError}
                 </span>
@@ -1226,7 +1263,7 @@ export function CreateStudioSidebar({
                 <button
                   type='submit'
                   disabled={fontBusy || !fontFile}
-                  className='flex flex-1 items-center justify-center gap-1 rounded-sm border border-indigo-ink bg-coral px-2 py-1 text-[10px] font-bold text-white shadow-craft-sm transition-all hover:bg-coral-dark active:translate-x-0.5 active:translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50'
+                  className='flex flex-1 items-center justify-center gap-1 rounded-sm border border-indigo-ink bg-coral px-2 py-1 text-[0.625rem] font-bold text-white shadow-craft-sm transition-all hover:bg-coral-dark active:translate-x-0.5 active:translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50'
                 >
                   <Upload className='size-3' />
                   <span>{fontBusy ? "در حال بارگذاری…" : "افزودن فونت"}</span>
@@ -1234,12 +1271,12 @@ export function CreateStudioSidebar({
                 <button
                   type='button'
                   onClick={resetFontForm}
-                  className='rounded-sm border border-indigo-ink bg-paper-light px-2 py-1 text-[10px] font-bold text-indigo-ink shadow-craft-sm hover:bg-paper-dim'
+                  className='rounded-sm border border-indigo-ink bg-paper-light px-2 py-1 text-[0.625rem] font-bold text-indigo-ink shadow-craft-sm hover:bg-paper-dim'
                 >
                   انصراف
                 </button>
               </div>
-              <span className='text-[9px] leading-relaxed text-indigo-light'>
+              <span className='text-[0.5625rem] leading-relaxed text-indigo-light'>
                 فایل فقط روی همین دستگاه ذخیره می‌شود؛ حداکثر{" "}
                 {toPersianDigits(CUSTOM_FONT_MAX_BYTES / (1024 * 1024))}{" "}
                 مگابایت.
@@ -1254,7 +1291,7 @@ export function CreateStudioSidebar({
                 setFontFile(null);
                 setFontError(null);
               }}
-              className='flex w-full items-center justify-center gap-1.5 rounded-sm border border-dashed border-indigo-ink bg-paper-dim px-2 py-1.5 text-[11px] font-bold text-indigo-ink shadow-craft-sm transition-all hover:bg-paper-light active:translate-x-0.5 active:translate-y-0.5'
+              className='flex w-full items-center justify-center gap-1.5 rounded-sm border border-dashed border-indigo-ink bg-paper-dim px-2 py-1.5 text-[0.6875rem] font-bold text-indigo-ink shadow-craft-sm transition-all hover:bg-paper-light active:translate-x-0.5 active:translate-y-0.5'
             >
               <Plus className='size-3.5 text-coral' />
               <span>افزودن فونت سفارشی</span>
@@ -1272,26 +1309,26 @@ export function CreateStudioSidebar({
           onClick={onSendConfig}
           className='craft-btn flex w-full items-center justify-center gap-1.5 rounded-sm bg-indigo-ink px-2.5 py-2 text-xs font-bold text-paper'
         >
-          <Send className='size-[15px]' />
+          <Send className='size-[0.9375rem]' />
           <span>ثبت پیکربندی و ارسال در فرم سفارش</span>
         </button>
         <button
           type='button'
           onClick={onExport}
-          className='flex w-full items-center justify-center gap-1.5 rounded-sm border border-indigo-ink bg-paper-dim px-2.5 py-1.5 text-[11px] font-bold text-indigo-ink shadow-craft-sm transition-all hover:bg-paper-light active:translate-x-0.5 active:translate-y-0.5'
+          className='flex w-full items-center justify-center gap-1.5 rounded-sm border border-indigo-ink bg-paper-dim px-2.5 py-1.5 text-[0.6875rem] font-bold text-indigo-ink shadow-craft-sm transition-all hover:bg-paper-light active:translate-x-0.5 active:translate-y-0.5'
         >
-          <Download className='size-[14px]' />
+          <Download className='size-[0.875rem]' />
           <span>استخراج کد تم (CSS)</span>
         </button>
         <button
           type='button'
           onClick={onImport}
-          className='flex w-full items-center justify-center gap-1.5 rounded-sm border border-dashed border-indigo-ink bg-paper-dim px-2.5 py-1.5 text-[11px] font-bold text-indigo-ink shadow-craft-sm transition-all hover:bg-paper-light active:translate-x-0.5 active:translate-y-0.5'
+          className='flex w-full items-center justify-center gap-1.5 rounded-sm border border-dashed border-indigo-ink bg-paper-dim px-2.5 py-1.5 text-[0.6875rem] font-bold text-indigo-ink shadow-craft-sm transition-all hover:bg-paper-light active:translate-x-0.5 active:translate-y-0.5'
         >
-          <FileUp className='size-[14px] text-coral' />
+          <FileUp className='size-[0.875rem] text-coral' />
           <span>بارگذاری پیکربندی کپی‌شده</span>
         </button>
-        <p className='text-center text-[9px] leading-relaxed text-indigo-light'>
+        <p className='text-center text-[0.5625rem] leading-relaxed text-indigo-light'>
           تنظیمات این پنل در همین مرورگر ذخیره می‌شود؛ فرم تماس پیکربندی کامل را
           به پیام شما پیوست می‌کند. فایل JSON خروجی را هم می‌توانید در همین پنل
           بارگذاری کنید.
@@ -1350,7 +1387,7 @@ function PaletteTokenRow({
           <Popover.Trigger
             aria-label={`انتخاب ${token.label}`}
             title={value.toUpperCase()}
-            className='size-6 shrink-0 cursor-pointer rounded-[2px] border border-indigo-ink shadow-craft-sm transition-transform focus-visible:ring-2 focus-visible:ring-coral focus-visible:ring-offset-1 focus-visible:outline-none'
+            className='size-6 shrink-0 cursor-pointer rounded-[0.125rem] border border-indigo-ink shadow-craft-sm transition-transform focus-visible:ring-2 focus-visible:ring-coral focus-visible:ring-offset-1 focus-visible:outline-none'
             style={{ backgroundColor: value }}
           />
           <PaletteColorPicker
@@ -1361,10 +1398,10 @@ function PaletteTokenRow({
         </Popover.Root>
         <span className='flex min-w-0 flex-1 flex-col'>
           <span className='flex items-center gap-1'>
-            <span className='truncate text-[10px] font-bold text-indigo-ink'>
+            <span className='truncate text-[0.625rem] font-bold text-indigo-ink'>
               {token.label}
             </span>
-            <span className='shrink-0 rounded-[2px] border border-indigo-ink/30 bg-paper-dim px-1 font-mono text-[7px] text-indigo-light'>
+            <span className='shrink-0 rounded-[0.125rem] border border-indigo-ink/30 bg-paper-dim px-1 font-mono text-[0.4375rem] text-indigo-light'>
               {token.tag}
             </span>
             {overridden ? (
@@ -1377,7 +1414,7 @@ function PaletteTokenRow({
           </span>
           <span
             dir='ltr'
-            className='truncate text-left font-mono text-[8px] text-indigo-light'
+            className='truncate text-left font-mono text-[0.5rem] text-indigo-light'
           >
             {token.token}
           </span>
@@ -1401,7 +1438,7 @@ function PaletteTokenRow({
               commit(hex);
             }
           }}
-          className={`w-16 shrink-0 rounded-[2px] border bg-paper-dim px-1 py-0.5 text-left font-mono text-[10px] font-bold text-indigo-ink uppercase outline-none focus:ring-1 focus:ring-coral ${
+          className={`w-16 shrink-0 rounded-[0.125rem] border bg-paper-dim px-1 py-0.5 text-left font-mono text-[0.625rem] font-bold text-indigo-ink uppercase outline-none focus:ring-1 focus:ring-coral ${
             invalid ? "border-coral" : "border-indigo-ink"
           }`}
         />
@@ -1409,7 +1446,7 @@ function PaletteTokenRow({
           type='button'
           onClick={() => commit(hex)}
           aria-label={`اعمال رنگ ${token.label}`}
-          className='shrink-0 rounded-[2px] border border-indigo-ink bg-paper-light p-1 text-indigo-ink shadow-craft-sm hover:bg-paper-dim'
+          className='shrink-0 rounded-[0.125rem] border border-indigo-ink bg-paper-light p-1 text-indigo-ink shadow-craft-sm hover:bg-paper-dim'
         >
           <Check className='size-3' />
         </button>
@@ -1425,16 +1462,16 @@ function PaletteTokenRow({
           }}
           disabled={!overridden}
           aria-label={`بازنشانی ${token.label}`}
-          className='shrink-0 rounded-[2px] border border-indigo-ink bg-paper-light p-1 text-indigo-ink shadow-craft-sm hover:bg-paper-dim disabled:cursor-not-allowed disabled:opacity-35'
+          className='shrink-0 rounded-[0.125rem] border border-indigo-ink bg-paper-light p-1 text-indigo-ink shadow-craft-sm hover:bg-paper-dim disabled:cursor-not-allowed disabled:opacity-35'
         >
           <RotateCcw className='size-3' />
         </button>
       </div>
-      <span className='px-0.5 text-[8px] leading-relaxed text-indigo-light'>
+      <span className='px-0.5 text-[0.5rem] leading-relaxed text-indigo-light'>
         {token.description}
       </span>
       {invalid ? (
-        <span role='alert' className='px-0.5 text-[8px] font-bold text-coral'>
+        <span role='alert' className='px-0.5 text-[0.5rem] font-bold text-coral'>
           کد رنگ معتبر نیست؛ نمونهٔ درست: #E76F51 یا #ABC
         </span>
       ) : null}
@@ -1552,11 +1589,11 @@ function PaletteColorPicker({
         className='z-[80]'
       >
         <Popover.Popup className='w-56 max-w-[calc(100vw-1rem)] rounded-sm border border-indigo-ink bg-paper-light p-2 text-indigo-ink shadow-craft-lg outline-none'>
-          <Popover.Title className='mb-1.5 flex items-center justify-between gap-2 text-[10px] font-bold'>
+          <Popover.Title className='mb-1.5 flex items-center justify-between gap-2 text-[0.625rem] font-bold'>
             <span>{label}</span>
             <span
               dir='ltr'
-              className='rounded-[2px] border border-indigo-ink/30 bg-paper-dim px-1 font-mono text-[9px]'
+              className='rounded-[0.125rem] border border-indigo-ink/30 bg-paper-dim px-1 font-mono text-[0.5625rem]'
             >
               {value.toUpperCase()}
             </span>
@@ -1647,7 +1684,7 @@ function PaletteColorPicker({
             />
           </div>
 
-          <p className='mt-1.5 text-[9px] leading-relaxed text-indigo-light'>
+          <p className='mt-1.5 text-[0.5625rem] leading-relaxed text-indigo-light'>
             مربع را بکشید یا با کلیدهای جهت تنظیم کنید؛ نوار پایین تن رنگ است.
           </p>
         </Popover.Popup>
@@ -1674,7 +1711,7 @@ function IconPickerRow<T extends string>({
 }: IconPickerRowProps<T>) {
   return (
     <div className='flex items-center gap-1'>
-      <span className='w-9 shrink-0 text-[9px] text-indigo-light'>{label}</span>
+      <span className='w-9 shrink-0 text-[0.5625rem] text-indigo-light'>{label}</span>
       <div
         role='group'
         aria-label={label}
@@ -1692,7 +1729,7 @@ function IconPickerRow<T extends string>({
               type='button'
               aria-pressed={active}
               onClick={() => onChange(option.id)}
-              className={`rounded-sm border border-indigo-ink/40 px-1 py-0.5 text-[9px] font-bold transition-colors ${
+              className={`rounded-sm border border-indigo-ink/40 px-1 py-0.5 text-[0.5625rem] font-bold transition-colors ${
                 active
                   ? "bg-indigo-ink text-paper"
                   : "bg-paper-light text-indigo-ink hover:bg-paper-dim"

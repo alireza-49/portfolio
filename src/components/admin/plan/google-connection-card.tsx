@@ -109,7 +109,7 @@ export function GoogleConnectionCard({
               سه کلید گوگل هنوز در محیط تنظیم نشده‌اند. تا آن زمان کارها ذخیره
               می‌شوند اما در تقویم ساخته نمی‌شوند:
             </p>
-            <ul className='flex flex-col gap-1 text-[11px] leading-relaxed font-medium text-indigo-light'>
+            <ul className='flex flex-col gap-1 text-[0.6875rem] leading-relaxed font-medium text-indigo-light'>
               <li>
                 ۱. در Google Cloud پروژه‌ای بسازید و Calendar API را فعال کنید.
               </li>
@@ -125,7 +125,7 @@ export function GoogleConnectionCard({
                 ۳. یک OAuth Client از نوع Web بسازید و نشانی بازگشت را ثبت کنید.
               </li>
             </ul>
-            <pre className='overflow-x-auto rounded-sm border border-indigo-ink/20 bg-paper-dim px-3 py-2 font-mono text-[10px] leading-relaxed text-indigo-ink'>
+            <pre className='overflow-x-auto rounded-sm border border-indigo-ink/20 bg-paper-dim px-3 py-2 font-mono text-[0.625rem] leading-relaxed text-indigo-ink'>
               {[
                 "GOOGLE_OAUTH_CLIENT_ID=…",
                 "GOOGLE_OAUTH_CLIENT_SECRET=…",
@@ -141,7 +141,7 @@ export function GoogleConnectionCard({
               <CalendarCheck className='size-3.5' />
               <span>اتصال به تقویم گوگل</span>
             </a>
-            <span className='text-[11px] font-medium text-indigo-light'>
+            <span className='text-[0.6875rem] font-medium text-indigo-light'>
               دسترسی فقط برای ساخت و خواندن رویدادها درخواست می‌شود؛ تقویم‌های
               دیگر شما دست‌نخورده می‌مانند.
             </span>
@@ -157,12 +157,12 @@ export function GoogleConnectionCard({
                   <span className='text-xs font-black text-coral-dark'>
                     دسترسی گوگل منقضی شده است.
                   </span>
-                  <span className='text-[11px] font-medium text-indigo-light'>
+                  <span className='text-[0.6875rem] font-medium text-indigo-light'>
                     {connection.lastError || "برای ادامه، اتصال را دوباره برقرار کنید."}
                   </span>
                   <a
                     href='/api/google/start'
-                    className='mt-1 w-fit rounded-sm border-[1.5px] border-coral px-2 py-1 text-[11px] font-black text-coral-dark hover:bg-coral/15'
+                    className='mt-1 w-fit rounded-sm border-[1.5px] border-coral px-2 py-1 text-[0.6875rem] font-black text-coral-dark hover:bg-coral/15'
                   >
                     اتصال دوباره
                   </a>
@@ -175,7 +175,7 @@ export function GoogleConnectionCard({
                 <span className={LABEL_CLASS}>حساب گوگل</span>
                 <span
                   dir='ltr'
-                  className='truncate rounded-sm border border-indigo-ink/20 bg-paper-dim px-2 py-1.5 text-start font-mono text-[11px] font-bold text-indigo-ink'
+                  className='truncate rounded-sm border border-indigo-ink/20 bg-paper-dim px-2 py-1.5 text-start font-mono text-[0.6875rem] font-bold text-indigo-ink'
                 >
                   {connection.accountEmail || "—"}
                 </span>
@@ -183,7 +183,7 @@ export function GoogleConnectionCard({
 
               <div className='flex flex-col gap-1'>
                 <span className={LABEL_CLASS}>آخرین دریافت تغییرات</span>
-                <span className='rounded-sm border border-indigo-ink/20 bg-paper-dim px-2 py-1.5 text-[11px] font-bold text-indigo-ink'>
+                <span className='rounded-sm border border-indigo-ink/20 bg-paper-dim px-2 py-1.5 text-[0.6875rem] font-bold text-indigo-ink'>
                   {connection.lastSyncedAt
                     ? faRelative(connection.lastSyncedAt)
                     : "هنوز انجام نشده"}
@@ -223,7 +223,7 @@ export function GoogleConnectionCard({
               </button>
             </div>
 
-            <p className='text-[10px] leading-relaxed font-medium text-indigo-light'>
+            <p className='text-[0.625rem] leading-relaxed font-medium text-indigo-light'>
               پیش‌فرض <code className='font-mono text-indigo-ink'>primary</code>{" "}
               است. برای جداسازی، در گوگل تقویم تازه‌ای بسازید و شناسهٔ آن را از
               تنظیمات تقویم (Calendar ID) اینجا بگذارید؛ رویدادهای ساخته‌شده با

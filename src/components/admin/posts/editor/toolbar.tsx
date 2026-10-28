@@ -83,7 +83,7 @@ function SizeControl({ editor, value }: { editor: Editor; value: string | null }
         onChange={(event) => apply(event.target.value)}
         aria-label='اندازهٔ قلم'
         title='اندازهٔ قلم'
-        className='h-6 rounded-sm bg-transparent px-0.5 text-[10px] font-bold text-indigo-ink outline-none'
+        className='h-6 rounded-sm bg-transparent px-0.5 text-[0.625rem] font-bold text-indigo-ink outline-none'
       >
         {options.map((size) => (
           <option key={size || "default"} value={size}>
@@ -105,7 +105,7 @@ function SizeControl({ editor, value }: { editor: Editor; value: string | null }
         placeholder='px'
         aria-label='اندازهٔ سفارشی قلم'
         title='اندازهٔ سفارشی (Enter)'
-        className='h-6 w-11 rounded-sm border border-indigo-ink/15 bg-paper px-1 text-center text-[10px] font-bold text-indigo-ink outline-none'
+        className='h-6 w-11 rounded-sm border border-indigo-ink/15 bg-paper px-1 text-center text-[0.625rem] font-bold text-indigo-ink outline-none'
       />
     </span>
   );
@@ -140,7 +140,7 @@ export function EditorToolbar({ editor }: { editor: Editor }) {
         }}
         aria-label='سطح تیتر'
         title='سطح تیتر'
-        className='h-7 rounded-sm border border-indigo-ink/20 bg-paper px-1.5 text-[10px] font-bold text-indigo-ink'
+        className='h-7 rounded-sm border border-indigo-ink/20 bg-paper px-1.5 text-[0.625rem] font-bold text-indigo-ink'
       >
         {BLOCKS.map((block) => (
           <option key={block.value} value={block.value}>
@@ -186,7 +186,7 @@ export function EditorToolbar({ editor }: { editor: Editor }) {
           <button
             type='button'
             onClick={() => chain().unsetColor().run()}
-            className='rounded-sm px-1 text-[9px] font-bold text-indigo-light hover:text-coral'
+            className='rounded-sm px-1 text-[0.5625rem] font-bold text-indigo-light hover:text-coral'
           >
             پاک
           </button>
@@ -210,7 +210,7 @@ export function EditorToolbar({ editor }: { editor: Editor }) {
           <button
             type='button'
             onClick={() => chain().unsetHighlight().run()}
-            className='rounded-sm px-1 text-[9px] font-bold text-indigo-light hover:text-coral'
+            className='rounded-sm px-1 text-[0.5625rem] font-bold text-indigo-light hover:text-coral'
           >
             پاک
           </button>
@@ -224,7 +224,7 @@ export function EditorToolbar({ editor }: { editor: Editor }) {
             else chain().unsetFontFamily().run();
           }}
           aria-label='خانوادهٔ قلم'
-          className='mx-2 mb-1.5 w-[calc(100%-1rem)] rounded-sm border border-indigo-ink/20 bg-paper px-1.5 py-1 text-[10px] font-bold text-indigo-ink'
+          className='mx-2 mb-1.5 w-[calc(100%-1rem)] rounded-sm border border-indigo-ink/20 bg-paper px-1.5 py-1 text-[0.625rem] font-bold text-indigo-ink'
         >
           {FONT_FAMILIES.map((font) => (
             <option key={font.value || "default"} value={font.value}>
@@ -241,7 +241,7 @@ export function EditorToolbar({ editor }: { editor: Editor }) {
             else chain().unsetLineHeight().run();
           }}
           aria-label='ارتفاع خط'
-          className='mx-2 mb-1.5 w-[calc(100%-1rem)] rounded-sm border border-indigo-ink/20 bg-paper px-1.5 py-1 text-[10px] font-bold text-indigo-ink'
+          className='mx-2 mb-1.5 w-[calc(100%-1rem)] rounded-sm border border-indigo-ink/20 bg-paper px-1.5 py-1 text-[0.625rem] font-bold text-indigo-ink'
         >
           {LINE_HEIGHTS.map((height) => (
             <option key={height || "default"} value={height}>

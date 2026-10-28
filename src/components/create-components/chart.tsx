@@ -298,7 +298,7 @@ export function MiniBars({
   return (
     <div
       data-cc-minibars=''
-      className={cn("flex h-8 w-full items-end gap-[2px]", className)}
+      className={cn("flex h-8 w-full items-end gap-[0.125rem]", className)}
       aria-hidden='true'
     >
       {points.map((value, index) => {
@@ -307,7 +307,7 @@ export function MiniBars({
           <span
             key={index}
             className={cn(
-              "sc-chart-grow flex-1 rounded-[1px]",
+              "sc-chart-grow flex-1 rounded-[0.0625rem]",
               highlightLast && isLast
                 ? "bg-[var(--cc-primary)]"
                 : "bg-[color:color-mix(in_srgb,var(--cc-primary)_38%,var(--cc-muted))]",
@@ -518,7 +518,7 @@ export function Heatmap({
           <span
             key={step}
             aria-hidden='true'
-            className='size-3 rounded-[2px] border-[length:var(--cc-border-width)] border-[color:color-mix(in_srgb,var(--cc-border)_45%,transparent)]'
+            className='size-3 rounded-[0.125rem] border-[length:var(--cc-border-width)] border-[color:color-mix(in_srgb,var(--cc-border)_45%,transparent)]'
             style={{
               backgroundColor: `color-mix(in srgb, var(--cc-primary) ${Math.round(
                 step * 88,

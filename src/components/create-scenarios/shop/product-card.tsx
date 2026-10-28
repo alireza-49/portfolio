@@ -125,7 +125,7 @@ export function ShopProductCard({
               </CardTitle>
               <span className='flex items-center gap-1.5'>
                 <StarRating value={product.rating} />
-                <span className='text-[11px] text-[color:var(--cc-muted-foreground)]'>
+                <span className='text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'>
                   {formatNumber(product.reviews)} نظر
                 </span>
               </span>
@@ -138,14 +138,14 @@ export function ShopProductCard({
                 )}
               >
                 {formatNumber(product.price)}
-                <span className='ms-1 text-[11px] font-normal text-[color:var(--cc-muted-foreground)]'>
+                <span className='ms-1 text-[0.6875rem] font-normal text-[color:var(--cc-muted-foreground)]'>
                   تومان
                 </span>
               </span>
               {product.oldPrice ? (
                 <span
                   className={cn(
-                    "text-[11px] text-[color:var(--cc-muted-foreground)] line-through decoration-1",
+                    "text-[0.6875rem] text-[color:var(--cc-muted-foreground)] line-through decoration-1",
                     monoType,
                   )}
                 >
@@ -176,7 +176,7 @@ export function ShopProductCard({
                 />
               );
             })}
-            <span className='text-[11px] text-[color:var(--cc-muted-foreground)]'>
+            <span className='text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'>
               {activeColor.name}
             </span>
           </div>
@@ -193,7 +193,7 @@ export function ShopProductCard({
                   aria-pressed={active}
                   aria-label={`سایز ${entry.label}${entry.inStock ? "" : " ناموجود"}`}
                   className={cn(
-                    "min-w-7 rounded-[var(--cc-radius-sm)] border-[length:var(--cc-border-width)] px-1.5 py-0.5 text-[11px]",
+                    "min-w-7 rounded-[var(--cc-radius-sm)] border-[length:var(--cc-border-width)] px-1.5 py-0.5 text-[0.6875rem]",
                     "border-[color:var(--cc-border)] transition-colors",
                     active
                       ? "bg-[var(--cc-primary)] text-[color:var(--cc-primary-foreground)]"

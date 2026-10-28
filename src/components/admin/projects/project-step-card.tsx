@@ -41,7 +41,7 @@ export function ProjectStepCard({
       <div className='flex flex-wrap items-center gap-2'>
         <span
           className={cn(
-            "flex size-7 shrink-0 items-center justify-center rounded-full font-mono text-[11px] font-black",
+            "flex size-7 shrink-0 items-center justify-center rounded-full font-mono text-[0.6875rem] font-black",
             step.status === "active"
               ? "bg-coral text-white"
               : step.status === "done"
@@ -114,7 +114,7 @@ export function ProjectStepCard({
       />
 
       <div className='flex flex-wrap items-center gap-3'>
-        <label className='flex items-center gap-2 text-[11px] font-bold text-indigo-ink'>
+        <label className='flex items-center gap-2 text-[0.6875rem] font-bold text-indigo-ink'>
           پیشرفت
           <input
             type='number'
@@ -134,7 +134,7 @@ export function ProjectStepCard({
           />
           <span className='font-mono text-indigo-light'>٪</span>
         </label>
-        <label className='flex items-center gap-2 text-[11px] font-bold text-indigo-ink'>
+        <label className='flex items-center gap-2 text-[0.6875rem] font-bold text-indigo-ink'>
           موعد
           <input
             type='date'
@@ -157,7 +157,7 @@ export function ProjectStepCard({
               style={{ width: `${step.progress}%` }}
             />
           </div>
-          <span className='font-mono text-[10px] font-bold text-indigo-light'>
+          <span className='font-mono text-[0.625rem] font-bold text-indigo-light'>
             {faNumber(step.progress)}٪
           </span>
         </div>

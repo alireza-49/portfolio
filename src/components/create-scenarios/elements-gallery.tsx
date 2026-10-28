@@ -212,7 +212,7 @@ function TokenChip({ token }: { token: string }) {
     <span
       dir='ltr'
       className={cn(
-        "inline-flex items-center rounded-[var(--cc-badge-radius)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] px-1.5 py-0.5 text-[10px] text-[color:var(--cc-muted-foreground)]",
+        "inline-flex items-center rounded-[var(--cc-badge-radius)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] px-1.5 py-0.5 text-[0.625rem] text-[color:var(--cc-muted-foreground)]",
         monoType,
       )}
     >
@@ -287,7 +287,7 @@ function Specimen({
 
         {tokens && tokens.length > 0 ? (
           <div className='flex flex-wrap items-center gap-1'>
-            <span className='text-[10px] text-[color:var(--cc-muted-foreground)]'>
+            <span className='text-[0.625rem] text-[color:var(--cc-muted-foreground)]'>
               توکن‌ها:
             </span>
             {tokens.map((token) => (
@@ -388,12 +388,12 @@ export function ElementsGalleryView() {
             type='button'
             onClick={() => jumpTo(section.id)}
             className={cn(
-              "flex items-center gap-1.5 rounded-[var(--cc-radius-sm)] px-2 py-1 text-[11px] text-[color:var(--cc-muted-foreground)] transition-colors duration-[var(--cc-duration)]",
+              "flex items-center gap-1.5 rounded-[var(--cc-radius-sm)] px-2 py-1 text-[0.6875rem] text-[color:var(--cc-muted-foreground)] transition-colors duration-[var(--cc-duration)]",
               "hover:bg-[var(--cc-surface)] hover:text-[color:var(--cc-surface-foreground)]",
               "focus-visible:ring-[length:var(--cc-focus-ring-width)] focus-visible:ring-[color:var(--cc-ring)] focus-visible:outline-none",
             )}
           >
-            <span className={cn("text-[10px] font-bold", monoType)}>
+            <span className={cn("text-[0.625rem] font-bold", monoType)}>
               {section.index}
             </span>
             {section.label}
@@ -420,7 +420,7 @@ export function ElementsGalleryView() {
           <CardContent className='grid gap-5 @2xl:grid-cols-[1.25fr_1fr]'>
             <div className='flex flex-col gap-3'>
               <div className='flex flex-col gap-1'>
-                <span className='text-[10px] text-[color:var(--cc-muted-foreground)]'>
+                <span className='text-[0.625rem] text-[color:var(--cc-muted-foreground)]'>
                   نمایشی
                 </span>
                 <p
@@ -444,7 +444,7 @@ export function ElementsGalleryView() {
               <Separator />
 
               <div className='flex flex-col gap-1'>
-                <span className='text-[10px] text-[color:var(--cc-muted-foreground)]'>
+                <span className='text-[0.625rem] text-[color:var(--cc-muted-foreground)]'>
                   متن
                 </span>
                 <p

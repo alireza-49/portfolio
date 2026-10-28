@@ -146,21 +146,21 @@ export function EditorInsertBar({ editor }: { editor: Editor }) {
               <button
                 type='button'
                 onClick={apply}
-                className='rounded-sm border-[1.5px] border-indigo-ink bg-coral px-2 py-1 text-[11px] font-black text-white'
+                className='rounded-sm border-[1.5px] border-indigo-ink bg-coral px-2 py-1 text-[0.6875rem] font-black text-white'
               >
                 {mode === "link" ? "اعمال" : "درج"}
               </button>
               <button
                 type='button'
                 onClick={close}
-                className='rounded-sm border border-indigo-ink/25 bg-paper px-2 py-1 text-[11px] font-bold text-indigo-ink'
+                className='rounded-sm border border-indigo-ink/25 bg-paper px-2 py-1 text-[0.6875rem] font-bold text-indigo-ink'
               >
                 بستن
               </button>
             </div>
           </div>
           {invalid ? (
-            <p className='text-[10px] font-bold text-coral'>
+            <p className='text-[0.625rem] font-bold text-coral'>
               نشانی باید با https:// یا / شروع شود.
             </p>
           ) : null}

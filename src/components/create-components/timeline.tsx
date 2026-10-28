@@ -27,7 +27,7 @@ export function Timeline({
     >
       <span
         aria-hidden='true'
-        className='absolute inset-y-1 start-[5px] w-px bg-[var(--cc-border)]'
+        className='absolute inset-y-1 start-[0.3125rem] w-px bg-[var(--cc-border)]'
       />
       {children}
     </ol>

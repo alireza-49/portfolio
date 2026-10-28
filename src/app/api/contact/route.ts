@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createSubmission } from "@/lib/content";
 import { hasDatabaseConfig } from "@/lib/db";
+import { looksLikePhone } from "@/lib/contact-pending";
+import { notifySubmissionSms } from "@/lib/sms";
 
 /**
  * Public contact endpoint. The form posts one JSON object; everything is capped,
@@ -110,6 +112,19 @@ export async function POST(request: Request) {
       studioStatus: asText(record.studioStatus, TEXT_LIMITS.studioStatus),
       designChoice: asText(record.designChoice, TEXT_LIMITS.designChoice),
     });
+
+    /*
+     * The text is a courtesy: the submission is already stored, so a dead key or
+     * an offline provider must never turn a successful form into an error. Only
+     * a real mobile number earns a message (the page promises exactly that).
+     */
+    if (looksLikePhone(contact)) {
+      try {
+        await notifySubmissionSms(submission);
+      } catch (error) {
+        console.error("[contact] sms failed:", error);
+      }
+    }
 
     return NextResponse.json({ ok: true, id: submission.id }, { status: 201 });
   } catch (error) {

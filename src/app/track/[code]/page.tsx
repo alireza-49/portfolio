@@ -55,14 +55,14 @@ export default async function TrackProjectPage({
         <div className='mx-auto flex max-w-7xl flex-col gap-4'>
           <div className='flex flex-wrap items-end justify-between gap-2 border-b-[2px] border-indigo-ink pb-3'>
             <div className='flex flex-col gap-1'>
-              <span className='font-mono text-[10px] font-bold tracking-widest text-coral uppercase'>
+              <span className='font-mono text-[0.625rem] font-bold tracking-widest text-coral uppercase'>
                 ROADMAP &amp; PHASES // گام‌های رسمی
               </span>
               <h2 className='text-lg font-black text-indigo-ink'>
                 تایم‌لاین گام‌های اجرایی سفارش
               </h2>
             </div>
-            <span className='text-[11px] font-bold text-indigo-light'>
+            <span className='text-[0.6875rem] font-bold text-indigo-light'>
               آخرین به‌روزرسانی: {faDate(project.updatedAt)}
             </span>
           </div>
@@ -74,14 +74,14 @@ export default async function TrackProjectPage({
         <section className='flex flex-col gap-3 rounded-md border-[2px] border-indigo-ink bg-paper-light p-4 shadow-craft sm:p-5 lg:col-span-7'>
           <div className='flex items-center justify-between gap-2 border-b border-dashed border-indigo-ink/20 pb-2'>
             <div className='flex flex-col gap-0.5'>
-              <span className='font-mono text-[10px] font-bold tracking-widest text-teal-craft uppercase'>
+              <span className='font-mono text-[0.625rem] font-bold tracking-widest text-teal-craft uppercase'>
                 Live workshop log
               </span>
               <h2 className='text-sm font-black text-indigo-ink'>
                 آخرین اقدامات فنی کارگاه
               </h2>
             </div>
-            <span className='rounded-sm border border-indigo-ink/25 bg-paper px-2 py-0.5 font-mono text-[9px] font-bold text-indigo-light'>
+            <span className='rounded-sm border border-indigo-ink/25 bg-paper px-2 py-0.5 font-mono text-[0.5625rem] font-bold text-indigo-light'>
               branch: main
             </span>
           </div>

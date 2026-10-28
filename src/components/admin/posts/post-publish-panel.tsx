@@ -47,7 +47,7 @@ export function PostPublishPanel({
             <StatusPill tone={published ? "teal" : "mustard"}>
               {published ? "منتشرشده" : "پیش‌نویس"}
             </StatusPill>
-            <span className='font-mono text-[10px] font-bold text-indigo-light'>
+            <span className='font-mono text-[0.625rem] font-bold text-indigo-light'>
               {published
                 ? `انتشار: ${faDate(draft.publishedAt)}`
                 : "در دسترس عموم نیست"}
@@ -100,7 +100,7 @@ export function PostPublishPanel({
               href={`/blog/${draft.slug}`}
               target='_blank'
               rel='noopener noreferrer'
-              className='inline-flex items-center justify-center gap-1.5 text-[11px] font-bold text-coral hover:text-coral-dark'
+              className='inline-flex items-center justify-center gap-1.5 text-[0.6875rem] font-bold text-coral hover:text-coral-dark'
             >
               <ExternalLink className='size-3.5' />
               مشاهده در وبلاگ
@@ -110,7 +110,7 @@ export function PostPublishPanel({
           <PostPreviewLink postId={postId} />
 
           {exists && dirty ? (
-            <p className='text-[10px] leading-relaxed font-medium text-indigo-light'>
+            <p className='text-[0.625rem] leading-relaxed font-medium text-indigo-light'>
               تغییرات ذخیره‌نشده هر ۲۰ ثانیه به‌صورت خودکار در پیش‌نویس ذخیره
               می‌شوند.
             </p>
@@ -133,7 +133,7 @@ export function PostPublishPanel({
             <button
               type='button'
               onClick={() => patch({ slug: slugify(draft.title) })}
-              className='w-fit text-[10px] font-black text-coral hover:text-coral-dark'
+              className='w-fit text-[0.625rem] font-black text-coral hover:text-coral-dark'
             >
               ساخت نامک از عنوان
             </button>
@@ -142,7 +142,7 @@ export function PostPublishPanel({
           <label className='flex flex-col gap-1.5'>
             <span className='flex items-center justify-between'>
               <span className={LABEL_CLASS}>خلاصه / توضیح متا</span>
-              <span className='font-mono text-[10px] font-bold text-indigo-light'>
+              <span className='font-mono text-[0.625rem] font-bold text-indigo-light'>
                 {faNumber(draft.excerpt.length)} / ۴۰۰
               </span>
             </span>

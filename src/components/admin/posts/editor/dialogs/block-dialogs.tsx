@@ -118,7 +118,7 @@ export function DemoDialog({
                 key={item}
                 type='button'
                 onClick={() => setTab(item)}
-                className={tab === item ? "rounded-sm bg-coral px-2 py-1 text-[10px] font-black text-paper" : "rounded-sm border border-indigo-ink/20 px-2 py-1 text-[10px] font-bold text-indigo-ink"}
+                className={tab === item ? "rounded-sm bg-coral px-2 py-1 text-[0.625rem] font-black text-paper" : "rounded-sm border border-indigo-ink/20 px-2 py-1 text-[0.625rem] font-bold text-indigo-ink"}
               >
                 {item.toUpperCase()}
               </button>
@@ -132,19 +132,19 @@ export function DemoDialog({
             ariaLabel={`کد ${tab}`}
           />
           <div className='mt-2 flex flex-wrap items-center justify-between gap-2'>
-            <label className='flex items-center gap-2 text-[11px] font-bold text-indigo-ink'>
+            <label className='flex items-center gap-2 text-[0.6875rem] font-bold text-indigo-ink'>
               <input type='checkbox' checked={live} onChange={(event) => setLive(event.target.checked)} />
               اجرای خودکار در صفحهٔ عمومی
             </label>
-            <span className='text-[10px] text-indigo-light'>اجرا در iframe جداشده</span>
+            <span className='text-[0.625rem] text-indigo-light'>اجرا در iframe جداشده</span>
           </div>
         </div>
         <div className='min-w-0 rounded-md border-[2px] border-indigo-ink/20 bg-paper p-2'>
-          <p className='mb-2 text-[10px] font-black text-indigo-light'>پیش‌نمایش زنده</p>
+          <p className='mb-2 text-[0.625rem] font-black text-indigo-light'>پیش‌نمایش زنده</p>
           <DemoBlock payload={draft} autoRun />
         </div>
       </div>
-      {error ? <p className='text-[11px] font-bold text-coral-dark'>{error}</p> : null}
+      {error ? <p className='text-[0.6875rem] font-bold text-coral-dark'>{error}</p> : null}
       <DialogFooter className='flex justify-end gap-2'>
         <button type='button' className={BTN_SECONDARY} onClick={onClose}>انصراف</button>
         <button type='button' className={BTN_PRIMARY} onClick={save}>ثبت دمو</button>
@@ -190,11 +190,11 @@ export function MermaidDialog({
     <Frame open={open} onClose={onClose} title='نمودار Mermaid' icon={<Workflow className='size-4 text-coral' />} wide>
       <div className='grid gap-3 lg:grid-cols-2'>
         <CodeEditor value={draft} onChange={setDraft} language='markdown' height='300px' ariaLabel='کد Mermaid' />
-        <div className='max-h-[300px] overflow-auto rounded-md border-[2px] border-indigo-ink/20 bg-paper p-2'>
+        <div className='max-h-[18.75rem] overflow-auto rounded-md border-[2px] border-indigo-ink/20 bg-paper p-2'>
           <MermaidBlock code={draft} />
         </div>
       </div>
-      {error ? <p className='text-[11px] font-bold text-coral-dark'>{error}</p> : null}
+      {error ? <p className='text-[0.6875rem] font-bold text-coral-dark'>{error}</p> : null}
       <DialogFooter className='flex justify-end gap-2'>
         <button type='button' className={BTN_SECONDARY} onClick={onClose}>انصراف</button>
         <button type='button' className={BTN_PRIMARY} onClick={save}>ثبت نمودار</button>
@@ -242,7 +242,7 @@ export function EmbedDialog({
 
   return (
     <Frame open={open} onClose={onClose} title='جاسازی ویدیو' icon={<FrameIcon className='size-4 text-coral' />}>
-      <label className='grid gap-1 text-[11px] font-bold text-indigo-ink'>
+      <label className='grid gap-1 text-[0.6875rem] font-bold text-indigo-ink'>
         نشانی یوتیوب یا ویمئو
         <input
           value={url}
@@ -264,9 +264,9 @@ export function EmbedDialog({
           />
         </div>
       ) : (
-        <p className='text-[11px] text-indigo-light'>برای دیدن پیش‌نمایش، نشانی معتبر وارد کنید.</p>
+        <p className='text-[0.6875rem] text-indigo-light'>برای دیدن پیش‌نمایش، نشانی معتبر وارد کنید.</p>
       )}
-      {error ? <p className='text-[11px] font-bold text-coral-dark'>{error}</p> : null}
+      {error ? <p className='text-[0.6875rem] font-bold text-coral-dark'>{error}</p> : null}
       <DialogFooter className='flex justify-end gap-2'>
         <button type='button' className={BTN_SECONDARY} onClick={onClose}>انصراف</button>
         <button type='button' className={BTN_PRIMARY} onClick={save} disabled={!current}>ثبت جاسازی</button>
@@ -327,7 +327,7 @@ export function MathDialog({
   return (
     <Frame open={open} onClose={onClose} title='فرمول ریاضی' icon={<Sigma className='size-4 text-coral' />}>
       <div className='grid gap-3'>
-        <label className='grid gap-1 text-[11px] font-bold text-indigo-ink'>
+        <label className='grid gap-1 text-[0.6875rem] font-bold text-indigo-ink'>
           LaTeX
           <textarea
             value={draft}
@@ -338,13 +338,13 @@ export function MathDialog({
             placeholder='\frac{a}{b}'
           />
         </label>
-        <label className='flex items-center gap-2 text-[11px] font-bold text-indigo-ink'>
+        <label className='flex items-center gap-2 text-[0.6875rem] font-bold text-indigo-ink'>
           <input type='checkbox' checked={isDisplay} onChange={(event) => setIsDisplay(event.target.checked)} />
           نمایش بلوکی
         </label>
         <div className='min-h-16 overflow-auto rounded-md border border-indigo-ink/20 bg-paper p-3 text-center' dir='ltr'
           dangerouslySetInnerHTML={{ __html: html }} />
-        {error ? <p className='text-[11px] font-bold text-coral-dark'>{error}</p> : null}
+        {error ? <p className='text-[0.6875rem] font-bold text-coral-dark'>{error}</p> : null}
       </div>
       <DialogFooter className='flex justify-end gap-2'>
         <button type='button' className={BTN_SECONDARY} onClick={onClose}>انصراف</button>
@@ -383,7 +383,7 @@ export function FootnoteDialog({
 
   return (
     <Frame open={open} onClose={onClose} title='پانویس' icon={<Megaphone className='size-4 text-coral' />}>
-      <label className='grid gap-1 text-[11px] font-bold text-indigo-ink'>
+      <label className='grid gap-1 text-[0.6875rem] font-bold text-indigo-ink'>
         متن پانویس
         <textarea value={draft} onChange={(event) => setDraft(event.target.value)} rows={4} className={FIELD_CLASS} autoFocus />
       </label>

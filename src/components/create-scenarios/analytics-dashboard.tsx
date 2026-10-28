@@ -109,7 +109,7 @@ export function AnalyticsDashboardView() {
               <span className='text-sm font-bold text-[color:var(--cc-surface-foreground)]'>
                 آترین آنالیتیکس
               </span>
-              <span className='flex flex-wrap items-center gap-1 text-[10px] text-[color:var(--cc-muted-foreground)]'>
+              <span className='flex flex-wrap items-center gap-1 text-[0.625rem] text-[color:var(--cc-muted-foreground)]'>
                 میز کار داده
                 <span aria-hidden='true'>·</span>
                 <span className='font-bold text-[color:var(--cc-surface-foreground)]'>
@@ -118,7 +118,7 @@ export function AnalyticsDashboardView() {
                 <span
                   dir='ltr'
                   className={cn(
-                    "rounded-[var(--cc-radius-sm)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] px-1 text-[9px]",
+                    "rounded-[var(--cc-radius-sm)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] px-1 text-[0.5625rem]",
                     monoType,
                   )}
                 >
@@ -151,7 +151,7 @@ export function AnalyticsDashboardView() {
                   live ? "bg-[var(--cc-success)]" : "bg-[var(--cc-border)]",
                 )}
               />
-              <span className='text-[10px] text-[color:var(--cc-muted-foreground)]'>
+              <span className='text-[0.625rem] text-[color:var(--cc-muted-foreground)]'>
                 زنده
               </span>
               <Switch
@@ -192,7 +192,7 @@ export function AnalyticsDashboardView() {
                   onClick={() => selectPage(item.id)}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "flex shrink-0 items-center gap-1.5 rounded-[var(--cc-radius-sm)] px-2 py-1.5 text-[11px] transition-colors duration-[var(--cc-duration)]",
+                    "flex shrink-0 items-center gap-1.5 rounded-[var(--cc-radius-sm)] px-2 py-1.5 text-[0.6875rem] transition-colors duration-[var(--cc-duration)]",
                     "focus-visible:ring-[length:var(--cc-focus-ring-width)] focus-visible:ring-[color:var(--cc-ring)] focus-visible:outline-none",
                     active
                       ? "bg-[var(--cc-primary)] font-bold text-[color:var(--cc-primary-foreground)]"
@@ -206,10 +206,10 @@ export function AnalyticsDashboardView() {
             })}
           </div>
           <div className='hidden flex-col gap-1 border-t-[length:var(--cc-border-width)] border-[color:var(--cc-border)] pt-2 @3xl:flex'>
-            <span className='text-[9px] text-[color:var(--cc-muted-foreground)]'>
+            <span className='text-[0.5625rem] text-[color:var(--cc-muted-foreground)]'>
               نسخهٔ ۲.۱۴.۰ · منطقهٔ داده EU
             </span>
-            <span className='text-[9px] text-[color:var(--cc-muted-foreground)]'>
+            <span className='text-[0.5625rem] text-[color:var(--cc-muted-foreground)]'>
               {formatNumber(DASHBOARD_PAGES.length)} صفحه · موتور نمودار:
               Recharts
             </span>
@@ -226,7 +226,7 @@ export function AnalyticsDashboardView() {
           </Swap>
 
           <footer className='flex flex-wrap items-center justify-between gap-2 border-t-[length:var(--cc-border-width)] border-[color:var(--cc-border)] pt-2'>
-            <span className='flex items-center gap-1.5 text-[10px] text-[color:var(--cc-muted-foreground)]'>
+            <span className='flex items-center gap-1.5 text-[0.625rem] text-[color:var(--cc-muted-foreground)]'>
               <Icon
                 name='brand'
                 className='size-3.5 text-[color:var(--cc-primary)]'

@@ -56,7 +56,7 @@ export function EditorBlockRow({
         label='خط جداکننده'
         onClick={() => chain().setHorizontalRule().run()}
       >
-        <span className='text-[13px] leading-none font-black'>—</span>
+        <span className='text-[0.8125rem] leading-none font-black'>—</span>
       </ToolButton>
     </div>
   );

@@ -69,12 +69,12 @@ export function PostListTable({
                 onClick={() => onFilter(item.id)}
                 className={
                   filter === item.id
-                    ? "rounded-sm border-[2px] border-indigo-ink bg-indigo-ink px-2.5 py-1 text-[11px] font-black text-paper"
-                    : "rounded-sm border-[2px] border-indigo-ink/25 bg-paper px-2.5 py-1 text-[11px] font-bold text-indigo-ink/80 hover:border-indigo-ink hover:text-indigo-ink"
+                    ? "rounded-sm border-[2px] border-indigo-ink bg-indigo-ink px-2.5 py-1 text-[0.6875rem] font-black text-paper"
+                    : "rounded-sm border-[2px] border-indigo-ink/25 bg-paper px-2.5 py-1 text-[0.6875rem] font-bold text-indigo-ink/80 hover:border-indigo-ink hover:text-indigo-ink"
                 }
               >
                 {item.label}
-                <span className='pr-1 font-mono text-[10px] opacity-70'>
+                <span className='pr-1 font-mono text-[0.625rem] opacity-70'>
                   {faNumber(counts[item.id])}
                 </span>
               </button>
@@ -106,9 +106,9 @@ export function PostListTable({
         </div>
       ) : (
         <div className='overflow-x-auto'>
-          <table className='w-full min-w-[1080px] border-collapse text-right'>
+          <table className='w-full min-w-[67.5rem] border-collapse text-right'>
             <thead>
-              <tr className='border-b-[2px] border-indigo-ink bg-paper-dim text-[11px] font-black text-indigo-ink'>
+              <tr className='border-b-[2px] border-indigo-ink bg-paper-dim text-[0.6875rem] font-black text-indigo-ink'>
                 <th scope='col' className='px-3 py-2'>یادداشت</th>
                 <th scope='col' className='px-3 py-2'>وضعیت</th>
                 <th scope='col' className='px-3 py-2'>برچسب‌ها</th>

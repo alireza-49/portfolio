@@ -64,7 +64,7 @@ export function LinkDialog({
           </DialogTitle>
         </DialogHeader>
         <div className='grid gap-3'>
-          <label className='grid gap-1 text-[11px] font-bold text-indigo-ink'>
+          <label className='grid gap-1 text-[0.6875rem] font-bold text-indigo-ink'>
             نشانی
             <input
               value={href}
@@ -75,7 +75,7 @@ export function LinkDialog({
               autoFocus
             />
           </label>
-          <label className='grid gap-1 text-[11px] font-bold text-indigo-ink'>
+          <label className='grid gap-1 text-[0.6875rem] font-bold text-indigo-ink'>
             متن پیوند
             <input
               value={text}
@@ -84,11 +84,11 @@ export function LinkDialog({
               className={FIELD_CLASS}
             />
           </label>
-          <label className='flex items-center gap-2 text-[11px] font-bold text-indigo-ink'>
+          <label className='flex items-center gap-2 text-[0.6875rem] font-bold text-indigo-ink'>
             <input type='checkbox' checked={newTab} onChange={(event) => setNewTab(event.target.checked)} />
             گشودن در زبانهٔ تازه
           </label>
-          {error ? <p className='text-[11px] font-bold text-coral-dark'>{error}</p> : null}
+          {error ? <p className='text-[0.6875rem] font-bold text-coral-dark'>{error}</p> : null}
         </div>
         <DialogFooter className='flex flex-wrap items-center justify-between gap-2'>
           <button

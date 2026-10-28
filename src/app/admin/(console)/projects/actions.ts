@@ -13,6 +13,11 @@ import {
   setProjectPublished,
   updateProject,
 } from "@/lib/content";
+import {
+  notifyProjectProgressSms,
+  notifyProjectStatusSms,
+  withSmsNote,
+} from "@/lib/sms";
 import { PROJECT_STATUSES, type ProjectStatus } from "@/lib/types";
 import { parseProjectInput } from "./validation";
 
@@ -87,7 +92,12 @@ export async function updateProjectAction(
     refresh(project.code);
     if (previous.code !== project.code) refresh(previous.code);
 
-    return { ok: true, message: "تغییرات پروژه ذخیره شد.", id };
+    const sms = await notifyProjectStatusSms(previous, project);
+    return {
+      ok: true,
+      message: withSmsNote("تغییرات پروژه ذخیره شد.", sms),
+      id,
+    };
   } catch (error) {
     console.error("[projects] update failed:", error);
     return { ok: false, message: "ذخیرهٔ تغییرات ناموفق بود." };
@@ -129,6 +139,9 @@ export async function patchProgressAction(
     return { ok: false, message: "هیچ تغییری برای ذخیره وجود ندارد." };
   }
 
+  const previous = await getProject(id);
+  if (!previous) return { ok: false, message: "پروژه پیدا نشد." };
+
   const project = await patchProjectProgress(id, {
     progress,
     status,
@@ -138,7 +151,39 @@ export async function patchProgressAction(
   if (!project) return { ok: false, message: "پروژه پیدا نشد." };
 
   refresh(project.code);
-  return { ok: true, message: "پیشرفت پروژه به‌روزرسانی شد.", id };
+
+  // Only a real transition texts the client; moving the slider stays silent.
+  const sms = await notifyProjectStatusSms(previous, project);
+  return {
+    ok: true,
+    message: withSmsNote("پیشرفت پروژه به‌روزرسانی شد.", sms),
+    id,
+  };
+}
+
+/**
+ * The manual «ارسال پیام پیشرفت» button on the project page. It re-reads the
+ * stored row instead of trusting the form, so an unsaved draft can never be
+ * texted to a client.
+ */
+export async function sendProjectProgressSmsAction(
+  id: string,
+): Promise<ProjectActionResult> {
+  await requireAdmin();
+
+  if (!id) return { ok: false, message: "شناسهٔ پروژه معتبر نیست." };
+
+  const project = await getProject(id);
+  if (!project) return { ok: false, message: "پروژه پیدا نشد." };
+
+  const outcome = await notifyProjectProgressSms(project);
+  revalidatePath("/admin/settings");
+
+  return {
+    ok: outcome.ok,
+    message: outcome.message || "پیامکی ارسال نشد.",
+    id,
+  };
 }
 
 export async function setProjectPublishedAction(

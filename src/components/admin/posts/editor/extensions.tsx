@@ -442,7 +442,7 @@ function NotebookView({ node, deleteNode, getPos }: NodeViewProps) {
     <NodeViewWrapper className='cc-notebook-shell' contentEditable={false}>
       <div className='cc-notebook-summary'>
         <span className='cc-notebook-title'>نوت‌بوک پایتون</span>
-        <span className='text-[11px] text-indigo-light'>{cells} سلول • اجرا در مرورگر</span>
+        <span className='text-[0.6875rem] text-indigo-light'>{cells} سلول • اجرا در مرورگر</span>
         <div className='flex items-center gap-1.5'>
           <button type='button' className='cc-demo-btn cc-demo-btn-primary' onClick={() => actions.openNotebook(payload ?? undefined, nodePos(getPos))}>
             <Play className='size-3.5' /> باز کردن

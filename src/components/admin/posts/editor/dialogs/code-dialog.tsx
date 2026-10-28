@@ -68,19 +68,19 @@ export function CodeDialog({
           </DialogTitle>
         </DialogHeader>
         <div className='flex flex-wrap items-center gap-2'>
-          <label className='flex items-center gap-1.5 text-[11px] font-bold text-indigo-ink'>
+          <label className='flex items-center gap-1.5 text-[0.6875rem] font-bold text-indigo-ink'>
             زبان
             <select
               value={language}
               onChange={(event) => setLanguage(event.target.value)}
-              className='h-8 rounded-sm border border-indigo-ink/20 bg-paper px-2 text-[11px] font-bold text-indigo-ink'
+              className='h-8 rounded-sm border border-indigo-ink/20 bg-paper px-2 text-[0.6875rem] font-bold text-indigo-ink'
             >
               {CODE_LANGUAGES.map((item) => (
                 <option key={item.id} value={item.id}>{item.label}</option>
               ))}
             </select>
           </label>
-          <span className='text-[10px] text-indigo-light'>{codeLanguageLabel(language)}</span>
+          <span className='text-[0.625rem] text-indigo-light'>{codeLanguageLabel(language)}</span>
         </div>
         <CodeEditor value={code} onChange={setCode} language={language} height='50vh' ariaLabel='ویرایشگر کد' />
         <DialogFooter className='flex justify-end gap-2'>

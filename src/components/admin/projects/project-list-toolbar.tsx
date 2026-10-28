@@ -42,7 +42,7 @@ export function ProjectListToolbar({
             className={`${FIELD_CLASS} pr-9`}
           />
         </div>
-        <span className='font-mono text-[10px] font-bold text-indigo-light'>
+        <span className='font-mono text-[0.625rem] font-bold text-indigo-light'>
           {faNumber(filteredCount)} از {faNumber(total)} پروژه
         </span>
       </div>
@@ -61,12 +61,12 @@ export function ProjectListToolbar({
               onClick={() => onFilter(status)}
               className={
                 active
-                  ? "rounded-sm border-[2px] border-indigo-ink bg-indigo-ink px-2.5 py-1 text-[11px] font-black text-paper"
-                  : "rounded-sm border-[2px] border-indigo-ink/25 bg-paper px-2.5 py-1 text-[11px] font-bold text-indigo-ink/80 transition-colors hover:border-indigo-ink hover:text-indigo-ink"
+                  ? "rounded-sm border-[2px] border-indigo-ink bg-indigo-ink px-2.5 py-1 text-[0.6875rem] font-black text-paper"
+                  : "rounded-sm border-[2px] border-indigo-ink/25 bg-paper px-2.5 py-1 text-[0.6875rem] font-bold text-indigo-ink/80 transition-colors hover:border-indigo-ink hover:text-indigo-ink"
               }
             >
               {label}
-              <span className='pr-1 font-mono text-[10px] opacity-70'>
+              <span className='pr-1 font-mono text-[0.625rem] opacity-70'>
                 {faNumber(count)}
               </span>
             </button>

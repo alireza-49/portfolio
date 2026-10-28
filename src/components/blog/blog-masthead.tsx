@@ -23,7 +23,7 @@ export function BlogMasthead({
   return (
     <section className='border-b-[2.5px] border-indigo-ink bg-paper'>
       <div className='mx-auto flex max-w-7xl flex-col gap-4 px-4 py-8 sm:px-8 lg:px-12'>
-        <div className='flex flex-wrap items-center justify-between gap-2 border-b border-indigo-ink/25 pb-2 text-[10px] font-bold text-indigo-light'>
+        <div className='flex flex-wrap items-center justify-between gap-2 border-b border-indigo-ink/25 pb-2 text-[0.625rem] font-bold text-indigo-light'>
           <span className='flex items-center gap-1.5'>
             <span className='size-2 rounded-full bg-coral' />
             آرشیو رسمی یادداشت‌های کارگاه
@@ -36,7 +36,7 @@ export function BlogMasthead({
 
         <div className='flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between'>
           <div className='flex flex-col gap-2'>
-            <span className='riso-stamp w-fit text-[10px]'>
+            <span className='riso-stamp w-fit text-[0.625rem]'>
               بیانیهٔ چاپ و کد
             </span>
             <h1 className='font-display text-3xl leading-tight font-black text-indigo-ink sm:text-4xl'>
@@ -47,7 +47,7 @@ export function BlogMasthead({
               در آتلیه و چاپ‌شده با دو جوهر.
             </p>
           </div>
-          <span className='rounded-sm border-[1.5px] border-indigo-ink bg-paper-dim px-3 py-1.5 text-[11px] font-black text-indigo-ink'>
+          <span className='rounded-sm border-[1.5px] border-indigo-ink bg-paper-dim px-3 py-1.5 text-[0.6875rem] font-black text-indigo-ink'>
             {faNumber(postsCount)} یادداشت منتشرشده
           </span>
         </div>
@@ -72,7 +72,7 @@ export function BlogMasthead({
                 onClick={() => onTag(null)}
                 aria-pressed={tag === null}
                 className={cn(
-                  "rounded-sm border-[1.5px] px-2 py-0.5 text-[10px] font-bold transition-colors",
+                  "rounded-sm border-[1.5px] px-2 py-0.5 text-[0.625rem] font-bold transition-colors",
                   tag === null
                     ? "border-indigo-ink bg-indigo-ink text-paper"
                     : "border-indigo-ink/25 bg-paper text-indigo-ink/80 hover:border-indigo-ink",
@@ -87,7 +87,7 @@ export function BlogMasthead({
                   onClick={() => onTag(tag === item ? null : item)}
                   aria-pressed={tag === item}
                   className={cn(
-                    "rounded-sm border-[1.5px] px-2 py-0.5 text-[10px] font-bold transition-colors",
+                    "rounded-sm border-[1.5px] px-2 py-0.5 text-[0.625rem] font-bold transition-colors",
                     tag === item
                       ? "border-coral bg-coral text-white"
                       : "border-indigo-ink/25 bg-paper text-indigo-ink/80 hover:border-indigo-ink",

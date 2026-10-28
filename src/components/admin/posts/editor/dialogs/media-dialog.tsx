@@ -301,7 +301,7 @@ export function MediaDialog({
           </TabsList>
 
           <TabsContent value='link' className='flex flex-col gap-2 pt-2'>
-            <label className='flex flex-col gap-1 text-[11px] font-bold text-indigo-light'>
+            <label className='flex flex-col gap-1 text-[0.6875rem] font-bold text-indigo-light'>
               نشانی فایل
               <input
                 dir='ltr'
@@ -317,7 +317,7 @@ export function MediaDialog({
               />
             </label>
             <div className='grid gap-2 sm:grid-cols-3'>
-              <label className='flex flex-col gap-1 text-[11px] font-bold text-indigo-light'>
+              <label className='flex flex-col gap-1 text-[0.6875rem] font-bold text-indigo-light'>
                 نوع
                 <select
                   value={kind}
@@ -332,7 +332,7 @@ export function MediaDialog({
                   ))}
                 </select>
               </label>
-              <label className='flex flex-col gap-1 text-[11px] font-bold text-indigo-light'>
+              <label className='flex flex-col gap-1 text-[0.6875rem] font-bold text-indigo-light'>
                 نام نمایشی
                 <input
                   value={name}
@@ -341,7 +341,7 @@ export function MediaDialog({
                   className={cn(FIELD_CLASS, "h-9")}
                 />
               </label>
-              <label className='flex flex-col gap-1 text-[11px] font-bold text-indigo-light'>
+              <label className='flex flex-col gap-1 text-[0.6875rem] font-bold text-indigo-light'>
                 متن جانشین (alt)
                 <input
                   value={alt}
@@ -351,7 +351,7 @@ export function MediaDialog({
                 />
               </label>
             </div>
-            <label className='flex flex-col gap-1 text-[11px] font-bold text-indigo-light'>
+            <label className='flex flex-col gap-1 text-[0.6875rem] font-bold text-indigo-light'>
               زیرنویس
               <input
                 value={caption}
@@ -366,7 +366,7 @@ export function MediaDialog({
             </div>
 
             <div className='flex items-center justify-between gap-2 pt-1'>
-              <span className='flex items-center gap-1 text-[10px] font-bold text-indigo-light'>
+              <span className='flex items-center gap-1 text-[0.625rem] font-bold text-indigo-light'>
                 <Icon className='size-3.5' /> {MEDIA_KIND_LABELS[kind]}
               </span>
               <button
@@ -420,8 +420,8 @@ export function MediaDialog({
                     >
                       <AssetIcon className='size-5 shrink-0 text-coral' />
                       <span className='min-w-0'>
-                        <span className='block truncate text-[11px] font-bold text-indigo-ink'>{asset.filename}</span>
-                        <span className='block text-[10px] text-indigo-light'>{formatBytes(asset.sizeBytes)}</span>
+                        <span className='block truncate text-[0.6875rem] font-bold text-indigo-ink'>{asset.filename}</span>
+                        <span className='block text-[0.625rem] text-indigo-light'>{formatBytes(asset.sizeBytes)}</span>
                       </span>
                     </button>
                   );
@@ -433,7 +433,7 @@ export function MediaDialog({
           <TabsContent value='upload' className='flex flex-col gap-2 pt-2'>
             <div className='rounded-md border-2 border-dashed border-indigo-ink/25 bg-paper-dim p-4 text-center'>
               <Upload className='mx-auto size-6 text-indigo-light' />
-              <p className='mt-2 text-[11px] font-bold text-indigo-light'>
+              <p className='mt-2 text-[0.6875rem] font-bold text-indigo-light'>
                 فایل را انتخاب کنید؛ مستقیماً به باکت آروان آپلود می‌شود.
               </p>
               <input
@@ -455,12 +455,12 @@ export function MediaDialog({
                 انتخاب فایل
               </button>
               {uploadFile ? (
-                <p className='mt-2 text-[11px] font-bold text-indigo-ink'>
+                <p className='mt-2 text-[0.6875rem] font-bold text-indigo-ink'>
                   {uploadFile.name} • {formatBytes(uploadFile.size)}
                 </p>
               ) : null}
             </div>
-            <label className='flex flex-col gap-1 text-[11px] font-bold text-indigo-light'>
+            <label className='flex flex-col gap-1 text-[0.6875rem] font-bold text-indigo-light'>
               متن جانشین (alt)
               <input
                 value={alt}
@@ -483,13 +483,13 @@ export function MediaDialog({
               {uploading ? <Loader2 className='size-4 animate-spin' /> : <Upload className='size-4' />}
               {uploading ? `آپلود ${progress}%` : "آپلود و درج"}
             </button>
-            <p className='text-[10px] leading-5 text-indigo-light'>
+            <p className='text-[0.625rem] leading-5 text-indigo-light'>
               اگر آپلود به دلیل CORS باکت انجام نشد، از تب «لینک» استفاده کنید. این مسیر هرگز ذخیرهٔ مقاله را مسدود نمی‌کند.
             </p>
           </TabsContent>
         </Tabs>
 
-        {error ? <p className='text-[11px] font-bold text-coral'>{error}</p> : null}
+        {error ? <p className='text-[0.6875rem] font-bold text-coral'>{error}</p> : null}
       </DialogContent>
     </Dialog>
   );

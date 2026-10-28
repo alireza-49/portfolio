@@ -20,6 +20,15 @@ function cleanText(value: string | null, fallback = ""): string {
   return (value ?? fallback).trim();
 }
 
+type Island = { root: Root; generation: number };
+
+// An effect cleanup runs inside React's commit, and React 19 refuses to unmount
+// a nested root there ("cannot finish unmounting until the current render has
+// completed"). Islands are torn down one microtask later instead; the
+// generation lets a StrictMode remount reuse its root rather than mounting a
+// second one on the same node.
+const islands = new WeakMap<HTMLElement, Island>();
+
 export function PostRuntime({
   html,
   className,
@@ -32,16 +41,19 @@ export function PostRuntime({
   useEffect(() => {
     const container = rootRef.current;
     if (!container) return;
-    const roots: Root[] = [];
-    const hosts: HTMLElement[] = [];
+    const mounted: { element: HTMLElement; island: Island }[] = [];
 
     const mount = (element: Element, node: ReactNode) => {
       if (!(element instanceof HTMLElement) || element.dataset.hydrated === "true") return;
       element.dataset.hydrated = "true";
-      const root = createRoot(element);
-      root.render(node);
-      roots.push(root);
-      hosts.push(element);
+      let island = islands.get(element);
+      if (!island) {
+        island = { root: createRoot(element), generation: 0 };
+        islands.set(element, island);
+      }
+      island.generation += 1;
+      island.root.render(node);
+      mounted.push({ element, island });
     };
 
     for (const element of container.querySelectorAll("[data-demo]")) {
@@ -83,13 +95,10 @@ export function PostRuntime({
         "فایل";
       const mediaKind = (element.getAttribute("data-kind") ?? "file") as MediaKind;
       if (!(element instanceof HTMLElement)) continue;
-      if (element.dataset.hydrated === "true") continue;
-      element.dataset.hydrated = "true";
       element.setAttribute("data-href", href);
       element.setAttribute("data-name", name);
-      element.innerHTML = "";
-      const root = createRoot(element);
-      root.render(
+      mount(
+        element,
         <FileCard
           name={name}
           href={href}
@@ -98,8 +107,6 @@ export function PostRuntime({
           kind={mediaKind}
         />,
       );
-      roots.push(root);
-      hosts.push(element);
     }
 
     const onClick = (event: MouseEvent) => {
@@ -119,8 +126,15 @@ export function PostRuntime({
 
     return () => {
       container.removeEventListener("click", onClick);
-      for (const root of roots) root.unmount();
-      for (const host of hosts) host.removeAttribute("data-hydrated");
+      for (const { element, island } of mounted) {
+        const generation = island.generation;
+        queueMicrotask(() => {
+          if (island.generation !== generation) return;
+          islands.delete(element);
+          island.root.unmount();
+        });
+        element.removeAttribute("data-hydrated");
+      }
     };
   }, []);
 

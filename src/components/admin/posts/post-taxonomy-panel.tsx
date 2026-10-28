@@ -49,7 +49,7 @@ export function PostTaxonomyPanel({
             {draft.tags.map((item) => (
               <span
                 key={item}
-                className='inline-flex items-center gap-1 rounded-sm border border-indigo-ink/25 bg-paper-dim px-1.5 py-0.5 text-[10px] font-bold text-indigo-ink'
+                className='inline-flex items-center gap-1 rounded-sm border border-indigo-ink/25 bg-paper-dim px-1.5 py-0.5 text-[0.625rem] font-bold text-indigo-ink'
               >
                 {item}
                 <button
@@ -65,7 +65,7 @@ export function PostTaxonomyPanel({
               </span>
             ))}
             {draft.tags.length === 0 ? (
-              <span className='text-[10px] font-medium text-indigo-light'>
+              <span className='text-[0.625rem] font-medium text-indigo-light'>
                 هنوز برچسبی اضافه نشده است.
               </span>
             ) : null}
@@ -111,7 +111,7 @@ export function PostTaxonomyPanel({
               className='h-28 w-full rounded-sm border-[1.5px] border-indigo-ink/30 bg-paper object-cover'
             />
           ) : (
-            <p className='text-[10px] font-medium text-indigo-light'>
+            <p className='text-[0.625rem] font-medium text-indigo-light'>
               بدون کاور، کارت مقاله با بافت چاپی پیش‌فرض نمایش داده می‌شود.
             </p>
           )}
@@ -158,7 +158,7 @@ export function PostTaxonomyPanel({
             />
           </label>
         </div>
-        <p className='text-[10px] leading-relaxed font-medium text-indigo-light'>
+        <p className='text-[0.625rem] leading-relaxed font-medium text-indigo-light'>
           به آمار واقعی اضافه می‌شود؛ برای اینکه صفحه از روز اول زنده به نظر
           برسد. حداکثر ۱۰٬۰۰۰٬۰۰۰.
         </p>

@@ -110,7 +110,7 @@ export function NotebookDialog({
         </DialogHeader>
 
         <div className='flex flex-wrap items-center gap-2'>
-          <label className='flex min-w-64 flex-1 items-center gap-2 text-[11px] font-bold text-indigo-ink'>
+          <label className='flex min-w-64 flex-1 items-center gap-2 text-[0.6875rem] font-bold text-indigo-ink'>
             بسته‌ها
             <input
               value={packagesText}
@@ -133,7 +133,7 @@ export function NotebookDialog({
           {draft.cells.map((cell, index) => (
             <div key={cell.id} className='rounded-sm border border-indigo-ink/15 bg-paper p-3'>
               <div className='mb-2 flex items-center justify-between gap-2'>
-                <span className='text-[10px] font-black tracking-[0.18em] text-indigo-light'>
+                <span className='text-[0.625rem] font-black tracking-[0.18em] text-indigo-light'>
                   {cell.kind === "code" ? "کد پایتون" : "متن"}
                 </span>
                 <div className='flex items-center gap-1'>
@@ -180,10 +180,10 @@ export function NotebookDialog({
             <Plus className='size-3.5' />
             سلول متن
           </button>
-          <span className='text-[10px] text-indigo-light'>وضعیت: {session.status}</span>
+          <span className='text-[0.625rem] text-indigo-light'>وضعیت: {session.status}</span>
         </div>
 
-        {error ? <p className='rounded-sm border border-coral/40 bg-coral/10 px-3 py-2 text-[11px] font-bold text-coral-dark'>{error}</p> : null}
+        {error ? <p className='rounded-sm border border-coral/40 bg-coral/10 px-3 py-2 text-[0.6875rem] font-bold text-coral-dark'>{error}</p> : null}
 
         <DialogFooter className='flex justify-end gap-2'>
           <button type='button' className={BTN_SECONDARY} onClick={onClose}>انصراف</button>

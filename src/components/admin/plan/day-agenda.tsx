@@ -53,10 +53,10 @@ export function DayAgenda({
     <div className='flex flex-col'>
       <div className='flex flex-wrap items-center justify-between gap-2 border-b-[2px] border-dashed border-indigo-ink/20 px-4 py-3'>
         <div className='flex flex-col'>
-          <span className='text-[11px] font-black text-indigo-ink'>
+          <span className='text-[0.6875rem] font-black text-indigo-ink'>
             {formatWeekday(day)}
           </span>
-          <span className='font-mono text-[10px] font-bold text-indigo-light'>
+          <span className='font-mono text-[0.625rem] font-bold text-indigo-light'>
             {faDate(day, { withYear: true })}
           </span>
         </div>
@@ -72,7 +72,7 @@ export function DayAgenda({
 
       <div className='flex flex-col gap-1.5 px-3 py-3'>
         {empty ? (
-          <p className='px-1 py-4 text-center text-[11px] font-bold text-indigo-light'>
+          <p className='px-1 py-4 text-center text-[0.6875rem] font-bold text-indigo-light'>
             برای این روز کاری برنامه‌ریزی نشده است.
           </p>
         ) : null}
@@ -89,19 +89,19 @@ export function DayAgenda({
                 task.done && "opacity-70",
               )}
             >
-              <span className='mt-0.5 shrink-0 rounded-sm border border-indigo-ink/20 bg-paper-dim px-1 font-mono text-[10px] font-black text-indigo-ink'>
+              <span className='mt-0.5 shrink-0 rounded-sm border border-indigo-ink/20 bg-paper-dim px-1 font-mono text-[0.625rem] font-black text-indigo-ink'>
                 {faTimeRange(task.startsAt, task.endsAt)}
               </span>
               <span className='flex min-w-0 flex-col gap-0.5'>
                 <span
                   className={cn(
-                    "truncate text-[11px] font-black text-indigo-ink",
+                    "truncate text-[0.6875rem] font-black text-indigo-ink",
                     task.done && "line-through",
                   )}
                 >
                   {task.title}
                 </span>
-                <span className='truncate text-[10px] font-bold text-indigo-light'>
+                <span className='truncate text-[0.625rem] font-bold text-indigo-light'>
                   {projectTitles.get(task.projectId) ?? "پروژهٔ حذف‌شده"}
                 </span>
               </span>
@@ -118,7 +118,7 @@ export function DayAgenda({
 
         {dayEvents.length > 0 ? (
           <div className='mt-2 flex flex-col gap-1 border-t border-dashed border-indigo-ink/20 pt-2'>
-            <span className='px-1 text-[10px] font-black text-indigo-light'>
+            <span className='px-1 text-[0.625rem] font-black text-indigo-light'>
               از تقویم گوگل
             </span>
             {dayEvents.map((event) => (
@@ -126,10 +126,10 @@ export function DayAgenda({
                 key={event.id}
                 className='flex items-center gap-2 rounded-sm border border-dashed border-indigo-ink/30 bg-paper-dim px-2 py-1.5'
               >
-                <span className='shrink-0 font-mono text-[10px] font-black text-indigo-light'>
+                <span className='shrink-0 font-mono text-[0.625rem] font-black text-indigo-light'>
                   {faTimeRange(event.startsAt, event.endsAt)}
                 </span>
-                <span className='min-w-0 flex-1 truncate text-[11px] font-bold text-indigo-light'>
+                <span className='min-w-0 flex-1 truncate text-[0.6875rem] font-bold text-indigo-light'>
                   {event.summary || "رویداد گوگل"}
                 </span>
                 {event.htmlLink ? (

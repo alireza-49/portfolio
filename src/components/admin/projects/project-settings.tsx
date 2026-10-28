@@ -54,7 +54,7 @@ export function ProjectSettings({
       </div>
 
       <div className='flex flex-col gap-2 rounded-sm border border-indigo-ink/20 bg-paper p-3'>
-        <div className='flex flex-wrap items-center justify-between gap-2 text-[11px] font-bold text-indigo-light'>
+        <div className='flex flex-wrap items-center justify-between gap-2 text-[0.6875rem] font-bold text-indigo-light'>
           <span>مانده: {faMoney(remaining)}</span>
           <span className='font-mono'>{faNumber(paidRatio)}٪ تسویه</span>
         </div>
@@ -64,7 +64,7 @@ export function ProjectSettings({
             style={{ width: `${paidRatio}%` }}
           />
         </div>
-        <label className='mt-1 flex cursor-pointer items-center gap-2 text-[11px] font-bold text-indigo-ink'>
+        <label className='mt-1 flex cursor-pointer items-center gap-2 text-[0.6875rem] font-bold text-indigo-ink'>
           <input
             type='checkbox'
             checked={draft.showFinancials}

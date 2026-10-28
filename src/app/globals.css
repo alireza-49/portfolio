@@ -179,6 +179,49 @@
     @apply font-sans;
     scroll-behavior: smooth;
   }
+  /*
+    Design-space scale — the one knob for "the site looks the same size on
+    every machine, whatever OS scaling the viewer picked".
+
+    Browsers expose no OS-scale factor (devicePixelRatio is OS scale x browser
+    zoom, and a Retina Mac is 2.0 at 100%), so we read the CSS viewport instead:
+    it is already the *result* of the viewer's scaling (1920x1080 at 150% -> a
+    1280x720 viewport). Rendering as if the window were at least 1440x900 makes
+    every viewport show the same design at the same proportion.
+
+      scale = min(width / 1440, height / 900), clamped to 0.75 - 1.0
+
+    1440x900 is scale 1 and 1440x900 or larger is untouched (so is 1920x1080@100%
+    and 4K@200%); at 1280x610 (1920x1080@150%) and 1366x650 it bottoms out at
+    0.75. Every size on the site is rem, so this one declaration scales type,
+    spacing, radii and icons together; hairlines, hard shadows and media-query
+    breakpoints stay px so the riso edges stay crisp and the layout breakpoints
+    stay fixed.
+
+    Below 768px the layout is phone-shaped and reflows on its own, so the scale
+    stays off. The 0.75 floor also bounds how hard the site fights browser zoom
+    (zoom shrinks the viewport too, so the scale would otherwise cancel it).
+  */
+  @media (min-width: 768px) {
+    html {
+      font-size: clamp(12px, min(1.1111vw, 1.7778vh), 16px);
+    }
+  }
+  /*
+    A touch-first screen (a tablet held upright) never has an OS-scale to
+    compensate for — it is simply a bigger phone. At 768px wide the rule above
+    would floor the root at 12px, so the tablet would read the phone layout at
+    75%: 9px captions. Those screens keep the full design size instead.
+
+    From lg up the layout is desktop-shaped again (two columns, wide cards) and
+    a 16px root would inflate every rem past what those columns can hold, so the
+    normal scale takes over there — a landscape tablet is a laptop by width.
+  */
+  @media (min-width: 768px) and (max-width: 1023.98px) and (pointer: coarse) {
+    html {
+      font-size: 16px;
+    }
+  }
   body {
     @apply bg-background text-foreground;
     overscroll-behavior-y: none;
@@ -342,11 +385,14 @@
     border: 2px dashed var(--color-coral);
     border-radius: 9999px;
     padding: 0.25rem 0.85rem;
-    font-family: var(--font-mono);
+    /* Persian is a connected script: Space Grotesk draws no Arabic glyphs, so the
+       per-glyph fallback broke the joins. Stamps are Persian labels; keep Latin
+       codes in mono by adding `font-mono tracking-wide` at the call site. */
+    font-family: var(--font-sans);
     font-weight: 800;
     color: var(--color-coral);
     text-transform: uppercase;
-    letter-spacing: 0.02em;
+    letter-spacing: 0;
     background: rgba(231, 111, 81, 0.08);
     box-shadow: inset 0 0 0 1px rgba(231, 111, 81, 0.2);
   }
@@ -486,7 +532,7 @@
   .post-editor .tiptap {
     color: var(--color-indigo-ink);
     font-family: var(--font-sans);
-    font-size: 15px;
+    font-size: 0.9375rem;
     line-height: 2;
     word-break: break-word;
   }
@@ -499,7 +545,7 @@
   @media (min-width: 640px) {
     .post-body,
     .post-editor .tiptap {
-      font-size: 16px;
+      font-size: 1rem;
     }
   }
 
@@ -821,7 +867,7 @@
   border-radius: 3px;
   background: transparent;
   padding: 0.32rem 0.55rem;
-  font-size: 10px;
+  font-size: 0.625rem;
   font-weight: 800;
   color: var(--color-indigo-light);
   cursor: pointer;
@@ -852,7 +898,7 @@
   border-radius: 3px;
   background: var(--color-paper);
   padding: 0 0.45rem;
-  font-size: 10px;
+  font-size: 0.625rem;
   font-weight: 800;
   color: var(--color-indigo-ink);
   cursor: pointer;
@@ -899,7 +945,7 @@
     color-mix(in srgb, var(--color-indigo-ink) 12%, transparent);
   background: var(--color-paper-dim);
   padding: 0.4rem 0.6rem;
-  font-size: 10px;
+  font-size: 0.625rem;
   font-weight: 700;
   color: var(--color-indigo-light);
 }
@@ -922,7 +968,7 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
-  font-size: 10px;
+  font-size: 0.625rem;
   font-weight: 800;
   color: var(--color-indigo-light);
 }
@@ -942,7 +988,7 @@
   border-radius: 3px;
   background: var(--color-paper);
   padding: 0.35rem 0.55rem;
-  font-size: 10px;
+  font-size: 0.625rem;
   font-weight: 800;
   color: var(--color-indigo-light);
   cursor: not-allowed;
@@ -981,7 +1027,7 @@
 .editor-source-empty,
 .editor-source-error {
   margin: 0;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   color: var(--color-indigo-light);
 }
@@ -1008,7 +1054,7 @@
     color-mix(in srgb, var(--color-indigo-ink) 16%, transparent);
   background: var(--color-paper-dim);
   padding: 0.55rem 0.85rem;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 900;
   color: var(--color-indigo-ink);
 }
@@ -1036,7 +1082,7 @@
   table-layout: fixed;
   width: 100%;
   margin: 0;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 
 .post-editor .tiptap th,
@@ -1065,7 +1111,7 @@
 .post-body table[data-table-style="compact"] th,
 .post-body table[data-table-style="compact"] td {
   padding: 0.22rem 0.35rem;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 
 .post-body table[data-table-style="plain"] th,
@@ -1115,7 +1161,7 @@
   background: var(--color-indigo-ink);
   color: var(--color-paper);
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.7;
   padding: 1rem;
   tab-size: 2;
@@ -1180,7 +1226,7 @@
   border-bottom: 1px solid color-mix(in srgb, var(--color-paper) 16%, transparent);
   padding: 0.35rem 0.65rem;
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 0.625rem;
   color: color-mix(in srgb, var(--color-paper) 72%, transparent);
 }
 
@@ -1191,7 +1237,7 @@
   background: transparent;
   padding: 0.12rem 0.4rem;
   font-family: var(--font-sans);
-  font-size: 9px;
+  font-size: 0.5625rem;
   font-weight: 700;
   color: var(--color-paper);
   cursor: pointer;
@@ -1242,7 +1288,7 @@
   border-radius: 2px;
   background: var(--color-paper);
   padding: 0.2rem 0.35rem;
-  font-size: 9px;
+  font-size: 0.5625rem;
   font-weight: 800;
   color: var(--color-indigo-ink);
   cursor: pointer;
@@ -1270,7 +1316,7 @@
 .cc-media-caption,
 .post-body figure figcaption {
   margin-top: 0.35rem;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: color-mix(in srgb, var(--color-indigo-ink) 62%, transparent);
   text-align: center;
 }
@@ -1298,7 +1344,7 @@
   background: var(--color-indigo-ink);
   color: var(--color-paper);
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: 0.5625rem;
   font-weight: 800;
   text-transform: uppercase;
 }
@@ -1310,14 +1356,14 @@
   max-width: 28rem;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 800;
   color: var(--color-indigo-ink);
 }
 
 .cc-file-meta,
 .post-file-meta {
-  font-size: 10px;
+  font-size: 0.625rem;
   color: color-mix(in srgb, var(--color-indigo-ink) 58%, transparent);
 }
 
@@ -1357,7 +1403,7 @@
 .post-callout .post-callout-title,
 .post-callout [data-callout-title] {
   margin: 0 0 0.35rem;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 900;
   color: var(--color-indigo-ink);
 }
@@ -1376,7 +1422,7 @@
   border-radius: 2px;
   background: var(--color-paper);
   padding: 0.2rem 0.3rem;
-  font-size: 10px;
+  font-size: 0.625rem;
   font-weight: 700;
   color: var(--color-indigo-ink);
 }
@@ -1403,7 +1449,7 @@
   border-radius: 2px;
   background: color-mix(in srgb, var(--color-mustard) 40%, transparent);
   padding: 0 0.22rem;
-  font-size: 8px;
+  font-size: 0.5rem;
   font-weight: 800;
   color: var(--color-indigo-ink);
   cursor: pointer;
@@ -1414,12 +1460,12 @@
   border-top: 1px solid
     color-mix(in srgb, var(--color-indigo-ink) 18%, transparent);
   padding-top: 0.75rem;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 
 .post-footnotes-title {
   margin: 0 0 0.5rem;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 900;
   color: var(--color-indigo-ink);
 }
@@ -1506,14 +1552,14 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 0.4rem;
-  font-size: 10px;
+  font-size: 0.625rem;
   font-weight: 700;
   color: var(--color-indigo-light);
 }
 
 .cc-demo-title,
 .cc-notebook-title {
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 900;
   color: var(--color-indigo-ink);
 }
@@ -1522,7 +1568,7 @@
   border-radius: 999px;
   background: color-mix(in srgb, var(--color-teal-craft) 18%, transparent);
   padding: 0.1rem 0.4rem;
-  font-size: 9px;
+  font-size: 0.5625rem;
   font-weight: 800;
   color: var(--color-teal-craft);
 }
@@ -1572,7 +1618,7 @@
   background: var(--color-paper-dim);
   padding: 1.5rem 0.75rem;
   text-align: center;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--color-indigo-light);
 }
 

@@ -38,14 +38,14 @@ export function TaskRow({
         <div className='flex min-w-0 flex-col'>
           <span
             className={cn(
-              "truncate text-[12px] font-black text-indigo-ink",
+              "truncate text-[0.75rem] font-black text-indigo-ink",
               task.done && "line-through",
             )}
           >
             {task.title}
           </span>
           {task.note ? (
-            <span className='max-w-72 truncate text-[10px] font-medium text-indigo-light'>
+            <span className='max-w-72 truncate text-[0.625rem] font-medium text-indigo-light'>
               {task.note}
             </span>
           ) : null}
@@ -53,25 +53,25 @@ export function TaskRow({
       </td>
 
       <td className='px-3 py-2'>
-        <span className='whitespace-nowrap text-[11px] font-bold text-indigo-ink/80'>
+        <span className='whitespace-nowrap text-[0.6875rem] font-bold text-indigo-ink/80'>
           {projectTitle}
         </span>
       </td>
 
       <td className='px-3 py-2'>
-        <span className='whitespace-nowrap font-mono text-[11px] font-bold text-indigo-ink'>
+        <span className='whitespace-nowrap font-mono text-[0.6875rem] font-bold text-indigo-ink'>
           {faDate(task.startsAt)}
         </span>
       </td>
 
       <td className='px-3 py-2'>
-        <span className='whitespace-nowrap font-mono text-[11px] font-bold text-indigo-light'>
+        <span className='whitespace-nowrap font-mono text-[0.6875rem] font-bold text-indigo-light'>
           {faTimeRange(task.startsAt, task.endsAt)}
         </span>
       </td>
 
       <td className='px-3 py-2'>
-        <span className='whitespace-nowrap text-[10px] font-bold text-indigo-light'>
+        <span className='whitespace-nowrap text-[0.625rem] font-bold text-indigo-light'>
           {faDuration(minutes)}
         </span>
       </td>
@@ -83,7 +83,7 @@ export function TaskRow({
           </StatusPill>
           {task.googleError && task.googleSyncState === "error" ? (
             <span
-              className='max-w-48 truncate text-[9px] font-medium text-coral-dark'
+              className='max-w-48 truncate text-[0.5625rem] font-medium text-coral-dark'
               title={task.googleError}
             >
               {task.googleError}

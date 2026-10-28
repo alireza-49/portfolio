@@ -66,7 +66,7 @@ export function ToolMenu({
       <Popover.Root open={open} onOpenChange={setOpen}>
         <Popover.Trigger
           className={cn(
-            "inline-flex h-7 shrink-0 cursor-pointer items-center gap-1 rounded-sm border border-indigo-ink/20 bg-paper px-1.5 text-[10px] font-bold text-indigo-ink transition-colors hover:bg-mustard/30",
+            "inline-flex h-7 shrink-0 cursor-pointer items-center gap-1 rounded-sm border border-indigo-ink/20 bg-paper px-1.5 text-[0.625rem] font-bold text-indigo-ink transition-colors hover:bg-mustard/30",
             className,
           )}
           aria-label={label}
@@ -117,7 +117,7 @@ export function MenuItem({
         menu?.close();
       }}
       className={cn(
-        "flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-start text-[11px] font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-40",
+        "flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-start text-[0.6875rem] font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-40",
         active ? "bg-coral/15 text-coral" : "text-indigo-ink hover:bg-mustard/30",
       )}
     >
@@ -128,7 +128,7 @@ export function MenuItem({
 
 export function MenuLabel({ children }: { children: ReactNode }) {
   return (
-    <p className='px-2 pb-1 pt-1.5 text-[9px] font-black uppercase tracking-wide text-indigo-light'>
+    <p className='px-2 pb-1 pt-1.5 text-[0.5625rem] font-black uppercase tracking-wide text-indigo-light'>
       {children}
     </p>
   );

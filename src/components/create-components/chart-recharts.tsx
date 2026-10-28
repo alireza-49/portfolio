@@ -84,7 +84,7 @@ function ChartTooltipBox({
             <span className='flex items-center gap-1.5'>
               <span
                 aria-hidden='true'
-                className='size-2 rounded-[2px]'
+                className='size-2 rounded-[0.125rem]'
                 style={{ backgroundColor: item.color }}
               />
               {item.name}

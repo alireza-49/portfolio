@@ -131,7 +131,7 @@ export function TaskBoard({
           </select>
         </div>
 
-        <label className='flex h-9 items-center gap-1.5 rounded-sm border-[1.5px] border-indigo-ink/30 bg-paper px-2 text-[11px] font-bold text-indigo-ink'>
+        <label className='flex h-9 items-center gap-1.5 rounded-sm border-[1.5px] border-indigo-ink/30 bg-paper px-2 text-[0.6875rem] font-bold text-indigo-ink'>
           <input
             type='checkbox'
             checked={showDone}
@@ -142,7 +142,7 @@ export function TaskBoard({
         </label>
 
         <span className='ms-auto flex items-center gap-3'>
-          <span className='font-mono text-[10px] font-bold text-indigo-light'>
+          <span className='font-mono text-[0.625rem] font-bold text-indigo-light'>
             {faDigits(rows.length)} کار
           </span>
           <button type='button' onClick={onCreate} className={BTN_PRIMARY}>
@@ -182,9 +182,9 @@ export function TaskBoard({
         </div>
       ) : (
         <div className='overflow-x-auto'>
-          <table className='w-full min-w-[860px] border-collapse text-start'>
+          <table className='w-full min-w-[53.75rem] border-collapse text-start'>
             <thead>
-              <tr className='border-b-[2px] border-indigo-ink/20 bg-paper-dim text-[10px] font-black text-indigo-light'>
+              <tr className='border-b-[2px] border-indigo-ink/20 bg-paper-dim text-[0.625rem] font-black text-indigo-light'>
                 <th className='px-3 py-2 text-start'>کار</th>
                 <th className='px-3 py-2 text-start'>پروژه</th>
                 <th className='px-3 py-2 text-start'>روز</th>
@@ -215,7 +215,7 @@ export function TaskBoard({
       )}
 
       {pending ? (
-        <p className='flex items-center gap-1.5 px-4 py-2 text-[10px] font-bold text-indigo-light'>
+        <p className='flex items-center gap-1.5 px-4 py-2 text-[0.625rem] font-bold text-indigo-light'>
           <RefreshCw className='size-3 animate-spin' />
           در حال همگام‌سازی با تقویم…
         </p>

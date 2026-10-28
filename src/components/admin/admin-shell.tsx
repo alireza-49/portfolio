@@ -44,7 +44,7 @@ export function AdminShell({
       <aside className='fixed inset-y-0 right-0 z-40 hidden w-64 flex-col border-l-[2px] border-indigo-ink bg-paper-dim lg:flex'>
         <AdminBrand />
         <div className='flex flex-1 flex-col gap-3 overflow-y-auto px-3 py-4'>
-          <span className='px-2 font-mono text-[9px] tracking-widest text-indigo-light uppercase'>
+          <span className='px-2 font-mono text-[0.5625rem] tracking-widest text-indigo-light uppercase'>
             کارگاه / بخش‌ها
           </span>
           <AdminNavLinks />
@@ -63,16 +63,16 @@ export function AdminShell({
             >
               <Menu className='size-4' />
             </button>
-            <span className='hidden font-mono text-[10px] font-bold tracking-widest text-indigo-light uppercase sm:inline'>
+            <span className='hidden font-mono text-[0.625rem] font-bold tracking-widest text-indigo-light uppercase sm:inline'>
               PHILL // OPS
             </span>
-            <span className='truncate text-[13px] font-black text-indigo-ink'>
+            <span className='truncate text-[0.8125rem] font-black text-indigo-ink'>
               {section}
             </span>
           </div>
 
           <div className='flex shrink-0 items-center gap-2'>
-            <span className='hidden items-center gap-1.5 rounded-full border border-teal-craft/40 bg-teal-craft/10 px-2.5 py-0.5 text-[10px] font-bold text-teal-craft sm:inline-flex'>
+            <span className='hidden items-center gap-1.5 rounded-full border border-teal-craft/40 bg-teal-craft/10 px-2.5 py-0.5 text-[0.625rem] font-bold text-teal-craft sm:inline-flex'>
               <span className='relative flex size-1.5'>
                 <span className='absolute inline-flex size-full animate-ping rounded-full bg-teal-craft opacity-70' />
                 <span className='relative inline-flex size-1.5 rounded-full bg-teal-craft' />
@@ -82,7 +82,7 @@ export function AdminShell({
             <form action={logoutAction}>
               <button
                 type='submit'
-                className='inline-flex h-8 items-center gap-1.5 rounded-sm border-[2px] border-indigo-ink bg-paper px-2.5 text-[11px] font-black text-indigo-ink transition-colors hover:bg-indigo-ink hover:text-paper'
+                className='inline-flex h-8 items-center gap-1.5 rounded-sm border-[2px] border-indigo-ink bg-paper px-2.5 text-[0.6875rem] font-black text-indigo-ink transition-colors hover:bg-indigo-ink hover:text-paper'
               >
                 <LogOut className='size-3.5' />
                 <span className='hidden sm:inline'>خروج</span>
@@ -94,7 +94,7 @@ export function AdminShell({
         {usingFallback ? (
           <div
             role='note'
-            className='flex flex-wrap items-center gap-2 border-b-[2px] border-indigo-ink bg-mustard/30 px-4 py-2 text-[11px] font-bold text-indigo-ink sm:px-6'
+            className='flex flex-wrap items-center gap-2 border-b-[2px] border-indigo-ink bg-mustard/30 px-4 py-2 text-[0.6875rem] font-bold text-indigo-ink sm:px-6'
           >
             <ShieldAlert className='size-4 shrink-0 text-coral' />
             <span>

@@ -52,22 +52,22 @@ export function PhaseStepper({ steps }: { steps: ProjectStep[] }) {
             />
             <div className='flex flex-col gap-2 pt-1'>
               <div className='flex items-center justify-between gap-2'>
-                <span className={cn("font-mono text-[10px] font-black", tone.text)}>
+                <span className={cn("font-mono text-[0.625rem] font-black", tone.text)}>
                   گام {faNumber(index + 1)}
                 </span>
                 <StepIcon status={step.status} />
               </div>
-              <h3 className='text-[13px] leading-snug font-black text-indigo-ink'>
+              <h3 className='text-[0.8125rem] leading-snug font-black text-indigo-ink'>
                 {step.title}
               </h3>
               {step.description ? (
-                <p className='text-[11px] leading-relaxed font-medium text-indigo-light'>
+                <p className='text-[0.6875rem] leading-relaxed font-medium text-indigo-light'>
                   {step.description}
                 </p>
               ) : null}
             </div>
             <div className='flex flex-col gap-1.5 border-t border-indigo-ink/10 pt-2'>
-              <div className='flex items-center justify-between text-[10px] font-bold'>
+              <div className='flex items-center justify-between text-[0.625rem] font-bold'>
                 <span className={tone.text}>{meta.label}</span>
                 <span className='font-mono text-indigo-light'>
                   {faNumber(step.progress)}٪
@@ -79,7 +79,7 @@ export function PhaseStepper({ steps }: { steps: ProjectStep[] }) {
                   style={{ width: `${Math.max(0, Math.min(100, step.progress))}%` }}
                 />
               </div>
-              <span className='font-mono text-[9px] font-bold text-indigo-light'>
+              <span className='font-mono text-[0.5625rem] font-bold text-indigo-light'>
                 موعد: {faDate(step.dueDate)}
               </span>
             </div>

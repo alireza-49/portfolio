@@ -95,7 +95,7 @@ export function EditorFormatRow({
           }
         }}
         aria-label='سطح تیتر'
-        className='h-7 rounded-sm border border-indigo-ink/20 bg-paper px-1.5 text-[11px] font-bold text-indigo-ink'
+        className='h-7 rounded-sm border border-indigo-ink/20 bg-paper px-1.5 text-[0.6875rem] font-bold text-indigo-ink'
       >
         <option value='p'>پاراگراف</option>
         <option value='1'>تیتر H1</option>

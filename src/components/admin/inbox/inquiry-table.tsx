@@ -48,9 +48,9 @@ export function InquiryTable({
 
   return (
     <div className='overflow-x-auto'>
-      <table className='w-full min-w-[840px] border-collapse text-right'>
+      <table className='w-full min-w-[52.5rem] border-collapse text-right'>
         <thead>
-          <tr className='border-b-[2px] border-indigo-ink bg-paper-dim text-[11px] font-black text-indigo-ink'>
+          <tr className='border-b-[2px] border-indigo-ink bg-paper-dim text-[0.6875rem] font-black text-indigo-ink'>
             <th scope='col' className='w-10 px-3 py-2 text-center'>
               <input
                 type='checkbox'
@@ -117,10 +117,10 @@ export function InquiryTable({
                       {submission.name.trim().charAt(0) || "؟"}
                     </span>
                     <div className='flex min-w-0 flex-col'>
-                      <span className='truncate text-[13px] font-black text-indigo-ink'>
+                      <span className='truncate text-[0.8125rem] font-black text-indigo-ink'>
                         {submission.name}
                       </span>
-                      <span className='truncate text-[11px] font-medium text-indigo-light'>
+                      <span className='truncate text-[0.6875rem] font-medium text-indigo-light'>
                         {submission.business || "بدون مجموعه"}
                       </span>
                     </div>
@@ -128,10 +128,10 @@ export function InquiryTable({
                 </td>
                 <td className='px-2.5 py-3'>
                   <div className='flex flex-col gap-0.5'>
-                    <span className='text-[12px] font-bold text-indigo-ink'>
+                    <span className='text-[0.75rem] font-bold text-indigo-ink'>
                       {projectLine}
                     </span>
-                    <span className='font-mono text-[11px] font-bold text-coral'>
+                    <span className='font-mono text-[0.6875rem] font-bold text-coral'>
                       {budget}
                     </span>
                   </div>
@@ -139,13 +139,13 @@ export function InquiryTable({
                 <td className='px-2.5 py-3'>
                   <span
                     dir='ltr'
-                    className='block max-w-[11rem] truncate text-right font-mono text-[11px] font-bold text-indigo-ink'
+                    className='block max-w-[11rem] truncate text-right font-mono text-[0.6875rem] font-bold text-indigo-ink'
                   >
                     {submission.contact}
                   </span>
                 </td>
                 <td className='px-2.5 py-3'>
-                  <span className='text-[11px] font-medium text-indigo-light'>
+                  <span className='text-[0.6875rem] font-medium text-indigo-light'>
                     {faDateTime(submission.createdAt)}
                   </span>
                 </td>
@@ -160,7 +160,7 @@ export function InquiryTable({
                     <button
                       type='button'
                       onClick={() => onOpen(submission.id)}
-                      className='inline-flex items-center gap-1 rounded-sm border border-indigo-ink/30 bg-paper px-2 py-1 text-[11px] font-black whitespace-nowrap text-indigo-ink transition-colors hover:bg-indigo-ink hover:text-paper'
+                      className='inline-flex items-center gap-1 rounded-sm border border-indigo-ink/30 bg-paper px-2 py-1 text-[0.6875rem] font-black whitespace-nowrap text-indigo-ink transition-colors hover:bg-indigo-ink hover:text-paper'
                     >
                       <Eye className='size-3.5' />
                       مشاهده

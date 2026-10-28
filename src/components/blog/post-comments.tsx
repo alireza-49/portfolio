@@ -9,7 +9,7 @@ const NAME_KEY = "cc-comment-name";
 
 const INPUT_CLASS =
   "w-full rounded-sm border-[2px] border-indigo-ink bg-paper px-3 py-2 text-sm font-medium text-indigo-ink placeholder:text-indigo-ink/35 focus-visible:border-coral focus-visible:ring-2 focus-visible:ring-coral/25";
-const LABEL_CLASS = "text-[12px] font-bold text-indigo-ink";
+const LABEL_CLASS = "text-[0.75rem] font-bold text-indigo-ink";
 
 export function PostComments({
   slug,
@@ -85,7 +85,7 @@ export function PostComments({
       <div className='mx-auto flex max-w-7xl flex-col gap-5'>
         <div className='flex flex-wrap items-end justify-between gap-2 border-b-[2px] border-indigo-ink pb-3'>
           <div className='flex flex-col gap-1'>
-            <span className='font-mono text-[10px] font-bold tracking-widest text-coral uppercase'>
+            <span className='font-mono text-[0.625rem] font-bold tracking-widest text-coral uppercase'>
               Readers
             </span>
             <h2 className='flex items-center gap-2 text-lg font-black text-indigo-ink'>
@@ -93,7 +93,7 @@ export function PostComments({
               گفت‌وگو
             </h2>
           </div>
-          <span className='rounded-sm border border-indigo-ink/25 bg-paper-dim px-2 py-0.5 text-[10px] font-bold text-indigo-light'>
+          <span className='rounded-sm border border-indigo-ink/25 bg-paper-dim px-2 py-0.5 text-[0.625rem] font-bold text-indigo-light'>
             {faNumber(comments.length)} نظر
           </span>
         </div>
@@ -123,7 +123,7 @@ export function PostComments({
                 autoComplete='email'
                 className={`${INPUT_CLASS} text-left`}
               />
-              <span className='text-[10px] font-medium text-indigo-light'>
+              <span className='text-[0.625rem] font-medium text-indigo-light'>
                 ایمیل فقط برای مدیر است و هیچ‌جا منتشر نمی‌شود.
               </span>
             </label>
@@ -154,7 +154,7 @@ export function PostComments({
           />
 
           <div className='flex flex-wrap items-center justify-between gap-2'>
-            <span className='text-[10px] font-medium text-indigo-light'>
+            <span className='text-[0.625rem] font-medium text-indigo-light'>
               نظرها بی‌درنگ منتشر می‌شوند.
             </span>
             <button
@@ -172,8 +172,8 @@ export function PostComments({
               role={notice.ok ? "status" : "alert"}
               className={
                 notice.ok
-                  ? "text-[11px] font-bold text-teal-craft"
-                  : "text-[11px] font-bold text-coral"
+                  ? "text-[0.6875rem] font-bold text-teal-craft"
+                  : "text-[0.6875rem] font-bold text-coral"
               }
             >
               {notice.message}
@@ -182,7 +182,7 @@ export function PostComments({
         </form>
 
         {comments.length === 0 ? (
-          <p className='rounded-md border border-dashed border-indigo-ink/30 bg-paper-dim p-4 text-[12px] font-medium text-indigo-light'>
+          <p className='rounded-md border border-dashed border-indigo-ink/30 bg-paper-dim p-4 text-[0.75rem] font-medium text-indigo-light'>
             هنوز نظری ثبت نشده؛ اولین نفر باشید.
           </p>
         ) : (
@@ -196,19 +196,19 @@ export function PostComments({
                   <span className='flex items-center gap-2'>
                     <span
                       aria-hidden
-                      className='flex size-6 items-center justify-center rounded-sm border border-indigo-ink/30 bg-paper font-mono text-[10px] font-black text-indigo-ink'
+                      className='flex size-6 items-center justify-center rounded-sm border border-indigo-ink/30 bg-paper font-mono text-[0.625rem] font-black text-indigo-ink'
                     >
                       {comment.name.slice(0, 1)}
                     </span>
-                    <span className='text-[12px] font-black text-indigo-ink'>
+                    <span className='text-[0.75rem] font-black text-indigo-ink'>
                       {comment.name}
                     </span>
                   </span>
-                  <span className='font-mono text-[10px] font-bold text-indigo-light'>
+                  <span className='font-mono text-[0.625rem] font-bold text-indigo-light'>
                     {faDate(comment.createdAt)} · {faTime(comment.createdAt)}
                   </span>
                 </div>
-                <p className='pt-2 text-[12px] leading-relaxed font-medium whitespace-pre-line break-words text-indigo-ink'>
+                <p className='pt-2 text-[0.75rem] leading-relaxed font-medium whitespace-pre-line break-words text-indigo-ink'>
                   {comment.body}
                 </p>
               </li>

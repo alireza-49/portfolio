@@ -35,12 +35,12 @@ export function DesignDocsPanel() {
             className='flex items-center justify-between gap-2 rounded-sm border-[2px] border-indigo-ink/25 bg-paper px-3 py-2 text-start transition-colors hover:bg-mustard/25'
           >
             <span className='flex min-w-0 flex-col gap-0.5'>
-              <span className='truncate text-[12px] font-black text-indigo-ink'>
+              <span className='truncate text-[0.75rem] font-black text-indigo-ink'>
                 {style.label}
               </span>
               <span
                 dir='ltr'
-                className='font-mono text-[9px] font-bold tracking-widest text-indigo-light uppercase'
+                className='font-mono text-[0.5625rem] font-bold tracking-widest text-indigo-light uppercase'
               >
                 {style.id}
               </span>

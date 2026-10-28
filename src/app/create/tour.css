@@ -26,7 +26,7 @@
 .driver-popover.cc-tour-popover .driver-popover-title {
   margin: 0;
   padding-inline-end: 1.4rem;
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 900;
   line-height: 1.8;
   color: var(--color-indigo-ink);
@@ -35,7 +35,7 @@
 
 .driver-popover.cc-tour-popover .driver-popover-description {
   margin: 6px 0 0;
-  font-size: 12.5px;
+  font-size: 0.78125rem;
   font-weight: 500;
   line-height: 2;
   color: var(--color-indigo-light);
@@ -48,7 +48,7 @@
   left: 0;
   width: 28px;
   height: 26px;
-  font-size: 20px;
+  font-size: 1.25rem;
   font-weight: 900;
   line-height: 1;
   color: var(--color-indigo-light);
@@ -74,7 +74,7 @@
 
 .driver-popover.cc-tour-popover .driver-popover-progress-text {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 0.625rem;
   font-weight: 700;
   color: var(--color-indigo-light);
   white-space: nowrap;
@@ -99,7 +99,7 @@
   background-color: var(--color-paper-dim);
   color: var(--color-indigo-ink);
   font-family: inherit;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 900;
   line-height: 1.6;
   text-decoration: none;
@@ -163,7 +163,7 @@
   border-radius: 2px;
   background-color: var(--color-mustard);
   color: var(--color-indigo-ink);
-  font-size: 12.5px;
+  font-size: 0.78125rem;
   font-weight: 800;
   line-height: 1.9;
   text-align: right;
@@ -172,12 +172,12 @@
 .driver-popover.cc-tour-popover .cc-tour-scope b {
   display: block;
   margin-bottom: 2px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 900;
 }
 
 .driver-popover.cc-tour-popover .cc-tour-scope-sm {
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.85;
 }
 
@@ -194,7 +194,7 @@
   background-color: var(--color-coral);
   color: var(--color-paper-light);
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 900;
   line-height: 1;
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type MouseEvent } from "react";
 import { cn } from "cn";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -52,6 +52,23 @@ const ADDONS = [
 type ProjectType = (typeof PROJECT_TYPES)[number]["value"];
 type Speed = (typeof SPEEDS)[number]["value"];
 type Addon = (typeof ADDONS)[number]["value"];
+
+/**
+ * Base UI draws each control as a `<span role="checkbox|radio">` beside a
+ * visually hidden native input, and a `<label>` around that pair forwards label
+ * taps (plus the focus that tags along) to the clipped input — on mobile the
+ * browser scrolls the page to it, which lands on the top of the estimator. So
+ * the row handles its own tap: a tap on the control arrives with
+ * `defaultPrevented` already set (Base UI toggled it), every other tap is
+ * cancelled here and applied by hand. Click-anywhere and the label's accessible
+ * name stay intact.
+ */
+const rowClick =
+  (activate: () => void) => (event: MouseEvent<HTMLLabelElement>) => {
+    if (event.defaultPrevented) return;
+    event.preventDefault();
+    activate();
+  };
 
 /**
  * Which timing and which modules each project type can take. The form only
@@ -173,11 +190,11 @@ export function EstimatorSection() {
   return (
     <section
       id='estimator-section'
-      className='w-full border-b-[2.5px] border-indigo-ink bg-paper-dim px-4 py-12 sm:px-8 lg:px-12'
+      className='w-full scroll-mt-16 border-b-[2.5px] border-indigo-ink bg-paper-dim px-4 py-12 sm:px-8 lg:px-12'
     >
       <div className='mx-auto flex max-w-7xl flex-col gap-10'>
         <div className='border-b-[2px] border-indigo-ink pb-6 text-right'>
-          <h2 className='text-[26px] font-black text-indigo-ink sm:text-[34px]'>
+          <h2 className='text-[1.625rem] font-black text-indigo-ink sm:text-[2.125rem]'>
             برآورد رایگان زمان و هزینه پروژه شما
           </h2>
         </div>
@@ -185,7 +202,7 @@ export function EstimatorSection() {
         <div className='grid grid-cols-1 gap-8 lg:grid-cols-12'>
           <Card className='craft-card flex flex-col gap-6 rounded-sm bg-paper-light p-6 sm:p-8 lg:col-span-7'>
             <div>
-              <span className='mb-3 flex items-center gap-2 text-[16px] font-black text-indigo-ink'>
+              <span className='mb-3 flex items-center gap-2 text-[1rem] font-black text-indigo-ink'>
                 <span className='flex h-6 w-6 items-center justify-center rounded-full bg-coral font-mono text-xs text-white'>
                   ۱
                 </span>
@@ -203,6 +220,7 @@ export function EstimatorSection() {
                   return (
                     <label
                       key={type.value}
+                      onClick={rowClick(() => selectProjectType(type.value))}
                       className={cn(
                         "flex cursor-pointer items-center justify-between gap-2 rounded-sm border-[2px] p-3.5 transition-colors",
                         checked
@@ -219,7 +237,7 @@ export function EstimatorSection() {
                           {type.label}
                         </span>
                       </div>
-                      <span className='shrink-0 whitespace-nowrap font-mono text-[12px] font-bold text-coral'>
+                      <span className='shrink-0 whitespace-nowrap font-mono text-[0.75rem] font-bold text-coral'>
                         {type.base}
                       </span>
                     </label>
@@ -229,7 +247,7 @@ export function EstimatorSection() {
             </div>
 
             <div>
-              <span className='mb-3 flex items-center gap-2 text-[16px] font-black text-indigo-ink'>
+              <span className='mb-3 flex items-center gap-2 text-[1rem] font-black text-indigo-ink'>
                 <span className='flex h-6 w-6 items-center justify-center rounded-full bg-coral font-mono text-xs text-white'>
                   ۲
                 </span>
@@ -246,6 +264,9 @@ export function EstimatorSection() {
                   return (
                     <label
                       key={option.value}
+                      onClick={rowClick(() => {
+                        if (available) setSpeed(option.value);
+                      })}
                       className={cn(
                         "flex flex-col items-center justify-center gap-1 rounded-sm border-[2px] p-3 text-center transition-colors",
                         !available
@@ -271,7 +292,7 @@ export function EstimatorSection() {
                         {option.title}
                       </div>
                       {available ? (
-                        <div className='mt-0.5 flex items-center gap-1 font-mono text-[11px]'>
+                        <div className='mt-0.5 flex items-center gap-1 font-mono text-[0.6875rem]'>
                           {option.nominal ? (
                             <>
                               <span className='text-indigo-light line-through'>
@@ -286,7 +307,7 @@ export function EstimatorSection() {
                           )}
                         </div>
                       ) : (
-                        <div className='mt-0.5 font-mono text-[10px] font-bold text-indigo-ink/55'>
+                        <div className='mt-0.5 font-mono text-[0.625rem] font-bold text-indigo-ink/55'>
                           برای این نوع پروژه نیست
                         </div>
                       )}
@@ -297,7 +318,7 @@ export function EstimatorSection() {
             </div>
 
             <div>
-              <span className='mb-3 flex items-center gap-2 text-[16px] font-black text-indigo-ink'>
+              <span className='mb-3 flex items-center gap-2 text-[1rem] font-black text-indigo-ink'>
                 <span className='flex h-6 w-6 items-center justify-center rounded-full bg-coral font-mono text-xs text-white'>
                   ۳
                 </span>
@@ -310,6 +331,7 @@ export function EstimatorSection() {
                   return (
                     <label
                       key={addon.value}
+                      onClick={rowClick(() => toggleAddon(addon.value))}
                       className={cn(
                         "flex items-center gap-2.5 rounded-sm border-[1.5px] p-3",
                         !available
@@ -391,18 +413,18 @@ export function EstimatorSection() {
                   محدوده سرمایه‌گذاری تقریبی
                 </span>
                 <div className='flex items-baseline justify-center gap-1.5'>
-                  <span className='font-display text-[34px] font-black text-coral'>
+                  <span className='font-display text-[2.125rem] font-black text-coral'>
                     {toPersianDigits(estimate.min)}
                   </span>
                   <span className='text-lg font-black text-indigo-ink'>تا</span>
-                  <span className='font-display text-[34px] font-black text-coral'>
+                  <span className='font-display text-[2.125rem] font-black text-coral'>
                     {toPersianDigits(estimate.max)}
                   </span>
                   <span className='text-sm font-bold text-indigo-ink'>
                     میلیون تومان
                   </span>
                 </div>
-                <span className='text-[11px] text-indigo-light'>
+                <span className='text-[0.6875rem] text-indigo-light'>
                   شامل صفر تا صد کدنویسی، رسپانسیو و تحویل نهایی
                 </span>
               </Card>

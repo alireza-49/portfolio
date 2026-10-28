@@ -62,7 +62,7 @@ export function CommentsPanel({ comments }: { comments: PostComment[] }) {
         title='نظرات یادداشت‌ها'
         description='نظرهای خوانندگان؛ هر نظر بی‌درنگ منتشر می‌شود و از همین‌جا حذف می‌شود.'
         actions={
-          <span className='rounded-sm border border-indigo-ink/25 bg-paper-dim px-2.5 py-1 font-mono text-[11px] font-bold text-indigo-light'>
+          <span className='rounded-sm border border-indigo-ink/25 bg-paper-dim px-2.5 py-1 font-mono text-[0.6875rem] font-bold text-indigo-light'>
             {faNumber(rows.length)} نظر
           </span>
         }
@@ -73,8 +73,8 @@ export function CommentsPanel({ comments }: { comments: PostComment[] }) {
           role={notice.ok ? "status" : "alert"}
           className={
             notice.ok
-              ? "rounded-sm border border-teal-craft/40 bg-teal-craft/10 px-3 py-2 text-[11px] font-bold text-teal-craft"
-              : "rounded-sm border border-coral/40 bg-coral/10 px-3 py-2 text-[11px] font-bold text-coral"
+              ? "rounded-sm border border-teal-craft/40 bg-teal-craft/10 px-3 py-2 text-[0.6875rem] font-bold text-teal-craft"
+              : "rounded-sm border border-coral/40 bg-coral/10 px-3 py-2 text-[0.6875rem] font-bold text-coral"
           }
         >
           {notice.message}
@@ -90,7 +90,7 @@ export function CommentsPanel({ comments }: { comments: PostComment[] }) {
       ) : (
         <Panel className='overflow-hidden'>
           <div className='flex flex-wrap items-center justify-between gap-2 border-b-[2px] border-dashed border-indigo-ink/20 p-3 sm:p-4'>
-            <label className='inline-flex items-center gap-2 text-[11px] font-bold text-indigo-ink'>
+            <label className='inline-flex items-center gap-2 text-[0.6875rem] font-bold text-indigo-ink'>
               <input
                 type='checkbox'
                 checked={allSelected}
@@ -102,7 +102,7 @@ export function CommentsPanel({ comments }: { comments: PostComment[] }) {
 
             {selected.length > 0 ? (
               <div className='flex flex-wrap items-center gap-2'>
-                <span className='text-[11px] font-black text-indigo-ink'>
+                <span className='text-[0.6875rem] font-black text-indigo-ink'>
                   {faNumber(selected.length)} نظر انتخاب شده
                 </span>
                 <button
@@ -133,7 +133,7 @@ export function CommentsPanel({ comments }: { comments: PostComment[] }) {
                     setArmKey(null);
                     setSelected([]);
                   }}
-                  className='text-[11px] font-bold text-indigo-ink/70 hover:text-coral'
+                  className='text-[0.6875rem] font-bold text-indigo-ink/70 hover:text-coral'
                 >
                   لغو انتخاب
                 </button>
@@ -142,9 +142,9 @@ export function CommentsPanel({ comments }: { comments: PostComment[] }) {
           </div>
 
           <div className='overflow-x-auto'>
-            <table className='w-full min-w-[1040px] border-collapse text-right'>
+            <table className='w-full min-w-[65rem] border-collapse text-right'>
               <thead>
-                <tr className='border-b-[2px] border-indigo-ink bg-paper-dim/60 text-[10px] font-black tracking-wide text-indigo-ink'>
+                <tr className='border-b-[2px] border-indigo-ink bg-paper-dim/60 text-[0.625rem] font-black tracking-wide text-indigo-ink'>
                   <th className='w-10 px-3 py-2'>
                     <span className='sr-only'>انتخاب</span>
                   </th>
@@ -173,21 +173,21 @@ export function CommentsPanel({ comments }: { comments: PostComment[] }) {
                         />
                       </td>
                       <td className='px-3 py-2.5'>
-                        <span className='block text-[12px] font-black text-indigo-ink'>
+                        <span className='block text-[0.75rem] font-black text-indigo-ink'>
                           {comment.name}
                         </span>
                         <a
                           href={`mailto:${comment.email}`}
                           dir='ltr'
-                          className='block text-left font-mono text-[10px] font-bold text-indigo-light hover:text-coral'
+                          className='block text-left font-mono text-[0.625rem] font-bold text-indigo-light hover:text-coral'
                         >
                           {comment.email}
                         </a>
                       </td>
-                      <td className='max-w-[380px] px-3 py-2.5'>
+                      <td className='max-w-[23.75rem] px-3 py-2.5'>
                         <p
                           title={comment.body}
-                          className='line-clamp-2 text-[12px] leading-relaxed font-medium break-words text-indigo-ink/90'
+                          className='line-clamp-2 text-[0.75rem] leading-relaxed font-medium break-words text-indigo-ink/90'
                         >
                           {comment.body}
                         </p>
@@ -197,13 +197,13 @@ export function CommentsPanel({ comments }: { comments: PostComment[] }) {
                           href={`/blog/${comment.postSlug}`}
                           target='_blank'
                           rel='noreferrer'
-                          className='inline-flex items-center gap-1 text-[11px] font-bold text-indigo-ink underline decoration-indigo-ink/30 underline-offset-2 hover:text-coral'
+                          className='inline-flex items-center gap-1 text-[0.6875rem] font-bold text-indigo-ink underline decoration-indigo-ink/30 underline-offset-2 hover:text-coral'
                         >
                           {comment.postTitle}
                           <ExternalLink className='size-3' />
                         </a>
                       </td>
-                      <td className='px-3 py-2.5 font-mono text-[10px] font-bold whitespace-nowrap text-indigo-light'>
+                      <td className='px-3 py-2.5 font-mono text-[0.625rem] font-bold whitespace-nowrap text-indigo-light'>
                         {faDateTime(comment.createdAt)}
                       </td>
                       <td className='px-3 py-2.5'>
@@ -220,8 +220,8 @@ export function CommentsPanel({ comments }: { comments: PostComment[] }) {
                           }}
                           className={
                             armed
-                              ? "inline-flex items-center gap-1 rounded-sm border-[1.5px] border-coral bg-coral px-2 py-1 text-[10px] font-black text-white disabled:opacity-60"
-                              : "inline-flex items-center gap-1 rounded-sm border-[1.5px] border-coral bg-paper px-2 py-1 text-[10px] font-black text-coral transition-colors hover:bg-coral hover:text-white disabled:opacity-60"
+                              ? "inline-flex items-center gap-1 rounded-sm border-[1.5px] border-coral bg-coral px-2 py-1 text-[0.625rem] font-black text-white disabled:opacity-60"
+                              : "inline-flex items-center gap-1 rounded-sm border-[1.5px] border-coral bg-paper px-2 py-1 text-[0.625rem] font-black text-coral transition-colors hover:bg-coral hover:text-white disabled:opacity-60"
                           }
                         >
                           <Trash2 className='size-3' />

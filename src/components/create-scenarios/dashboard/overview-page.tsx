@@ -128,7 +128,7 @@ export function OverviewPage({ data }: { data: DashboardData }) {
           >
             <span className='flex flex-col gap-0.5'>
               {alert.detail}
-              <span className='text-[9px] opacity-70'>{alert.time}</span>
+              <span className='text-[0.5625rem] opacity-70'>{alert.time}</span>
             </span>
           </Alert>
         ))}
@@ -145,7 +145,7 @@ export function OverviewPage({ data }: { data: DashboardData }) {
               value={metric}
               onValueChange={(value) => setMetric(value as Metric)}
             >
-              <TabsList className='text-[10px]'>
+              <TabsList className='text-[0.625rem]'>
                 <TabsTrigger value='revenue'>درآمد</TabsTrigger>
                 <TabsTrigger value='orders'>سفارش</TabsTrigger>
               </TabsList>

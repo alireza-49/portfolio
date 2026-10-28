@@ -113,7 +113,7 @@ export default async function BlogPostPage({
           <div className='mx-auto flex max-w-7xl flex-col gap-4'>
             <div className='flex flex-wrap items-end justify-between gap-2 border-b-[2px] border-indigo-ink pb-3'>
               <div className='flex flex-col gap-1'>
-                <span className='font-mono text-[10px] font-bold tracking-widest text-coral uppercase'>
+                <span className='font-mono text-[0.625rem] font-bold tracking-widest text-coral uppercase'>
                   Related reading
                 </span>
                 <h2 className='text-lg font-black text-indigo-ink'>
@@ -122,7 +122,7 @@ export default async function BlogPostPage({
               </div>
               <Link
                 href='/blog'
-                className='inline-flex items-center gap-1 text-[11px] font-black text-coral hover:text-indigo-ink'
+                className='inline-flex items-center gap-1 text-[0.6875rem] font-black text-coral hover:text-indigo-ink'
               >
                 کل آرشیو
                 <ArrowLeft className='size-3.5' />

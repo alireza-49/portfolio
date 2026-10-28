@@ -61,13 +61,13 @@ export function PostCard({
             {post.tags.slice(0, 3).map((tag) => (
               <span
                 key={tag}
-                className='rounded-sm border border-indigo-ink/25 bg-paper-dim px-1.5 py-0.5 text-[9px] font-bold text-indigo-ink'
+                className='rounded-sm border border-indigo-ink/25 bg-paper-dim px-1.5 py-0.5 text-[0.5625rem] font-bold text-indigo-ink'
               >
                 {tag}
               </span>
             ))}
           </div>
-          <span className='font-mono text-[10px] font-bold text-indigo-light'>
+          <span className='font-mono text-[0.625rem] font-bold text-indigo-light'>
             {faDate(post.publishedAt)}
           </span>
         </div>
@@ -81,11 +81,11 @@ export function PostCard({
           {post.title}
         </h3>
 
-        <p className='line-clamp-3 text-[12px] leading-relaxed font-medium text-indigo-light'>
+        <p className='line-clamp-3 text-[0.75rem] leading-relaxed font-medium text-indigo-light'>
           {post.excerpt || deriveExcerpt(post.contentHtml, featured ? 220 : 130)}
         </p>
 
-        <span className='flex items-center gap-3 text-[10px] font-bold text-indigo-light'>
+        <span className='flex items-center gap-3 text-[0.625rem] font-bold text-indigo-light'>
           <span className='inline-flex items-center gap-1'>
             <Eye className='size-3' />
             {faNumber(post.views)}
@@ -97,14 +97,14 @@ export function PostCard({
         </span>
 
         <div className='mt-auto flex items-center justify-between border-t border-dashed border-indigo-ink/20 pt-2'>
-          <span className='flex items-center gap-2 text-[10px] font-bold text-indigo-light'>
+          <span className='flex items-center gap-2 text-[0.625rem] font-bold text-indigo-light'>
             <span className='font-black text-indigo-ink'>{post.author}</span>
             <span className='flex items-center gap-1'>
               <Clock3 className='size-3' />
               {faNumber(post.readingMinutes)} دقیقه
             </span>
           </span>
-          <span className='flex items-center gap-1 text-[11px] font-black text-coral'>
+          <span className='flex items-center gap-1 text-[0.6875rem] font-black text-coral'>
             مطالعه
             <ArrowLeft className='size-3.5' />
           </span>

@@ -201,7 +201,7 @@ export function TaskForm({
         {clash ? (
           <p
             role='status'
-            className='rounded-sm border-[1.5px] border-mustard-deep bg-mustard/20 px-3 py-2 text-[11px] font-bold text-indigo-ink md:col-span-2'
+            className='rounded-sm border-[1.5px] border-mustard-deep bg-mustard/20 px-3 py-2 text-[0.6875rem] font-bold text-indigo-ink md:col-span-2'
           >
             هم‌پوشانی با «{clash.title}» در {faDate(clash.startsAt)} •{" "}
             {faTimeRange(clash.startsAt, clash.endsAt)} — ثبت مجاز است.

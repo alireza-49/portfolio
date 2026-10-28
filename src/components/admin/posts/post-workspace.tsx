@@ -47,7 +47,7 @@ export function PostWorkspace({
           <div className='flex flex-col gap-2 p-4 sm:p-5'>
             <label
               htmlFor='post-title'
-              className='font-mono text-[10px] font-bold tracking-widest text-coral uppercase'
+              className='font-mono text-[0.625rem] font-bold tracking-widest text-coral uppercase'
             >
               Headline / تیتر اصلی
             </label>
@@ -58,7 +58,7 @@ export function PostWorkspace({
               placeholder='تیتر اصلی مقاله را اینجا بنویسید…'
               className='w-full border-0 border-b-[2px] border-indigo-ink/25 bg-transparent pb-2 font-display text-xl leading-tight font-black text-indigo-ink outline-none placeholder:text-indigo-ink/30 focus:border-coral sm:text-2xl'
             />
-            <span className='font-mono text-[10px] font-bold text-indigo-light'>
+            <span className='font-mono text-[0.625rem] font-bold text-indigo-light'>
               {draft.slug ? `/blog/${draft.slug}` : "نامک هنوز تعیین نشده است"}
             </span>
           </div>
@@ -90,7 +90,7 @@ export function PostWorkspace({
             </button>
             <Link
               href='/admin/posts'
-              className='text-[11px] font-bold text-indigo-light hover:text-coral'
+              className='text-[0.6875rem] font-bold text-indigo-light hover:text-coral'
             >
               بازگشت بدون ذخیره
             </Link>

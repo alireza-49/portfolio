@@ -109,7 +109,7 @@ export function InquiryStudioPanel({
   return (
     <>
       <div className='flex flex-col gap-2 rounded-sm border border-indigo-ink/20 bg-paper p-3'>
-        <span className='flex items-center gap-1.5 text-[12px] font-black text-indigo-ink'>
+        <span className='flex items-center gap-1.5 text-[0.75rem] font-black text-indigo-ink'>
           <Palette className='size-3.5 text-coral' />
           ظاهر و تم استودیو
         </span>
@@ -131,11 +131,11 @@ export function InquiryStudioPanel({
           ) : null}
         </div>
         {submission.studioSummary ? (
-          <pre className='max-h-40 overflow-auto rounded-sm bg-paper-dim p-2 text-[10px] leading-relaxed font-medium whitespace-pre-wrap text-indigo-ink'>
+          <pre className='max-h-40 overflow-auto rounded-sm bg-paper-dim p-2 text-[0.625rem] leading-relaxed font-medium whitespace-pre-wrap text-indigo-ink'>
             {submission.studioSummary}
           </pre>
         ) : (
-          <p className='text-[11px] font-medium text-indigo-light'>
+          <p className='text-[0.6875rem] font-medium text-indigo-light'>
             این درخواست بدون پیکربندی استودیو ارسال شده است.
           </p>
         )}
@@ -144,7 +144,7 @@ export function InquiryStudioPanel({
             <button
               type='button'
               onClick={() => downloadStudioConfig(submission)}
-              className='inline-flex w-fit items-center gap-1.5 rounded-sm border-[1.5px] border-indigo-ink bg-paper px-2 py-1 text-[11px] font-black text-indigo-ink transition-colors hover:bg-mustard/30'
+              className='inline-flex w-fit items-center gap-1.5 rounded-sm border-[1.5px] border-indigo-ink bg-paper px-2 py-1 text-[0.6875rem] font-black text-indigo-ink transition-colors hover:bg-mustard/30'
             >
               <Download className='size-3.5' />
               دانلود پیکربندی JSON
@@ -158,7 +158,7 @@ export function InquiryStudioPanel({
                     designDoc,
                   )
                 }
-                className='inline-flex w-fit items-center gap-1.5 rounded-sm border-[1.5px] border-teal-craft bg-teal-craft/10 px-2 py-1 text-[11px] font-black text-teal-craft transition-colors hover:bg-teal-craft hover:text-white'
+                className='inline-flex w-fit items-center gap-1.5 rounded-sm border-[1.5px] border-teal-craft bg-teal-craft/10 px-2 py-1 text-[0.6875rem] font-black text-teal-craft transition-colors hover:bg-teal-craft hover:text-white'
               >
                 <Download className='size-3.5' />
                 دانلود design.md (انگلیسی)
@@ -171,7 +171,7 @@ export function InquiryStudioPanel({
       <div className='flex flex-col gap-1.5'>
         <label
           htmlFor='submission-status'
-          className='text-[12px] font-black text-indigo-ink'
+          className='text-[0.75rem] font-black text-indigo-ink'
         >
           تغییر وضعیت درخواست
         </label>
@@ -196,7 +196,7 @@ export function InquiryStudioPanel({
         <button
           type='button'
           onClick={copyReply}
-          className='inline-flex items-center gap-1.5 rounded-sm border-[2px] border-indigo-ink bg-paper px-2.5 py-1.5 text-[11px] font-black text-indigo-ink transition-colors hover:bg-mustard/30'
+          className='inline-flex items-center gap-1.5 rounded-sm border-[2px] border-indigo-ink bg-paper px-2.5 py-1.5 text-[0.6875rem] font-black text-indigo-ink transition-colors hover:bg-mustard/30'
         >
           {copied ? (
             <Check className='size-3.5' />
@@ -207,7 +207,7 @@ export function InquiryStudioPanel({
         </button>
         <a
           href={`mailto:${submission.contact}?subject=${encodeURIComponent("پاسخ وب دیزاین فیل")}&body=${encodeURIComponent(replyText)}`}
-          className='inline-flex items-center gap-1.5 rounded-sm border-[2px] border-indigo-ink bg-paper px-2.5 py-1.5 text-[11px] font-black text-indigo-ink transition-colors hover:bg-mustard/30'
+          className='inline-flex items-center gap-1.5 rounded-sm border-[2px] border-indigo-ink bg-paper px-2.5 py-1.5 text-[0.6875rem] font-black text-indigo-ink transition-colors hover:bg-mustard/30'
         >
           <Mail className='size-3.5' />
           ایمیل رسمی
@@ -222,14 +222,14 @@ export function InquiryStudioPanel({
             onDelete();
           }}
           disabled={pending}
-          className='ms-auto inline-flex items-center gap-1.5 rounded-sm border-[2px] border-coral bg-coral/10 px-2.5 py-1.5 text-[11px] font-black text-coral transition-colors hover:bg-coral hover:text-white disabled:opacity-60'
+          className='ms-auto inline-flex items-center gap-1.5 rounded-sm border-[2px] border-coral bg-coral/10 px-2.5 py-1.5 text-[0.6875rem] font-black text-coral transition-colors hover:bg-coral hover:text-white disabled:opacity-60'
         >
           <Trash2 className='size-3.5' />
           {confirmDelete ? "برای حذف دوباره بزنید" : "حذف درخواست"}
         </button>
       </div>
 
-      <p className='flex items-center gap-1.5 text-[10px] font-medium text-indigo-light'>
+      <p className='flex items-center gap-1.5 text-[0.625rem] font-medium text-indigo-light'>
         <Wand2 className='size-3' />
         این پنل فقط داده‌های ثبت‌شده در پایگاه داده را نمایش می‌دهد؛ اعلان
         ایمیلی خودکار ارسال نمی‌شود.

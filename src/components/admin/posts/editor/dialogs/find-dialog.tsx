@@ -84,7 +84,7 @@ export function FindDialog({
           </DialogTitle>
         </DialogHeader>
         <div className='grid gap-3'>
-          <label className='grid gap-1 text-[11px] font-bold text-indigo-ink'>
+          <label className='grid gap-1 text-[0.6875rem] font-bold text-indigo-ink'>
             جستجو
             <input
               value={search}
@@ -94,11 +94,11 @@ export function FindDialog({
               autoFocus
             />
           </label>
-          <label className='grid gap-1 text-[11px] font-bold text-indigo-ink'>
+          <label className='grid gap-1 text-[0.6875rem] font-bold text-indigo-ink'>
             جایگزین
             <input value={replace} onChange={(event) => setReplace(event.target.value)} className={FIELD_CLASS} />
           </label>
-          <div className='flex flex-wrap gap-3 text-[11px] font-bold text-indigo-ink'>
+          <div className='flex flex-wrap gap-3 text-[0.6875rem] font-bold text-indigo-ink'>
             <label className='flex items-center gap-1.5'>
               <input type='checkbox' checked={caseSensitive} onChange={(event) => setCaseSensitive(event.target.checked)} />
               حساس به حرف بزرگ
@@ -112,7 +112,7 @@ export function FindDialog({
               عبارت منظم
             </label>
           </div>
-          {error ? <p className='text-[11px] font-bold text-coral-dark'>{error}</p> : null}
+          {error ? <p className='text-[0.6875rem] font-bold text-coral-dark'>{error}</p> : null}
         </div>
         <DialogFooter className='flex flex-wrap gap-2'>
           <button type='button' className={BTN_SECONDARY} onClick={() => run("prev")}>قبلی</button>

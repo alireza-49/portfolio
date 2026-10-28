@@ -248,3 +248,80 @@ CREATE TABLE IF NOT EXISTS post_comments (
 
 CREATE INDEX IF NOT EXISTS post_comments_post_idx
   ON post_comments (post_id, created_at DESC);
+
+-- ==========================================================================
+-- Outbound SMS (AmootSMS)
+-- ==========================================================================
+
+/*
+ * One settings row, encrypted like the Google tokens: `amootsms_token` is
+ * AES-256-GCM ciphertext from `secrets.ts`, so a database dump is not an API
+ * token. Rotating ADMIN_SESSION_SECRET makes it unreadable again and the console
+ * asks for the token instead of failing every send.
+ *
+ * `amootsms_line` stays empty by default — AmootSMS then sends on its public
+ * line ("public"), the only sender we can honestly guess.
+ */
+CREATE TABLE IF NOT EXISTS app_settings (
+  id TEXT PRIMARY KEY,
+  amootsms_token TEXT NOT NULL DEFAULT '',
+  amootsms_line TEXT NOT NULL DEFAULT '',
+  sms_enabled BOOLEAN NOT NULL DEFAULT FALSE,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+/*
+ * A database created before the switch still has the Kavenegar columns. Rename
+ * them in place so existing rows survive, then blank both: a Kavenegar key can
+ * never authenticate against Amoot, and its sender line means nothing there.
+ */
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+     WHERE table_schema = current_schema()
+       AND table_name = 'app_settings'
+       AND column_name = 'kavenegar_api_key'
+  ) THEN
+    ALTER TABLE app_settings RENAME COLUMN kavenegar_api_key TO amootsms_token;
+    ALTER TABLE app_settings RENAME COLUMN kavenegar_sender TO amootsms_line;
+    UPDATE app_settings SET amootsms_token = '', amootsms_line = '';
+  END IF;
+END $$;
+
+/*
+ * One row per attempt, including the ones that never left the server (SMS off,
+ * no token, no valid mobile, provider error). "The client says nothing arrived"
+ * must be answerable from the console, not from a shell.
+ */
+CREATE TABLE IF NOT EXISTS sms_log (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  kind TEXT NOT NULL CHECK (
+    kind IN ('submission', 'project_status', 'project_progress', 'test')
+  ),
+  receptor TEXT NOT NULL DEFAULT '',
+  ref_id UUID,
+  body TEXT NOT NULL DEFAULT '',
+  ok BOOLEAN NOT NULL DEFAULT FALSE,
+  provider_status TEXT,
+  provider_message TEXT NOT NULL DEFAULT '',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+/* AmootSMS answers with status words ("Token_NotExists"), not HTTP codes. */
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+     WHERE table_schema = current_schema()
+       AND table_name = 'sms_log'
+       AND column_name = 'provider_status'
+       AND data_type <> 'text'
+  ) THEN
+    ALTER TABLE sms_log
+      ALTER COLUMN provider_status TYPE TEXT USING provider_status::text;
+  END IF;
+END $$;
+
+CREATE INDEX IF NOT EXISTS sms_log_created_idx ON sms_log (created_at DESC);
+CREATE INDEX IF NOT EXISTS sms_log_ref_idx ON sms_log (ref_id, created_at DESC);

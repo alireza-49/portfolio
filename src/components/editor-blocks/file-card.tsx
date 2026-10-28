@@ -98,7 +98,7 @@ export function FileCard({
           ) : (
             <p className='text-xs text-indigo-light'>برای این نوع فایل پیش‌نمایش درون‌صفحه‌ای نداریم؛ از دانلود استفاده کنید.</p>
           )}
-          <a href={downloadUrl} download={name} rel='noopener noreferrer' className='inline-flex w-fit items-center gap-1.5 rounded-sm bg-indigo-ink px-3 py-1.5 text-[11px] font-bold text-paper'>
+          <a href={downloadUrl} download={name} rel='noopener noreferrer' className='inline-flex w-fit items-center gap-1.5 rounded-sm bg-indigo-ink px-3 py-1.5 text-[0.6875rem] font-bold text-paper'>
             <Download className='size-3.5' />
             دانلود فایل
           </a>

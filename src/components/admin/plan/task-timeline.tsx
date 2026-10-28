@@ -116,10 +116,10 @@ export function TaskTimeline({
   return (
     <div className='flex flex-col'>
       <div className='overflow-x-auto'>
-        <div className='min-w-[720px]'>
+        <div className='min-w-[45rem]'>
           <div className='flex items-center border-b-[2px] border-indigo-ink/20 bg-paper-dim'>
             <div className='sticky start-0 z-20 w-36 shrink-0 border-e border-indigo-ink/20 bg-paper-dim px-2 py-1.5'>
-              <span className='text-[10px] font-black text-indigo-light'>
+              <span className='text-[0.625rem] font-black text-indigo-light'>
                 پروژه / روز
               </span>
             </div>
@@ -128,7 +128,7 @@ export function TaskTimeline({
                 <div
                   key={day.day}
                   className={cn(
-                    "flex-1 border-s border-indigo-ink/5 py-1 text-center font-mono text-[9px] font-bold",
+                    "flex-1 border-s border-indigo-ink/5 py-1 text-center font-mono text-[0.5625rem] font-bold",
                     day.day === today
                       ? "bg-coral/15 text-coral-dark"
                       : "text-indigo-light",
@@ -140,7 +140,7 @@ export function TaskTimeline({
             </div>
           </div>
 
-          <div className='max-h-[420px] overflow-y-auto'>
+          <div className='max-h-[26.25rem] overflow-y-auto'>
             {ordered.map((project) => {
               const projectTasks = tasks
                 .filter(
@@ -166,12 +166,12 @@ export function TaskTimeline({
                   <div className='sticky start-0 z-20 flex w-36 shrink-0 items-center gap-1 border-e border-indigo-ink/20 bg-paper-light px-2 py-1.5'>
                     <div className='flex min-w-0 flex-col'>
                       <span
-                        className='truncate text-[11px] font-black text-indigo-ink'
+                        className='truncate text-[0.6875rem] font-black text-indigo-ink'
                         title={project.title}
                       >
                         {project.title}
                       </span>
-                      <span className='font-mono text-[9px] font-bold text-indigo-light'>
+                      <span className='font-mono text-[0.5625rem] font-bold text-indigo-light'>
                         {project.code}
                       </span>
                     </div>
@@ -223,7 +223,7 @@ export function TaskTimeline({
                               task.done && "border-dashed opacity-60",
                             )}
                           >
-                            <span className='truncate text-[10px] font-black text-indigo-ink'>
+                            <span className='truncate text-[0.625rem] font-black text-indigo-ink'>
                               {task.title}
                             </span>
                           </button>
@@ -238,10 +238,10 @@ export function TaskTimeline({
             {laneCount > 0 ? (
               <div className='flex items-stretch border-b border-indigo-ink/10 bg-paper-dim/60'>
                 <div className='sticky start-0 z-20 flex w-36 shrink-0 flex-col justify-center border-e border-indigo-ink/20 bg-paper-dim px-2 py-1.5'>
-                  <span className='text-[10px] font-black text-indigo-light'>
+                  <span className='text-[0.625rem] font-black text-indigo-light'>
                     تقویم گوگل
                   </span>
-                  <span className='text-[9px] font-bold text-indigo-light/80'>
+                  <span className='text-[0.5625rem] font-bold text-indigo-light/80'>
                     فقط خواندنی
                   </span>
                 </div>
@@ -307,7 +307,7 @@ export function TaskTimeline({
       </div>
 
       <div className='flex flex-wrap items-center gap-3 border-t-[2px] border-dashed border-indigo-ink/20 px-4 py-2'>
-        <span className='text-[10px] font-black text-indigo-light'>
+        <span className='text-[0.625rem] font-black text-indigo-light'>
           راهنما:
         </span>
         {(["synced", "pending", "error", "skipped"] as ProjectTaskSyncState[]).map(
@@ -317,7 +317,7 @@ export function TaskTimeline({
             </StatusPill>
           ),
         )}
-        <span className='ms-auto flex items-center gap-1 text-[10px] font-bold text-indigo-light'>
+        <span className='ms-auto flex items-center gap-1 text-[0.625rem] font-bold text-indigo-light'>
           <ExternalLink className='size-3' />
           {faDigits(lanes.length)} رویداد واردشده •{" "}
           {faDuration(

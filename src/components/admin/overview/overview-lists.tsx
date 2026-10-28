@@ -28,7 +28,7 @@ export function RecentSubmissionsPanel({
         actions={
           <Link
             href='/admin/inbox'
-            className='inline-flex items-center gap-1 text-[11px] font-black text-coral hover:text-indigo-ink'
+            className='inline-flex items-center gap-1 text-[0.6875rem] font-black text-coral hover:text-indigo-ink'
           >
             همهٔ درخواست‌ها
             <ArrowLeft className='size-3' />
@@ -53,12 +53,12 @@ export function RecentSubmissionsPanel({
                 className='flex flex-col gap-1 px-4 py-3 transition-colors hover:bg-mustard/15 sm:px-5'
               >
                 <div className='flex flex-wrap items-center justify-between gap-2'>
-                  <span className='text-[13px] font-black text-indigo-ink'>
+                  <span className='text-[0.8125rem] font-black text-indigo-ink'>
                     {submission.name}
                   </span>
                   <StatusPill tone={meta.tone}>{meta.label}</StatusPill>
                 </div>
-                <div className='flex flex-wrap items-center justify-between gap-2 text-[11px] font-medium text-indigo-light'>
+                <div className='flex flex-wrap items-center justify-between gap-2 text-[0.6875rem] font-medium text-indigo-light'>
                   <span>
                     {submission.business || "بدون مجموعه"}
                     {submission.projectType
@@ -87,7 +87,7 @@ export function ActiveProjectsPanel({ projects }: { projects: Project[] }) {
         actions={
           <Link
             href='/admin/progress'
-            className='inline-flex items-center gap-1 text-[11px] font-black text-coral hover:text-indigo-ink'
+            className='inline-flex items-center gap-1 text-[0.6875rem] font-black text-coral hover:text-indigo-ink'
           >
             تابلوی پیشرفت
             <ArrowLeft className='size-3' />
@@ -117,8 +117,8 @@ export function ActiveProjectsPanel({ projects }: { projects: Project[] }) {
                 className='flex flex-col gap-2 px-4 py-3 transition-colors hover:bg-mustard/15 sm:px-5'
               >
                 <div className='flex flex-wrap items-center justify-between gap-2'>
-                  <span className='flex items-center gap-2 text-[13px] font-black text-indigo-ink'>
-                    <span className='rounded-sm border border-indigo-ink/30 bg-paper-dim px-1.5 py-0.5 font-mono text-[10px]'>
+                  <span className='flex items-center gap-2 text-[0.8125rem] font-black text-indigo-ink'>
+                    <span className='rounded-sm border border-indigo-ink/30 bg-paper-dim px-1.5 py-0.5 font-mono text-[0.625rem]'>
                       {project.code}
                     </span>
                     {project.title}
@@ -132,11 +132,11 @@ export function ActiveProjectsPanel({ projects }: { projects: Project[] }) {
                       style={{ width: `${project.progress}%` }}
                     />
                   </div>
-                  <span className='font-mono text-[10px] font-bold text-indigo-light'>
+                  <span className='font-mono text-[0.625rem] font-bold text-indigo-light'>
                     {faNumber(project.progress)}٪
                   </span>
                 </div>
-                <span className='text-[11px] font-medium text-indigo-light'>
+                <span className='text-[0.6875rem] font-medium text-indigo-light'>
                   {project.currentPhase || "بدون فاز فعال"}
                 </span>
               </Link>

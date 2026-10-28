@@ -50,7 +50,7 @@ export function OfferBoard({ offers }: { offers: Submission[] }) {
         actions={
           <Link
             href='/admin/inbox'
-            className='inline-flex items-center gap-1 text-[11px] font-black text-coral hover:text-indigo-ink'
+            className='inline-flex items-center gap-1 text-[0.6875rem] font-black text-coral hover:text-indigo-ink'
           >
             صندوق درخواست‌ها
             <ArrowLeft className='size-3' />
@@ -80,12 +80,12 @@ export function OfferBoard({ offers }: { offers: Submission[] }) {
                 className='flex flex-col gap-1.5 px-4 py-3 transition-colors hover:bg-mustard/15 sm:px-5'
               >
                 <div className='flex flex-wrap items-center justify-between gap-2'>
-                  <span className='text-[13px] font-black text-indigo-ink'>
+                  <span className='text-[0.8125rem] font-black text-indigo-ink'>
                     {offer.name}
                   </span>
                   <StatusPill tone={meta.tone}>{meta.label}</StatusPill>
                 </div>
-                <div className='flex flex-wrap items-center justify-between gap-2 text-[11px] font-medium text-indigo-light'>
+                <div className='flex flex-wrap items-center justify-between gap-2 text-[0.6875rem] font-medium text-indigo-light'>
                   <span>
                     {[offer.business, offer.projectType || typeTitle]
                       .filter(Boolean)
@@ -93,7 +93,7 @@ export function OfferBoard({ offers }: { offers: Submission[] }) {
                   </span>
                   <span className='font-mono'>{faRelative(offer.createdAt)}</span>
                 </div>
-                <span className='inline-flex w-fit items-center gap-1 rounded-sm border-[1.5px] border-mustard-deep bg-mustard/25 px-2 py-0.5 text-[11px] font-black text-indigo-ink'>
+                <span className='inline-flex w-fit items-center gap-1 rounded-sm border-[1.5px] border-mustard-deep bg-mustard/25 px-2 py-0.5 text-[0.6875rem] font-black text-indigo-ink'>
                   <Banknote className='size-3' />
                   {range
                     ? `${faNumber(range.min)} تا ${faNumber(range.max)} م.ت`
@@ -105,7 +105,7 @@ export function OfferBoard({ offers }: { offers: Submission[] }) {
         )}
       </div>
       {ceiling > 0 ? (
-        <div className='border-t-2 border-dashed border-indigo-ink/20 px-4 py-2.5 text-[11px] font-bold text-indigo-light sm:px-5'>
+        <div className='border-t-2 border-dashed border-indigo-ink/20 px-4 py-2.5 text-[0.6875rem] font-bold text-indigo-light sm:px-5'>
           سقف برآورد پیشنهادهای باز:{" "}
           <span className='font-mono text-indigo-ink'>{faMoney(ceiling)}</span>
         </div>
@@ -130,7 +130,7 @@ export function ContractBoard({ projects }: { projects: Project[] }) {
         actions={
           <Link
             href='/admin/projects'
-            className='inline-flex items-center gap-1 text-[11px] font-black text-coral hover:text-indigo-ink'
+            className='inline-flex items-center gap-1 text-[0.6875rem] font-black text-coral hover:text-indigo-ink'
           >
             مدیریت پروژه‌ها
             <ArrowLeft className='size-3' />
@@ -170,8 +170,8 @@ export function ContractBoard({ projects }: { projects: Project[] }) {
                 className='flex flex-col gap-2 px-4 py-3 transition-colors hover:bg-mustard/15 sm:px-5'
               >
                 <div className='flex flex-wrap items-center justify-between gap-2'>
-                  <span className='flex items-center gap-2 text-[13px] font-black text-indigo-ink'>
-                    <span className='rounded-sm border border-indigo-ink/30 bg-paper-dim px-1.5 py-0.5 font-mono text-[10px]'>
+                  <span className='flex items-center gap-2 text-[0.8125rem] font-black text-indigo-ink'>
+                    <span className='rounded-sm border border-indigo-ink/30 bg-paper-dim px-1.5 py-0.5 font-mono text-[0.625rem]'>
                       {project.code}
                     </span>
                     {project.title}
@@ -185,11 +185,11 @@ export function ContractBoard({ projects }: { projects: Project[] }) {
                       style={{ width: `${ratio}%` }}
                     />
                   </div>
-                  <span className='font-mono text-[10px] font-bold text-indigo-light'>
+                  <span className='font-mono text-[0.625rem] font-bold text-indigo-light'>
                     {faNumber(ratio)}٪
                   </span>
                 </div>
-                <div className='flex flex-wrap items-center justify-between gap-2 text-[11px] font-bold text-indigo-light'>
+                <div className='flex flex-wrap items-center justify-between gap-2 text-[0.6875rem] font-bold text-indigo-light'>
                   <span className='font-mono'>
                     مبلغ: <span className='text-indigo-ink'>{faMoney(project.amount)}</span>
                   </span>
@@ -203,7 +203,7 @@ export function ContractBoard({ projects }: { projects: Project[] }) {
         )}
       </div>
       {ordered.length > 0 ? (
-        <div className='border-t-2 border-dashed border-indigo-ink/20 px-4 py-2.5 text-[11px] font-bold text-indigo-light sm:px-5'>
+        <div className='border-t-2 border-dashed border-indigo-ink/20 px-4 py-2.5 text-[0.6875rem] font-bold text-indigo-light sm:px-5'>
           جمع قراردادها:{" "}
           <span className='font-mono text-indigo-ink'>{faMoney(contracted)}</span>
           {" • "}
