@@ -16,6 +16,7 @@ import {
   type SubmissionStatus,
 } from "@/lib/types";
 import {
+  bulkDeleteSubmissionAction,
   bulkSetSubmissionStatusAction,
   deleteSubmissionAction,
   setSubmissionStatusAction,
@@ -92,6 +93,21 @@ export function InquiryInbox({
     });
   };
 
+  const removeSelected = () => {
+    if (selected.length === 0) return;
+    startTransition(async () => {
+      const result = await bulkDeleteSubmissionAction(selected);
+      if (result.ok) {
+        setOpenId((current) =>
+          current && selected.includes(current) ? null : current,
+        );
+        setSelected([]);
+      }
+      notify(result.message);
+      if (result.ok) router.refresh();
+    });
+  };
+
   const applyBulk = () => {
     if (selected.length === 0) return;
     startTransition(async () => {
@@ -125,7 +141,7 @@ export function InquiryInbox({
   return (
     <div className='flex flex-col gap-5'>
       <PageHeader
-        eyebrow='CODOLOGY STUDIO // INBOUND OPS'
+        eyebrow='PHILL WEB DESIGN // INBOUND OPS'
         title='صندوق استعلام و پیام‌های سفارش'
         description='هر پیامی که از فرم تماس سایت ثبت شود، همراه با برآورد هزینه و پیکربندی استودیو، همین‌جا نگه‌داری می‌شود.'
         actions={
@@ -186,6 +202,7 @@ export function InquiryInbox({
           bulkStatus={bulkStatus}
           onBulkStatus={setBulkStatus}
           onApplyBulk={applyBulk}
+          onDeleteSelected={removeSelected}
           onClearSelection={() => setSelected([])}
           pending={pending}
           notice={notice}
@@ -193,9 +210,11 @@ export function InquiryInbox({
         <InquiryTable
           rows={filtered}
           selected={selected}
+          pending={pending}
           onToggle={toggle}
           onToggleAll={toggleAll}
           onOpen={(id) => setOpenId(id)}
+          onDelete={remove}
         />
       </Panel>
 

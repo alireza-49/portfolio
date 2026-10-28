@@ -7,7 +7,7 @@ import {
   Panel,
   PanelHeading,
 } from "@/components/admin/ui";
-import type { PostInput, PostStatus } from "@/lib/types";
+import type { PostInput, PostIssue, PostStatus } from "@/lib/types";
 import { RichTextEditor, type OutlineItem } from "./rich-text-editor";
 import { PostSidebar } from "./post-sidebar";
 
@@ -21,6 +21,10 @@ export function PostWorkspace({
   pending,
   onSave,
   published,
+  issues,
+  onRestore,
+  onAuditChange,
+  onExport,
 }: {
   draft: PostInput;
   patch: (values: Partial<PostInput>) => void;
@@ -31,6 +35,10 @@ export function PostWorkspace({
   pending: boolean;
   onSave: (status: PostStatus) => void;
   published: boolean;
+  issues: PostIssue[];
+  onRestore: (html: string) => void;
+  onAuditChange: (issues: PostIssue[]) => void;
+  onExport: (markdown: string) => void;
 }) {
   return (
     <div className='grid grid-cols-1 gap-4 xl:grid-cols-12'>
@@ -39,7 +47,7 @@ export function PostWorkspace({
           <div className='flex flex-col gap-2 p-4 sm:p-5'>
             <label
               htmlFor='post-title'
-              className='font-mono text-[10px] font-bold tracking-widest text-coral uppercase'
+              className='font-mono text-[0.625rem] font-bold tracking-widest text-coral uppercase'
             >
               Headline / تیتر اصلی
             </label>
@@ -50,7 +58,7 @@ export function PostWorkspace({
               placeholder='تیتر اصلی مقاله را اینجا بنویسید…'
               className='w-full border-0 border-b-[2px] border-indigo-ink/25 bg-transparent pb-2 font-display text-xl leading-tight font-black text-indigo-ink outline-none placeholder:text-indigo-ink/30 focus:border-coral sm:text-2xl'
             />
-            <span className='font-mono text-[10px] font-bold text-indigo-light'>
+            <span className='font-mono text-[0.625rem] font-bold text-indigo-light'>
               {draft.slug ? `/blog/${draft.slug}` : "نامک هنوز تعیین نشده است"}
             </span>
           </div>
@@ -60,6 +68,8 @@ export function PostWorkspace({
           value={draft.contentHtml}
           onChange={(contentHtml) => patch({ contentHtml })}
           onOutlineChange={onOutlineChange}
+          onAuditChange={onAuditChange}
+          onExport={onExport}
         />
 
         <Panel>
@@ -80,7 +90,7 @@ export function PostWorkspace({
             </button>
             <Link
               href='/admin/posts'
-              className='text-[11px] font-bold text-indigo-light hover:text-coral'
+              className='text-[0.6875rem] font-bold text-indigo-light hover:text-coral'
             >
               بازگشت بدون ذخیره
             </Link>
@@ -98,6 +108,9 @@ export function PostWorkspace({
           pending={pending}
           onSave={() => onSave(draft.status)}
           onTogglePublish={() => onSave(published ? "draft" : "published")}
+          postId={postId}
+          issues={issues}
+          onRestore={onRestore}
         />
       </div>
     </div>

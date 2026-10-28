@@ -36,8 +36,15 @@ function sslFor(url) {
   return { rejectUnauthorized: false };
 }
 
+// Keep in sync with src/lib/db.ts: `sslmode=require` already means verify-full,
+// so state it explicitly instead of letting pg warn about its v3 change.
+function explicitSslMode(url) {
+  if (/\buselibpqcompat=true\b/.test(url)) return url;
+  return url.replace(/([?&]sslmode=)(prefer|require|verify-ca)(?=&|$)/, "$1verify-full");
+}
+
 const pool = new Pool({
-  connectionString,
+  connectionString: explicitSslMode(connectionString),
   max: 1,
   ssl: sslFor(connectionString),
 });
@@ -121,6 +128,54 @@ async function insertPosts() {
   }
 }
 
+/**
+ * One-time display baselines for the posts that already exist. The guard means
+ * re-running setup never overwrites numbers the owner edited in the console.
+ * Kept modest on purpose: 100–200 reads a lively archive without bragging, and
+ * likes stay around 5% of views so the pair looks natural.
+ */
+const BLOG_ENGAGEMENT = [
+  { slug: "riso-ink-and-modern-code", views: 180, likes: 9 },
+  { slug: "sterile-web-return-of-ink", views: 140, likes: 7 },
+  { slug: "persian-type-at-web-speed", views: 120, likes: 6 },
+];
+
+async function seedEngagementBaselines() {
+  let touched = 0;
+  for (const item of BLOG_ENGAGEMENT) {
+    const result = await pool.query(
+      `UPDATE posts SET base_views = $2, base_likes = $3
+        WHERE slug = $1 AND base_views = 0 AND base_likes = 0`,
+      [item.slug, item.views, item.likes],
+    );
+    touched += result.rowCount ?? 0;
+  }
+
+  // Posts written in the console are not in the seed list; give them the same
+  // starting numbers (newest first) so a live archive is not all zeros. The
+  // zero-guard still skips anything the owner already touched.
+  const rest = await pool.query(
+    `SELECT id FROM posts
+      WHERE status = 'published' AND base_views = 0 AND base_likes = 0
+      ORDER BY published_at DESC NULLS LAST, created_at DESC`,
+  );
+  for (const [index, row] of rest.rows.entries()) {
+    const seed = BLOG_ENGAGEMENT[index % BLOG_ENGAGEMENT.length];
+    const result = await pool.query(
+      `UPDATE posts SET base_views = $2, base_likes = $3
+        WHERE id = $1 AND base_views = 0 AND base_likes = 0`,
+      [row.id, seed.views, seed.likes],
+    );
+    touched += result.rowCount ?? 0;
+  }
+
+  console.log(
+    touched
+      ? `✓ starting views/hearts set on ${touched} posts`
+      : "• starting views/hearts already set — skipped",
+  );
+}
+
 async function insertSubmissions() {
   for (const submission of submissions) {
     await pool.query(
@@ -178,6 +233,8 @@ try {
   } else {
     console.log(`• posts already has ${existing.posts} rows — skipped`);
   }
+
+  await seedEngagementBaselines();
 
   if (existing.submissions === 0) {
     await insertSubmissions();

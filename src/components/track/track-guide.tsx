@@ -33,7 +33,7 @@ export function TrackGuide() {
                 className='flex flex-col gap-2 rounded-sm border-[2px] border-indigo-ink/20 bg-paper-light p-4'
               >
                 <div className='flex items-center justify-between'>
-                  <span className='font-mono text-[10px] font-black text-coral'>
+                  <span className='font-mono text-[0.625rem] font-black text-coral'>
                     {faNumber(index + 1)}
                   </span>
                   <Icon className='size-5 text-coral' />
@@ -41,7 +41,7 @@ export function TrackGuide() {
                 <h3 className='text-sm font-black text-indigo-ink'>
                   {step.title}
                 </h3>
-                <p className='text-[11px] leading-relaxed font-medium text-indigo-light'>
+                <p className='text-[0.6875rem] leading-relaxed font-medium text-indigo-light'>
                   {step.body}
                 </p>
               </div>

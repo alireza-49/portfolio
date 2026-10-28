@@ -47,7 +47,7 @@ export function getAdminConfig(): AdminConfig | null {
   if (!isProduction) {
     return {
       username: "admin",
-      password: "codology-dev",
+      password: "phill-dev",
       secret: secret || DEV_SECRET,
       usingFallback: true,
     };

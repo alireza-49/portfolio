@@ -38,13 +38,13 @@ export default function ConsoleError({
 
       <pre
         dir='ltr'
-        className='overflow-x-auto rounded-sm border border-indigo-ink/20 bg-paper-dim p-3 font-mono text-[12px] text-indigo-ink'
+        className='overflow-x-auto rounded-sm border border-indigo-ink/20 bg-paper-dim p-3 font-mono text-[0.75rem] text-indigo-ink'
       >
         npm run db:setup
       </pre>
 
       {error.digest ? (
-        <p className='font-mono text-[10px] text-indigo-light'>
+        <p className='font-mono text-[0.625rem] text-indigo-light'>
           digest: {error.digest}
         </p>
       ) : null}

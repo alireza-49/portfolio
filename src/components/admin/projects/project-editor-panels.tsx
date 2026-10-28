@@ -1,8 +1,9 @@
 "use client";
 
 import { Panel, PanelHeading } from "@/components/admin/ui";
-import type { ProjectInput } from "@/lib/types";
+import type { ProjectInput, ProjectTask } from "@/lib/types";
 import { ProjectBasics } from "./project-basics";
+import { ProjectSchedulePanel } from "./project-schedule-panel";
 import { ProjectSettings } from "./project-settings";
 import { ProjectStepsEditor } from "./project-steps-editor";
 import { ProjectUpdatesEditor } from "./project-updates-editor";
@@ -10,9 +11,15 @@ import { ProjectUpdatesEditor } from "./project-updates-editor";
 export function ProjectEditorPanels({
   draft,
   patch,
+  projectId,
+  tasks,
+  now,
 }: {
   draft: ProjectInput;
   patch: (values: Partial<ProjectInput>) => void;
+  projectId: string;
+  tasks: ProjectTask[];
+  now: string;
 }) {
   return (
     <>
@@ -56,6 +63,21 @@ export function ProjectEditorPanels({
         <ProjectUpdatesEditor
           updates={draft.updates}
           onChange={(updates) => patch({ updates })}
+        />
+      </Panel>
+
+      <Panel>
+        <PanelHeading
+          eyebrow='05 / SCHEDULE'
+          title='زمان‌بندی کارها و تقویم گوگل'
+          description='برای هر کار بازهٔ شروع و پایان بگذارید؛ همان بازه به‌صورت رویداد زمان‌دار در تقویم گوگل ساخته می‌شود. کارها به تقویم شمسی و منطقهٔ زمانی تهران ثبت می‌شوند.'
+        />
+        <ProjectSchedulePanel
+          projectId={projectId}
+          tasks={tasks}
+          startDate={draft.startDate}
+          dueDate={draft.dueDate}
+          now={now}
         />
       </Panel>
     </>

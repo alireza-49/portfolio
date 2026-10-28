@@ -3,43 +3,36 @@
 import { useEffect, useRef } from "react";
 
 type CustomCursorProps = {
-  /** Hide the OS cursor while the custom one is active. */
+  /** Hide the OS cursor with a global `cursor: none` stylesheet. */
   hideNativeCursor?: boolean;
-  /** Disable the sprinkle particles. */
+  /** Emit the sprinkle particles while the pointer is moving. */
   sprinkles?: boolean;
 };
 
-const PARTICLE_COLORS = ["#e76f51", "#2a9d8f", "#2b2d42", "#e9c46a", "#f4a261"];
+const MAX_PARTICLES = 90;
 
-const MAX_PARTICLES = 260;
+/** Cold accents pulled from the design system. */
+const PARTICLE_COLORS = ["#e76f51", "#2a9d8f", "#e9c46a", "#2b2d42", "#264653"];
+
+/** Sprinkle lifecycle — faster pointer movement means a denser trail. */
 const MAX_SPEED = 3; // px per ms at which the ring is fully stretched
 const EMIT_THRESHOLD = 0.05; // normalized speed below which nothing is emitted
 const RING_SIZE = 34;
 const DOT_SIZE = 7;
-
-/** Dot appearance while hovering an interactive control. */
-const DOT_HOVER_SIZE = 9;
-const DOT_HOVER_RADIUS = 2;
 const DOT_COLOR = "#e76f51"; // --color-coral
-const DOT_HOVER_COLOR = "#264653"; // --color-secondary / --color-indigo-ink
 
 /** Ring elongation at full speed, along the direction of travel. */
 const STRETCH_LENGTH = 1.4;
-/** Ring thinning at full speed, across the direction of travel. */
-const STRETCH_SQUASH = 0.38;
-/** Small overall swell so the ring gains presence with speed. */
-const STRETCH_SWELL = 0.12;
+/** Extra size added uniformly while stretched, so the ring keeps its mass. */
+const STRETCH_SWELL = 0.22;
+/** Cross-axis squash at full speed. */
+const STRETCH_SQUASH = 0.45;
 
 /**
- * Hides the OS cursor everywhere.
- *
- * The universal `!important` rule is required: utility classes such as
- * Tailwind's `cursor-pointer` (used on buttons, links, `[role='button']`, …)
- * are class selectors and would otherwise beat a plain `html, body` rule,
- * making the native arrow pop back in on hover.
- *
- * Text fields keep a real caret cursor — that rule is more specific
- * (`html input` = 0,0,2 vs `*` = 0,0,0) and also `!important`, so it wins.
+ * Hiding the OS cursor is global (`cursor: none`) on purpose: it keeps every
+ * child selector in the app out of the way, so components can use arbitrary
+ * cursor utilities without fighting the overlay. Text fields opt back in
+ * below, otherwise inserting a caret becomes guesswork.
  */
 const NATIVE_CURSOR_CSS = `
   html, body, *, *::before, *::after { cursor: none !important; }
@@ -49,32 +42,6 @@ const NATIVE_CURSOR_CSS = `
   html [contenteditable='true'],
   html [contenteditable=''] { cursor: text !important; }
 `;
-
-/** Elements the ring snaps around and grows to match. */
-const MORPH_SELECTOR = [
-  "a",
-  "button",
-  "[role='button']",
-  "[data-cursor-morph]",
-  "[data-slot='badge']",
-  ".craft-card",
-  ".craft-btn",
-].join(",");
-
-/**
- * Elements that turn the centre dot from a coral circle into an indigo square.
- * Deliberately narrower than MORPH_SELECTOR: cards and badges keep the dot
- * round, only real controls get the square.
- */
-const DOT_SQUARE_SELECTOR = [
-  "button",
-  "[role='button']",
-  ".craft-btn",
-  "a",
-].join(",");
-
-/** Breathing room between the ring and the element it wraps. */
-const MORPH_PADDING = 8;
 
 type Particle = {
   x: number;
@@ -88,17 +55,6 @@ type Particle = {
   square: boolean;
   rot: number;
   spin: number;
-};
-
-type MorphTarget = {
-  el: Element;
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  r: number;
-  /** Cached border radius so we don't read computed style every frame. */
-  radius: number;
 };
 
 export function CustomCursor({
@@ -139,87 +95,6 @@ export function CustomCursor({
     let stretch = 0; // smoothed 0..1
     let emitAccumulator = 0;
 
-    // ---- morph state -----------------------------------------------------
-    let morphTarget: MorphTarget | null = null;
-    let morphAmount = 0; // smoothed 0..1, damps the velocity stretch
-    let ringW = RING_SIZE;
-    let ringH = RING_SIZE;
-    let ringR = RING_SIZE / 2;
-
-    // ---- dot state -------------------------------------------------------
-    let dotHover = false;
-
-    /**
-     * Push the dot's shape/colour for the current hover state.
-     * Only called when the state flips — the CSS transition on the dot
-     * animates the circle → square morph, so the render loop stays cheap.
-     */
-    const applyDotState = () => {
-      const size = dotHover ? DOT_HOVER_SIZE : DOT_SIZE;
-      dot.style.width = `${size}px`;
-      dot.style.height = `${size}px`;
-      dot.style.borderRadius = dotHover ? `${DOT_HOVER_RADIUS}px` : "50%";
-      dot.style.backgroundColor = dotHover ? DOT_HOVER_COLOR : DOT_COLOR;
-    };
-
-    const setDotHover = (next: boolean) => {
-      if (next === dotHover) return;
-      dotHover = next;
-      applyDotState();
-    };
-
-    const readMorph = (el: Element): MorphTarget | null => {
-      const rect = el.getBoundingClientRect();
-      if (rect.width < 1 || rect.height < 1) return null;
-
-      const radius = parseFloat(getComputedStyle(el).borderTopLeftRadius) || 0;
-      const w = rect.width + MORPH_PADDING * 2;
-      const h = rect.height + MORPH_PADDING * 2;
-
-      return {
-        el,
-        x: rect.left + rect.width / 2,
-        y: rect.top + rect.height / 2,
-        w,
-        h,
-        r: Math.min(radius + MORPH_PADDING, Math.min(w, h) / 2),
-        radius,
-      };
-    };
-
-    /**
-     * Re-measure the hovered element. Called every frame so the ring keeps
-     * hugging elements that move while hovered (hover lifts, transitions,
-     * layout shifts, carousels).
-     */
-    const syncMorph = () => {
-      if (!morphTarget) return;
-
-      const el = morphTarget.el;
-      if (!el.isConnected) {
-        morphTarget = null;
-        return;
-      }
-
-      const rect = el.getBoundingClientRect();
-      if (rect.width < 1 || rect.height < 1) {
-        morphTarget = null;
-        return;
-      }
-
-      const w = rect.width + MORPH_PADDING * 2;
-      const h = rect.height + MORPH_PADDING * 2;
-
-      morphTarget.x = rect.left + rect.width / 2;
-      morphTarget.y = rect.top + rect.height / 2;
-      morphTarget.w = w;
-      morphTarget.h = h;
-      morphTarget.r = Math.min(
-        morphTarget.radius + MORPH_PADDING,
-        Math.min(w, h) / 2,
-      );
-    };
-
     // ---- canvas sizing ---------------------------------------------------
     let width = 0;
     let height = 0;
@@ -233,7 +108,6 @@ export function CustomCursor({
       canvas.style.width = `${width}px`;
       canvas.style.height = `${height}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      syncMorph();
     };
     resize();
 
@@ -301,26 +175,9 @@ export function CustomCursor({
       }
     };
 
-    const onPointerOver = (event: PointerEvent) => {
-      if (!enabled) return;
-
-      const target = event.target;
-      if (!(target instanceof Element)) return;
-
-      // centre dot: square + secondary ink over interactive controls
-      setDotHover(target.closest(DOT_SQUARE_SELECTOR) !== null);
-
-      const el = target.closest(MORPH_SELECTOR);
-      if (el === morphTarget?.el) return;
-
-      morphTarget = el ? readMorph(el) : null;
-    };
-
     const onPointerLeave = () => {
       dot.style.opacity = "0";
       ring.style.opacity = "0";
-      morphTarget = null;
-      setDotHover(false);
     };
 
     const onPointerEnter = () => {
@@ -340,36 +197,16 @@ export function CustomCursor({
       lastFrame = now;
       const step = dt / 16.667;
 
-      // keep the ring glued to elements that move while hovered
-      syncMorph();
-
       // let the velocity bleed off when the pointer stops moving
       speed *= Math.exp(-dt / 110);
 
-      // ---- morph easing --------------------------------------------------
-      const morphing = morphTarget !== null;
-      const morphEase = 1 - Math.pow(1 - 0.2, step);
-
-      morphAmount += ((morphing ? 1 : 0) - morphAmount) * morphEase;
-
-      const targetW = morphTarget ? morphTarget.w : RING_SIZE;
-      const targetH = morphTarget ? morphTarget.h : RING_SIZE;
-      const targetR = morphTarget ? morphTarget.r : RING_SIZE / 2;
-
-      ringW += (targetW - ringW) * morphEase;
-      ringH += (targetH - ringH) * morphEase;
-      ringR += (targetR - ringR) * morphEase;
-
-      // ring easing toward the pointer (or the hovered element)
+      // ring easing toward the pointer
       const follow = 1 - Math.pow(1 - 0.17, step);
-      const followX = morphTarget ? morphTarget.x : pointer.x;
-      const followY = morphTarget ? morphTarget.y : pointer.y;
-      ringPos.x += (followX - ringPos.x) * follow;
-      ringPos.y += (followY - ringPos.y) * follow;
+      ringPos.x += (pointer.x - ringPos.x) * follow;
+      ringPos.y += (pointer.y - ringPos.y) * follow;
 
       // stretch easing
-      const targetStretch =
-        still || morphing ? 0 : Math.min(speed / MAX_SPEED, 1);
+      const targetStretch = still ? 0 : Math.min(speed / MAX_SPEED, 1);
       stretch += (targetStretch - stretch) * (1 - Math.pow(1 - 0.22, step));
 
       // angle easing along the shortest path
@@ -386,18 +223,12 @@ export function CustomCursor({
       // ring: elongated along the direction of travel, thinned across it.
       //
       // `rotate(angle) scale(along, across)` would also rotate the ring's own
-      // box, which pops as a spin the moment the ring morphs into a link or a
-      // button. So the anisotropic scale is baked into the travel frame
-      // instead:  R(angle) · S(along, across) · R(-angle).
-      // A circle is invariant under R(-angle), so the visible result is the
-      // same ellipse pointing down the travel axis, while a morphing shape
-      // keeps its own orientation. The stretch also relaxes as the ring grows
-      // into an element (`morphAmount`), so it never distorts the wrapper.
-      const spread = stretch * (1 - morphAmount);
+      // box and its border, so instead the anisotropic scale is baked into the
+      // travel frame:  R(angle) · S(along, across) · R(-angle).
       const alongScale =
-        (1 + spread * STRETCH_LENGTH) * (1 + spread * STRETCH_SWELL);
+        (1 + stretch * STRETCH_LENGTH) * (1 + stretch * STRETCH_SWELL);
       const acrossScale =
-        (1 - spread * STRETCH_SQUASH) * (1 + spread * STRETCH_SWELL);
+        (1 - stretch * STRETCH_SQUASH) * (1 + stretch * STRETCH_SWELL);
 
       const cos = Math.cos(angle);
       const sin = Math.sin(angle);
@@ -406,9 +237,6 @@ export function CustomCursor({
       const m11 = alongScale * cos * cos + acrossScale * sin * sin;
       const m22 = alongScale * sin * sin + acrossScale * cos * cos;
 
-      ring.style.width = `${ringW}px`;
-      ring.style.height = `${ringH}px`;
-      ring.style.borderRadius = `${ringR}px`;
       ring.style.transform =
         `translate3d(${ringPos.x}px, ${ringPos.y}px, 0) translate(-50%, -50%) ` +
         `matrix(${m11}, ${cross}, ${cross}, ${m22}, 0, 0)`;
@@ -477,21 +305,12 @@ export function CustomCursor({
     // ---- wiring ----------------------------------------------------------
     window.addEventListener("pointermove", onPointerMove, { passive: true });
     window.addEventListener("resize", resize);
-    window.addEventListener("scroll", syncMorph, {
-      passive: true,
-      capture: true,
-    });
-    document.addEventListener("pointerover", onPointerOver, { passive: true });
     document.addEventListener("pointerleave", onPointerLeave);
     document.addEventListener("pointerenter", onPointerEnter);
 
     const onPointerCapabilityChange = () => {
       enabled = finePointer.matches;
       container.style.display = enabled ? "" : "none";
-      if (!enabled) {
-        morphTarget = null;
-        setDotHover(false);
-      }
     };
     const onMotionChange = () => {
       still = reducedMotion.matches;
@@ -512,8 +331,6 @@ export function CustomCursor({
       cancelAnimationFrame(raf);
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("resize", resize);
-      window.removeEventListener("scroll", syncMorph, { capture: true });
-      document.removeEventListener("pointerover", onPointerOver);
       document.removeEventListener("pointerleave", onPointerLeave);
       document.removeEventListener("pointerenter", onPointerEnter);
       finePointer.removeEventListener("change", onPointerCapabilityChange);
@@ -525,35 +342,29 @@ export function CustomCursor({
   return (
     <div
       ref={containerRef}
-      aria-hidden='true'
-      // Above every dialog/overlay, including driver.js' tour layer (z-index
-      // 1e9): the custom pointer must stay visible while a guide is open.
-      className='pointer-events-none fixed inset-0 z-[2147483647] overflow-hidden'
+      aria-hidden
+      className="pointer-events-none fixed inset-0 z-[2147483647] overflow-hidden"
     >
-      <canvas ref={canvasRef} className='absolute inset-0' />
+      <canvas ref={canvasRef} className="absolute inset-0" />
       <div
         ref={ringRef}
-        className='absolute left-0 top-0 border-2 will-change-transform'
+        className="absolute top-0 left-0 rounded-full border-2 border-[#2b2d42]"
         style={{
           width: RING_SIZE,
           height: RING_SIZE,
-          borderRadius: RING_SIZE / 2,
-          borderColor: "#2b2d42",
+          borderRadius: "50%",
           opacity: 0,
-          transition: "opacity 200ms ease",
         }}
       />
       <div
         ref={dotRef}
-        className='absolute left-0 top-0 will-change-transform'
+        className="absolute top-0 left-0 rounded-full"
         style={{
           width: DOT_SIZE,
           height: DOT_SIZE,
           borderRadius: "50%",
           backgroundColor: DOT_COLOR,
           opacity: 0,
-          transition:
-            "opacity 200ms ease, width 180ms ease, height 180ms ease, border-radius 180ms ease, background-color 180ms ease",
         }}
       />
     </div>

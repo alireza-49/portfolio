@@ -31,7 +31,7 @@ export function LoginForm({
     <form action={formAction} className='flex w-full flex-col gap-5'>
       <div className='flex items-center gap-2 rounded-sm border-[1.5px] border-indigo-ink/25 bg-paper-dim px-3 py-2'>
         <ShieldCheck className='size-4 shrink-0 text-coral' />
-        <span className='text-[11px] font-bold text-indigo-ink'>
+        <span className='text-[0.6875rem] font-bold text-indigo-ink'>
           نشست احراز هویت‌شده / امضای HMAC-SHA256
         </span>
       </div>
@@ -39,7 +39,7 @@ export function LoginForm({
       <div className='flex flex-col gap-1.5'>
         <label
           htmlFor='admin-username'
-          className='flex items-center gap-1.5 text-[12px] font-bold text-indigo-ink'
+          className='flex items-center gap-1.5 text-[0.75rem] font-bold text-indigo-ink'
         >
           <span className='size-1.5 rounded-full bg-coral' />
           شناسه کاربری یا ایمیل سازمانی
@@ -54,7 +54,7 @@ export function LoginForm({
             required
             autoComplete='username'
             spellCheck={false}
-            placeholder='admin@codology.studio'
+            placeholder='admin@phill.studio'
             className={cn(FIELD_CLASS, "h-12 pr-11 pl-4 text-left")}
           />
         </div>
@@ -63,7 +63,7 @@ export function LoginForm({
       <div className='flex flex-col gap-1.5'>
         <label
           htmlFor='admin-password'
-          className='flex items-center gap-1.5 text-[12px] font-bold text-indigo-ink'
+          className='flex items-center gap-1.5 text-[0.75rem] font-bold text-indigo-ink'
         >
           <span className='size-1.5 rounded-full bg-coral' />
           گذرواژهٔ امنیتی
@@ -99,7 +99,7 @@ export function LoginForm({
       </div>
 
       <div className='flex flex-wrap items-center justify-between gap-2 rounded-sm border border-indigo-ink/15 bg-paper px-3 py-2'>
-        <label className='flex cursor-pointer items-center gap-2 text-[11px] font-bold text-indigo-ink select-none'>
+        <label className='flex cursor-pointer items-center gap-2 text-[0.6875rem] font-bold text-indigo-ink select-none'>
           <input
             type='checkbox'
             name='remember'
@@ -107,7 +107,7 @@ export function LoginForm({
           />
           ثبت نشست روی دستگاه جاری (۳۰ روز)
         </label>
-        <span className='font-mono text-[10px] font-bold text-indigo-light'>
+        <span className='font-mono text-[0.625rem] font-bold text-indigo-light'>
           SESSION / 12H–30D
         </span>
       </div>
@@ -116,7 +116,7 @@ export function LoginForm({
         <p
           role='alert'
           aria-live='assertive'
-          className='rounded-sm border-[1.5px] border-coral bg-coral/10 px-3 py-2 text-[12px] font-bold text-coral-dark'
+          className='rounded-sm border-[1.5px] border-coral bg-coral/10 px-3 py-2 text-[0.75rem] font-bold text-coral-dark'
         >
           {state.error}
         </p>
@@ -141,7 +141,7 @@ export function LoginForm({
       </button>
 
       {devCredentials ? (
-        <div className='rounded-sm border-[1.5px] border-dashed border-mustard-deep bg-mustard/25 px-3 py-2 text-[11px] leading-relaxed font-bold text-indigo-ink'>
+        <div className='rounded-sm border-[1.5px] border-dashed border-mustard-deep bg-mustard/25 px-3 py-2 text-[0.6875rem] leading-relaxed font-bold text-indigo-ink'>
           محیط توسعه: هنوز متغیرهای محیطی تنظیم نشده‌اند. با{" "}
           <code className='font-mono' dir='ltr'>
             {devCredentials.username}

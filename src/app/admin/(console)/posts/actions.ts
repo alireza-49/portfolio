@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
 import {
   createPost,
+  createPostRevision,
   deletePost,
   getPost,
   setPostStatus,
@@ -31,6 +32,7 @@ function refresh(slug?: string | null) {
 
 export async function createPostAction(
   raw: unknown,
+  options?: { snapshot?: boolean },
 ): Promise<PostActionResult> {
   await requireAdmin();
 
@@ -46,6 +48,18 @@ export async function createPostAction(
 
   try {
     const post = await createPost(parsed.value, parsed.readingMinutes);
+    if (options?.snapshot !== false && post.contentHtml.trim()) {
+      try {
+        await createPostRevision(
+          post.id,
+          post.title,
+          post.contentHtml,
+          post.status === "published" ? "publish" : "save",
+        );
+      } catch (error) {
+        console.error("[posts] revision snapshot failed:", error);
+      }
+    }
     refresh(post.slug);
     return {
       ok: true,
@@ -65,6 +79,7 @@ export async function createPostAction(
 export async function updatePostAction(
   id: string,
   raw: unknown,
+  options?: { snapshot?: boolean },
 ): Promise<PostActionResult> {
   await requireAdmin();
 
@@ -86,6 +101,21 @@ export async function updatePostAction(
   try {
     const post = await updatePost(id, parsed.value, parsed.readingMinutes);
     if (!post) return { ok: false, message: "یادداشت پیدا نشد." };
+
+    // Autosave is intentionally not snapshotted; manual save, publish and
+    // restore are. A revision failure must never fail the post write.
+    if (options?.snapshot === true && post.contentHtml.trim()) {
+      try {
+        await createPostRevision(
+          post.id,
+          post.title,
+          post.contentHtml,
+          post.status === "published" ? "publish" : "save",
+        );
+      } catch (error) {
+        console.error("[posts] revision snapshot failed:", error);
+      }
+    }
 
     refresh(post.slug);
     if (previous.slug !== post.slug) refresh(previous.slug);
@@ -115,6 +145,19 @@ export async function setPostStatusAction(
 
   const post = await setPostStatus(id, status);
   if (!post) return { ok: false, message: "یادداشت پیدا نشد." };
+
+  if (post.contentHtml.trim()) {
+    try {
+      await createPostRevision(
+        post.id,
+        post.title,
+        post.contentHtml,
+        status === "published" ? "publish" : "save",
+      );
+    } catch (error) {
+      console.error("[posts] revision snapshot failed:", error);
+    }
+  }
 
   refresh(post.slug);
   return {
@@ -151,6 +194,8 @@ export async function duplicatePostAction(
       coverUrl: original.coverUrl,
       author: original.author,
       tags: original.tags,
+      baseViews: 0,
+      baseLikes: 0,
       status: "draft",
       publishedAt: null,
     },

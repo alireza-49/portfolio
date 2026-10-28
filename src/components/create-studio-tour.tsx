@@ -16,18 +16,35 @@ import {
  * what each one does. It opens once per browser and can be replayed from the
  * studio bar at any time.
  *
+ * Below `lg` the settings panel is a drawer, so the tour opens it for the
+ * sidebar steps and closes it again for the canvas steps — otherwise driver.js
+ * would measure a hidden element and the spotlight would land in the wrong
+ * place.
+ *
  * Storage is only read/written from effects and driver hooks, never while
  * rendering, so the prerendered page stays deterministic.
  */
+const COMPACT_QUERY = "(max-width: 1023px)";
+
+const isCompactViewport = () => window.matchMedia(COMPACT_QUERY).matches;
+
+type TourPanel = "sidebar" | "canvas";
+
+const panelOf = (step: DriveStep | undefined): TourPanel =>
+  step?.data?.panel === "sidebar" ? "sidebar" : "canvas";
+
+/** How long the drawer transition takes before driver.js may measure it. */
+const DRAWER_SETTLE_MS = 260;
+
 const STEPS: DriveStep[] = [
   {
     popover: {
-      title: "به استودیو کدولوژی خوش آمدید",
+      title: "به وب دیزاین فیل خوش آمدید",
       // driver.js renders `description` as HTML, so the scope note is a real
       // styled block (`.cc-tour-scope` in tour.css) instead of a buried
       // sentence at the end of the paragraph.
       description:
-        "اینجا کارگاه زندهٔ ساخت ظاهر سایت است؛ به‌جای حدس زدن، سبک، رنگ، فونت و آیکون را روی یک سایت واقعی می‌بینید. در چند قدم کوتاه هر بخش را معرفی می‌کنم و در پایان نشان می‌دهم چطور همین ترکیب را برای من بفرستید." +
+        "اینجا کارگاه زندهٔ ساخت ظاهر سایت است؛ به‌جای حدس زدن، سبک، رنگ و فونت را روی یک سایت واقعی می‌بینید. در چند قدم کوتاه هر بخش را معرفی می‌کنم و در پایان نشان می‌دهم چطور همین ترکیب را برای من بفرستید." +
         "<div class='cc-tour-scope'>" +
         "<span class='cc-tour-scope-badge' aria-hidden='true'>!</span>" +
         "<span><b>این تم فقط ظاهر است، نه چیدمان.</b> " +
@@ -47,16 +64,18 @@ const STEPS: DriveStep[] = [
   },
   {
     element: "[data-tour='styles']",
+    data: { panel: "sidebar" },
     popover: {
       title: "۲. سبک بصری",
       description:
-        "سیزده سبک آماده در سه خانوادهٔ مدرن، فنی و بیانی. هر سبک پالت رنگ، فونت، بافت، فرم کنترل‌ها و سایهٔ خودش را دارد؛ با انتخاب سبک، پالت، گردی گوشه و فونت هم با آن همگام می‌شوند.",
+        "سیزده سبک آماده، از شرکتی و مینیمال تا چاپی و آزمایشی. هر سبک پالت رنگ، فونت، بافت، فرم کنترل‌ها و سایهٔ خودش را دارد؛ با انتخاب سبک، پالت، گردی گوشه و فونت هم با آن همگام می‌شوند.",
       side: "left",
       align: "start",
     },
   },
   {
     element: "[data-tour='palette']",
+    data: { panel: "sidebar" },
     popover: {
       title: "۳. پالت رنگ",
       description:
@@ -66,19 +85,10 @@ const STEPS: DriveStep[] = [
     },
   },
   {
-    element: "[data-tour='icons']",
-    popover: {
-      title: "۴. کتابخانه و استایل آیکون",
-      description:
-        "بین سه کتابخانهٔ واقعی جابه‌جا شوید؛ همهٔ آیکون‌های بوم عوض می‌شوند. اندازه، ضخامت خط و رنگ آیکون‌ها را هم از همین بخش تنظیم کنید.",
-      side: "left",
-      align: "start",
-    },
-  },
-  {
     element: "[data-tour='radius']",
+    data: { panel: "sidebar" },
     popover: {
-      title: "۵. گردی گوشه‌ها",
+      title: "۴. گردی گوشه‌ها",
       description:
         "از تیز و چاپی تا نرم و مدرن؛ یکی از گزینه‌ها را بزنید یا عدد دلخواه خودتان را به پیکسل وارد کنید. کارت‌ها، دکمه‌ها و ورودی‌ها همه از همین یک توکن پیروی می‌کنند.",
       side: "left",
@@ -87,8 +97,9 @@ const STEPS: DriveStep[] = [
   },
   {
     element: "[data-tour='shadow']",
+    data: { panel: "sidebar" },
     popover: {
-      title: "۶. سایهٔ جعبه‌ها",
+      title: "۵. سایهٔ جعبه‌ها",
       description:
         "بدون سایه، نرم، برجسته، چاپی یا هالهٔ رنگی؛ «پیرو سبک» هم امضای خود سبک را نگه می‌دارد. سایه روی کارت‌ها، دکمه‌ها، ورودی‌ها و پنل نمودارها می‌نشیند.",
       side: "left",
@@ -97,10 +108,11 @@ const STEPS: DriveStep[] = [
   },
   {
     element: "[data-tour='typography']",
+    data: { panel: "sidebar" },
     popover: {
-      title: "۷. فونت و تایپوگرافی",
+      title: "۶. انتخاب فونت",
       description:
-        "فونت متن و فونت نمایشی را جدا انتخاب کنید یا فونت اختصاصی خودتان را (woff2، woff، ttf یا otf) آپلود کنید. فونت‌های آپلودی در همین مرورگر ذخیره می‌شوند.",
+        "گزینهٔ «پیش‌فرض» همان فونتِ سبک فعال است؛ فونت متن و نمایشی را جدا انتخاب کنید یا فونت اختصاصی خودتان را (woff2، woff، ttf یا otf) آپلود کنید. فونت‌های آپلودی در همین مرورگر ذخیره می‌شوند.",
       side: "left",
       align: "start",
     },
@@ -131,6 +143,7 @@ const STEPS: DriveStep[] = [
   },
   {
     element: "[data-tour='submit-config']",
+    data: { panel: "sidebar" },
     popover: {
       title: "ترکیبتان را برای من بفرستید",
       description:
@@ -148,12 +161,37 @@ const STEPS: DriveStep[] = [
   },
 ];
 
+/**
+ * On a phone the sidebar is a full-height sheet, so a popover beside the
+ * highlighted control has nowhere to go. Put those popovers under the control
+ * and let driver.js clamp them into the viewport.
+ */
+function stepsForViewport(compact: boolean): DriveStep[] {
+  if (!compact) return STEPS;
+  return STEPS.map((step) =>
+    step.data?.panel === "sidebar"
+      ? {
+          ...step,
+          popover: { ...step.popover, side: "bottom", align: "center" },
+        }
+      : step,
+  );
+}
+
 type CreateStudioTourProps = {
   /** Increment to replay the guide; `0` auto-opens on the first visit. */
   run: number;
+  /**
+   * Opens or closes the mobile settings sheet. The tour calls it whenever the
+   * next step lives in the settings panel, and closes the sheet on destroy.
+   */
+  onSettingsChange?: (open: boolean) => void;
 };
 
-export function CreateStudioTour({ run }: CreateStudioTourProps) {
+export function CreateStudioTour({
+  run,
+  onSettingsChange,
+}: CreateStudioTourProps) {
   const driverRef = useRef<Driver | null>(null);
 
   useEffect(() => {
@@ -167,40 +205,91 @@ export function CreateStudioTour({ run }: CreateStudioTourProps) {
      * keyboard users can still go back or dismiss the guide.
      */
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== " " || event.repeat || event.defaultPrevented) return;
-      if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey)
-        return;
-
-      const target = event.target;
-      if (target instanceof Element) {
-        if (
-          target.closest(
-            "input, textarea, select, [contenteditable='true'], [contenteditable='']",
-          )
-        ) {
+      if (event.key === " " && !event.repeat && !event.defaultPrevented) {
+        if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey)
           return;
+
+        const target = event.target;
+        if (target instanceof Element) {
+          if (
+            target.closest(
+              "input, textarea, select, [contenteditable='true'], [contenteditable='']",
+            )
+          ) {
+            return;
+          }
+
+          const button = target.closest(".cc-tour-popover button");
+          if (button && !button.classList.contains("driver-popover-next-btn"))
+            return;
         }
 
-        const button = target.closest(".cc-tour-popover button");
-        if (button && !button.classList.contains("driver-popover-next-btn"))
-          return;
+        const next = document.querySelector<HTMLButtonElement>(
+          ".cc-tour-popover .driver-popover-next-btn",
+        );
+        if (!next || next.disabled) return;
+
+        // Cancel the page scroll and the native button click on keyup, then
+        // advance once through driver's own handler.
+        event.preventDefault();
+        next.click();
+        return;
       }
 
-      const next = document.querySelector<HTMLButtonElement>(
-        ".cc-tour-popover .driver-popover-next-btn",
-      );
-      if (!next || next.disabled) return;
-
-      // Cancel the page scroll and the native button click on keyup, then
-      // advance once through driver's own handler.
-      event.preventDefault();
-      next.click();
+      // Compact mode disables driver's own keyboard control (its arrow keys
+      // bypass our hooks and would step onto a hidden drawer target); Escape
+      // still has to dismiss the guide.
+      if (event.key === "Escape" && isCompactViewport()) {
+        event.preventDefault();
+        driverRef.current?.destroy();
+      }
     };
 
     // Let the canvas paint (and the persisted configuration settle) first.
     const timer = window.setTimeout(() => {
-      const tour = driver({
-        steps: STEPS,
+      const compact = isCompactViewport();
+      const panelRef = { current: "canvas" as TourPanel };
+      let settleTimer: number | null = null;
+
+      if (compact) onSettingsChange?.(false);
+
+      let tour: Driver | null = null;
+
+      /**
+       * Move to a step after making its panel visible. The sheet animates, so
+       * wait one transition before driver.js measures the target element.
+       */
+      const revealStep = (index: number) => {
+        if (!tour) return;
+        const steps = tour.getConfig().steps ?? [];
+        const step = steps[index];
+        if (!step) {
+          tour.destroy();
+          return;
+        }
+        const panel = panelOf(step);
+        if (!compact || panel === panelRef.current) {
+          tour.moveTo(index);
+          return;
+        }
+        panelRef.current = panel;
+        onSettingsChange?.(panel === "sidebar");
+        if (settleTimer !== null) window.clearTimeout(settleTimer);
+        // Hide the outgoing popover while the sheet slides; the next step
+        // re-renders its own popover, so nothing has to be restored.
+        const popover = tour.getState("popover") as
+          | { wrapper?: HTMLElement }
+          | undefined;
+        if (popover?.wrapper) popover.wrapper.style.visibility = "hidden";
+        settleTimer = window.setTimeout(() => {
+          settleTimer = null;
+          if (!tour?.isActive()) return;
+          tour.moveTo(index);
+        }, DRAWER_SETTLE_MS);
+      };
+
+      tour = driver({
+        steps: stepsForViewport(compact),
         animate: true,
         duration: 400,
         // Instant scrolling keeps the spotlight glued to sections inside the
@@ -224,6 +313,20 @@ export function CreateStudioTour({ run }: CreateStudioTourProps) {
         closeBtnLabel: "بستن راهنما",
         // The guide explains; it must never navigate away mid-tour.
         disableActiveInteraction: true,
+        // Arrow keys bypass onNextClick/onPrevClick, so they would walk onto
+        // drawer targets that are still hidden. Compact mode advances through
+        // the buttons and Space only.
+        allowKeyboardControl: !compact,
+        onNextClick: () => {
+          const index = tour?.getActiveIndex();
+          if (index === undefined) return;
+          revealStep(index + 1);
+        },
+        onPrevClick: () => {
+          const index = tour?.getActiveIndex();
+          if (index === undefined) return;
+          revealStep(index - 1);
+        },
         onPopoverRender: (popover) => {
           popover.wrapper.setAttribute("dir", "rtl");
           popover.wrapper.setAttribute("lang", "fa");
@@ -241,6 +344,9 @@ export function CreateStudioTour({ run }: CreateStudioTourProps) {
         onDestroyed: () => {
           markStudioTourSeen();
           window.removeEventListener("keydown", onKeyDown);
+          if (settleTimer !== null) window.clearTimeout(settleTimer);
+          if (compact) onSettingsChange?.(false);
+          panelRef.current = "canvas";
           driverRef.current = null;
         },
       });
@@ -256,7 +362,7 @@ export function CreateStudioTour({ run }: CreateStudioTourProps) {
       driverRef.current?.destroy();
       driverRef.current = null;
     };
-  }, [run]);
+  }, [run, onSettingsChange]);
 
   return null;
 }

@@ -128,7 +128,7 @@ export function ProjectCreateForm() {
       </Panel>
 
       <div className='sticky bottom-2 z-10 flex flex-wrap items-center justify-between gap-2 rounded-md border-[2px] border-indigo-ink bg-paper-light px-3 py-2 shadow-craft'>
-        <span className='text-[11px] font-bold text-indigo-light'>
+        <span className='text-[0.6875rem] font-bold text-indigo-light'>
           همهٔ بخش‌ها در یک درخواست ذخیره می‌شوند.
         </span>
         <button

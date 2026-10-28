@@ -55,7 +55,7 @@ export function BlogArchive({ posts }: { posts: Post[] }) {
 
         {featured ? (
           <div className='flex flex-col gap-2'>
-            <span className='font-mono text-[10px] font-bold tracking-widest text-coral uppercase'>
+            <span className='font-mono text-[0.625rem] font-bold tracking-widest text-coral uppercase'>
               Featured manifesto
             </span>
             <PostCard post={featured} featured />
@@ -85,7 +85,7 @@ export function BlogArchive({ posts }: { posts: Post[] }) {
               <span className='text-sm font-black text-indigo-ink'>
                 می‌خواهید شمارهٔ بعدی را زودتر بخوانید؟
               </span>
-              <span className='text-[11px] font-medium text-indigo-light'>
+              <span className='text-[0.6875rem] font-medium text-indigo-light'>
                 یادداشت‌ها بدون خبرنامه و ترکر منتشر می‌شوند؛ برای گفتگو مستقیم
                 پیام دهید.
               </span>

@@ -93,7 +93,7 @@ function HeroChip({
   return (
     <div
       className={cn(
-        "absolute flex items-center gap-1.5 rounded-[var(--cc-radius-sm)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-surface)] px-2 py-1 text-[11px] font-bold text-[color:var(--cc-surface-foreground)] [box-shadow:var(--cc-shadow)]",
+        "absolute flex items-center gap-1.5 rounded-[var(--cc-radius-sm)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-surface)] px-2 py-1 text-[0.6875rem] font-bold text-[color:var(--cc-surface-foreground)] [box-shadow:var(--cc-shadow)]",
         styles.floatChip,
         className,
       )}
@@ -295,7 +295,7 @@ export function ClothingShopView() {
             {[...ANNOUNCEMENTS, ...ANNOUNCEMENTS].map((item, index) => (
               <span
                 key={`${item}-${index}`}
-                className='flex items-center gap-2 px-4 text-[11px] font-bold whitespace-nowrap'
+                className='flex items-center gap-2 px-4 text-[0.6875rem] font-bold whitespace-nowrap'
               >
                 <Icon name='sparkles' className='size-3 opacity-70' />
                 {item}
@@ -316,7 +316,7 @@ export function ClothingShopView() {
               <span className='text-sm font-bold text-[color:var(--cc-surface-foreground)]'>
                 مانو | پوشاک روزمره
               </span>
-              <span className='text-[11px] text-[color:var(--cc-muted-foreground)]'>
+              <span className='text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'>
                 کالکشن پاییز ۱۴۰۴ · {SHOP_STATS.madeIn}
               </span>
             </span>
@@ -485,7 +485,7 @@ export function ClothingShopView() {
                 <StarRating value={SHOP_STATS.rating} />
                 <span
                   className={cn(
-                    "text-[11px] font-bold text-[color:var(--cc-surface-foreground)]",
+                    "text-[0.6875rem] font-bold text-[color:var(--cc-surface-foreground)]",
                     monoType,
                   )}
                 >
@@ -493,20 +493,20 @@ export function ClothingShopView() {
                 </span>
                 <span
                   aria-hidden='true'
-                  className='text-[11px] text-[color:var(--cc-muted-foreground)]'
+                  className='text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'
                 >
                   ·
                 </span>
-                <span className='text-[11px] text-[color:var(--cc-muted-foreground)]'>
+                <span className='text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'>
                   {formatNumber(SHOP_STATS.reviews)} نظر
                 </span>
                 <span
                   aria-hidden='true'
-                  className='text-[11px] text-[color:var(--cc-muted-foreground)]'
+                  className='text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'
                 >
                   ·
                 </span>
-                <span className='flex items-center gap-1 text-[11px] text-[color:var(--cc-surface-foreground)]'>
+                <span className='flex items-center gap-1 text-[0.6875rem] text-[color:var(--cc-surface-foreground)]'>
                   <Icon
                     name='truck'
                     className='size-3.5 text-[color:var(--cc-primary)]'
@@ -517,7 +517,7 @@ export function ClothingShopView() {
             </div>
 
             <div className='relative order-first flex flex-col border-b-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-background)] @3xl:order-none @3xl:border-b-0 @3xl:border-s'>
-              <div className='relative mx-auto aspect-[7/6] w-full max-w-md overflow-hidden @3xl:mx-0 @3xl:aspect-auto @3xl:h-[clamp(360px,44vh,470px)] @3xl:max-w-none'>
+              <div className='relative mx-auto aspect-[7/6] w-full max-w-md overflow-hidden @3xl:mx-0 @3xl:aspect-auto @3xl:h-[clamp(22.5rem,44vh,29.375rem)] @3xl:max-w-none'>
                 <ShopfrontScene className='absolute inset-0 size-full' />
 
                 <HeroChip
@@ -575,7 +575,7 @@ export function ClothingShopView() {
                   <span className='text-[length:calc(var(--cc-font-size)*0.9)] font-bold text-[color:var(--cc-surface-foreground)]'>
                     {service.title}
                   </span>
-                  <span className='text-[11px] leading-relaxed text-[color:var(--cc-muted-foreground)]'>
+                  <span className='text-[0.6875rem] leading-relaxed text-[color:var(--cc-muted-foreground)]'>
                     {service.body}
                   </span>
                 </div>
@@ -640,7 +640,7 @@ export function ClothingShopView() {
                       <span className='text-[length:calc(var(--cc-font-size)*0.95)] font-bold text-[color:var(--cc-surface-foreground)]'>
                         {entry.label}
                       </span>
-                      <span className='text-[11px] text-[color:var(--cc-muted-foreground)]'>
+                      <span className='text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'>
                         {entry.caption}
                       </span>
                     </span>
@@ -714,7 +714,7 @@ export function ClothingShopView() {
                       <span className='text-sm font-bold text-[color:var(--cc-surface-foreground)]'>
                         {look.title}
                       </span>
-                      <span className='text-[11px] text-[color:var(--cc-muted-foreground)]'>
+                      <span className='text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'>
                         {look.subtitle}
                       </span>
                       <div className='flex flex-wrap gap-1'>
@@ -808,7 +808,7 @@ export function ClothingShopView() {
                 </span>
                 <div className='flex flex-col gap-0.5 pb-0.5'>
                   <StarRating value={SHOP_REVIEW_STATS.average} />
-                  <span className='text-[11px] text-[color:var(--cc-muted-foreground)]'>
+                  <span className='text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'>
                     از {formatNumber(SHOP_REVIEW_STATS.total)} نظر
                   </span>
                 </div>
@@ -819,7 +819,7 @@ export function ClothingShopView() {
                   <div key={bucket.stars} className='flex items-center gap-2'>
                     <span
                       className={cn(
-                        "w-4 text-[11px] text-[color:var(--cc-muted-foreground)]",
+                        "w-4 text-[0.6875rem] text-[color:var(--cc-muted-foreground)]",
                         monoType,
                       )}
                     >
@@ -832,7 +832,7 @@ export function ClothingShopView() {
                     />
                     <span
                       className={cn(
-                        "w-8 text-end text-[11px] text-[color:var(--cc-muted-foreground)]",
+                        "w-8 text-end text-[0.6875rem] text-[color:var(--cc-muted-foreground)]",
                         monoType,
                       )}
                     >
@@ -855,7 +855,7 @@ export function ClothingShopView() {
                       <span className='text-sm font-bold text-[color:var(--cc-surface-foreground)]'>
                         {review.name}
                       </span>
-                      <span className='text-[11px] text-[color:var(--cc-muted-foreground)]'>
+                      <span className='text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'>
                         {review.city} · خرید تأییدشده
                       </span>
                     </div>
@@ -870,7 +870,7 @@ export function ClothingShopView() {
               <div className='mt-auto flex items-center justify-between gap-2 border-t-[length:var(--cc-border-width)] border-[color:var(--cc-border)] pt-2'>
                 <span
                   className={cn(
-                    "text-[11px] text-[color:var(--cc-muted-foreground)]",
+                    "text-[0.6875rem] text-[color:var(--cc-muted-foreground)]",
                     monoType,
                   )}
                 >
@@ -944,7 +944,7 @@ export function ClothingShopView() {
               >
                 مانو | پوشاک روزمره
               </h3>
-              <p className='max-w-md text-[11px] leading-relaxed text-[color:var(--cc-muted-foreground)]'>
+              <p className='max-w-md text-[0.6875rem] leading-relaxed text-[color:var(--cc-muted-foreground)]'>
                 کالکشن‌های کوچک، پارچهٔ طبیعی و دوخت داخلی. اگر سایز یا رنگ
                 مناسبی پیدا نکردی، بنویس؛ سری بعد اضافه می‌کنیم.
               </p>
@@ -978,7 +978,7 @@ export function ClothingShopView() {
 
             <div className='grid grid-cols-2 gap-4'>
               <div className='flex flex-col gap-1.5'>
-                <span className='text-[11px] font-bold text-[color:var(--cc-surface-foreground)]'>
+                <span className='text-[0.6875rem] font-bold text-[color:var(--cc-surface-foreground)]'>
                   فروشگاه
                 </span>
                 <ul className='flex flex-col gap-1'>
@@ -986,7 +986,7 @@ export function ClothingShopView() {
                     <li key={item.href}>
                       <a
                         href={item.href}
-                        className='text-[11px] text-[color:var(--cc-muted-foreground)] transition-colors hover:text-[color:var(--cc-primary)]'
+                        className='text-[0.6875rem] text-[color:var(--cc-muted-foreground)] transition-colors hover:text-[color:var(--cc-primary)]'
                       >
                         {item.label}
                       </a>
@@ -996,7 +996,7 @@ export function ClothingShopView() {
               </div>
 
               <div className='flex flex-col gap-1.5'>
-                <span className='text-[11px] font-bold text-[color:var(--cc-surface-foreground)]'>
+                <span className='text-[0.6875rem] font-bold text-[color:var(--cc-surface-foreground)]'>
                   پرداخت و ارسال
                 </span>
                 <div className='flex flex-wrap gap-1'>
@@ -1005,7 +1005,7 @@ export function ClothingShopView() {
                   <Badge variant='outline'>پست پیشتاز</Badge>
                   <Badge variant='outline'>پرداخت در محل</Badge>
                 </div>
-                <span className='text-[11px] leading-relaxed text-[color:var(--cc-muted-foreground)]'>
+                <span className='text-[0.6875rem] leading-relaxed text-[color:var(--cc-muted-foreground)]'>
                   این یک دموی استودیو است؛ سفارش واقعی ثبت نمی‌شود.
                 </span>
               </div>
@@ -1013,10 +1013,10 @@ export function ClothingShopView() {
           </div>
 
           <div className='relative flex flex-wrap items-center justify-between gap-2 border-t-[length:var(--cc-border-width)] border-[color:var(--cc-border)] px-5 py-2 sm:px-7'>
-            <span className='text-[11px] text-[color:var(--cc-muted-foreground)]'>
+            <span className='text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'>
               © ۱۴۰۴ مانو — همهٔ حقوق محفوظ است.
             </span>
-            <span className='flex items-center gap-1 text-[11px] text-[color:var(--cc-muted-foreground)]'>
+            <span className='flex items-center gap-1 text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'>
               <Icon
                 name='shield-check'
                 className='size-3.5 text-[color:var(--cc-success)]'

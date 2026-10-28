@@ -1,6 +1,7 @@
 "use client";
 
-import { Eye, Inbox } from "lucide-react";
+import { useState } from "react";
+import { Check, Eye, Inbox, Trash2 } from "lucide-react";
 import { cn } from "cn";
 import { EmptyState, StatusPill } from "@/components/admin/ui";
 import { faDateTime } from "@/lib/fa";
@@ -15,16 +16,21 @@ const AVATAR_TONES = [
 export function InquiryTable({
   rows,
   selected,
+  pending,
   onToggle,
   onToggleAll,
   onOpen,
+  onDelete,
 }: {
   rows: Submission[];
   selected: string[];
+  pending: boolean;
   onToggle: (id: string) => void;
   onToggleAll: () => void;
   onOpen: (id: string) => void;
+  onDelete: (id: string) => void;
 }) {
+  const [armedId, setArmedId] = useState<string | null>(null);
   const allSelected =
     rows.length > 0 && rows.every((row) => selected.includes(row.id));
 
@@ -42,9 +48,9 @@ export function InquiryTable({
 
   return (
     <div className='overflow-x-auto'>
-      <table className='w-full min-w-[920px] border-collapse text-right'>
+      <table className='w-full min-w-[52.5rem] border-collapse text-right'>
         <thead>
-          <tr className='border-b-[2px] border-indigo-ink bg-paper-dim text-[11px] font-black text-indigo-ink'>
+          <tr className='border-b-[2px] border-indigo-ink bg-paper-dim text-[0.6875rem] font-black text-indigo-ink'>
             <th scope='col' className='w-10 px-3 py-2 text-center'>
               <input
                 type='checkbox'
@@ -54,11 +60,11 @@ export function InquiryTable({
                 className='size-4 cursor-pointer accent-coral'
               />
             </th>
-            <th scope='col' className='px-3 py-2'>متقاضی</th>
-            <th scope='col' className='px-3 py-2'>پروژه و بودجه</th>
-            <th scope='col' className='px-3 py-2'>راه ارتباط</th>
-            <th scope='col' className='px-3 py-2'>زمان ثبت</th>
-            <th scope='col' className='px-3 py-2'>وضعیت</th>
+            <th scope='col' className='px-2.5 py-2'>متقاضی</th>
+            <th scope='col' className='px-2.5 py-2'>پروژه و بودجه</th>
+            <th scope='col' className='px-2.5 py-2'>راه ارتباط</th>
+            <th scope='col' className='px-2.5 py-2'>زمان ثبت</th>
+            <th scope='col' className='px-2.5 py-2'>وضعیت</th>
             <th scope='col' className='px-3 py-2 text-left'>عملیات</th>
           </tr>
         </thead>
@@ -66,6 +72,7 @@ export function InquiryTable({
           {rows.map((submission, index) => {
             const meta = SUBMISSION_STATUS_META[submission.status];
             const checked = selected.includes(submission.id);
+            const armed = armedId === submission.id;
             const estimate = submission.estimate;
             const projectLine =
               submission.projectType ||
@@ -98,7 +105,7 @@ export function InquiryTable({
                     className='size-4 cursor-pointer accent-coral'
                   />
                 </td>
-                <td className='px-3 py-3'>
+                <td className='px-2.5 py-3'>
                   <div className='flex items-center gap-2'>
                     <span
                       aria-hidden
@@ -110,53 +117,90 @@ export function InquiryTable({
                       {submission.name.trim().charAt(0) || "؟"}
                     </span>
                     <div className='flex min-w-0 flex-col'>
-                      <span className='truncate text-[13px] font-black text-indigo-ink'>
+                      <span className='truncate text-[0.8125rem] font-black text-indigo-ink'>
                         {submission.name}
                       </span>
-                      <span className='truncate text-[11px] font-medium text-indigo-light'>
+                      <span className='truncate text-[0.6875rem] font-medium text-indigo-light'>
                         {submission.business || "بدون مجموعه"}
                       </span>
                     </div>
                   </div>
                 </td>
-                <td className='px-3 py-3'>
+                <td className='px-2.5 py-3'>
                   <div className='flex flex-col gap-0.5'>
-                    <span className='text-[12px] font-bold text-indigo-ink'>
+                    <span className='text-[0.75rem] font-bold text-indigo-ink'>
                       {projectLine}
                     </span>
-                    <span className='font-mono text-[11px] font-bold text-coral'>
+                    <span className='font-mono text-[0.6875rem] font-bold text-coral'>
                       {budget}
                     </span>
                   </div>
                 </td>
-                <td className='px-3 py-3'>
+                <td className='px-2.5 py-3'>
                   <span
                     dir='ltr'
-                    className='block max-w-[11rem] truncate text-right font-mono text-[11px] font-bold text-indigo-ink'
+                    className='block max-w-[11rem] truncate text-right font-mono text-[0.6875rem] font-bold text-indigo-ink'
                   >
                     {submission.contact}
                   </span>
                 </td>
-                <td className='px-3 py-3'>
-                  <span className='text-[11px] font-medium whitespace-nowrap text-indigo-light'>
+                <td className='px-2.5 py-3'>
+                  <span className='text-[0.6875rem] font-medium text-indigo-light'>
                     {faDateTime(submission.createdAt)}
                   </span>
                 </td>
-                <td className='px-3 py-3'>
+                <td className='px-2.5 py-3'>
                   <StatusPill tone={meta.tone}>{meta.label}</StatusPill>
                 </td>
                 <td
-                  className='px-3 py-3 text-left'
+                  className='px-2 py-3 text-left'
                   onClick={(event) => event.stopPropagation()}
                 >
-                  <button
-                    type='button'
-                    onClick={() => onOpen(submission.id)}
-                    className='inline-flex items-center gap-1 rounded-sm border border-indigo-ink/30 bg-paper px-2 py-1 text-[11px] font-black text-indigo-ink transition-colors hover:bg-indigo-ink hover:text-paper'
-                  >
-                    <Eye className='size-3.5' />
-                    مشاهده
-                  </button>
+                  <div className='flex items-center justify-end gap-1.5'>
+                    <button
+                      type='button'
+                      onClick={() => onOpen(submission.id)}
+                      className='inline-flex items-center gap-1 rounded-sm border border-indigo-ink/30 bg-paper px-2 py-1 text-[0.6875rem] font-black whitespace-nowrap text-indigo-ink transition-colors hover:bg-indigo-ink hover:text-paper'
+                    >
+                      <Eye className='size-3.5' />
+                      مشاهده
+                    </button>
+                    <button
+                      type='button'
+                      disabled={pending}
+                      title={
+                        armed
+                          ? "برای حذف قطعی دوباره بزنید"
+                          : "حذف این درخواست"
+                      }
+                      aria-label={
+                        armed
+                          ? `تأیید حذف درخواست ${submission.name}`
+                          : `حذف درخواست ${submission.name}`
+                      }
+                      onClick={() => {
+                        if (armed) {
+                          setArmedId(null);
+                          onDelete(submission.id);
+                          return;
+                        }
+                        setArmedId(submission.id);
+                      }}
+                      onBlur={() => setArmedId(null)}
+                      className={cn(
+                        "inline-flex size-7 shrink-0 items-center justify-center rounded-sm border transition-colors disabled:opacity-50",
+                        armed
+                          ? "border-coral bg-coral text-white ring-2 ring-coral/25"
+                          : "border-coral/50 bg-coral/10 text-coral hover:bg-coral hover:text-white",
+                      )}
+                    >
+                      {armed ? (
+                        <Check className='size-3.5' />
+                      ) : (
+                        <Trash2 className='size-3.5' />
+                      )}
+                    </button>
+                  </div>
                 </td>
               </tr>
             );

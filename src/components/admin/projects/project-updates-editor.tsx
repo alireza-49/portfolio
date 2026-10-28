@@ -41,7 +41,7 @@ export function ProjectUpdatesEditor({
   return (
     <div className='flex flex-col gap-3 p-4 sm:p-5'>
       <div className='flex flex-wrap items-center justify-between gap-2'>
-        <p className='max-w-xl text-[11px] leading-relaxed font-medium text-indigo-light'>
+        <p className='max-w-xl text-[0.6875rem] leading-relaxed font-medium text-indigo-light'>
           هر ردیف یک به‌روزرسانی کارگاه است و در صفحهٔ رهگیری عمومی زیر
           «لاگ مهندسی» نمایش داده می‌شود.
         </p>

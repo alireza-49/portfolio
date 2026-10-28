@@ -28,11 +28,11 @@ function MetaCell({
 }) {
   return (
     <div className='flex flex-col gap-0.5 rounded-sm border border-indigo-ink/20 bg-paper p-2.5'>
-      <span className='flex items-center gap-1 text-[10px] font-bold text-indigo-light'>
+      <span className='flex items-center gap-1 text-[0.625rem] font-bold text-indigo-light'>
         {icon}
         {label}
       </span>
-      <span className='truncate text-[12px] font-black text-indigo-ink'>
+      <span className='text-[0.75rem] font-black break-words text-indigo-ink'>
         {value}
       </span>
     </div>
@@ -46,10 +46,10 @@ export function ProjectHero({ project }: { project: Project }) {
   return (
     <>
       <div className='w-full overflow-x-auto border-b-[2px] border-indigo-ink bg-paper-dim px-4 py-1.5 sm:px-6 lg:px-10'>
-        <div className='mx-auto flex max-w-7xl items-center gap-3 text-[10px] font-bold whitespace-nowrap text-indigo-light'>
+        <div className='mx-auto flex max-w-7xl items-center gap-3 text-[0.625rem] font-bold whitespace-nowrap text-indigo-light'>
           <span className='flex items-center gap-1.5 text-coral'>
             <span className='size-2 animate-pulse rounded-full bg-coral' />
-            پایگاه زندهٔ رهگیری استودیو کدولوژی
+            پایگاه زندهٔ رهگیری وب دیزاین فیل
           </span>
           <span className='text-indigo-ink/20'>|</span>
           <span>آخرین به‌روزرسانی: {faDate(project.updatedAt)}</span>
@@ -65,17 +65,17 @@ export function ProjectHero({ project }: { project: Project }) {
         <div className='mx-auto grid max-w-7xl grid-cols-1 items-start gap-8 lg:grid-cols-12'>
           <div className='flex flex-col gap-4 lg:col-span-7'>
             <div className='flex flex-wrap items-center gap-2'>
-              <span className='riso-stamp text-[10px]'>{project.code}</span>
+              <span className='riso-stamp text-[0.625rem]'>{project.code}</span>
               <span
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded-sm border-[1.5px] px-2 py-0.5 text-[11px] font-bold",
+                  "inline-flex items-center gap-1.5 rounded-sm border-[1.5px] px-2 py-0.5 text-[0.6875rem] font-bold",
                   STATUS_TONE[project.status],
                 )}
               >
                 <CircleDot className='size-3' />
                 {meta.label}
               </span>
-              <span className='font-mono text-[10px] font-bold text-indigo-light'>
+              <span className='font-mono text-[0.625rem] font-bold text-indigo-light'>
                 گام‌های تکمیل‌شده: {faNumber(doneSteps)} از{" "}
                 {faNumber(project.steps.length)}
               </span>
@@ -86,7 +86,7 @@ export function ProjectHero({ project }: { project: Project }) {
             </h1>
             <p className='max-w-2xl text-sm leading-relaxed font-medium text-indigo-light sm:text-base'>
               {project.summary ||
-                "این پروژه در کارگاه کدولوژی در حال اجراست؛ وضعیت هر فاز در همین تابلو به‌روز می‌شود."}
+                "این پروژه در کارگاه فیل در حال اجراست؛ وضعیت هر فاز در همین تابلو به‌روز می‌شود."}
             </p>
           </div>
 
@@ -116,13 +116,13 @@ export function ProjectHero({ project }: { project: Project }) {
 
         <div className='mx-auto mt-6 max-w-7xl rounded-md border-[2px] border-indigo-ink bg-paper-light p-4 shadow-craft sm:p-5'>
           <div className='flex flex-wrap items-center justify-between gap-2'>
-            <span className='flex items-center gap-2 text-[12px] font-black text-indigo-ink'>
+            <span className='flex items-center gap-2 text-[0.75rem] font-black text-indigo-ink'>
               میزان پیشرفت کلی اجرای پروژه
               <span className='font-display text-xl font-black text-coral'>
                 {faNumber(project.progress)}٪
               </span>
             </span>
-            <span className='text-[11px] font-bold text-indigo-light'>
+            <span className='text-[0.6875rem] font-bold text-indigo-light'>
               {project.currentPhase || "بدون فاز فعال"}
             </span>
           </div>
@@ -132,7 +132,7 @@ export function ProjectHero({ project }: { project: Project }) {
               style={{ width: `${Math.max(0, Math.min(100, project.progress))}%` }}
             />
           </div>
-          <div className='mt-1.5 flex items-center justify-between text-[10px] font-bold text-indigo-light'>
+          <div className='mt-1.5 flex flex-col gap-0.5 text-[0.625rem] font-bold text-indigo-light sm:flex-row sm:items-center sm:justify-between'>
             <span>شروع: {faDate(project.startDate)}</span>
             <span className='text-coral'>
               در حال اجرا: {project.currentPhase || "—"}

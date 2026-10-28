@@ -4,7 +4,7 @@ import { ArrowLeft, FileQuestion } from "lucide-react";
 import { PublicPageShell } from "@/components/public-page-shell";
 
 export const metadata: Metadata = {
-  title: "صفحه پیدا نشد | استودیو کدولوژی",
+  title: "صفحه پیدا نشد | وب دیزاین فیل",
   robots: { index: false, follow: false },
 };
 
@@ -14,7 +14,7 @@ export default function NotFound() {
       <section className='flex flex-1 items-center justify-center px-4 py-16 sm:px-8'>
         <div className='paper-pattern w-full max-w-xl rounded-md border-[2px] border-indigo-ink bg-paper-light p-8 text-center shadow-craft-lg'>
           <FileQuestion className='mx-auto size-10 text-coral' />
-          <span className='mt-3 block font-mono text-[10px] font-bold tracking-widest text-indigo-light uppercase'>
+          <span className='mt-3 block font-mono text-[0.625rem] font-bold tracking-widest text-indigo-light uppercase'>
             404 / MISSING SHEET
           </span>
           <h1 className='mt-1 font-display text-2xl font-black text-indigo-ink'>

@@ -8,11 +8,30 @@ import { PublicPageShell } from "@/components/public-page-shell";
 import { PostHero } from "@/components/blog/post-hero";
 import { PostBody } from "@/components/blog/post-body";
 import { PostCard } from "@/components/blog/post-card";
+import { PostComments } from "@/components/blog/post-comments";
+import { PostEngagement } from "@/components/blog/post-engagement";
 import { ReadingProgress } from "@/components/blog/reading-progress";
-import { getPostBySlug, listPosts } from "@/lib/content";
+import {
+  getPostBySlug,
+  isPostLikedBy,
+  listPostComments,
+  listPosts,
+} from "@/lib/content";
+import { readReaderId } from "@/lib/reader";
 import { deriveExcerpt } from "@/lib/text";
+import { readerSalt, visitorHash } from "@/lib/visitor";
 
 export const instant = false;
+
+/** Next 16.4 hands the page the raw URL segment while metadata gets it decoded. */
+function decodeSlug(value: string): string {
+  if (!value.includes("%")) return value;
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
 
 const loadPost = cache(async (slug: string) => getPostBySlug(slug));
 
@@ -22,11 +41,12 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   await connection();
-  const { slug } = await params;
+  const { slug: rawSlug } = await params;
+  const slug = decodeSlug(rawSlug);
   const post = await loadPost(slug);
 
   if (!post || post.status !== "published") {
-    return { title: "یادداشت پیدا نشد | استودیو کدولوژی" };
+    return { title: "یادداشت پیدا نشد | وب دیزاین فیل" };
   }
 
   return {
@@ -48,10 +68,17 @@ export default async function BlogPostPage({
   params: Promise<{ slug: string }>;
 }) {
   await connection();
-  const { slug } = await params;
+  const { slug: rawSlug } = await params;
+  const slug = decodeSlug(rawSlug);
   const post = await loadPost(slug);
 
   if (!post || post.status !== "published") notFound();
+
+  const reader = await readReaderId();
+  const liked = reader
+    ? await isPostLikedBy(post.id, visitorHash(reader, readerSalt()))
+    : false;
+  const comments = await listPostComments(post.id);
 
   const all = await listPosts({ publishedOnly: true });
   const related = all
@@ -67,16 +94,26 @@ export default async function BlogPostPage({
       <ReadingProgress />
       <PostHero post={post} />
 
+      <PostEngagement
+        slug={post.slug}
+        views={post.views}
+        likes={post.likes}
+        liked={liked}
+        commentCount={post.commentCount}
+      />
+
       <div className='mx-auto w-full max-w-7xl px-4 py-8 sm:px-8 lg:px-12'>
         <PostBody html={post.contentHtml} />
       </div>
+
+      <PostComments slug={post.slug} initialComments={comments} />
 
       {related.length > 0 ? (
         <section className='border-t-[2.5px] border-indigo-ink bg-paper-dim/40 px-4 py-8 sm:px-8 lg:px-12'>
           <div className='mx-auto flex max-w-7xl flex-col gap-4'>
             <div className='flex flex-wrap items-end justify-between gap-2 border-b-[2px] border-indigo-ink pb-3'>
               <div className='flex flex-col gap-1'>
-                <span className='font-mono text-[10px] font-bold tracking-widest text-coral uppercase'>
+                <span className='font-mono text-[0.625rem] font-bold tracking-widest text-coral uppercase'>
                   Related reading
                 </span>
                 <h2 className='text-lg font-black text-indigo-ink'>
@@ -85,7 +122,7 @@ export default async function BlogPostPage({
               </div>
               <Link
                 href='/blog'
-                className='inline-flex items-center gap-1 text-[11px] font-black text-coral hover:text-indigo-ink'
+                className='inline-flex items-center gap-1 text-[0.6875rem] font-black text-coral hover:text-indigo-ink'
               >
                 کل آرشیو
                 <ArrowLeft className='size-3.5' />

@@ -32,7 +32,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
-.env.example
+!.env.example
 
 # vercel
 .vercel
@@ -47,3 +47,9 @@ design/
 
 # Aider Studio (auto-added)
 REPO_MAP.md
+
+.tmp-anim
+
+docs
+
+.tmp*

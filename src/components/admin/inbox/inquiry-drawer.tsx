@@ -44,7 +44,7 @@ export function InquiryDrawer({
           <SheetTitle className='text-right text-sm font-black text-indigo-ink'>
             جزئیات درخواست
           </SheetTitle>
-          <SheetDescription className='text-right text-[11px] font-medium text-indigo-light'>
+          <SheetDescription className='text-right text-[0.6875rem] font-medium text-indigo-light'>
             {meta ? meta.label : "درخواست انتخاب نشده"}
           </SheetDescription>
         </SheetHeader>

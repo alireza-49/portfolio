@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
 import {
   deleteSubmission,
+  deleteSubmissions,
   updateSubmissionStatus,
 } from "@/lib/content";
 import { SUBMISSION_STATUSES, type SubmissionStatus } from "@/lib/types";
@@ -76,4 +77,20 @@ export async function deleteSubmissionAction(
 
   refresh();
   return { ok: true, message: "درخواست از صندوق حذف شد." };
+}
+
+export async function bulkDeleteSubmissionAction(
+  ids: string[],
+): Promise<ActionResult> {
+  await requireAdmin();
+
+  if (!Array.isArray(ids) || ids.length === 0) {
+    return { ok: false, message: "هیچ درخواستی انتخاب نشده است." };
+  }
+
+  const deleted = await deleteSubmissions(ids);
+  if (deleted === 0) return { ok: false, message: "درخواستی حذف نشد." };
+
+  refresh();
+  return { ok: true, message: `${deleted} درخواست از صندوق حذف شد.` };
 }

@@ -551,6 +551,11 @@
 
 .sc-ticker {
   overflow: hidden;
+  /* The page is RTL: a max-content track is laid out from the inline-start,
+     i.e. its right edge, so `translateX(-50%)` walks it clear out of the
+     window and leaves the strip blank for most of the loop. LTR here only
+     positions the track; the Persian copy inside keeps its own bidi runs. */
+  direction: ltr;
 }
 
 .sc-tickerTrack {

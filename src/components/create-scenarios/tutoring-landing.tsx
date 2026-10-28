@@ -74,7 +74,7 @@ import { sc as styles } from "./scenes";
 const SUBJECT_IDS = Object.keys(SUBJECTS) as SubjectId[];
 
 const eyebrowType = cn(
-  "text-[11px] font-bold text-[color:var(--cc-primary)]",
+  "text-[0.6875rem] font-bold text-[color:var(--cc-primary)]",
   labelType,
 );
 
@@ -151,7 +151,7 @@ export function TutoringLandingView() {
             <span className='text-sm font-bold text-[color:var(--cc-surface-foreground)]'>
               آکادمی روشنا
             </span>
-            <span className='text-[11px] text-[color:var(--cc-muted-foreground)]'>
+            <span className='text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'>
               تدریس آنلاین · کلاس زنده
             </span>
           </span>
@@ -189,7 +189,7 @@ export function TutoringLandingView() {
           <a
             key={item.href}
             href={item.href}
-            className='shrink-0 rounded-[var(--cc-radius-sm)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] px-2.5 py-1 text-[11px] text-[color:var(--cc-muted-foreground)]'
+            className='shrink-0 rounded-[var(--cc-radius-sm)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] px-2.5 py-1 text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'
           >
             {item.label}
           </a>
@@ -205,7 +205,7 @@ export function TutoringLandingView() {
         {/* Decorative rings, kept in a wrapper so `hidden` isn't overridden by
             the `.sc-art { display: block }` rule in scenes.css. */}
         <div className='pointer-events-none absolute -top-20 start-[2%] hidden @xl:block'>
-          <HeroOrbit className='h-[320px] w-[320px] opacity-55 @2xl:h-[340px] @2xl:w-[340px]' />
+          <HeroOrbit className='h-[20rem] w-[20rem] opacity-55 @2xl:h-[21.25rem] @2xl:w-[21.25rem]' />
         </div>
 
         <div className='relative grid @3xl:grid-cols-[1.04fr_0.96fr]'>
@@ -291,7 +291,7 @@ export function TutoringLandingView() {
             </div>
           </div>
 
-          <div className='relative min-h-[320px] overflow-hidden border-t-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-muted)] @3xl:min-h-[430px] @3xl:border-s @3xl:border-t-0'>
+          <div className='relative min-h-[20rem] overflow-hidden border-t-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-muted)] @3xl:min-h-[26.875rem] @3xl:border-s @3xl:border-t-0'>
             <ClassroomScene className='absolute inset-0 size-full' />
             <div className='absolute start-3 top-3'>
               <Badge variant='danger' className='gap-1'>
@@ -313,7 +313,7 @@ export function TutoringLandingView() {
           <div key={stat.label} className='flex flex-col gap-1'>
             <span
               className={cn(
-                "text-[11px] text-[color:var(--cc-muted-foreground)]",
+                "text-[0.6875rem] text-[color:var(--cc-muted-foreground)]",
                 labelType,
               )}
             >
@@ -329,7 +329,7 @@ export function TutoringLandingView() {
               {stat.value}
             </span>
             <Sparkline points={stat.spark} className='h-8 w-full' />
-            <span className='text-[11px] text-[color:var(--cc-muted-foreground)]'>
+            <span className='text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'>
               {stat.note}
             </span>
           </div>
@@ -381,7 +381,7 @@ export function TutoringLandingView() {
                     className='h-28 w-full rounded-[var(--cc-radius)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)]'
                   />
                   <CardHeader>
-                    <span className='flex items-center gap-1.5 text-[11px] font-bold text-[color:var(--cc-primary)]'>
+                    <span className='flex items-center gap-1.5 text-[0.6875rem] font-bold text-[color:var(--cc-primary)]'>
                       <Icon name={feature.icon} className='size-3.5' />
                       {feature.meta}
                     </span>
@@ -469,7 +469,7 @@ export function TutoringLandingView() {
                   </div>
 
                   <Progress value={seatsTaken} max={day.capacity} />
-                  <span className='text-[11px] text-[color:var(--cc-muted-foreground)]'>
+                  <span className='text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'>
                     {formatNumber(seatsTaken)} از{" "}
                     {formatNumber(day.capacity)} صندلی پر شده
                   </span>
@@ -537,7 +537,7 @@ export function TutoringLandingView() {
                                 <Badge variant='outline'>{course.level}</Badge>
                                 <StarRating value={course.rating} />
                               </div>
-                              <span className='text-[11px] text-[color:var(--cc-muted-foreground)]'>
+                              <span className='text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'>
                                 {course.tutor} ·{" "}
                                 {formatNumber(course.sessions)} جلسه ·{" "}
                                 {formatToman(course.price)}
@@ -547,7 +547,7 @@ export function TutoringLandingView() {
                                 <span
                                   dir='ltr'
                                   className={cn(
-                                    "shrink-0 text-[11px] text-[color:var(--cc-muted-foreground)]",
+                                    "shrink-0 text-[0.6875rem] text-[color:var(--cc-muted-foreground)]",
                                     monoType,
                                   )}
                                 >
@@ -599,7 +599,7 @@ export function TutoringLandingView() {
                       <span className='text-sm font-bold text-[color:var(--cc-surface-foreground)]'>
                         {tutor.name}
                       </span>
-                      <span className='text-[11px] text-[color:var(--cc-muted-foreground)]'>
+                      <span className='text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'>
                         {tutor.subject} · {formatNumber(tutor.sessions)} جلسه
                       </span>
                       <StarRating value={tutor.rating} />
@@ -672,7 +672,7 @@ export function TutoringLandingView() {
                       <span className='text-xs font-bold text-[color:var(--cc-surface-foreground)]'>
                         {story.name}
                       </span>
-                      <span className='text-[11px] text-[color:var(--cc-muted-foreground)]'>
+                      <span className='text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'>
                         {story.exam}
                       </span>
                     </div>
@@ -700,7 +700,7 @@ export function TutoringLandingView() {
                 >
                   <Icon name='chevron-left' className='size-4' />
                 </Button>
-                <span className='ms-1 text-[11px] text-[color:var(--cc-muted-foreground)]'>
+                <span className='ms-1 text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'>
                   {formatNumber(testimonial + 1)} از{" "}
                   {formatNumber(TESTIMONIALS.length)}
                 </span>
@@ -733,7 +733,7 @@ export function TutoringLandingView() {
             </div>
 
             <div className='flex flex-col gap-2 rounded-[var(--cc-radius)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-surface)] p-3'>
-              <div className='flex items-center justify-between text-[11px] text-[color:var(--cc-muted-foreground)]'>
+              <div className='flex items-center justify-between text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'>
                 <span>آزمون قبل از روشنا</span>
                 <span>بعد از یک ترم</span>
               </div>
@@ -772,7 +772,7 @@ export function TutoringLandingView() {
               <div className='flex flex-wrap items-center gap-2 rounded-[var(--cc-radius)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-muted)] px-2 py-1'>
                 <span
                   className={cn(
-                    "text-[11px]",
+                    "text-[0.6875rem]",
                     annual
                       ? "text-[color:var(--cc-muted-foreground)]"
                       : "font-bold text-[color:var(--cc-primary)]",
@@ -787,7 +787,7 @@ export function TutoringLandingView() {
                 />
                 <span
                   className={cn(
-                    "text-[11px]",
+                    "text-[0.6875rem]",
                     annual
                       ? "font-bold text-[color:var(--cc-primary)]"
                       : "text-[color:var(--cc-muted-foreground)]",
@@ -836,11 +836,11 @@ export function TutoringLandingView() {
                         >
                           {formatToman(price)}
                         </span>
-                        <span className='pb-0.5 text-[11px] text-[color:var(--cc-muted-foreground)]'>
+                        <span className='pb-0.5 text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'>
                           / {annual ? "سال" : "ماه"}
                         </span>
                       </div>
-                      <span className='text-[11px] text-[color:var(--cc-muted-foreground)]'>
+                      <span className='text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'>
                         {annual
                           ? `معادل ${formatToman(Math.round(plan.yearly / 12))} در ماه`
                           : "بدون قرارداد بلندمدت"}
@@ -952,7 +952,7 @@ export function TutoringLandingView() {
                       <span className='text-xs font-bold text-[color:var(--cc-surface-foreground)]'>
                         {step.title}
                       </span>
-                      <span className='text-[11px] leading-relaxed text-[color:var(--cc-muted-foreground)]'>
+                      <span className='text-[0.6875rem] leading-relaxed text-[color:var(--cc-muted-foreground)]'>
                         {step.body}
                       </span>
                     </span>
@@ -997,7 +997,7 @@ export function TutoringLandingView() {
                 <span className='text-sm font-bold text-[color:var(--cc-surface-foreground)]'>
                   پشتیبانی روشنا
                 </span>
-                <span className='text-[11px] text-[color:var(--cc-muted-foreground)]'>
+                <span className='text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'>
                   پاسخ انسانی در کمتر از ۵ دقیقه
                 </span>
               </div>
@@ -1019,7 +1019,7 @@ export function TutoringLandingView() {
               ].map((item) => (
                 <span
                   key={item}
-                  className='flex items-center gap-1.5 text-[11px] text-[color:var(--cc-muted-foreground)]'
+                  className='flex items-center gap-1.5 text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'
                 >
                   <Icon
                     name='check-circle'
@@ -1153,7 +1153,7 @@ export function TutoringLandingView() {
                 آکادمی روشنا
               </span>
             </div>
-            <p className='max-w-xs text-[11px] leading-relaxed text-[color:var(--cc-muted-foreground)]'>
+            <p className='max-w-xs text-[0.6875rem] leading-relaxed text-[color:var(--cc-muted-foreground)]'>
               کلاس زنده، مدرس اختصاصی و برنامهٔ شخصی برای دانش‌آموزان ایران. ترم
               پاییز ۱۴۰۴.
             </p>
@@ -1171,7 +1171,7 @@ export function TutoringLandingView() {
                 key={id}
                 type='button'
                 onClick={() => setSubject(id)}
-                className='text-start text-[11px] text-[color:var(--cc-muted-foreground)] transition-colors hover:text-[color:var(--cc-surface-foreground)]'
+                className='text-start text-[0.6875rem] text-[color:var(--cc-muted-foreground)] transition-colors hover:text-[color:var(--cc-surface-foreground)]'
               >
                 {SUBJECTS[id].label}
               </button>
@@ -1184,7 +1184,7 @@ export function TutoringLandingView() {
               <a
                 key={tutor.name}
                 href='#tutors'
-                className='text-start text-[11px] text-[color:var(--cc-muted-foreground)] transition-colors hover:text-[color:var(--cc-surface-foreground)]'
+                className='text-start text-[0.6875rem] text-[color:var(--cc-muted-foreground)] transition-colors hover:text-[color:var(--cc-surface-foreground)]'
               >
                 {tutor.name}
               </a>
@@ -1202,7 +1202,7 @@ export function TutoringLandingView() {
               <a
                 key={item.label}
                 href={item.href}
-                className='text-start text-[11px] text-[color:var(--cc-muted-foreground)] transition-colors hover:text-[color:var(--cc-surface-foreground)]'
+                className='text-start text-[0.6875rem] text-[color:var(--cc-muted-foreground)] transition-colors hover:text-[color:var(--cc-surface-foreground)]'
               >
                 {item.label}
               </a>
@@ -1211,7 +1211,7 @@ export function TutoringLandingView() {
         </div>
 
         <div className='flex flex-wrap items-center justify-between gap-2 border-t-[length:var(--cc-border-width)] border-[color:var(--cc-border)] pt-2'>
-          <span className='text-[11px] text-[color:var(--cc-muted-foreground)]'>
+          <span className='text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'>
             © ۱۴۰۴ آکادمی روشنا · ساخته‌شده با کامپوننت‌های استودیو
           </span>
           <div className='flex flex-wrap items-center gap-1'>

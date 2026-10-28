@@ -38,7 +38,7 @@ export function EditorPalettes({
   return (
     <div className='flex flex-wrap items-center gap-2'>
       <div className='flex items-center gap-1 rounded-sm border border-indigo-ink/20 bg-paper px-1.5 py-1'>
-        <span className='pr-0.5 text-[10px] font-bold text-indigo-light'>رنگ</span>
+        <span className='pr-0.5 text-[0.625rem] font-bold text-indigo-light'>رنگ</span>
         {TEXT_COLORS.map((swatch) => (
           <button
             key={swatch.value}
@@ -56,14 +56,14 @@ export function EditorPalettes({
         <button
           type='button'
           onClick={() => chain().unsetColor().run()}
-          className='rounded-sm px-1 text-[9px] font-bold text-indigo-light hover:text-coral'
+          className='rounded-sm px-1 text-[0.5625rem] font-bold text-indigo-light hover:text-coral'
         >
           پاک
         </button>
       </div>
 
       <div className='flex items-center gap-1 rounded-sm border border-indigo-ink/20 bg-paper px-1.5 py-1'>
-        <span className='pr-0.5 text-[10px] font-bold text-indigo-light'>
+        <span className='pr-0.5 text-[0.625rem] font-bold text-indigo-light'>
           هایلایت
         </span>
         {HIGHLIGHTS.map((swatch) => (
@@ -83,13 +83,13 @@ export function EditorPalettes({
         <button
           type='button'
           onClick={() => chain().unsetHighlight().run()}
-          className='rounded-sm px-1 text-[9px] font-bold text-indigo-light hover:text-coral'
+          className='rounded-sm px-1 text-[0.5625rem] font-bold text-indigo-light hover:text-coral'
         >
           پاک
         </button>
       </div>
 
-      <label className='flex items-center gap-1 rounded-sm border border-indigo-ink/20 bg-paper px-1.5 py-1 text-[10px] font-bold text-indigo-light'>
+      <label className='flex items-center gap-1 rounded-sm border border-indigo-ink/20 bg-paper px-1.5 py-1 text-[0.625rem] font-bold text-indigo-light'>
         اندازه
         <select
           value={fontSize ?? ""}
@@ -99,7 +99,7 @@ export function EditorPalettes({
             else chain().unsetFontSize().run();
           }}
           aria-label='اندازهٔ قلم'
-          className='rounded-sm border border-indigo-ink/20 bg-paper px-1 py-0.5 text-[10px] font-bold text-indigo-ink'
+          className='rounded-sm border border-indigo-ink/20 bg-paper px-1 py-0.5 text-[0.625rem] font-bold text-indigo-ink'
         >
           {FONT_SIZES.map((size) => (
             <option key={size || "default"} value={size}>

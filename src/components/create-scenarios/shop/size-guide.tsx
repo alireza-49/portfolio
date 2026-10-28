@@ -55,7 +55,7 @@ export function ShopSizeGuide() {
             {TIPS.map((tip) => (
               <li
                 key={tip}
-                className='flex items-start gap-1.5 text-[11px] leading-relaxed text-[color:var(--cc-muted-foreground)]'
+                className='flex items-start gap-1.5 text-[0.6875rem] leading-relaxed text-[color:var(--cc-muted-foreground)]'
               >
                 <Icon
                   name='check-circle'

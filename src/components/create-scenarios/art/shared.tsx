@@ -95,7 +95,7 @@ export function StarRating({
         ))}
       </span>
       {typeof count === "number" ? (
-        <span className='text-[10px] text-[color:var(--cc-muted-foreground)]'>
+        <span className='text-[0.625rem] text-[color:var(--cc-muted-foreground)]'>
           {count}
         </span>
       ) : null}

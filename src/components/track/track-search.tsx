@@ -29,7 +29,7 @@ export function TrackSearchForm({
     <form onSubmit={submit} className='flex w-full flex-col gap-2'>
       <label
         htmlFor='track-code'
-        className='text-[12px] font-bold text-indigo-ink'
+        className='text-[0.75rem] font-bold text-indigo-ink'
       >
         کد رهگیری سفارش
       </label>
@@ -55,7 +55,7 @@ export function TrackSearchForm({
           مشاهدهٔ پیشرفت
         </button>
       </div>
-      <p className='text-[11px] font-medium text-indigo-light'>
+      <p className='text-[0.6875rem] font-medium text-indigo-light'>
         کد رهگیری در پیش‌فاکتور و پیام تأیید سفارش ارسال شده است.
       </p>
     </form>

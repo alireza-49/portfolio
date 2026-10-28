@@ -30,14 +30,14 @@ export function ProjectRow({
       <td className='px-3 py-3'>
         <div className='flex flex-col gap-1'>
           <span className='flex flex-wrap items-center gap-1.5'>
-            <span className='rounded-sm border border-indigo-ink/30 bg-paper-dim px-1.5 py-0.5 font-mono text-[10px] font-black text-indigo-ink'>
+            <span className='rounded-sm border border-indigo-ink/30 bg-paper-dim px-1.5 py-0.5 font-mono text-[0.625rem] font-black text-indigo-ink'>
               {project.code}
             </span>
-            <span className='text-[13px] font-black text-indigo-ink'>
+            <span className='text-[0.8125rem] font-black text-indigo-ink'>
               {project.title}
             </span>
           </span>
-          <span className='text-[11px] font-medium text-indigo-light'>
+          <span className='text-[0.6875rem] font-medium text-indigo-light'>
             {project.clientName || "بدون کارفرما"}
             {project.clientOrg ? ` • ${project.clientOrg}` : ""}
           </span>
@@ -58,17 +58,17 @@ export function ProjectRow({
                 style={{ width: `${project.progress}%` }}
               />
             </div>
-            <span className='font-mono text-[10px] font-bold text-indigo-light'>
+            <span className='font-mono text-[0.625rem] font-bold text-indigo-light'>
               {faNumber(project.progress)}٪
             </span>
           </div>
-          <span className='truncate text-[10px] font-medium text-indigo-light'>
+          <span className='truncate text-[0.625rem] font-medium text-indigo-light'>
             {project.currentPhase || "بدون فاز فعال"}
           </span>
         </div>
       </td>
       <td className='px-3 py-3'>
-        <div className='flex flex-col gap-0.5 text-[11px] font-medium text-indigo-light'>
+        <div className='flex flex-col gap-0.5 text-[0.6875rem] font-medium text-indigo-light'>
           <span>موعد: {faDate(project.dueDate)}</span>
           <span className='font-mono'>آخرین ویرایش: {faDate(project.updatedAt)}</span>
         </div>
@@ -80,8 +80,8 @@ export function ProjectRow({
           disabled={pending}
           className={
             project.published
-              ? "rounded-sm border-[1.5px] border-teal-craft bg-teal-craft/10 px-2 py-1 text-[10px] font-black text-teal-craft disabled:opacity-60"
-              : "rounded-sm border-[1.5px] border-indigo-ink/30 bg-paper px-2 py-1 text-[10px] font-black text-indigo-ink/70 disabled:opacity-60"
+              ? "rounded-sm border-[1.5px] border-teal-craft bg-teal-craft/10 px-2 py-1 text-[0.625rem] font-black text-teal-craft disabled:opacity-60"
+              : "rounded-sm border-[1.5px] border-indigo-ink/30 bg-paper px-2 py-1 text-[0.625rem] font-black text-indigo-ink/70 disabled:opacity-60"
           }
         >
           {project.published ? "منتشر شده" : "منتشر نشده"}
@@ -91,7 +91,7 @@ export function ProjectRow({
         <div className='flex items-center justify-end gap-1'>
           <Link
             href={`/admin/projects/${project.id}`}
-            className='inline-flex items-center gap-1 rounded-sm border border-indigo-ink/30 bg-paper px-2 py-1 text-[11px] font-black text-indigo-ink transition-colors hover:bg-indigo-ink hover:text-paper'
+            className='inline-flex items-center gap-1 rounded-sm border border-indigo-ink/30 bg-paper px-2 py-1 text-[0.6875rem] font-black text-indigo-ink transition-colors hover:bg-indigo-ink hover:text-paper'
           >
             <Pencil className='size-3.5' />
             پیشرفت
@@ -119,7 +119,7 @@ export function ProjectRow({
             disabled={pending}
             aria-label={`حذف پروژهٔ ${project.title}`}
             className={cn(
-              "inline-flex items-center gap-1 rounded-sm border px-2 py-1 text-[10px] font-black transition-colors disabled:opacity-60",
+              "inline-flex items-center gap-1 rounded-sm border px-2 py-1 text-[0.625rem] font-black transition-colors disabled:opacity-60",
               confirmDelete
                 ? "border-coral bg-coral text-white"
                 : "border-coral/40 bg-coral/10 text-coral hover:bg-coral/20",

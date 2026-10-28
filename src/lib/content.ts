@@ -1,12 +1,25 @@
 import { randomUUID } from "node:crypto";
-import { query, queryOne } from "./db";
+import { query, queryOne, type SqlValue } from "./db";
+import { buildIncomeSummary, type IncomeSummary } from "./income";
+import { decryptSecret, encryptSecret } from "./secrets";
+import { SMS_KINDS, type SmsKind, type SmsLogEntry, type SmsSettings } from "./types";
 import type {
+  ImportedCalendarEvent,
+  MediaAsset,
+  MediaKind,
   Post,
+  PostComment,
   PostInput,
+  PostRevisionDetail,
+  PostRevisionSummary,
   Project,
   ProjectInput,
   ProjectStep,
+  ProjectTask,
+  ProjectTaskInput,
   ProjectUpdate,
+  PublicComment,
+  RevisionKind,
   Submission,
   SubmissionInput,
   SubmissionStatus,
@@ -79,6 +92,24 @@ function mapProject(row: Row): Project {
   };
 }
 
+/** Derived display counts: seeded baseline plus the real rows. */
+const POST_SELECT = `
+  SELECT p.*,
+    p.base_views + COALESCE(v.total, 0)::int AS total_views,
+    p.base_likes + COALESCE(l.total, 0)::int AS total_likes,
+    COALESCE(c.total, 0)::int AS comment_count
+  FROM posts p
+  LEFT JOIN (
+    SELECT post_id, SUM(views) AS total FROM post_viewers GROUP BY post_id
+  ) v ON v.post_id = p.id
+  LEFT JOIN (
+    SELECT post_id, COUNT(*) AS total FROM post_likes GROUP BY post_id
+  ) l ON l.post_id = p.id
+  LEFT JOIN (
+    SELECT post_id, COUNT(*) AS total FROM post_comments GROUP BY post_id
+  ) c ON c.post_id = p.id
+`;
+
 function mapPost(row: Row): Post {
   return {
     id: text(row.id),
@@ -92,6 +123,11 @@ function mapPost(row: Row): Post {
     status: text(row.status, "draft") as Post["status"],
     publishedAt: iso(row.published_at),
     readingMinutes: num(row.reading_minutes, 1),
+    baseViews: num(row.base_views),
+    baseLikes: num(row.base_likes),
+    views: num(row.total_views, num(row.base_views)),
+    likes: num(row.total_likes, num(row.base_likes)),
+    commentCount: num(row.comment_count),
     createdAt: iso(row.created_at) ?? new Date(0).toISOString(),
     updatedAt: iso(row.updated_at) ?? new Date(0).toISOString(),
   };
@@ -279,21 +315,21 @@ export async function listPosts(options?: {
 }): Promise<Post[]> {
   const rows = await query<Row>(
     options?.publishedOnly
-      ? `SELECT * FROM posts WHERE status = 'published'
-         ORDER BY published_at DESC NULLS LAST, created_at DESC`
-      : `SELECT * FROM posts ORDER BY updated_at DESC`,
+      ? `${POST_SELECT} WHERE p.status = 'published'
+         ORDER BY p.published_at DESC NULLS LAST, p.created_at DESC`
+      : `${POST_SELECT} ORDER BY p.updated_at DESC`,
   );
   return rows.map(mapPost);
 }
 
 export async function getPostBySlug(slug: string): Promise<Post | null> {
-  const row = await queryOne<Row>(`SELECT * FROM posts WHERE slug = $1`, [slug]);
+  const row = await queryOne<Row>(`${POST_SELECT} WHERE p.slug = $1`, [slug]);
   return row ? mapPost(row) : null;
 }
 
 export async function getPost(id: string): Promise<Post | null> {
   if (!isUuid(id)) return null;
-  const row = await queryOne<Row>(`SELECT * FROM posts WHERE id = $1`, [id]);
+  const row = await queryOne<Row>(`${POST_SELECT} WHERE p.id = $1`, [id]);
   return row ? mapPost(row) : null;
 }
 
@@ -318,8 +354,10 @@ function postValues(input: PostInput): (string | number | null)[] {
     input.excerpt.trim(),
     input.contentHtml,
     input.coverUrl.trim(),
-    input.author.trim() || "استودیو کدولوژی",
+    input.author.trim() || "وب دیزاین فیل",
     JSON.stringify(input.tags),
+    input.baseViews,
+    input.baseLikes,
     input.status,
     input.publishedAt,
   ];
@@ -333,10 +371,11 @@ export async function createPost(
   const row = await queryOne<Row>(
     `INSERT INTO posts (
        id, slug, title, excerpt, content_html, cover_url, author, tags,
-       status, published_at, reading_minutes, created_at, updated_at
+       base_views, base_likes, status, published_at, reading_minutes,
+       created_at, updated_at
      ) VALUES (
-       $1, $2, $3, $4, $5, $6, $7, $8::jsonb, $9, $10::timestamptz,
-       $11, NOW(), NOW()
+       $1, $2, $3, $4, $5, $6, $7, $8::jsonb, $9, $10, $11,
+       $12::timestamptz, $13, NOW(), NOW()
      )
      RETURNING *`,
     [id, ...postValues(input), Math.round(readingMinutes)],
@@ -354,8 +393,9 @@ export async function updatePost(
   const row = await queryOne<Row>(
     `UPDATE posts SET
        slug = $2, title = $3, excerpt = $4, content_html = $5,
-       cover_url = $6, author = $7, tags = $8::jsonb, status = $9,
-       published_at = $10::timestamptz, reading_minutes = $11,
+       cover_url = $6, author = $7, tags = $8::jsonb,
+       base_views = $9, base_likes = $10, status = $11,
+       published_at = $12::timestamptz, reading_minutes = $13,
        updated_at = NOW()
      WHERE id = $1
      RETURNING *`,
@@ -391,6 +431,367 @@ export async function deletePost(id: string): Promise<boolean> {
     [id],
   );
   return rows.length > 0;
+}
+
+
+export async function getPublishedPostRef(
+  slug: string,
+): Promise<{ id: string } | null> {
+  const row = await queryOne<{ id: string }>(
+    `SELECT id FROM posts WHERE slug = $1 AND status = 'published'`,
+    [slug],
+  );
+  return row ? { id: text(row.id) } : null;
+}
+
+/*
+ * The one-hour window is decided by Postgres `NOW()`, so every writer shares
+ * one clock; no injectable `now` parameter is needed (the repo has no DB test
+ * harness to inject it into).
+ */
+export async function recordPostView(
+  postId: string,
+  visitorHash: string,
+): Promise<number> {
+  if (!isUuid(postId)) return 0;
+  await query(
+    `INSERT INTO post_viewers (post_id, visitor_hash, views, last_seen_at)
+     VALUES ($1, $2, 1, NOW())
+     ON CONFLICT (post_id, visitor_hash) DO UPDATE
+       SET views = post_viewers.views + CASE
+             WHEN post_viewers.last_seen_at < NOW() - INTERVAL '1 hour'
+               THEN 1 ELSE 0 END,
+           last_seen_at = NOW()`,
+    [postId, visitorHash],
+  );
+  const row = await queryOne<{ views: number }>(
+    `SELECT p.base_views + COALESCE((
+       SELECT SUM(views) FROM post_viewers WHERE post_id = p.id
+     ), 0)::int AS views
+     FROM posts p WHERE p.id = $1`,
+    [postId],
+  );
+  return num(row?.views);
+}
+
+export async function isPostLikedBy(
+  postId: string,
+  visitorHash: string,
+): Promise<boolean> {
+  if (!isUuid(postId)) return false;
+  const row = await queryOne<{ liked: number }>(
+    `SELECT 1 AS liked FROM post_likes
+      WHERE post_id = $1 AND visitor_hash = $2`,
+    [postId, visitorHash],
+  );
+  return Boolean(row);
+}
+
+export async function togglePostLike(
+  postId: string,
+  visitorHash: string,
+  liked: boolean,
+): Promise<{ liked: boolean; likes: number } | null> {
+  if (!isUuid(postId)) return null;
+  const post = await queryOne<{ id: string }>(
+    `SELECT id FROM posts WHERE id = $1`,
+    [postId],
+  );
+  if (!post) return null;
+
+  if (liked) {
+    await query(
+      `INSERT INTO post_likes (post_id, visitor_hash) VALUES ($1, $2)
+       ON CONFLICT (post_id, visitor_hash) DO NOTHING`,
+      [postId, visitorHash],
+    );
+  } else {
+    await query(
+      `DELETE FROM post_likes WHERE post_id = $1 AND visitor_hash = $2`,
+      [postId, visitorHash],
+    );
+  }
+
+  const row = await queryOne<{ likes: number }>(
+    `SELECT p.base_likes + (SELECT COUNT(*) FROM post_likes
+        WHERE post_id = p.id)::int AS likes
+     FROM posts p WHERE p.id = $1`,
+    [postId],
+  );
+  return { liked, likes: num(row?.likes) };
+}
+
+/* -------------------------------------------------------------------------- */
+/*                          Draft previews and revisions                      */
+/* -------------------------------------------------------------------------- */
+
+/** Only the newest 20 revisions are kept; autosave never writes one. */
+const REVISION_LIMIT = 20;
+
+function mapRevisionSummary(row: Row): PostRevisionSummary {
+  return {
+    id: text(row.id),
+    postId: text(row.post_id),
+    title: text(row.title),
+    kind: text(row.kind, "save") as RevisionKind,
+    sizeBytes: num(row.size_bytes),
+    createdAt: iso(row.created_at) ?? new Date(0).toISOString(),
+  };
+}
+
+export async function listPostRevisions(
+  postId: string,
+): Promise<PostRevisionSummary[]> {
+  if (!isUuid(postId)) return [];
+  const rows = await query<Row>(
+    `SELECT id, post_id, title, kind, length(content_html) AS size_bytes, created_at
+       FROM post_revisions
+      WHERE post_id = $1
+      ORDER BY created_at DESC
+      LIMIT $2`,
+    [postId, REVISION_LIMIT],
+  );
+  return rows.map(mapRevisionSummary);
+}
+
+export async function getPostRevision(
+  postId: string,
+  revisionId: string,
+): Promise<PostRevisionDetail | null> {
+  if (!isUuid(postId) || !isUuid(revisionId)) return null;
+  const row = await queryOne<Row>(
+    `SELECT id, post_id, title, kind, content_html,
+            length(content_html) AS size_bytes, created_at
+       FROM post_revisions
+      WHERE id = $1 AND post_id = $2`,
+    [revisionId, postId],
+  );
+  if (!row) return null;
+  return {
+    ...mapRevisionSummary(row),
+    contentHtml: text(row.content_html),
+  };
+}
+
+export async function createPostRevision(
+  postId: string,
+  title: string,
+  contentHtml: string,
+  kind: RevisionKind,
+): Promise<void> {
+  if (!isUuid(postId)) return;
+  await query(
+    `INSERT INTO post_revisions (post_id, title, content_html, kind)
+     VALUES ($1, $2, $3, $4)`,
+    [postId, title.slice(0, 180), contentHtml, kind],
+  );
+  await query(
+    `DELETE FROM post_revisions
+      WHERE post_id = $1
+        AND id NOT IN (
+          SELECT id FROM post_revisions
+           WHERE post_id = $1
+           ORDER BY created_at DESC
+           LIMIT $2
+        )`,
+    [postId, REVISION_LIMIT],
+  );
+}
+
+/**
+ * Restore a snapshot and immediately snapshot what was replaced, so a restore
+ * itself is reversible. The caller re-sanitizes `contentHtml` first.
+ */
+export async function restorePostRevision(
+  postId: string,
+  revisionId: string,
+  readingMinutes: number,
+  sanitizedHtml?: string,
+): Promise<Post | null> {
+  const revision = await getPostRevision(postId, revisionId);
+  const current = await getPost(postId);
+  if (!revision || !current) return null;
+
+  const restored = await updatePost(
+    postId,
+    {
+      slug: current.slug,
+      title: revision.title || current.title,
+      excerpt: current.excerpt,
+      contentHtml: sanitizedHtml ?? revision.contentHtml,
+      coverUrl: current.coverUrl,
+      author: current.author,
+      tags: current.tags,
+      baseViews: current.baseViews,
+      baseLikes: current.baseLikes,
+      status: current.status,
+      publishedAt: current.publishedAt,
+    },
+    readingMinutes,
+  );
+
+  if (restored) {
+    await createPostRevision(
+      postId,
+      current.title,
+      current.contentHtml,
+      "restore",
+    );
+  }
+
+  return restored;
+}
+
+export async function getPostByPreviewHash(hash: string): Promise<Post | null> {
+  if (!/^[0-9a-f]{64}$/i.test(hash)) return null;
+  const row = await queryOne<Row>(
+    `SELECT * FROM posts
+      WHERE preview_token_hash = $1 AND preview_expires_at > NOW()`,
+    [hash.toLowerCase()],
+  );
+  return row ? mapPost(row) : null;
+}
+
+export async function setPostPreviewToken(
+  postId: string,
+  hash: string,
+  expiresAt: Date,
+): Promise<boolean> {
+  if (!isUuid(postId)) return false;
+  const rows = await query<{ id: string }>(
+    `UPDATE posts
+        SET preview_token_hash = $2, preview_expires_at = $3, updated_at = NOW()
+      WHERE id = $1
+      RETURNING id`,
+    [postId, hash, expiresAt],
+  );
+  return rows.length > 0;
+}
+
+export async function clearPostPreviewToken(postId: string): Promise<boolean> {
+  if (!isUuid(postId)) return false;
+  const rows = await query<{ id: string }>(
+    `UPDATE posts
+        SET preview_token_hash = NULL, preview_expires_at = NULL, updated_at = NOW()
+      WHERE id = $1
+      RETURNING id`,
+    [postId],
+  );
+  return rows.length > 0;
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                Media library                               */
+/* -------------------------------------------------------------------------- */
+
+function mapMediaAsset(row: Row): MediaAsset {
+  return {
+    id: text(row.id),
+    url: text(row.url),
+    storageKey: nullableText(row.storage_key),
+    filename: text(row.filename),
+    mime: text(row.mime, "application/octet-stream"),
+    sizeBytes: num(row.size_bytes),
+    kind: text(row.kind, "file") as MediaKind,
+    width: row.width == null ? null : num(row.width),
+    height: row.height == null ? null : num(row.height),
+    alt: text(row.alt),
+    createdAt: iso(row.created_at) ?? new Date(0).toISOString(),
+    lastUsedAt: iso(row.last_used_at),
+  };
+}
+
+export async function listMediaAssets(options?: {
+  query?: string;
+  kind?: MediaKind;
+  limit?: number;
+}): Promise<MediaAsset[]> {
+  const limit = Math.min(100, Math.max(1, options?.limit ?? 60));
+  const filters: string[] = [];
+  const params: SqlValue[] = [];
+
+  if (options?.kind) {
+    params.push(options.kind);
+    filters.push(`kind = $${params.length}`);
+  }
+
+  const needle = options?.query?.trim();
+  if (needle) {
+    params.push(`%${needle}%`);
+    filters.push(
+      `(filename ILIKE $${params.length} OR alt ILIKE $${params.length})`,
+    );
+  }
+
+  params.push(limit);
+  const rows = await query<Row>(
+    `SELECT * FROM media_assets
+      ${filters.length ? `WHERE ${filters.join(" AND ")}` : ""}
+      ORDER BY created_at DESC
+      LIMIT $${params.length}`,
+    params,
+  );
+  return rows.map(mapMediaAsset);
+}
+
+export async function getMediaAsset(id: string): Promise<MediaAsset | null> {
+  if (!isUuid(id)) return null;
+  const row = await queryOne<Row>(`SELECT * FROM media_assets WHERE id = $1`, [
+    id,
+  ]);
+  return row ? mapMediaAsset(row) : null;
+}
+
+export type MediaAssetInput = Pick<
+  MediaAsset,
+  "url" | "filename" | "mime" | "sizeBytes" | "kind"
+> & {
+  storageKey?: string | null;
+  width?: number | null;
+  height?: number | null;
+  alt?: string;
+};
+
+export async function createMediaAsset(
+  input: MediaAssetInput,
+): Promise<MediaAsset> {
+  const row = await queryOne<Row>(
+    `INSERT INTO media_assets (
+       url, storage_key, filename, mime, size_bytes, kind, width, height, alt
+     ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+     ON CONFLICT (url) DO UPDATE SET
+       filename = EXCLUDED.filename,
+       mime = EXCLUDED.mime,
+       size_bytes = EXCLUDED.size_bytes,
+       kind = EXCLUDED.kind,
+       width = COALESCE(EXCLUDED.width, media_assets.width),
+       height = COALESCE(EXCLUDED.height, media_assets.height),
+       alt = CASE
+         WHEN EXCLUDED.alt <> '' THEN EXCLUDED.alt
+         ELSE media_assets.alt
+       END
+     RETURNING *`,
+    [
+      input.url,
+      input.storageKey ?? null,
+      input.filename,
+      input.mime,
+      Math.round(input.sizeBytes),
+      input.kind,
+      input.width ?? null,
+      input.height ?? null,
+      input.alt ?? "",
+    ],
+  );
+  if (!row) throw new Error("ثبت رسانه در پایگاه داده ناموفق بود.");
+  return mapMediaAsset(row);
+}
+
+export async function markMediaUsed(id: string): Promise<void> {
+  if (!isUuid(id)) return;
+  await query(`UPDATE media_assets SET last_used_at = NOW() WHERE id = $1`, [
+    id,
+  ]);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -466,6 +867,18 @@ export async function deleteSubmission(id: string): Promise<boolean> {
     [id],
   );
   return rows.length > 0;
+}
+
+/** Deletes every valid id in one statement; returns how many rows went away. */
+export async function deleteSubmissions(ids: string[]): Promise<number> {
+  const valid = [...new Set(ids.filter(isUuid))];
+  if (valid.length === 0) return 0;
+  const placeholders = valid.map((_, index) => `$${index + 1}`).join(", ");
+  const rows = await query<{ id: string }>(
+    `DELETE FROM submissions WHERE id IN (${placeholders}) RETURNING id`,
+    valid,
+  );
+  return rows.length;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -575,4 +988,778 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     recentSubmissions: recentRows.map(mapSubmission),
     activeProjects: activeRows.map(mapProject),
   };
+}
+
+export type IncomeOverview = {
+  summary: IncomeSummary;
+  offers: Submission[];
+  projects: Project[];
+};
+
+/**
+ * The income screen reads the same two tables the rest of the console reads:
+ * every non-archived project (contract value, cash received, start date) and
+ * every still-open contact submission (whose price tag is the form estimate).
+ * Nothing here is stored twice — reopening the page recalculates from rows.
+ */
+export async function getIncomeOverview(): Promise<IncomeOverview> {
+  const [projectRows, offerRows] = await Promise.all([
+    query<Row>(
+      `SELECT * FROM projects WHERE status <> 'archived' ORDER BY created_at DESC`,
+    ),
+    query<Row>(
+      `SELECT * FROM submissions
+       WHERE status IN ('new', 'reviewing', 'meeting')
+       ORDER BY created_at DESC
+       LIMIT 12`,
+    ),
+  ]);
+
+  const projects = projectRows.map(mapProject);
+  const offers = offerRows.map(mapSubmission);
+
+  return {
+    summary: buildIncomeSummary(projects, offers),
+    offers,
+    projects,
+  };
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                Project tasks                               */
+/* -------------------------------------------------------------------------- */
+
+function mapTask(row: Row): ProjectTask {
+  return {
+    id: text(row.id),
+    projectId: text(row.project_id),
+    title: text(row.title),
+    note: text(row.note),
+    startsAt: iso(row.starts_at) ?? new Date(0).toISOString(),
+    endsAt: iso(row.ends_at) ?? new Date(0).toISOString(),
+    done: bool(row.done),
+    googleCalendarId: text(row.google_calendar_id),
+    googleEventId: text(row.google_event_id),
+    googleHtmlLink: text(row.google_html_link),
+    googleSyncState: text(
+      row.google_sync_state,
+      "pending",
+    ) as ProjectTask["googleSyncState"],
+    googleError: text(row.google_error),
+    googleSyncedAt: iso(row.google_synced_at),
+    createdAt: iso(row.created_at) ?? new Date(0).toISOString(),
+    updatedAt: iso(row.updated_at) ?? new Date(0).toISOString(),
+  };
+}
+
+/**
+ * Half-open range filter (`ends_at > from` / `starts_at < to`) so a task that
+ * merely touches the edge of a month still shows up on that month's timeline.
+ */
+export async function listTasks(options?: {
+  projectId?: string;
+  fromIso?: string;
+  toIso?: string;
+  limit?: number;
+}): Promise<ProjectTask[]> {
+  const where: string[] = [];
+  const params: SqlValue[] = [];
+
+  if (options?.projectId) {
+    if (!isUuid(options.projectId)) return [];
+    params.push(options.projectId);
+    where.push(`project_id = $${params.length}`);
+  }
+  if (options?.fromIso) {
+    params.push(options.fromIso);
+    where.push(`ends_at > $${params.length}::timestamptz`);
+  }
+  if (options?.toIso) {
+    params.push(options.toIso);
+    where.push(`starts_at < $${params.length}::timestamptz`);
+  }
+
+  const limit = Math.min(500, Math.max(1, options?.limit ?? 500));
+  const rows = await query<Row>(
+    `SELECT * FROM project_tasks
+     ${where.length > 0 ? `WHERE ${where.join(" AND ")}` : ""}
+     ORDER BY starts_at ASC
+     LIMIT ${limit}`,
+    params,
+  );
+  return rows.map(mapTask);
+}
+
+export async function getTask(id: string): Promise<ProjectTask | null> {
+  if (!isUuid(id)) return null;
+  const row = await queryOne<Row>(`SELECT * FROM project_tasks WHERE id = $1`, [
+    id,
+  ]);
+  return row ? mapTask(row) : null;
+}
+
+export async function createTask(input: ProjectTaskInput): Promise<ProjectTask> {
+  const id = randomUUID();
+  const row = await queryOne<Row>(
+    `INSERT INTO project_tasks (
+       id, project_id, title, note, starts_at, ends_at, done,
+       created_at, updated_at
+     ) VALUES (
+       $1, $2, $3, $4, $5::timestamptz, $6::timestamptz, $7, NOW(), NOW()
+     )
+     RETURNING *`,
+    [
+      id,
+      input.projectId,
+      input.title.trim(),
+      input.note.trim(),
+      input.startsAt,
+      input.endsAt,
+      input.done,
+    ],
+  );
+  if (!row) throw new Error("ثبت کار در پایگاه داده ناموفق بود.");
+  return mapTask(row);
+}
+
+/**
+ * Any edit invalidates the Google copy, so the row drops back to `pending`;
+ * the caller immediately pushes and overwrites the state with the real result.
+ */
+export async function updateTask(
+  id: string,
+  input: ProjectTaskInput,
+): Promise<ProjectTask | null> {
+  if (!isUuid(id)) return null;
+  const row = await queryOne<Row>(
+    `UPDATE project_tasks SET
+       project_id = $2, title = $3, note = $4,
+       starts_at = $5::timestamptz, ends_at = $6::timestamptz, done = $7,
+       google_sync_state = 'pending', google_error = '',
+       updated_at = NOW()
+     WHERE id = $1
+     RETURNING *`,
+    [
+      id,
+      input.projectId,
+      input.title.trim(),
+      input.note.trim(),
+      input.startsAt,
+      input.endsAt,
+      input.done,
+    ],
+  );
+  return row ? mapTask(row) : null;
+}
+
+export async function setTaskDone(
+  id: string,
+  done: boolean,
+): Promise<ProjectTask | null> {
+  if (!isUuid(id)) return null;
+  const row = await queryOne<Row>(
+    `UPDATE project_tasks SET
+       done = $2, google_sync_state = 'pending', google_error = '',
+       updated_at = NOW()
+     WHERE id = $1
+     RETURNING *`,
+    [id, done],
+  );
+  return row ? mapTask(row) : null;
+}
+
+export async function deleteTask(id: string): Promise<ProjectTask | null> {
+  if (!isUuid(id)) return null;
+  const row = await queryOne<Row>(
+    `DELETE FROM project_tasks WHERE id = $1 RETURNING *`,
+    [id],
+  );
+  return row ? mapTask(row) : null;
+}
+
+export async function markTaskSynced(
+  id: string,
+  values: {
+    calendarId: string;
+    eventId: string;
+    htmlLink: string;
+    syncedAt?: string;
+  },
+): Promise<ProjectTask | null> {
+  if (!isUuid(id)) return null;
+  const row = await queryOne<Row>(
+    `UPDATE project_tasks SET
+       google_calendar_id = $2, google_event_id = $3, google_html_link = $4,
+       google_sync_state = 'synced', google_error = '',
+       google_synced_at = COALESCE($5::timestamptz, NOW()), updated_at = NOW()
+     WHERE id = $1
+     RETURNING *`,
+    [id, values.calendarId, values.eventId, values.htmlLink, values.syncedAt ?? null],
+  );
+  return row ? mapTask(row) : null;
+}
+
+export async function markTaskSyncError(
+  id: string,
+  message: string,
+): Promise<ProjectTask | null> {
+  if (!isUuid(id)) return null;
+  const row = await queryOne<Row>(
+    `UPDATE project_tasks SET
+       google_sync_state = 'error', google_error = $2, updated_at = NOW()
+     WHERE id = $1
+     RETURNING *`,
+    [id, message.slice(0, 400)],
+  );
+  return row ? mapTask(row) : null;
+}
+
+export async function markTaskSkipped(
+  id: string,
+  message: string,
+): Promise<ProjectTask | null> {
+  if (!isUuid(id)) return null;
+  const row = await queryOne<Row>(
+    `UPDATE project_tasks SET
+       google_sync_state = 'skipped', google_error = $2, updated_at = NOW()
+     WHERE id = $1
+     RETURNING *`,
+    [id, message.slice(0, 400)],
+  );
+  return row ? mapTask(row) : null;
+}
+
+/**
+ * The pull half of the two-way sync: an event we created was edited in Google,
+ * so Google wins and the task adopts its title/times.
+ */
+export async function adoptTaskFromGoogle(
+  id: string,
+  values: { title: string; startsAt: string; endsAt: string; syncedAt?: string },
+): Promise<ProjectTask | null> {
+  if (!isUuid(id)) return null;
+  const row = await queryOne<Row>(
+    `UPDATE project_tasks SET
+       title = $2, starts_at = $3::timestamptz, ends_at = $4::timestamptz,
+       google_sync_state = 'synced', google_error = '',
+       google_synced_at = COALESCE($5::timestamptz, NOW()), updated_at = NOW()
+     WHERE id = $1
+     RETURNING *`,
+    [id, values.title, values.startsAt, values.endsAt, values.syncedAt ?? null],
+  );
+  return row ? mapTask(row) : null;
+}
+
+/** Tasks worth a retry on «ارسال همه»: pending, failed, or never created. */
+export async function listTasksNeedingSync(): Promise<ProjectTask[]> {
+  const rows = await query<Row>(
+    `SELECT * FROM project_tasks
+     WHERE google_sync_state IN ('pending', 'error')
+     ORDER BY starts_at ASC
+     LIMIT 200`,
+  );
+  return rows.map(mapTask);
+}
+
+/* -------------------------------------------------------------------------- */
+/*                          Imported calendar events                          */
+/* -------------------------------------------------------------------------- */
+
+export type ImportedCalendarEventInput = Omit<
+  ImportedCalendarEvent,
+  "id" | "createdAt" | "updatedAt"
+>;
+
+function mapImportedEvent(row: Row): ImportedCalendarEvent {
+  return {
+    id: text(row.id),
+    googleEventId: text(row.google_event_id),
+    calendarId: text(row.google_calendar_id, "primary"),
+    summary: text(row.summary),
+    description: text(row.description),
+    location: text(row.location),
+    startsAt: iso(row.starts_at) ?? new Date(0).toISOString(),
+    endsAt: iso(row.ends_at) ?? new Date(0).toISOString(),
+    allDay: bool(row.all_day),
+    status: text(
+      row.status,
+      "confirmed",
+    ) as ImportedCalendarEvent["status"],
+    htmlLink: text(row.html_link),
+    googleUpdatedAt: iso(row.google_updated_at),
+    createdAt: iso(row.created_at) ?? new Date(0).toISOString(),
+    updatedAt: iso(row.updated_at) ?? new Date(0).toISOString(),
+  };
+}
+
+export async function listImportedEvents(options?: {
+  fromIso?: string;
+  toIso?: string;
+}): Promise<ImportedCalendarEvent[]> {
+  const where: string[] = [];
+  const params: SqlValue[] = [];
+
+  if (options?.fromIso) {
+    params.push(options.fromIso);
+    where.push(`ends_at > $${params.length}::timestamptz`);
+  }
+  if (options?.toIso) {
+    params.push(options.toIso);
+    where.push(`starts_at < $${params.length}::timestamptz`);
+  }
+
+  const rows = await query<Row>(
+    `SELECT * FROM calendar_events
+     ${where.length > 0 ? `WHERE ${where.join(" AND ")}` : ""}
+     ORDER BY starts_at ASC
+     LIMIT 500`,
+    params,
+  );
+  return rows.map(mapImportedEvent);
+}
+
+export async function upsertImportedEvent(
+  input: ImportedCalendarEventInput,
+): Promise<void> {
+  await query(
+    `INSERT INTO calendar_events (
+       id, google_event_id, google_calendar_id, summary, description,
+       location, starts_at, ends_at, all_day, status, html_link,
+       google_updated_at, created_at, updated_at
+     ) VALUES (
+       $1, $2, $3, $4, $5, $6, $7::timestamptz, $8::timestamptz, $9, $10,
+       $11, $12::timestamptz, NOW(), NOW()
+     )
+     ON CONFLICT (google_event_id) DO UPDATE SET
+       google_calendar_id = EXCLUDED.google_calendar_id,
+       summary = EXCLUDED.summary,
+       description = EXCLUDED.description,
+       location = EXCLUDED.location,
+       starts_at = EXCLUDED.starts_at,
+       ends_at = EXCLUDED.ends_at,
+       all_day = EXCLUDED.all_day,
+       status = EXCLUDED.status,
+       html_link = EXCLUDED.html_link,
+       google_updated_at = EXCLUDED.google_updated_at,
+       updated_at = NOW()`,
+    [
+      randomUUID(),
+      input.googleEventId,
+      input.calendarId,
+      input.summary,
+      input.description,
+      input.location,
+      input.startsAt,
+      input.endsAt,
+      input.allDay,
+      input.status,
+      input.htmlLink,
+      input.googleUpdatedAt,
+    ],
+  );
+}
+
+export async function deleteImportedEvent(
+  googleEventId: string,
+): Promise<boolean> {
+  if (!googleEventId.trim()) return false;
+  const rows = await query<{ id: string }>(
+    `DELETE FROM calendar_events WHERE google_event_id = $1 RETURNING id`,
+    [googleEventId],
+  );
+  return rows.length > 0;
+}
+
+/* -------------------------------------------------------------------------- */
+/*                              Google account                                */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Server-only shape of the single Google link. `accessToken`/`refreshToken` are
+ * ciphertext (see `secrets.ts`); client components only ever receive
+ * `GoogleConnectionState` from `types.ts`.
+ */
+export type GoogleAccountRecord = {
+  accountEmail: string;
+  accessToken: string;
+  accessExpiresAt: string | null;
+  refreshToken: string;
+  scope: string;
+  calendarId: string;
+  syncToken: string;
+  lastSyncedAt: string | null;
+  needsReauth: boolean;
+  lastError: string;
+};
+
+function mapGoogleAccount(row: Row): GoogleAccountRecord {
+  return {
+    accountEmail: text(row.account_email),
+    accessToken: text(row.access_token),
+    accessExpiresAt: iso(row.access_expires_at),
+    refreshToken: text(row.refresh_token),
+    scope: text(row.scope),
+    calendarId: text(row.calendar_id, "primary") || "primary",
+    syncToken: text(row.sync_token),
+    lastSyncedAt: iso(row.last_synced_at),
+    needsReauth: bool(row.needs_reauth),
+    lastError: text(row.last_error),
+  };
+}
+
+export async function getGoogleAccount(): Promise<GoogleAccountRecord | null> {
+  const row = await queryOne<Row>(
+    `SELECT * FROM google_account WHERE id = 'default'`,
+  );
+  return row ? mapGoogleAccount(row) : null;
+}
+
+/**
+ * Read-merge-write on the single row: a token refresh can safely patch just the
+ * access token without inventing a second row or dropping the refresh token.
+ */
+export async function saveGoogleAccount(
+  patch: Partial<GoogleAccountRecord>,
+): Promise<void> {
+  const current = await getGoogleAccount();
+  const keep = <K extends keyof GoogleAccountRecord>(
+    key: K,
+    fallback: GoogleAccountRecord[K],
+  ): GoogleAccountRecord[K] =>
+    patch[key] === undefined ? (current?.[key] ?? fallback) : (patch[key] as GoogleAccountRecord[K]);
+
+  const next: GoogleAccountRecord = {
+    accountEmail: keep("accountEmail", ""),
+    accessToken: keep("accessToken", ""),
+    accessExpiresAt: keep("accessExpiresAt", null),
+    refreshToken: keep("refreshToken", ""),
+    scope: keep("scope", ""),
+    calendarId: keep("calendarId", "primary") || "primary",
+    syncToken: keep("syncToken", ""),
+    lastSyncedAt: keep("lastSyncedAt", null),
+    needsReauth: keep("needsReauth", false),
+    lastError: keep("lastError", ""),
+  };
+
+  await query(
+    `INSERT INTO google_account (
+       id, account_email, access_token, access_expires_at, refresh_token,
+       scope, calendar_id, sync_token, last_synced_at, needs_reauth,
+       last_error, updated_at
+     ) VALUES (
+       'default', $1, $2, $3::timestamptz, $4, $5, $6, $7,
+       $8::timestamptz, $9, $10, NOW()
+     )
+     ON CONFLICT (id) DO UPDATE SET
+       account_email = EXCLUDED.account_email,
+       access_token = EXCLUDED.access_token,
+       access_expires_at = EXCLUDED.access_expires_at,
+       refresh_token = EXCLUDED.refresh_token,
+       scope = EXCLUDED.scope,
+       calendar_id = EXCLUDED.calendar_id,
+       sync_token = EXCLUDED.sync_token,
+       last_synced_at = EXCLUDED.last_synced_at,
+       needs_reauth = EXCLUDED.needs_reauth,
+       last_error = EXCLUDED.last_error,
+       updated_at = NOW()`,
+    [
+      next.accountEmail,
+      next.accessToken,
+      next.accessExpiresAt,
+      next.refreshToken,
+      next.scope,
+      next.calendarId,
+      next.syncToken,
+      next.lastSyncedAt,
+      next.needsReauth,
+      next.lastError,
+    ],
+  );
+}
+
+/** Disconnect keeps `project_tasks.google_event_id` so a reconnect re-patches. */
+export async function clearGoogleAccount(): Promise<void> {
+  await query(`DELETE FROM google_account WHERE id = 'default'`);
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                Plan overview                               */
+/* -------------------------------------------------------------------------- */
+
+export type PlanOverview = {
+  projects: Project[];
+  tasks: ProjectTask[];
+  imported: ImportedCalendarEvent[];
+};
+
+/**
+ * One round trip for `/admin/plan`: every non-archived project plus the tasks
+ * and imported events that touch the requested window. The window is the
+ * visible Jalali month grid, so nothing outside the screen is serialized.
+ */
+export async function getPlanOverview(range: {
+  fromIso: string;
+  toIso: string;
+}): Promise<PlanOverview> {
+  const [projectRows, tasks, imported] = await Promise.all([
+    query<Row>(
+      `SELECT * FROM projects WHERE status <> 'archived' ORDER BY created_at DESC`,
+    ),
+    // The board plans across projects, not inside one month, so it gets every
+    // task; the calendar/timeline filter by range on the client.
+    listTasks({ limit: 500 }),
+    listImportedEvents(range),
+  ]);
+
+  return { projects: projectRows.map(mapProject), tasks, imported };
+}
+
+/* -------------------------------------------------------------------------- */
+/*                              Post comments                                 */
+/* -------------------------------------------------------------------------- */
+
+const COMMENT_SELECT = `
+  SELECT c.*, p.title AS post_title, p.slug AS post_slug
+  FROM post_comments c JOIN posts p ON p.id = c.post_id
+`;
+
+const COMMENT_LIMIT = 100;
+
+function mapPublicComment(row: Row): PublicComment {
+  return {
+    id: text(row.id),
+    postId: text(row.post_id),
+    postTitle: text(row.post_title),
+    postSlug: text(row.post_slug),
+    name: text(row.name),
+    body: text(row.body),
+    createdAt: iso(row.created_at) ?? new Date(0).toISOString(),
+  };
+}
+
+function mapComment(row: Row): PostComment {
+  return { ...mapPublicComment(row), email: text(row.email) };
+}
+
+export async function listPostComments(
+  postId: string,
+  limit = COMMENT_LIMIT,
+): Promise<PublicComment[]> {
+  if (!isUuid(postId)) return [];
+  const rows = await query<Row>(
+    `${COMMENT_SELECT} WHERE c.post_id = $1
+      ORDER BY c.created_at DESC LIMIT $2`,
+    [postId, Math.min(Math.max(1, limit), COMMENT_LIMIT)],
+  );
+  return rows.map(mapPublicComment);
+}
+
+/** Console listing: newest first, includes the email for moderation. */
+export async function listComments(): Promise<PostComment[]> {
+  const rows = await query<Row>(
+    `${COMMENT_SELECT} ORDER BY c.created_at DESC`,
+  );
+  return rows.map(mapComment);
+}
+
+export async function createPostComment(input: {
+  postId: string;
+  name: string;
+  email: string;
+  body: string;
+}): Promise<PublicComment> {
+  const row = await queryOne<Row>(
+    `INSERT INTO post_comments (post_id, name, email, body)
+     VALUES ($1, $2, $3, $4) RETURNING *`,
+    [input.postId, input.name, input.email, input.body],
+  );
+  if (!row) throw new Error("ثبت نظر در پایگاه داده ناموفق بود.");
+  const post = await queryOne<Row>(
+    `SELECT title, slug FROM posts WHERE id = $1`,
+    [input.postId],
+  );
+  return mapPublicComment({
+    ...row,
+    post_title: post?.title ?? "",
+    post_slug: post?.slug ?? "",
+  });
+}
+
+export async function deletePostComments(ids: string[]): Promise<number> {
+  const valid = ids.filter(isUuid);
+  if (valid.length === 0) return 0;
+  const rows = await query<{ id: string }>(
+    `DELETE FROM post_comments WHERE id = ANY($1::uuid[]) RETURNING id`,
+    [valid as unknown as SqlValue],
+  );
+  return rows.length;
+}
+
+/* --------------------------------------------------------------------------
+ * Outbound SMS (AmootSMS)
+ *
+ * `getSmsSettings` is the browser-safe shape (never the token);
+ * `readSmsCredentials` is the only function that decrypts it, for the sender.
+ * `sms_log` records every attempt — including the ones we never sent.
+ * ------------------------------------------------------------------------ */
+
+const SETTINGS_ID = "default";
+
+export type SmsCredentials = {
+  enabled: boolean;
+  sender: string;
+  notifyMobile: string;
+  token: string;
+  hasStoredToken: boolean;
+  tokenUnreadable: boolean;
+};
+
+export async function readSmsCredentials(): Promise<SmsCredentials> {
+  const row = await queryOne<Row>(
+    `SELECT amootsms_token, amootsms_line, notify_mobile, sms_enabled
+       FROM app_settings WHERE id = $1`,
+    [SETTINGS_ID],
+  );
+  const stored = text(row?.amootsms_token);
+  const token = stored ? decryptSecret(stored) : null;
+
+  return {
+    enabled: row ? bool(row.sms_enabled) : false,
+    sender: text(row?.amootsms_line),
+    notifyMobile: text(row?.notify_mobile),
+    token: token ?? "",
+    hasStoredToken: Boolean(stored),
+    tokenUnreadable: Boolean(stored) && token === null,
+  };
+}
+
+export async function getSmsSettings(): Promise<SmsSettings> {
+  const row = await queryOne<Row>(
+    `SELECT amootsms_token, amootsms_line, notify_mobile, sms_enabled, updated_at
+       FROM app_settings WHERE id = $1`,
+    [SETTINGS_ID],
+  );
+  const stored = text(row?.amootsms_token);
+
+  return {
+    enabled: row ? bool(row.sms_enabled) : false,
+    sender: text(row?.amootsms_line),
+    notifyMobile: text(row?.notify_mobile),
+    hasToken: Boolean(stored) && decryptSecret(stored) !== null,
+    tokenUnreadable: Boolean(stored) && decryptSecret(stored) === null,
+    updatedAt: row ? iso(row.updated_at) : null,
+  };
+}
+
+/**
+ * A blank/omitted `token` keeps the stored one (the console never echoes it
+ * back), `clearToken` removes it, and anything else is encrypted before it is
+ * written.
+ */
+export async function saveSmsSettings(input: {
+  enabled: boolean;
+  sender: string;
+  notifyMobile: string;
+  token?: string;
+  clearToken?: boolean;
+}): Promise<void> {
+  const current = await queryOne<Row>(
+    `SELECT amootsms_token FROM app_settings WHERE id = $1`,
+    [SETTINGS_ID],
+  );
+  const stored = text(current?.amootsms_token);
+  const provided = input.token?.trim() ?? "";
+
+  const nextToken = input.clearToken
+    ? ""
+    : provided
+      ? encryptSecret(provided)
+      : stored;
+
+  await query(
+    `INSERT INTO app_settings
+       (id, amootsms_token, amootsms_line, notify_mobile, sms_enabled, updated_at)
+     VALUES ($1, $2, $3, $4, $5, NOW())
+     ON CONFLICT (id) DO UPDATE SET
+       amootsms_token = EXCLUDED.amootsms_token,
+       amootsms_line = EXCLUDED.amootsms_line,
+       notify_mobile = EXCLUDED.notify_mobile,
+       sms_enabled = EXCLUDED.sms_enabled,
+       updated_at = NOW()`,
+    [
+      SETTINGS_ID,
+      nextToken,
+      input.sender.trim(),
+      input.notifyMobile.trim(),
+      input.enabled,
+    ],
+  );
+}
+
+const smsKindOf = (value: unknown): SmsKind =>
+  typeof value === "string" && (SMS_KINDS as readonly string[]).includes(value)
+    ? (value as SmsKind)
+    : "test";
+
+/**
+ * `provider_status` is TEXT (AmootSMS answers with words, not HTTP codes); an
+ * empty value must stay NULL instead of printing an empty pair of brackets.
+ */
+function mapSmsLog(row: Row): SmsLogEntry {
+  return {
+    id: text(row.id),
+    kind: smsKindOf(row.kind),
+    receptor: text(row.receptor),
+    refId: nullableText(row.ref_id),
+    body: text(row.body),
+    ok: bool(row.ok),
+    providerStatus: nullableText(row.provider_status),
+    providerMessage: text(row.provider_message),
+    createdAt: iso(row.created_at) ?? new Date().toISOString(),
+  };
+}
+
+export async function recordSmsLog(input: {
+  kind: SmsKind;
+  receptor: string;
+  refId: string | null;
+  body: string;
+  ok: boolean;
+  providerStatus: string | null;
+  providerMessage: string;
+}): Promise<void> {
+  await query(
+    `INSERT INTO sms_log
+       (kind, receptor, ref_id, body, ok, provider_status, provider_message)
+     VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+    [
+      input.kind,
+      input.receptor,
+      input.refId && isUuid(input.refId) ? input.refId : null,
+      input.body,
+      input.ok,
+      input.providerStatus,
+      input.providerMessage,
+    ],
+  );
+}
+
+export async function listSmsLog(limit = 20): Promise<SmsLogEntry[]> {
+  const rows = await query<Row>(
+    `SELECT * FROM sms_log ORDER BY created_at DESC LIMIT $1`,
+    [Math.min(Math.max(limit, 1), 100)],
+  );
+  return rows.map(mapSmsLog);
+}
+
+export async function listSmsLogForRef(
+  refId: string,
+  limit = 4,
+): Promise<SmsLogEntry[]> {
+  if (!isUuid(refId)) return [];
+  const rows = await query<Row>(
+    `SELECT * FROM sms_log WHERE ref_id = $1 ORDER BY created_at DESC LIMIT $2`,
+    [refId, Math.min(Math.max(limit, 1), 20)],
+  );
+  return rows.map(mapSmsLog);
 }

@@ -29,7 +29,7 @@ export function DraftField({
       <span className={LABEL_CLASS}>{label}</span>
       {children}
       {hint ? (
-        <span className='text-[10px] leading-relaxed font-medium text-indigo-light'>
+        <span className='text-[0.625rem] leading-relaxed font-medium text-indigo-light'>
           {hint}
         </span>
       ) : null}
@@ -205,7 +205,7 @@ export function ProjectBasics({
 
       <span
         id={`${idPrefix}-help`}
-        className='text-[10px] leading-relaxed font-medium text-indigo-light sm:col-span-2'
+        className='text-[0.625rem] leading-relaxed font-medium text-indigo-light sm:col-span-2'
       >
         فیلدهای ستاره‌دار در فرم ثبت پروژه الزامی‌اند؛ بقیه را می‌توانید بعداً
         کامل کنید.

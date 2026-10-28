@@ -18,7 +18,7 @@ export function TrendPanel({
         title='روند درخواست‌های سفارش'
         description={`در ۱۴ روز گذشته ${faNumber(total)} درخواست از فرم تماس سایت ثبت شده است.`}
         actions={
-          <span className='flex items-center gap-1 rounded-sm border border-teal-craft/40 bg-teal-craft/10 px-2 py-0.5 text-[10px] font-bold text-teal-craft'>
+          <span className='flex items-center gap-1 rounded-sm border border-teal-craft/40 bg-teal-craft/10 px-2 py-0.5 text-[0.625rem] font-bold text-teal-craft'>
             <TrendingUp className='size-3' />
             داده زنده
           </span>
@@ -39,15 +39,15 @@ export function TrendPanel({
                 key={point.date}
                 className='flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-1'
               >
-                <span className='font-mono text-[9px] font-bold text-indigo-light'>
+                <span className='font-mono text-[0.5625rem] font-bold text-indigo-light'>
                   {point.count > 0 ? faNumber(point.count) : ""}
                 </span>
                 <div
                   title={`${point.date}: ${point.count}`}
-                  className='w-full rounded-t-[2px] border-t-[1.5px] border-indigo-ink bg-coral/80'
+                  className='w-full rounded-t-[0.125rem] border-t-[1.5px] border-indigo-ink bg-coral/80'
                   style={{ height: `${height}%` }}
                 />
-                <span className='h-3 text-[9px] font-bold whitespace-nowrap text-indigo-light'>
+                <span className='h-3 text-[0.5625rem] font-bold whitespace-nowrap text-indigo-light'>
                   {showLabel
                     ? faNumber(Number(point.date.slice(8)))
                     : ""}

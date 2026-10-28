@@ -10,9 +10,15 @@ const numberFormatter = new Intl.NumberFormat("fa-IR");
 const decimalFormatter = new Intl.NumberFormat("fa-IR", {
   maximumFractionDigits: 1,
 });
+const timeFormatter = new Intl.DateTimeFormat("fa-IR", {
+  hour: "2-digit",
+  minute: "2-digit",
+  timeZone: "Asia/Tehran",
+  hour12: false,
+});
 
 /** Tehran calendar day (`YYYY-MM-DD`) for a date or an ISO timestamp. */
-function tehranDay(value: string): string {
+export function tehranDay(value: string): string {
   if (value.length <= 10) return value.slice(0, 10);
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value.slice(0, 10);
@@ -58,13 +64,24 @@ export function faDateTime(iso: string | null | undefined): string {
   if (!iso) return "—";
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return "—";
-  const time = new Intl.DateTimeFormat("fa-IR", {
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZone: "Asia/Tehran",
-    hour12: false,
-  }).format(date);
-  return `${toPersianDigits(formatJalali(tehranDay(iso)))} • ${time}`;
+  return `${toPersianDigits(formatJalali(tehranDay(iso)))} • ${timeFormatter.format(date)}`;
+}
+
+/** Time of day only, in Tehran: `2026-10-26T11:30:00Z` → `۱۵:۰۰`. */
+export function faTime(iso: string | null | undefined): string {
+  if (!iso) return "—";
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "—";
+  return timeFormatter.format(date);
+}
+
+/** `۱۵:۰۰ – ۱۶:۳۰`. */
+export function faTimeRange(
+  startIso: string | null | undefined,
+  endIso: string | null | undefined,
+): string {
+  if (!startIso || !endIso) return "—";
+  return `${faTime(startIso)} – ${faTime(endIso)}`;
 }
 
 /** Human distance from now, e.g. `۳ روز پیش`. */

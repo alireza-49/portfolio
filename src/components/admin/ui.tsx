@@ -49,7 +49,7 @@ export function StatusPill({
   return (
     <span
       className={cn(
-        "inline-flex w-fit items-center gap-1.5 rounded-sm border-[1.5px] px-2 py-0.5 text-[11px] leading-5 font-bold whitespace-nowrap",
+        "inline-flex w-fit items-center gap-1.5 rounded-sm border-[1.5px] px-2 py-0.5 text-[0.6875rem] leading-5 font-bold whitespace-nowrap",
         TONE_PILL[tone],
         className,
       )}
@@ -102,7 +102,7 @@ export function PanelHeading({
     >
       <div className="flex min-w-0 flex-col gap-1">
         {eyebrow ? (
-          <span className="font-mono text-[10px] font-bold tracking-widest text-coral uppercase">
+          <span className="font-mono text-[0.625rem] font-bold tracking-widest text-coral uppercase">
             {eyebrow}
           </span>
         ) : null}
@@ -137,7 +137,7 @@ export function PageHeader({
     <div className="flex flex-col justify-between gap-4 border-b-[2.5px] border-indigo-ink pb-5 md:flex-row md:items-end">
       <div className="flex min-w-0 flex-col gap-2">
         {eyebrow ? (
-          <span className="flex items-center gap-2 font-mono text-[11px] font-bold tracking-widest text-coral uppercase">
+          <span className="flex items-center gap-2 font-mono text-[0.6875rem] font-bold tracking-widest text-coral uppercase">
             <span className="size-2 rounded-full bg-coral" />
             {eyebrow}
           </span>
@@ -182,7 +182,7 @@ export function MetricCard({
         className={cn("absolute inset-y-0 right-0 w-1.5", TONE_BAR[tone])}
       />
       <div className="flex items-start justify-between gap-2 pr-2">
-        <span className="text-[11px] font-bold text-indigo-light">{label}</span>
+        <span className="text-[0.6875rem] font-bold text-indigo-light">{label}</span>
         {icon ? (
           <span className={cn("rounded-sm border px-1 py-0.5", TONE_PILL[tone])}>
             {icon}
@@ -194,11 +194,11 @@ export function MetricCard({
           {value}
         </span>
         {unit ? (
-          <span className="text-[11px] font-bold text-indigo-light">{unit}</span>
+          <span className="text-[0.6875rem] font-bold text-indigo-light">{unit}</span>
         ) : null}
       </div>
       {hint ? (
-        <p className="mt-1 pr-2 text-[11px] font-medium text-indigo-light">
+        <p className="mt-1 pr-2 text-[0.6875rem] font-medium text-indigo-light">
           {hint}
         </p>
       ) : null}
@@ -253,7 +253,7 @@ export const FIELD_CLASS =
 export const TEXTAREA_CLASS =
   "min-h-20 w-full rounded-sm border-[2px] border-indigo-ink bg-paper px-3 py-2 text-sm leading-relaxed font-medium text-indigo-ink placeholder:text-indigo-ink/35 focus-visible:border-coral focus-visible:ring-2 focus-visible:ring-coral/25";
 
-export const LABEL_CLASS = "text-[12px] font-bold text-indigo-ink";
+export const LABEL_CLASS = "text-[0.75rem] font-bold text-indigo-ink";
 
 export const BTN_PRIMARY =
   "craft-btn inline-flex h-auto items-center justify-center gap-1.5 rounded-sm border-[2.5px] border-indigo-ink bg-coral px-3.5 py-2 text-xs font-black text-white disabled:cursor-not-allowed disabled:opacity-60";

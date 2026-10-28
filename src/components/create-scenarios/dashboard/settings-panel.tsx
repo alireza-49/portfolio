@@ -60,10 +60,10 @@ export function SettingsPanel({
         <CardContent>
           <div className='flex items-center justify-between gap-4'>
             <div className='flex flex-col gap-0.5'>
-              <span className='text-[10px] font-bold text-[color:var(--cc-surface-foreground)]'>
+              <span className='text-[0.625rem] font-bold text-[color:var(--cc-surface-foreground)]'>
                 به‌روزرسانی زنده
               </span>
-              <span className='text-[9px] text-[color:var(--cc-muted-foreground)]'>
+              <span className='text-[0.5625rem] text-[color:var(--cc-muted-foreground)]'>
                 شاخص‌ها هر ۸ ثانیه بازخوانی می‌شوند
               </span>
             </div>
@@ -79,7 +79,7 @@ export function SettingsPanel({
           <div className='flex flex-col gap-1.5'>
             <label
               htmlFor='dash-default-range'
-              className='text-[10px] font-bold text-[color:var(--cc-surface-foreground)]'
+              className='text-[0.625rem] font-bold text-[color:var(--cc-surface-foreground)]'
             >
               بازهٔ پیش‌فرض گزارش‌ها
             </label>
@@ -93,7 +93,7 @@ export function SettingsPanel({
               }))}
               size='sm'
             />
-            <span className='text-[9px] text-[color:var(--cc-muted-foreground)]'>
+            <span className='text-[0.5625rem] text-[color:var(--cc-muted-foreground)]'>
               همین بازه در نوار بالا هم انتخاب شده است.
             </span>
           </div>
@@ -102,10 +102,10 @@ export function SettingsPanel({
 
           <div className='flex items-center justify-between gap-4'>
             <div className='flex flex-col gap-0.5'>
-              <span className='text-[10px] font-bold text-[color:var(--cc-surface-foreground)]'>
+              <span className='text-[0.625rem] font-bold text-[color:var(--cc-surface-foreground)]'>
                 خلاصهٔ هفتگی
               </span>
-              <span className='text-[9px] text-[color:var(--cc-muted-foreground)]'>
+              <span className='text-[0.5625rem] text-[color:var(--cc-muted-foreground)]'>
                 یک ایمیل دوشنبه‌ها با نمودارهای هفته
               </span>
             </div>
@@ -122,7 +122,7 @@ export function SettingsPanel({
         <CardHeader>
           <div className='flex flex-wrap items-center justify-between gap-2'>
             <CardTitle className='text-sm'>مسیر هشدارها</CardTitle>
-            <Badge variant='outline' className={cn("text-[9px]", monoType)}>
+            <Badge variant='outline' className={cn("text-[0.5625rem]", monoType)}>
               {activeChannel?.label ?? channel}
             </Badge>
           </div>
@@ -145,7 +145,7 @@ export function SettingsPanel({
           <Separator />
 
           <div className='flex flex-wrap items-center justify-between gap-2'>
-            <span className='text-[9px] text-[color:var(--cc-muted-foreground)]'>
+            <span className='text-[0.5625rem] text-[color:var(--cc-muted-foreground)]'>
               تغییرات فقط برای اعضای تیم اعمال می‌شود.
             </span>
             <Button size='sm' onClick={() => setSaved(true)}>

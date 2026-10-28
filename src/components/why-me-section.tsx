@@ -1,12 +1,12 @@
 import {
   Clock,
-  FlaskConical,
-  Leaf,
+  FileSearch,
+  MousePointerClick,
   Palette,
+  Radio,
   Wallet,
   Zap,
   BadgeCheck,
-  Sparkles,
 } from "lucide-react";
 import { cn } from "cn";
 import { Card } from "@/components/ui/card";
@@ -36,21 +36,21 @@ const REASONS = [
     icon: Palette,
     iconBox: "bg-teal-craft text-white shadow-craft-inset",
     blob: "bg-teal-craft/15",
-    title: "طراحی دست‌ساز و بااصالت",
-    body: "سایت شما شبیه هزاران وب‌سایت کپی‌شده دیگر نخواهد بود. پالت‌های رنگی جذاب، تایپوگرافی خوش‌خوان و بافت بصری باهویت متناسب با کسب‌وکارتان.",
-    footer: "✨ هویت بصری منحصر‌به‌فرد",
+    title: "رنگ استایل و فونت مطابق سلیقه شما ",
+    body: "در استودیو کدولوژی پالت، فونت، گوشه‌ها و سبک را زنده عوض می‌کنید و همان انتخاب روی سایت شما پیاده می‌شود. چیزی که می‌بینید، همان چیزی است که تحویل می‌گیرید.",
+    footer: "🖌️ پیش‌نمایش زنده، بدون حدس",
     footerTone: "text-teal-craft",
-    footerIcon: Sparkles,
+    footerIcon: MousePointerClick,
   },
   {
-    icon: FlaskConical,
+    icon: FileSearch,
     iconBox: "bg-indigo-ink text-paper shadow-craft-coral",
     blob: "bg-indigo-ink/10",
-    title: "نظم علمی و معماری پایدار",
-    body: "تخصص ارشد مهندسی بهداشت محیط به معنای احترام عمیق به بهینگی است: کدهای تمیز، لود زیر یک ثانیه و کمترین بار سرور و مصرف باتری.",
-    footer: "🌱 رتبه لایت‌هاوس ۹۵ به بالا",
+    title: "شفاف، از پیش‌پرداخت تا تحویل",
+    body: "هر پروژه یک کد رهگیری دارد که درصد پیشرفت، فازهای اجرایی و لاگ مهندسی را نشان می‌دهد. دیگر لازم نیست بپرسید «کارم کجاست؟» — خودتان می‌بینید.",
+    footer: "🔍 کد رهگیری و پیشرفت زنده",
     footerTone: "text-indigo-ink",
-    footerIcon: Leaf,
+    footerIcon: Radio,
   },
 ] as const;
 
@@ -58,11 +58,11 @@ export function WhyMeSection() {
   return (
     <section
       id='why-me-section'
-      className='w-full border-b-[2.5px] border-indigo-ink bg-paper-dim px-4 py-12 sm:px-8 lg:px-12'
+      className='w-full scroll-mt-16 border-b-[2.5px] border-indigo-ink bg-paper-dim px-4 py-12 sm:px-8 lg:px-12'
     >
       <div className='mx-auto flex max-w-7xl flex-col gap-10'>
         <div className='flex flex-col justify-between gap-4 border-b-[2px] border-indigo-ink pb-6 md:flex-row md:items-end'>
-          <h2 className='text-[26px] font-black text-indigo-ink sm:text-[34px]'>
+          <h2 className='text-[1.625rem] font-black text-indigo-ink sm:text-[2.125rem]'>
             چرا کار با یک سازنده مستقل بهتر و کم هزینه تر است؟
           </h2>
           <div className='riso-stamp-mustard self-start text-xs font-bold md:self-auto p-1 rounded-4xl'>
@@ -90,9 +90,9 @@ export function WhyMeSection() {
                     reason.iconBox,
                   )}
                 >
-                  <reason.icon className='size-[26px]' />
+                  <reason.icon className='size-[1.625rem]' />
                 </div>
-                <h3 className='pb-2 text-[19px] font-extrabold text-indigo-ink'>
+                <h3 className='pb-2 text-[1.1875rem] font-extrabold text-indigo-ink'>
                   {reason.title}
                 </h3>
                 <p className='text-sm leading-relaxed text-indigo-light'>

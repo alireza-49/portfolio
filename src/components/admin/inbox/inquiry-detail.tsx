@@ -25,7 +25,7 @@ export function InquiryDetail({
   return (
     <div className='flex flex-1 flex-col gap-5 overflow-y-auto p-4 sm:p-5'>
       <div className='flex flex-col gap-1'>
-        <span className='font-mono text-[10px] font-bold tracking-widest text-coral uppercase'>
+        <span className='font-mono text-[0.625rem] font-bold tracking-widest text-coral uppercase'>
           INBOUND / مشروح درخواست
         </span>
         <h2 className='text-lg font-black text-indigo-ink'>{submission.name}</h2>
@@ -36,35 +36,35 @@ export function InquiryDetail({
 
       <div className='grid grid-cols-2 gap-2 rounded-sm border border-indigo-ink/20 bg-paper p-3'>
         <div className='flex flex-col'>
-          <span className='text-[10px] font-bold text-indigo-light'>
+          <span className='text-[0.625rem] font-bold text-indigo-light'>
             نوع پروژه
           </span>
-          <span className='text-[12px] font-black text-indigo-ink'>
+          <span className='text-[0.75rem] font-black text-indigo-ink'>
             {submission.projectType || type || "مشخص نشده"}
           </span>
         </div>
         <div className='flex flex-col'>
-          <span className='text-[10px] font-bold text-indigo-light'>بودجه</span>
-          <span className='text-[12px] font-black text-coral'>
+          <span className='text-[0.625rem] font-bold text-indigo-light'>بودجه</span>
+          <span className='text-[0.75rem] font-black text-coral'>
             {submission.budget ||
               (min && max ? `${min} تا ${max} میلیون تومان` : "اعلام نشده")}
           </span>
         </div>
         <div className='flex flex-col'>
-          <span className='text-[10px] font-bold text-indigo-light'>
+          <span className='text-[0.625rem] font-bold text-indigo-light'>
             زمان ثبت
           </span>
-          <span className='text-[12px] font-bold text-indigo-ink'>
+          <span className='text-[0.75rem] font-bold text-indigo-ink'>
             {faDateTime(submission.createdAt)}
           </span>
         </div>
         <div className='flex min-w-0 flex-col'>
-          <span className='text-[10px] font-bold text-indigo-light'>
+          <span className='text-[0.625rem] font-bold text-indigo-light'>
             راه ارتباط
           </span>
           <span
             dir='ltr'
-            className='truncate text-right font-mono text-[11px] font-bold text-indigo-ink'
+            className='truncate text-right font-mono text-[0.6875rem] font-bold text-indigo-ink'
           >
             {submission.contact}
           </span>
@@ -72,11 +72,11 @@ export function InquiryDetail({
       </div>
 
       <div className='flex flex-col gap-1.5'>
-        <span className='flex items-center gap-1 text-[12px] font-black text-indigo-ink'>
+        <span className='flex items-center gap-1 text-[0.75rem] font-black text-indigo-ink'>
           <Mail className='size-3.5 text-coral' />
           متن پیام کارفرما
         </span>
-        <div className='rounded-sm border border-indigo-ink/20 bg-paper-dim p-3 text-[13px] leading-relaxed font-medium text-indigo-ink'>
+        <div className='rounded-sm border border-indigo-ink/20 bg-paper-dim p-3 text-[0.8125rem] leading-relaxed font-medium text-indigo-ink'>
           {submission.message ? (
             <p className='whitespace-pre-line'>{submission.message}</p>
           ) : (
@@ -89,10 +89,10 @@ export function InquiryDetail({
 
       {estimate ? (
         <div className='flex flex-col gap-1.5 rounded-sm border-[1.5px] border-mustard-deep bg-mustard/20 p-3'>
-          <span className='text-[12px] font-black text-indigo-ink'>
+          <span className='text-[0.75rem] font-black text-indigo-ink'>
             برآورد خودکار کارفرما
           </span>
-          <div className='flex flex-wrap items-center gap-2 text-[11px] font-bold text-indigo-ink'>
+          <div className='flex flex-wrap items-center gap-2 text-[0.6875rem] font-bold text-indigo-ink'>
             <span className='rounded-sm border border-indigo-ink/25 bg-paper px-1.5 py-0.5'>
               {type || "برآورد پروژه"}
             </span>

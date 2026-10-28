@@ -18,7 +18,7 @@ export function EditorToolbar({ editor }: { editor: Editor | null }) {
 
   if (!editor || !state) {
     return (
-      <div className='rounded-sm border border-indigo-ink/20 bg-paper px-3 py-2 text-[11px] font-bold text-indigo-light'>
+      <div className='rounded-sm border border-indigo-ink/20 bg-paper px-3 py-2 text-[0.6875rem] font-bold text-indigo-light'>
         ویرایشگر در حال آماده‌سازی است…
       </div>
     );
@@ -38,7 +38,7 @@ export function EditorToolbar({ editor }: { editor: Editor | null }) {
         highlight={state.highlight}
       />
       <EditorInsertBar editor={editor} />
-      <div className='flex flex-wrap items-center justify-between gap-2 border-t border-indigo-ink/15 pt-1.5 text-[10px] font-bold text-indigo-light'>
+      <div className='flex flex-wrap items-center justify-between gap-2 border-t border-indigo-ink/15 pt-1.5 text-[0.625rem] font-bold text-indigo-light'>
         <span>
           {faNumber(words)} کلمه • {faNumber(state.text.length)} کاراکتر
         </span>

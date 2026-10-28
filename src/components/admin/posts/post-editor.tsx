@@ -5,12 +5,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowRight, LoaderCircle, Save, Send } from "lucide-react";
 import { BTN_PRIMARY, BTN_SECONDARY, PageHeader } from "@/components/admin/ui";
-import { faDate } from "@/lib/fa";
-import type { Post, PostInput, PostStatus } from "@/lib/types";
+import { faDate, readingMinutes } from "@/lib/fa";
+import type { Post, PostInput, PostIssue, PostStatus } from "@/lib/types";
 import {
   createPostAction,
   updatePostAction,
 } from "@/app/admin/(console)/posts/actions";
+import { buildPostMarkdown, downloadTextFile } from "@/lib/post-export";
+import { slugify } from "@/lib/slugs";
 import type { OutlineItem } from "./rich-text-editor";
 import { PostWorkspace } from "./post-workspace";
 
@@ -20,8 +22,10 @@ const EMPTY_DRAFT: PostInput = {
   excerpt: "",
   contentHtml: "",
   coverUrl: "",
-  author: "استودیو کدولوژی",
+  author: "وب دیزاین فیل",
   tags: [],
+  baseViews: 0,
+  baseLikes: 0,
   status: "draft",
   publishedAt: null,
 };
@@ -35,6 +39,8 @@ function toDraft(post: Post): PostInput {
     coverUrl: post.coverUrl,
     author: post.author,
     tags: [...post.tags],
+    baseViews: post.baseViews,
+    baseLikes: post.baseLikes,
     status: post.status,
     publishedAt: post.publishedAt,
   };
@@ -47,6 +53,7 @@ export function PostEditor({ post }: { post: Post | null }) {
     post ? toDraft(post) : EMPTY_DRAFT,
   );
   const [outline, setOutline] = useState<OutlineItem[]>([]);
+  const [issues, setIssues] = useState<PostIssue[]>([]);
   const [dirty, setDirty] = useState(false);
   const [notice, setNotice] = useState<{
     ok: boolean;
@@ -195,6 +202,33 @@ export function PostEditor({ post }: { post: Post | null }) {
         pending={pending}
         onSave={save}
         published={published}
+        issues={issues}
+        onAuditChange={setIssues}
+        onExport={(markdown) => {
+          const now = new Date().toISOString();
+          const exportable: Post = {
+            id: postId ?? "draft",
+            slug: draft.slug || slugify(draft.title) || "draft",
+            title: draft.title || "بدون عنوان",
+            excerpt: draft.excerpt,
+            contentHtml: draft.contentHtml,
+            coverUrl: draft.coverUrl,
+            author: draft.author,
+            tags: draft.tags,
+            status: draft.status,
+            publishedAt: draft.publishedAt,
+            readingMinutes: readingMinutes(draft.contentHtml.replace(/<[^>]*>/g, " ")),
+            baseViews: draft.baseViews,
+            baseLikes: draft.baseLikes,
+            views: draft.baseViews,
+            likes: draft.baseLikes,
+            commentCount: 0,
+            createdAt: post?.createdAt ?? now,
+            updatedAt: now,
+          };
+          downloadTextFile(`${exportable.slug}.md`, buildPostMarkdown(exportable, markdown));
+        }}
+        onRestore={(html) => patch({ contentHtml: html })}
       />
     </div>
   );

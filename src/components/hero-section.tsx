@@ -5,57 +5,49 @@ import Link from "next/link";
 import {
   Calculator,
   Coffee,
+  Palette,
   Rocket,
-  SlidersHorizontal,
-  Smile,
+  type LucideIcon,
 } from "lucide-react";
 import { cn } from "cn";
-import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { HeroSpecSheet } from "@/components/hero-spec-sheet";
 
-const HERO_BADGES = [
-  { icon: Coffee, label: "مشاوره ۱۰۰٪ رایگان و بدون تعهد", tone: "coral" },
-  { icon: Calculator, label: "ماشین‌حساب آنلاین قیمت و زمان", tone: "teal" },
-  {
-    icon: SlidersHorizontal,
-    label: "امکان تست و شخصی‌سازی آزمایشی",
-    tone: "mustard",
-  },
-] as const;
-
-const BADGE_TONES: Record<string, string> = {
-  coral: "bg-coral/10 text-coral border-coral/40",
-  teal: "bg-teal-craft/15 text-teal-craft border-teal-craft/40",
-  mustard: "bg-mustard/25 text-indigo-ink border-indigo-ink/20",
+type HeroPromise = {
+  icon: LucideIcon;
+  title: string;
+  body: string;
+  box: string;
+  href?: string;
 };
 
-const HERO_PROMISES = [
-  {
-    icon: Smile,
-    title: "مشاوره رایگان ۳۰ دقیقه‌ای",
-    body: "بدون هیچ پیش‌پرداخت یا تعهد مالی",
-    box: "bg-paper-dim text-indigo-ink border-indigo-ink/40",
-  },
+const HERO_PROMISES: HeroPromise[] = [
   {
     icon: Calculator,
-    title: "تخمین آنلاین و شفاف هزینه",
-    body: "محاسبه دقیق قیمت و تحویل در چند ثانیه",
+    title: "اول قیمت، بعد تصمیم",
+    body: "برآورد شفاف در چند ثانیه",
     box: "bg-mustard/30 text-indigo-ink border-indigo-ink/40",
   },
   {
-    icon: SlidersHorizontal,
-    title: "تست و شخصی‌سازی آزمایشی",
-    body: "بررسی زنده چیدمان قبل از شروع رسمی",
-    box: "bg-teal-craft/20 text-teal-craft border-teal-craft/40",
+    icon: Coffee,
+    title: "۳۰ دقیقه مشاوره، رایگان",
+    body: "بدون پیش‌پرداخت و بدون تعهد",
+    box: "bg-paper-dim text-indigo-ink border-indigo-ink/40",
   },
   {
     icon: Rocket,
-    title: "تحویل چابک ۳ الی ۵ روز",
-    body: "ارتباط مستقیم و کدنویسی اختصاصی",
+    title: "تحویل ۳ تا ۵ روز",
+    body: "کدنویسی دست‌ساز، نه قالب آماده",
     box: "bg-coral/20 text-coral border-coral/40",
   },
-] as const;
+  {
+    icon: Palette,
+    title: "تم را قبل از سفارش ببینید",
+    body: "استودیو کدولوژی: رنگ، فونت و سبک را زنده امتحان کنید",
+    box: "bg-teal-craft/20 text-teal-craft border-teal-craft/40",
+    href: "/create",
+  },
+];
 
 const INK_COLORS = ["#E76F51", "#E9C46A", "#F237A1", "#264653", "#2A9D8F"];
 
@@ -72,7 +64,7 @@ type Particle = {
 };
 
 function createParticles(count: number): Particle[] {
-  return Array.from({ length: count }, (_, index) => {
+  return Array.from({ length: count }, () => {
     const angle = Math.random() * Math.PI * 2;
     const distance = Math.random() * 48 + 32;
     const squish = () =>
@@ -110,8 +102,14 @@ export function HeroSection() {
     }, 700);
   }, []);
 
+  // Touch screens never fire mouseleave, so a tap has to clean up after itself.
+  const tap = useCallback(() => {
+    splatter();
+    if (window.matchMedia("(hover: none)").matches) reset();
+  }, [splatter, reset]);
+
   return (
-    <section className='dot-grid relative w-full overflow-hidden border-b-[2.5px] border-indigo-ink bg-paper px-4 pt-12 pb-20 sm:px-8 lg:px-12'>
+    <section className='dot-grid relative w-full overflow-hidden border-b-[2.5px] border-indigo-ink bg-paper px-4 pt-8 pb-12 sm:px-8 sm:pt-12 sm:pb-20 lg:px-12'>
       <div
         aria-hidden
         className='pointer-events-none absolute -top-10 left-10 h-72 w-72 rounded-full bg-mustard/25 blur-3xl'
@@ -121,35 +119,18 @@ export function HeroSection() {
         className='pointer-events-none absolute right-10 bottom-4 h-80 w-80 rounded-full bg-coral/15 blur-3xl'
       />
 
-      <div className='relative z-10 mx-auto flex max-w-7xl flex-col items-center gap-12 lg:flex-row'>
+      <div className='relative z-10 mx-auto flex max-w-7xl flex-col items-center gap-8 sm:gap-12 lg:flex-row'>
         <div className='flex w-full flex-col gap-6 text-right lg:w-7/12'>
-          <div className='flex flex-wrap items-center gap-2.5'>
-            {HERO_BADGES.map((badge) => (
-              <Badge
-                key={badge.label}
-                variant='outline'
-                data-cursor-morph
-                className={cn(
-                  "inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-bold [&>svg]:size-4",
-                  BADGE_TONES[badge.tone],
-                )}
-              >
-                <badge.icon className='size-4' />
-                {badge.label}
-              </Badge>
-            ))}
-          </div>
-
-          <h1 className='font-display text-[32px] leading-[1.3] font-black text-indigo-ink sm:text-[46px]'>
+          <h1 className='font-display text-[1.75rem] leading-[1.45] font-black text-indigo-ink sm:text-[2.125rem] sm:leading-[1.35] md:text-[2.5rem] md:leading-[1.3] lg:text-[clamp(2.375rem,3.4vw,2.875rem)]'>
             طراحی وب{" "}
             <span
-              className={`ink-splash-wrapper group mx-1.5 inline-block px-3 py-1 align-baseline text-coral ${
+              className={`ink-splash-wrapper group mx-1.5 inline-block max-sm:mx-0 max-sm:block max-sm:w-fit max-sm:whitespace-nowrap max-sm:text-[clamp(1rem,6.3vw,1.75rem)] px-0 py-0 align-baseline text-coral sm:px-3 sm:py-1 ${
                 splashed ? "splashed" : ""
               }`}
               title='برای پاشش جوهر ریزوگراف کلیک یا هاور کنید!'
               onMouseEnter={splatter}
               onMouseLeave={reset}
-              onClick={splatter}
+              onClick={tap}
             >
               <span className='ink-blot-backdrop flex items-center justify-center'>
                 <svg
@@ -204,7 +185,7 @@ export function HeroSection() {
               </span>
 
               <svg
-                className='ink-droplet-svg -inset-6 h-[calc(100%+48px)] w-[calc(100%+48px)] transition-all duration-300'
+                className='ink-droplet-svg -inset-6 block h-[calc(100%+3rem)] w-[calc(100%+3rem)] transition-all duration-300'
                 viewBox='0 0 200 90'
                 aria-hidden
                 style={
@@ -237,52 +218,62 @@ export function HeroSection() {
               </svg>
 
               <span className='ink-text-target z-10 inline-block px-1 font-black tracking-normal'>
-                ارزان ، سریع و شخصی سازی شده
+                سریع، سئو عالی و  قیمت منصفانه
               </span>
 
-              <span className='absolute inset-x-0 bottom-0 h-[3px] rounded-full bg-coral transition-opacity duration-200 group-[.splashed]:opacity-0' />
-            </span>{" "}
-            برای همه کسب‌وکارها{" "}
+              <span className='absolute inset-x-0 bottom-0 h-[0.1875rem] rounded-full bg-coral transition-opacity duration-200 group-[.splashed]:opacity-0' />
+            </span>
+            <span className='block'>برای کسب‌وکارهای کوچک </span>
           </h1>
 
-          <p className='max-w-2xl text-[17px] leading-[1.85] font-medium text-indigo-light sm:text-[18px]'>
-            بدون واسطه و مستقیم با من گفتگو کنید! قبل از شروع می توانید با{" "}
+          <p className='max-w-2xl text-[1.0625rem] leading-[1.85] font-medium text-indigo-light sm:text-[1.125rem]'>
+            مستقیم با خودم کار می‌کنید؛{" "}
             <strong className='font-bold text-indigo-ink'>
-              ماشین‌حساب آنلاین
-            </strong>{" "}
-            هزینه و زمان دقیق پروژه‌تان را برآورد کنید، در{" "}
+              بدون واسطه و بدون هزینهٔ پنهان
+            </strong>
+            . قیمت و زمان تحویل را همین حالا آنلاین می‌بینید، بعد در یک{" "}
             <strong className='font-bold text-indigo-ink'>
-              جلسه مشاوره رایگان ۳۰ دقیقه‌ای
+              جلسهٔ ۳۰ دقیقه‌ای رایگان
             </strong>{" "}
-            ایده‌تان را موشکافی کنیم و حتی می توانید از قسمت ساخت ساخت انلاین
-            چیدمان و دیزاین را به صورت{" "}
-            <strong className='font-bold text-indigo-ink'>
-              رایگان و تست و شخصی‌سازی زنده
-            </strong>{" "}
-            مطابق سلیقه برند خود بررسی نمایید.
+            ایده را با هم می‌سنجیم.
+          </p>
+
+          <p className='-mt-3 flex items-center gap-2 text-[0.8125rem] font-medium text-indigo-black/60 sm:text-sm'>
+            <span className='size-1.5 shrink-0 rounded-full bg-teal-craft' />
+            بیش از ۴ سال توسعهٔ فرانت‌اند در تیم‌های محصول
           </p>
 
           <div className='grid grid-cols-1 gap-3 pt-1 sm:grid-cols-2'>
             {HERO_PROMISES.map((promise) => (
               <Card
                 key={promise.title}
-                data-cursor-morph
-                className='flex flex-row items-center gap-3 rounded-sm border-[2px] border-indigo-ink bg-paper-light p-3 shadow-craft-inset'
+                className={cn(
+                  "relative flex flex-row items-center gap-3 rounded-sm border-[2px] border-indigo-ink bg-paper-light p-3 shadow-craft-inset",
+                  promise.href &&
+                    "transition-colors hover:border-teal-craft hover:bg-teal-craft/5",
+                )}
               >
                 <span
                   className={cn(
-                    "flex size-9 items-center justify-center rounded border font-bold",
+                    "flex size-9 shrink-0 items-center justify-center rounded border font-bold",
                     promise.box,
                   )}
                 >
                   <promise.icon className='size-5' />
                 </span>
-                <div className='text-xs sm:text-sm'>
+                <div className='min-w-0 text-xs'>
                   <strong className='block text-indigo-ink'>
                     {promise.title}
                   </strong>
                   <span className='text-indigo-light'>{promise.body}</span>
                 </div>
+                {promise.href && (
+                  <Link
+                    href={promise.href}
+                    className='absolute inset-0 rounded-sm'
+                    aria-label={promise.title}
+                  />
+                )}
               </Card>
             ))}
           </div>
@@ -290,19 +281,23 @@ export function HeroSection() {
           <div className='flex flex-wrap items-center gap-4 pt-3'>
             <Link
               href='#contact-section'
-              className='craft-btn inline-flex h-auto items-center justify-center gap-2 rounded-sm border-[2.5px] border-indigo-ink bg-coral px-6 py-3.5 text-base font-bold text-white shadow-craft-sm transition-colors hover:bg-coral-dark'
+              className='craft-btn inline-flex h-auto w-full items-center justify-center gap-2 rounded-sm border-[2.5px] border-indigo-ink bg-coral px-6 py-3.5 text-base font-bold text-white shadow-craft-sm transition-colors hover:bg-coral-dark sm:w-auto'
             >
-              <span>رزرو جلسه مشاوره رایگان (۳۰ دقیقه)</span>
+              <span>رزرو مشاورهٔ رایگان</span>
               <Coffee className='size-5' />
             </Link>
             <Link
               href='#estimator-section'
-              className='craft-btn inline-flex h-auto items-center justify-center gap-2 rounded-sm border-[2.5px] border-indigo-ink bg-mustard px-6 py-3.5 text-base font-bold text-indigo-ink shadow-craft-sm transition-colors hover:bg-mustard-deep'
+              className='craft-btn inline-flex h-auto w-full items-center justify-center gap-2 rounded-sm border-[2.5px] border-indigo-ink bg-mustard px-6 py-3.5 text-base font-bold text-indigo-ink shadow-craft-sm transition-colors hover:bg-mustard-deep sm:w-auto'
             >
-              <span>محاسبه آنلاین قیمت و زمان تحویل</span>
+              <span>محاسبهٔ قیمت و زمان</span>
               <Calculator className='size-5' />
             </Link>
           </div>
+
+          <p className='-mt-1 text-[0.8125rem] font-medium text-indigo-light'>
+            همان روز جواب می‌دهم، بدون پیش‌پرداخت.
+          </p>
         </div>
 
         <div className='flex w-full items-center justify-center lg:w-5/12'>

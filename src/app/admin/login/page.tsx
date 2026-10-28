@@ -31,7 +31,7 @@ export default async function AdminLoginPage() {
       className='paper-pattern flex min-h-dvh w-full flex-col items-center justify-center px-4 py-10'
     >
       <div className='w-full max-w-md'>
-        <div className='flex w-full flex-wrap items-center justify-between gap-2 pb-4 text-[10px] font-bold tracking-widest text-indigo-light uppercase opacity-70 select-none'>
+        <div className='flex w-full flex-wrap items-center justify-between gap-2 pb-4 text-[0.625rem] font-bold tracking-widest text-indigo-light uppercase opacity-70 select-none'>
           <span className='flex items-center gap-1 font-mono text-coral'>
             <Plus className='size-3.5' />
             REG: #092-COD
@@ -50,7 +50,7 @@ export default async function AdminLoginPage() {
           <div className='flex flex-col items-center gap-2 text-center'>
             <div className='relative rounded-full border-[2px] border-indigo-ink bg-paper-dim p-1.5 shadow-craft-sm'>
               <LogoButton
-                aria-label='استودیو کدولوژی'
+                aria-label='وب دیزاین فیل'
                 logoClassName='size-full'
                 className='flex size-20 items-center justify-center rounded-full border border-indigo-ink/20 bg-paper text-indigo-ink hover:text-indigo-ink'
               />
@@ -58,8 +58,8 @@ export default async function AdminLoginPage() {
                 <Terminal className='size-3.5' />
               </span>
             </div>
-            <span className='pt-1 font-mono text-[10px] font-bold tracking-[0.2em] text-indigo-ink uppercase'>
-              CODOLOGY // چاپ و کُد
+            <span className='pt-1 font-mono text-[0.625rem] font-bold tracking-[0.2em] text-indigo-ink uppercase'>
+              PHILL // چاپ و کُد
             </span>
           </div>
 
@@ -78,7 +78,7 @@ export default async function AdminLoginPage() {
           ) : (
             <div
               role='alert'
-              className='flex flex-col gap-2 rounded-sm border-[2px] border-coral bg-coral/10 p-3 text-[12px] leading-relaxed font-bold text-coral-dark'
+              className='flex flex-col gap-2 rounded-sm border-[2px] border-coral bg-coral/10 p-3 text-[0.75rem] leading-relaxed font-bold text-coral-dark'
             >
               <span className='flex items-center gap-1.5'>
                 <Lock className='size-4' />
@@ -97,22 +97,22 @@ export default async function AdminLoginPage() {
 
           <div className='flex items-center gap-2 opacity-50'>
             <span className='h-0.5 flex-1 bg-indigo-ink/20' />
-            <span className='text-[10px] font-bold text-indigo-light'>
+            <span className='text-[0.625rem] font-bold text-indigo-light'>
               دستورالعمل نظارت بر نشر
             </span>
             <span className='h-0.5 flex-1 bg-indigo-ink/20' />
           </div>
 
-          <div className='flex flex-col items-center gap-2 text-center text-[10px] font-bold text-indigo-light sm:flex-row sm:justify-between sm:text-right'>
+          <div className='flex flex-col items-center gap-2 text-center text-[0.625rem] font-bold text-indigo-light sm:flex-row sm:justify-between sm:text-right'>
             <span className='flex items-center gap-1'>
               <Lock className='size-3.5 text-mustard-deep' />
               نشست رمزنگاری‌شده و HttpOnly
             </span>
-            <span className='font-mono'>CODOLOGY OPS © ۲۰۲۶</span>
+            <span className='font-mono'>PHILL OPS © ۲۰۲۶</span>
           </div>
         </section>
 
-        <p className='pt-4 text-center text-[11px] font-bold text-indigo-light'>
+        <p className='pt-4 text-center text-[0.6875rem] font-bold text-indigo-light'>
           <Link
             href='/'
             className='underline decoration-dashed underline-offset-4 transition-colors hover:text-coral'

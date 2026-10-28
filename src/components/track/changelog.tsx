@@ -45,18 +45,18 @@ export function Changelog({ updates }: { updates: ProjectUpdate[] }) {
             </span>
             <div className='flex min-w-0 flex-col gap-0.5'>
               <div className='flex flex-wrap items-center gap-2'>
-                <span className='text-[12px] leading-snug font-black text-indigo-ink'>
+                <span className='text-[0.75rem] leading-snug font-black text-indigo-ink'>
                   {update.title}
                 </span>
-                <span className='rounded-sm border border-indigo-ink/20 bg-paper px-1.5 py-0.5 font-mono text-[9px] font-bold text-indigo-light'>
+                <span className='rounded-sm border border-indigo-ink/20 bg-paper px-1.5 py-0.5 font-mono text-[0.5625rem] font-bold text-indigo-light'>
                   {UPDATE_TYPE_META[update.type].label}
                 </span>
-                <span className='ms-auto font-mono text-[10px] font-bold text-indigo-light'>
+                <span className='font-mono text-[0.625rem] font-bold text-indigo-light sm:ms-auto'>
                   {faDate(update.date)}
                 </span>
               </div>
               {update.body ? (
-                <p className='text-[11px] leading-relaxed font-medium text-indigo-light'>
+                <p className='text-[0.6875rem] leading-relaxed font-medium text-indigo-light'>
                   {update.body}
                 </p>
               ) : null}

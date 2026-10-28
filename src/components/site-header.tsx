@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Coffee, Menu } from "lucide-react";
 import Link from "next/link";
-import { LogoButton } from "@/assests/logo";
+import { BrandMarkButton } from "@/components/brand-mark";
 import {
   Sheet,
   SheetContent,
@@ -16,17 +16,16 @@ import {
 type NavLink = {
   href: string;
   label: string;
-  highlight?: boolean;
 };
 
 const NAV_LINKS: NavLink[] = [
-  { href: "/#projects-container", label: "پروژه‌ها" },
   { href: "/blog", label: "وبلاگ" },
+  { href: "/#projects-container", label: "پروژه‌ها" },
   { href: "/track", label: "پیگیری پروژه" },
-  { href: "/create", label: "ساخت آنلاین", highlight: true },
   { href: "/#estimator-section", label: "برآورد هزینه" },
-  { href: "/#contact-section", label: "تماس و سفارش" },
 ];
+
+const CREATE_LINK: NavLink = { href: "/create", label: "ساخت آنلاین" };
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
@@ -36,10 +35,10 @@ export function SiteHeader() {
       <div className='mx-auto flex h-15 max-w-7xl flex-nowrap items-center justify-between gap-4 px-4 sm:px-8'>
         <div className='flex shrink-0 items-center gap-3'>
           <div className='relative flex items-center'>
-            <LogoButton
-              aria-label='استودیو کدولوژی'
-              logoClassName='size-full'
-              className='size-9 rounded-sm border-[1.5px] border-indigo-ink bg-mustard/30 p-1 text-indigo-ink shadow-craft-inset hover:bg-mustard/30 hover:text-indigo-ink'
+            <BrandMarkButton
+              aria-label='وب دیزاین فیل'
+              priority
+              className='size-13 rounded-sm border-[1.5px] border-indigo-ink bg-mustard/30 p-1 text-indigo-ink shadow-craft-inset hover:bg-mustard/30 hover:text-indigo-ink'
             />
             <span className='absolute -top-1 -right-1 flex h-2.5 w-2.5'>
               <span className='absolute inline-flex h-full w-full animate-ping rounded-full bg-teal-craft opacity-75' />
@@ -51,24 +50,20 @@ export function SiteHeader() {
               href='/'
               className='font-display text-base leading-tight font-black tracking-tight text-indigo-ink transition-colors hover:text-coral sm:text-lg'
             >
-              استودیو کدولوژی
+              وب دیزاین فیل
             </Link>
-            <span className='mt-0.5 text-[11px] leading-none font-medium text-indigo-light'>
+            <span className='mt-0.5 text-[0.6875rem] leading-none font-medium text-indigo-light'>
               توسعه فرانت‌اند دست‌ساز
             </span>
           </div>
         </div>
 
-        <nav className='hidden shrink items-center gap-3 text-[13px] font-bold whitespace-nowrap text-indigo-ink lg:flex'>
+        <nav className='hidden shrink items-center gap-3 text-[0.8125rem] font-bold whitespace-nowrap text-indigo-ink lg:flex'>
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className={
-                link.highlight
-                  ? "rounded-sm border-[1.5px] border-indigo-ink bg-mustard/40 px-2.5 py-1 font-black text-indigo-ink shadow-craft-sm transition-all hover:bg-mustard"
-                  : "rounded px-2 py-1 text-indigo-ink/80 transition-all hover:bg-mustard/20 hover:text-coral"
-              }
+              className='rounded px-2 py-1 text-indigo-ink/80 transition-all hover:bg-mustard/20 hover:text-coral'
             >
               {link.label}
             </Link>
@@ -76,24 +71,15 @@ export function SiteHeader() {
         </nav>
 
         <div className='flex shrink-0 items-center gap-2.5 whitespace-nowrap'>
-          <div className='inline-flex items-center rounded-sm border-[1.5px] border-indigo-ink bg-paper-dim p-[2px] text-[10px] font-bold shadow-craft-inset'>
-            <Link
-              href='#'
-              className='rounded-[2px] bg-indigo-ink px-2 py-[2px] text-paper'
-            >
-              فا
-            </Link>
-            <Link
-              href='#'
-              className='px-1.5 py-[2px] text-indigo-ink transition-colors hover:text-coral'
-            >
-              EN
-            </Link>
-          </div>
-
+          <Link
+            href={CREATE_LINK.href}
+            className='craft-btn hidden items-center justify-center rounded-sm border-[2.5px] border-indigo-ink bg-mustard/60 px-3.5 py-1.5 text-xs font-black whitespace-nowrap text-indigo-ink shadow-craft-sm transition-colors hover:bg-mustard hover:text-coral sm:inline-flex sm:text-[0.8125rem]'
+          >
+            {CREATE_LINK.label}
+          </Link>
           <Link
             href='#contact-section'
-            className='craft-btn hidden h-auto items-center justify-center gap-1 rounded-sm border-[2.5px] border-indigo-ink bg-coral px-3.5 py-1.5 text-xs font-bold whitespace-nowrap text-white shadow-craft-sm transition-colors hover:bg-coral-dark sm:inline-flex sm:text-[13px]'
+            className='craft-btn hidden h-auto items-center justify-center gap-1 rounded-sm border-[2.5px] border-indigo-ink bg-coral px-3.5 py-1.5 text-xs font-bold whitespace-nowrap text-white shadow-craft-sm transition-colors hover:bg-coral-dark sm:inline-flex sm:text-[0.8125rem]'
           >
             <Coffee className='size-4' />
             <span>مشاوره و سفارش</span>
@@ -112,7 +98,7 @@ export function SiteHeader() {
                   منوی ناوبری
                 </SheetTitle>
                 <SheetDescription className='text-right text-xs text-indigo-light'>
-                  دسترسی سریع به بخش‌های استودیو کدولوژی
+                  دسترسی سریع به بخش‌های وب دیزاین فیل
                 </SheetDescription>
               </SheetHeader>
               <nav className='px-4'>
@@ -122,16 +108,21 @@ export function SiteHeader() {
                       <Link
                         href={link.href}
                         onClick={() => setOpen(false)}
-                        className={
-                          link.highlight
-                            ? "block py-3 text-sm font-black text-coral transition-colors hover:text-coral-dark"
-                            : "block py-3 text-sm font-bold text-indigo-ink transition-colors hover:text-coral"
-                        }
+                        className='block py-3 text-sm font-bold text-indigo-ink transition-colors hover:text-coral'
                       >
                         {link.label}
                       </Link>
                     </li>
                   ))}
+                  <li>
+                    <Link
+                      href={CREATE_LINK.href}
+                      onClick={() => setOpen(false)}
+                      className='block py-3 text-sm font-black text-coral transition-colors hover:text-coral-dark'
+                    >
+                      {CREATE_LINK.label}
+                    </Link>
+                  </li>
                 </ul>
               </nav>
             </SheetContent>

@@ -34,6 +34,21 @@ export function hasDatabaseConfig(): boolean {
 }
 
 /**
+ * `pg` (via pg-connection-string) already treats `sslmode=prefer|require|verify-ca`
+ * as `verify-full`, but warns on every process start that v3 will switch those
+ * modes to libpq semantics. Pin today's meaning here: the warning disappears and
+ * a future `pg` upgrade cannot silently drop certificate verification.
+ * `uselibpqcompat=true` is an explicit opt-out and is left untouched.
+ */
+function explicitSslMode(connectionString: string): string {
+  if (/\buselibpqcompat=true\b/.test(connectionString)) return connectionString;
+  return connectionString.replace(
+    /([?&]sslmode=)(prefer|require|verify-ca)(?=&|$)/,
+    "$1verify-full",
+  );
+}
+
+/**
  * Managed Postgres (Neon, Supabase, RDS) presents a certificate chain that
  * Node's default store does not ship. Local sockets keep TLS off.
  */
@@ -50,8 +65,9 @@ function sslFor(connectionString: string) {
 }
 
 export function getPool(): Pool {
-  const connectionString = process.env.DATABASE_URL?.trim();
-  if (!connectionString) throw new DatabaseNotConfiguredError();
+  const rawConnectionString = process.env.DATABASE_URL?.trim();
+  if (!rawConnectionString) throw new DatabaseNotConfiguredError();
+  const connectionString = explicitSslMode(rawConnectionString);
 
   if (!globalDb.__studioPool) {
     const pool = new Pool({

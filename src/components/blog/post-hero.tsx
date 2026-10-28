@@ -11,18 +11,18 @@ export function PostHero({ post }: { post: Post }) {
         <div className='grid grid-cols-1 gap-4 lg:grid-cols-12'>
           <div className='relative flex flex-col gap-3 overflow-hidden rounded-md border-[2px] border-indigo-ink bg-paper-dim p-5 shadow-craft sm:p-7 lg:col-span-8'>
             <div className='flex flex-wrap items-center gap-2 border-b border-indigo-ink/20 pb-2'>
-              <span className='rounded-sm border-[1.5px] border-indigo-ink bg-coral px-2 py-0.5 text-[9px] font-black tracking-wider text-white uppercase'>
+              <span className='rounded-sm border-[1.5px] border-indigo-ink bg-coral px-2 py-0.5 text-[0.5625rem] font-black tracking-wider text-white uppercase'>
                 Dossier
               </span>
               {post.tags.slice(0, 3).map((tag) => (
                 <span
                   key={tag}
-                  className='rounded-sm border border-indigo-ink/25 bg-paper px-1.5 py-0.5 text-[9px] font-bold text-indigo-ink'
+                  className='rounded-sm border border-indigo-ink/25 bg-paper px-1.5 py-0.5 text-[0.5625rem] font-bold text-indigo-ink'
                 >
                   {tag}
                 </span>
               ))}
-              <span className='ms-auto font-mono text-[9px] font-bold text-indigo-light'>
+              <span className='ms-auto text-[0.5625rem] font-bold text-indigo-light'>
                 پیکربندی زندهٔ ریسو
               </span>
             </div>
@@ -31,11 +31,11 @@ export function PostHero({ post }: { post: Post }) {
               {post.title}
             </h1>
 
-            <p className='max-w-2xl text-[13px] leading-relaxed font-medium text-indigo-light sm:text-sm'>
+            <p className='max-w-2xl text-[0.8125rem] leading-relaxed font-medium text-indigo-light sm:text-sm'>
               {post.excerpt || deriveExcerpt(post.contentHtml, 260)}
             </p>
 
-            <div className='flex flex-wrap items-center justify-between gap-2 border-t border-dashed border-indigo-ink/20 pt-2 text-[10px] font-bold text-indigo-light'>
+            <div className='flex flex-wrap items-center justify-between gap-2 border-t border-dashed border-indigo-ink/20 pt-2 text-[0.625rem] font-bold text-indigo-light'>
               <span className='flex items-center gap-1'>
                 <FileText className='size-3.5' />
                 یادداشت شمارهٔ {faNumber(post.readingMinutes)}
@@ -51,14 +51,16 @@ export function PostHero({ post }: { post: Post }) {
                   {post.author.slice(0, 1)}
                 </span>
                 <div className='flex min-w-0 flex-col'>
-                  <span className='truncate text-sm font-black'>{post.author}</span>
-                  <span className='text-[10px] font-medium text-paper/60'>
-                    نویسندهٔ کارگاه کُدولوژی
+                  <span className='truncate text-sm font-black'>
+                    {post.author}
+                  </span>
+                  <span className='text-[0.625rem] font-medium text-paper/60'>
+                    نویسندهٔ کارگاه فیل وب
                   </span>
                 </div>
               </div>
 
-              <div className='grid grid-cols-2 gap-2 rounded-sm border border-paper/15 bg-paper/5 p-2 text-[10px] font-bold'>
+              <div className='grid grid-cols-2 gap-2 rounded-sm border border-paper/15 bg-paper/5 p-2 text-[0.625rem] font-bold'>
                 <span className='flex items-center gap-1 text-paper/70'>
                   <Clock3 className='size-3.5 text-mustard' />
                   {faNumber(post.readingMinutes)} دقیقه مطالعه
@@ -69,7 +71,7 @@ export function PostHero({ post }: { post: Post }) {
                 </span>
               </div>
 
-              <p className='text-[10px] leading-relaxed font-medium text-paper/60'>
+              <p className='text-[0.625rem] leading-relaxed font-medium text-paper/60'>
                 این یادداشت بخشی از آرشیو رسمی کارگاه است؛ بازنشر با ذکر منبع
                 آزاد است.
               </p>
@@ -78,11 +80,11 @@ export function PostHero({ post }: { post: Post }) {
         </div>
 
         <div className='flex flex-wrap items-center justify-between gap-2'>
-          <div className='flex flex-wrap items-center gap-1.5 text-[10px] font-bold text-indigo-light'>
+          <div className='flex flex-wrap items-center gap-1.5 text-[0.625rem] font-bold text-indigo-light'>
             <span className='rounded-sm border border-indigo-ink/25 bg-paper-dim px-2 py-0.5'>
               {faNumber(post.tags.length)} موضوع
             </span>
-            <span className='rounded-sm border border-indigo-ink/25 bg-paper-dim px-2 py-0.5 font-mono'>
+            <span className='max-w-full break-all rounded-sm border border-indigo-ink/25 bg-paper-dim px-2 py-0.5'>
               /blog/{post.slug}
             </span>
           </div>
@@ -97,8 +99,8 @@ export function PostHero({ post }: { post: Post }) {
               alt={`کاور یادداشت ${post.title}`}
               className='max-h-80 w-full rounded-sm object-cover'
             />
-            <p className='px-1 pt-1.5 text-[10px] font-medium text-indigo-light'>
-              تصویر کاور یادداشت — آرشیو چاپ دیجیتال کُدولوژی
+            <p className='px-1 pt-1.5 text-[0.625rem] font-medium text-indigo-light'>
+              تصویر کاور یادداشت — آرشیو چاپ دیجیتال فیل وب
             </p>
           </div>
         ) : null}

@@ -9,7 +9,7 @@ export function CraftValuesSection() {
     >
       <Card className="mx-auto flex max-w-7xl flex-col items-center gap-8 rounded-sm border-[2px] border-indigo-ink bg-paper-dim p-8 shadow-craft-inset md:flex-row">
         <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-sm border-[2px] border-indigo-ink bg-mustard text-indigo-ink shadow-craft-inset">
-          <ScrollText className="size-[34px]" />
+          <ScrollText className="size-[2.125rem]" />
         </div>
         <div className="flex flex-1 flex-col gap-1 text-right">
           <h4 className="text-lg font-black text-indigo-ink">

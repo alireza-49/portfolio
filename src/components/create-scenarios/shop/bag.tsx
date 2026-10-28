@@ -106,7 +106,7 @@ export function ShopBag({
           <div
             className={cn(
               PANEL,
-              "grid items-center gap-4 p-[calc(1rem*var(--cc-density))] @2xl:grid-cols-[220px_1fr]",
+              "grid items-center gap-4 p-[calc(1rem*var(--cc-density))] @2xl:grid-cols-[13.75rem_1fr]",
             )}
           >
             <OrderPlacedScene className='h-44 w-full rounded-[var(--cc-radius)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)]' />
@@ -178,7 +178,7 @@ export function ShopBag({
                             <Icon name='trash' className='size-3.5' />
                           </Button>
                         </div>
-                        <span className='text-[11px] text-[color:var(--cc-muted-foreground)]'>
+                        <span className='text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'>
                           سایز {line.size}
                           {colour ? ` · ${colour.name}` : ""}
                         </span>
@@ -232,7 +232,7 @@ export function ShopBag({
                 <Icon name='trash' className='size-3.5' />
                 خالی کردن سبد
               </Button>
-              <span className='text-[11px] text-[color:var(--cc-muted-foreground)]'>
+              <span className='text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'>
                 قیمت‌ها شامل مالیات است.
               </span>
             </div>
@@ -257,7 +257,7 @@ export function ShopBag({
                 اعمال
               </Button>
             </form>
-            <span className='text-[11px] text-[color:var(--cc-muted-foreground)]'>
+            <span className='text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'>
               کد نمایشی:{" "}
               <span className={cn("font-bold", monoType)} dir='ltr'>
                 {COUPON_CODE}
@@ -310,12 +310,12 @@ export function ShopBag({
             <div className='flex flex-col gap-1.5 rounded-[var(--cc-radius)] border-[length:var(--cc-border-width)] border-[color:var(--cc-border)] bg-[var(--cc-muted)] p-2'>
               <ShippingTrack percent={totals.percent} className='h-16 w-full' />
               <div className='flex flex-col gap-0.5'>
-                <span className='text-[11px] font-bold text-[color:var(--cc-surface-foreground)]'>
+                <span className='text-[0.6875rem] font-bold text-[color:var(--cc-surface-foreground)]'>
                   {totals.remaining > 0
                     ? `${formatToman(totals.remaining)} تا ارسال رایگان`
                     : "ارسال رایگان فعال شد"}
                 </span>
-                <span className='text-[11px] text-[color:var(--cc-muted-foreground)]'>
+                <span className='text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'>
                   انبار تهران ← تحویل درِ خانه
                 </span>
               </div>
@@ -348,7 +348,7 @@ export function ShopBag({
           <span className='text-sm font-bold text-[color:var(--cc-surface-foreground)]'>
             سبد خرید خالی است
           </span>
-          <p className='max-w-sm text-[11px] text-[color:var(--cc-muted-foreground)]'>
+          <p className='max-w-sm text-[0.6875rem] text-[color:var(--cc-muted-foreground)]'>
             از کالکشن یکی انتخاب کن یا یکی از استایل‌های آماده را اضافه کن.
           </p>
           <a

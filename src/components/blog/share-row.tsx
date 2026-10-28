@@ -27,7 +27,7 @@ export function ShareRow({ title }: { title: string }) {
   };
 
   const button =
-    "inline-flex items-center gap-1.5 rounded-sm border-[1.5px] border-indigo-ink bg-paper px-2.5 py-1.5 text-[11px] font-black text-indigo-ink transition-colors hover:bg-mustard/30";
+    "inline-flex items-center gap-1.5 rounded-sm border-[1.5px] border-indigo-ink bg-paper px-2.5 py-1.5 text-[0.6875rem] font-black text-indigo-ink transition-colors hover:bg-mustard/30";
 
   return (
     <div className='flex flex-wrap items-center gap-1.5'>
@@ -40,7 +40,7 @@ export function ShareRow({ title }: { title: string }) {
         تلگرام
       </button>
       <button type='button' onClick={() => share("x")} className={button}>
-        <span className='font-mono text-[11px]'>𝕏</span>
+        <span className='font-mono text-[0.6875rem]'>𝕏</span>
         اشتراک در X
       </button>
     </div>

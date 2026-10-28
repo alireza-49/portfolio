@@ -45,7 +45,7 @@ export function InfraPanel() {
           {SYSTEM_HEALTH.map((service) => (
             <div key={service.name} className='flex flex-col gap-1'>
               <div className='flex items-center justify-between gap-2'>
-                <span className='text-[10px] font-bold text-[color:var(--cc-surface-foreground)]'>
+                <span className='text-[0.625rem] font-bold text-[color:var(--cc-surface-foreground)]'>
                   {service.name}
                 </span>
                 <Badge
@@ -57,7 +57,7 @@ export function InfraPanel() {
               <Progress value={service.uptime} />
               <div
                 className={cn(
-                  "flex items-center justify-between text-[9px] text-[color:var(--cc-muted-foreground)]",
+                  "flex items-center justify-between text-[0.5625rem] text-[color:var(--cc-muted-foreground)]",
                   monoType,
                 )}
               >
@@ -77,7 +77,7 @@ export function InfraPanel() {
               >
                 <span
                   className={cn(
-                    "flex items-center justify-between gap-1 text-[9px] text-[color:var(--cc-muted-foreground)]",
+                    "flex items-center justify-between gap-1 text-[0.5625rem] text-[color:var(--cc-muted-foreground)]",
                     monoType,
                   )}
                 >
@@ -87,7 +87,7 @@ export function InfraPanel() {
                 <Progress value={node.load} />
                 <span
                   className={cn(
-                    "text-[9px] text-[color:var(--cc-surface-foreground)]",
+                    "text-[0.5625rem] text-[color:var(--cc-surface-foreground)]",
                     monoType,
                   )}
                 >
@@ -119,7 +119,7 @@ export function InfraPanel() {
           <Separator />
           <div className='grid grid-cols-2 gap-1.5'>
             <div className='flex flex-col gap-0.5 rounded-[var(--cc-radius-sm)] bg-[var(--cc-muted)] p-2'>
-              <span className='text-[9px] text-[color:var(--cc-muted-foreground)]'>
+              <span className='text-[0.5625rem] text-[color:var(--cc-muted-foreground)]'>
                 میانگین زمان پاسخ
               </span>
               <span className={cn("text-sm font-black", monoType)}>
@@ -128,7 +128,7 @@ export function InfraPanel() {
               </span>
             </div>
             <div className='flex flex-col gap-0.5 rounded-[var(--cc-radius-sm)] bg-[var(--cc-muted)] p-2'>
-              <span className='text-[9px] text-[color:var(--cc-muted-foreground)]'>
+              <span className='text-[0.5625rem] text-[color:var(--cc-muted-foreground)]'>
                 رویدادهای ثبت‌شده
               </span>
               <span className={cn("text-sm font-black", monoType)}>
