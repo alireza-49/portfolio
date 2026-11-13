@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
 import {
   createPost,
@@ -23,6 +23,8 @@ export type PostActionResult = {
 };
 
 function refresh(slug?: string | null) {
+  // The public reader is served from the `posts` cache (see lib/blog-feed.ts).
+  revalidateTag("posts", "max");
   revalidatePath("/admin");
   revalidatePath("/admin/posts");
   revalidatePath("/blog");

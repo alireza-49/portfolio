@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="نمودار تصمیم اگر و حلقهٔ تکرار در پایتون، با فلش‌های جوهر و کاغذ کرم">
+  <defs>
+    <pattern id="paper-grain-b" width="20" height="20" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.1" fill="#264653" opacity="0.16" />
+      <circle cx="13" cy="14" r="0.8" fill="#e76f51" opacity="0.14" />
+    </pattern>
+    <marker id="arrow-b" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#264653" />
+    </marker>
+  </defs>
+  <rect width="1200" height="630" fill="#fffdf5" />
+  <rect width="1200" height="630" fill="url(#paper-grain-b)" />
+
+  <!-- decision diamond -->
+  <path d="M360 210 L470 315 L360 420 L250 315 Z" fill="#e9c46a" stroke="#264653" stroke-width="4" />
+  <text x="360" y="330" text-anchor="middle" fill="#264653" font-family="'Space Grotesk', ui-monospace, monospace" font-size="34" font-weight="700">if</text>
+
+  <!-- branches -->
+  <g fill="none" stroke="#264653" stroke-width="4" marker-end="url(#arrow-b)">
+    <path d="M470 315 H600" />
+    <path d="M360 420 V500 H600" />
+  </g>
+  <g fill="#2a9d8f" font-family="'Space Grotesk', ui-monospace, monospace" font-size="15" letter-spacing="2">
+    <text x="492" y="298">TRUE</text>
+  </g>
+  <g fill="#e76f51" font-family="'Space Grotesk', ui-monospace, monospace" font-size="15" letter-spacing="2">
+    <text x="372" y="452">FALSE</text>
+  </g>
+
+  <!-- outcomes -->
+  <rect x="610" y="270" width="200" height="90" fill="#264653" />
+  <rect x="620" y="280" width="200" height="90" fill="none" stroke="#2a9d8f" stroke-width="3" stroke-dasharray="9 7" />
+  <rect x="610" y="455" width="200" height="90" fill="#e76f51" />
+
+  <!-- for loop -->
+  <g fill="none" stroke="#264653" stroke-width="4">
+    <path d="M900 200 H1050 V470 H900" marker-end="url(#arrow-b)" />
+  </g>
+  <circle cx="900" cy="335" r="46" fill="#2a9d8f" />
+  <text x="900" y="348" text-anchor="middle" fill="#fffdf5" font-family="'Space Grotesk', ui-monospace, monospace" font-size="26" font-weight="700">for</text>
+  <g fill="#264653" font-family="'Space Grotesk', ui-monospace, monospace" font-size="14" letter-spacing="2">
+    <text x="958" y="182">REPEAT</text>
+  </g>
+
+  <!-- baseline -->
+  <g fill="none" stroke="#264653" stroke-width="3">
+    <path d="M120 560 H1092" />
+    <path d="M120 560 v-16 M360 560 v-16 M610 560 v-16 M900 560 v-16 M1092 560 v-16" />
+  </g>
+
+  <g fill="#264653" font-family="'Space Grotesk', ui-monospace, monospace" font-size="17" letter-spacing="3">
+    <text x="120" y="124">IF / FOR — PYTHON BASICS</text>
+    <text x="120" y="592">DECISIONS · REPETITION · INDENTATION</text>
+  </g>
+  <circle cx="1096" cy="100" r="10" fill="#e76f51" />
+</svg>

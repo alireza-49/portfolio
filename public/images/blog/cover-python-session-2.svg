@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="تابع، محیط مجازی و جدول پانداس کنار هم، جلسهٔ دوم کارگاه پایتون">
+  <defs>
+    <pattern id="paper-grain-s2" width="20" height="20" patternUnits="userSpaceOnUse">
+      <circle cx="3" cy="3" r="1" fill="#264653" opacity="0.15" />
+      <circle cx="13" cy="14" r="0.85" fill="#e76f51" opacity="0.15" />
+    </pattern>
+    <marker id="arrow-s2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#264653" />
+    </marker>
+  </defs>
+  <rect width="1200" height="630" fill="#fffdf5" />
+  <rect width="1200" height="630" fill="url(#paper-grain-s2)" />
+
+  <!-- def panel -->
+  <rect x="96" y="212" width="320" height="300" fill="#264653" />
+  <rect x="86" y="202" width="320" height="300" fill="none" stroke="#e76f51" stroke-width="4" />
+  <g font-family="'Space Grotesk', ui-monospace, monospace" font-size="17" font-weight="700">
+    <text x="120" y="252" fill="#e9c46a">def</text>
+    <text x="158" y="252" fill="#fffdf5">aqi_category</text>
+    <text x="290" y="252" fill="#2a9d8f">(pm25)</text>
+  </g>
+  <g fill="#fffdf5" opacity="0.5">
+    <rect x="144" y="286" width="128" height="10" rx="2" />
+    <rect x="284" y="286" width="60" height="10" rx="2" />
+    <rect x="144" y="314" width="96" height="10" rx="2" />
+    <rect x="252" y="314" width="92" height="10" rx="2" />
+  </g>
+  <g fill="#e76f51">
+    <rect x="144" y="354" width="18" height="12" rx="2" />
+    <rect x="172" y="354" width="118" height="12" rx="2" opacity="0.75" />
+  </g>
+  <path d="M120 396 H392" stroke="#fffdf5" stroke-width="1.5" opacity="0.2" stroke-dasharray="6 6" />
+  <text x="120" y="436" fill="#2a9d8f" font-family="'Space Grotesk', ui-monospace, monospace" font-size="14" letter-spacing="3">RETURN</text>
+  <rect x="120" y="448" width="168" height="28" fill="#e9c46a" />
+  <text x="132" y="467" fill="#264653" font-family="'Space Grotesk', ui-monospace, monospace" font-size="14">"Unhealthy"</text>
+
+  <!-- arrow: function to venv -->
+  <path d="M428 360 H506" fill="none" stroke="#264653" stroke-width="4" marker-end="url(#arrow-s2)" />
+
+  <!-- virtual environment folder -->
+  <path d="M528 280 v-20 h92 l12 20 h104 v202 H528 Z" fill="#f4efe2" stroke="#264653" stroke-width="4" stroke-linejoin="miter" />
+  <text x="548" y="310" fill="#264653" font-family="'Space Grotesk', ui-monospace, monospace" font-size="16" font-weight="700" letter-spacing="1">.venv/</text>
+  <rect x="548" y="326" width="164" height="38" fill="#fffdf5" stroke="#264653" stroke-width="2.5" />
+  <rect x="558" y="338" width="52" height="14" fill="#264653" />
+  <rect x="622" y="340" width="74" height="10" rx="2" fill="#2a9d8f" />
+  <rect x="548" y="372" width="164" height="38" fill="#2a9d8f" />
+  <rect x="558" y="386" width="60" height="10" rx="2" fill="#fffdf5" opacity="0.9" />
+  <rect x="628" y="386" width="68" height="10" rx="2" fill="#fffdf5" opacity="0.5" />
+  <rect x="548" y="418" width="164" height="38" fill="#e9c46a" />
+  <rect x="558" y="432" width="88" height="10" rx="2" fill="#264653" opacity="0.55" />
+  <text x="546" y="498" fill="#e76f51" font-family="'Space Grotesk', ui-monospace, monospace" font-size="13" letter-spacing="2">ISOLATED</text>
+
+  <!-- arrow: venv to table -->
+  <path d="M752 360 H840" fill="none" stroke="#264653" stroke-width="4" marker-end="url(#arrow-s2)" />
+
+  <!-- dataframe -->
+  <rect x="858" y="252" width="246" height="196" fill="#fffdf5" />
+  <rect x="858" y="252" width="246" height="40" fill="#e9c46a" />
+  <rect x="1038" y="292" width="66" height="156" fill="#fbeee9" />
+  <g stroke="#264653" stroke-width="2.5" fill="none">
+    <rect x="858" y="252" width="246" height="196" />
+    <path d="M948 292 V448 M1038 292 V448" />
+    <path d="M858 331 H1104 M858 370 H1104 M858 409 H1104" />
+  </g>
+  <g font-family="'Space Grotesk', ui-monospace, monospace" font-size="13" font-weight="700" letter-spacing="1" fill="#264653">
+    <text x="872" y="278">city</text>
+    <text x="962" y="278">pm25</text>
+    <text x="1052" y="278">mean</text>
+  </g>
+  <g fill="#264653" opacity="0.45">
+    <rect x="872" y="307" width="46" height="9" rx="2" />
+    <rect x="962" y="307" width="40" height="9" rx="2" />
+    <rect x="872" y="346" width="38" height="9" rx="2" />
+    <rect x="962" y="346" width="46" height="9" rx="2" />
+    <rect x="872" y="385" width="42" height="9" rx="2" />
+    <rect x="962" y="385" width="36" height="9" rx="2" />
+    <rect x="872" y="424" width="48" height="9" rx="2" />
+    <rect x="962" y="424" width="34" height="9" rx="2" />
+  </g>
+  <g fill="#e76f51">
+    <rect x="1052" y="307" width="34" height="9" rx="2" opacity="0.8" />
+    <rect x="1052" y="346" width="28" height="9" rx="2" opacity="0.65" />
+    <rect x="1052" y="385" width="30" height="9" rx="2" opacity="0.55" />
+    <rect x="1052" y="424" width="26" height="9" rx="2" opacity="0.45" />
+  </g>
+
+  <!-- baseline -->
+  <g fill="none" stroke="#264653" stroke-width="3">
+    <path d="M120 556 H1092" />
+    <path d="M120 556 v-16 M424 556 v-16 M640 556 v-16 M858 556 v-16 M1092 556 v-16" />
+  </g>
+
+  <g fill="#264653" font-family="'Space Grotesk', ui-monospace, monospace" font-size="17" letter-spacing="3">
+    <text x="120" y="118">PYTHON WORKSHOP / SESSION 02</text>
+    <text x="120" y="592">FUNCTIONS · VENV · IMPORT · PANDAS</text>
+  </g>
+  <g fill="#e76f51" font-family="'Space Grotesk', ui-monospace, monospace" font-size="13" letter-spacing="2">
+    <text x="866" y="226">IMPORT</text>
+    <text x="542" y="240">PACKAGES</text>
+  </g>
+  <circle cx="1096" cy="96" r="10" fill="#2a9d8f" />
+</svg>

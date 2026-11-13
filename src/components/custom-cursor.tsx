@@ -20,6 +20,49 @@ const EMIT_THRESHOLD = 0.05; // normalized speed below which nothing is emitted
 const RING_SIZE = 34;
 const DOT_SIZE = 7;
 const DOT_COLOR = "#e76f51"; // --color-coral
+/** Resting ring ink. */
+const RING_INK = "#2b2d42";
+
+/**
+ * Hover feedback: over anything clickable (or anything that reacts to hover)
+ * the trailing ring collapses and the dot swells, both landing on one rounded
+ * coral square. Its size sits between the resting dot and the resting ring, so
+ * neither shape has to jump.
+ */
+const HOVER_SIZE = 22;
+const HOVER_RADIUS = "5px";
+const HOVER_FILL = DOT_COLOR;
+const HOVER_HALO = `color-mix(in srgb, ${DOT_COLOR} 18%, transparent)`;
+
+/**
+ * Anything under the pointer that reads as "this responds to you". Buttons and
+ * links are covered by their tags; cards and buttons on this site carry
+ * `.craft-card` / `.craft-btn`, and everything else that opted into a pointer
+ * cursor gets `.cursor-pointer`. `data-cursor='hover'` is the escape hatch for
+ * a hover effect that is none of the above.
+ */
+const HOVER_SELECTOR = [
+  "a[href]",
+  "button",
+  "summary",
+  "label",
+  "select",
+  "input[type='submit']",
+  "input[type='button']",
+  "input[type='reset']",
+  "input[type='checkbox']",
+  "input[type='radio']",
+  "input[type='range']",
+  "[role='button']",
+  "[role='link']",
+  "[role='tab']",
+  "[role='menuitem']",
+  "[role='option']",
+  ".cursor-pointer",
+  ".craft-card",
+  ".craft-btn",
+  "[data-cursor='hover']",
+].join(",");
 
 /** Ring elongation at full speed, along the direction of travel. */
 const STRETCH_LENGTH = 1.4;
@@ -113,6 +156,36 @@ export function CustomCursor({
     let angle = 0; // smoothed render angle
     let stretch = 0; // smoothed 0..1
     let emitAccumulator = 0;
+
+    // ---- hover state -----------------------------------------------------
+    let hovered = false;
+    /** Element target of the last pointermove, so `closest` runs only on change. */
+    let hoverProbe: EventTarget | null = null;
+
+    /**
+     * The morph itself is a CSS transition on the ring (see the JSX style), so
+     * it keeps animating even after the frame loop parks.
+     */
+    const applyHover = (next: boolean) => {
+      if (!dot || !ring || next === hovered) return;
+      hovered = next;
+
+      // Ring: 34px circle -> 22px rounded square, same coral as the dot, so the
+      // two shapes meet as one.
+      ring.style.width = `${next ? HOVER_SIZE : RING_SIZE}px`;
+      ring.style.height = `${next ? HOVER_SIZE : RING_SIZE}px`;
+      ring.style.borderRadius = next ? HOVER_RADIUS : "50%";
+      ring.style.backgroundColor = next ? HOVER_FILL : "transparent";
+      ring.style.borderColor = next ? HOVER_FILL : RING_INK;
+      ring.style.boxShadow = next ? `0 0 0 3px ${HOVER_HALO}` : "none";
+
+      // Dot: 7px coral dot -> the same 22px rounded square, so it grows into
+      // the ring's new footprint and takes over the shape.
+      dot.style.width = `${next ? HOVER_SIZE : DOT_SIZE}px`;
+      dot.style.height = `${next ? HOVER_SIZE : DOT_SIZE}px`;
+      dot.style.borderRadius = next ? HOVER_RADIUS : "50%";
+      dot.style.backgroundColor = next ? HOVER_FILL : DOT_COLOR;
+    };
 
     // ---- canvas (created on the first real pointer move) ------------------
     let canvas: HTMLCanvasElement | null = null;
@@ -224,13 +297,21 @@ export function CustomCursor({
       // let the velocity bleed off when the pointer stops moving
       speed *= Math.exp(-dt / 110);
 
-      // ring easing toward the pointer
-      const follow = 1 - Math.pow(1 - 0.3, step);
-      ringPos.x += (pointer.x - ringPos.x) * follow;
-      ringPos.y += (pointer.y - ringPos.y) * follow;
+      // Ring easing toward the pointer. Over a hover target it is pinned
+      // outright: the dot has already grown into the same square, so any lag
+      // would show a second, offset square shadowing the pointer.
+      if (hovered) {
+        ringPos.x = pointer.x;
+        ringPos.y = pointer.y;
+      } else {
+        const follow = 1 - Math.pow(1 - 0.3, step);
+        ringPos.x += (pointer.x - ringPos.x) * follow;
+        ringPos.y += (pointer.y - ringPos.y) * follow;
+      }
 
-      // stretch easing
-      const targetStretch = still ? 0 : Math.min(speed / MAX_SPEED, 1);
+      // stretch easing — a hovered pointer keeps one square shape
+      const targetStretch =
+        still || hovered ? 0 : Math.min(speed / MAX_SPEED, 1);
       stretch += (targetStretch - stretch) * (1 - Math.pow(1 - 0.22, step));
 
       // angle easing along the shortest path
@@ -391,6 +472,17 @@ export function CustomCursor({
       const dt = Math.max(now - lastMoveAt, 1);
       lastMoveAt = now;
 
+      // Re-probe only when the element under the pointer changes, so the
+      // selector match never runs per frame.
+      if (event.target !== hoverProbe) {
+        hoverProbe = event.target;
+        const match =
+          event.target instanceof Element
+            ? event.target.closest(HOVER_SELECTOR)
+            : null;
+        applyHover(Boolean(match));
+      }
+
       const dx = event.clientX - pointer.x;
       const dy = event.clientY - pointer.y;
       pointer.x = event.clientX;
@@ -497,12 +589,15 @@ export function CustomCursor({
     >
       <div
         ref={ringRef}
-        className="absolute top-0 left-0 rounded-full border-2 border-[#2b2d42]"
+        className="absolute top-0 left-0 rounded-full border-2"
         style={{
           width: RING_SIZE,
           height: RING_SIZE,
           borderRadius: "50%",
-          opacity: 0,
+          borderColor: RING_INK,
+          backgroundColor: "transparent",
+          transition:
+            "width 400ms var(--ease-craft, ease-out), height 400ms var(--ease-craft, ease-out), border-radius 400ms var(--ease-craft, ease-out), background-color 320ms ease, border-color 320ms ease, box-shadow 320ms ease",
         }}
       />
       <div
@@ -514,6 +609,8 @@ export function CustomCursor({
           borderRadius: "50%",
           backgroundColor: DOT_COLOR,
           opacity: 0,
+          transition:
+            "width 400ms var(--ease-craft, ease-out), height 400ms var(--ease-craft, ease-out), border-radius 400ms var(--ease-craft, ease-out), background-color 320ms ease, opacity 160ms ease",
         }}
       />
     </div>

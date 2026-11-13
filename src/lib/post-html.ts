@@ -1,6 +1,7 @@
 import hljs from "highlight.js";
 import katex from "katex";
 import { faNumber } from "./fa";
+import { embedFromUrl } from "./richtext";
 import { stripTags } from "./text";
 
 export type PostHeading = { id: string; text: string; level: number };
@@ -171,14 +172,54 @@ function renderFootnotes(html: string): string {
   return `${withRefs}<section class="post-footnotes" aria-label="پانویس‌ها"><p class="post-footnotes-title">پانویس‌ها</p><ol>${items}</ol></section>`;
 }
 
+const EMBED_TITLES: Record<string, string> = {
+  youtube: "ویدیوی یوتیوب",
+  vimeo: "ویدیوی ویمئو",
+  aparat: "ویدیوی آپارات",
+};
+
 /**
- * Server-side enhancement for the saved body: syntax highlighting, KaTeX and
- * footnote links. It runs after sanitization, so the generated classes and
- * wrappers are trusted output — never feed raw author HTML through here.
+ * A saved embed is an empty `<div data-embed data-src>`; the reader used to
+ * mount its player in the browser, which left a bare link behind whenever that
+ * island did not run. The player is now part of the server HTML, so the post
+ * ships with its video.
+ *
+ * The stored URL is never trusted verbatim: `embedFromUrl` re-derives the one
+ * canonical player URL for youtube/vimeo/aparat, and anything else is left for
+ * the reader's island to handle (or to fall back to its link).
+ */
+function renderEmbeds(html: string): string {
+  return html.replace(
+    /<div([^>]*)\bdata-embed="([^"]*)"([^>]*)>\s*<\/div>/gi,
+    (match, before: string, provider: string, after: string) => {
+      const attrs = `${before} ${after}`;
+      const rawSrc = /\bdata-src="([^"]*)"/i.exec(attrs)?.[1] ?? "";
+      const parsed = embedFromUrl(decodeEntities(rawSrc));
+      if (!parsed || parsed.provider !== provider) return match;
+
+      const title = EMBED_TITLES[parsed.provider] ?? "ویدیو";
+      return (
+        `<div class="cc-embed-frame" dir="ltr">` +
+        `<iframe src="${escapeHtml(parsed.src)}" title="${title}" ` +
+        `sandbox="allow-scripts allow-same-origin allow-presentation allow-popups" ` +
+        `allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" ` +
+        `allowfullscreen referrerpolicy="no-referrer" loading="lazy"></iframe>` +
+        `</div>`
+      );
+    },
+  );
+}
+
+/**
+ * Server-side enhancement for the saved body: syntax highlighting, KaTeX,
+ * player embeds and footnote links. It runs after sanitization, so the
+ * generated classes and wrappers are trusted output — never feed raw author
+ * HTML through here.
  */
 export function enhancePostHtml(html: string): string {
   let result = highlightCodeBlocks(html);
   result = renderMath(result);
   result = renderFootnotes(result);
+  result = renderEmbeds(result);
   return result;
 }

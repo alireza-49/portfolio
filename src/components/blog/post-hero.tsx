@@ -97,7 +97,7 @@ export function PostHero({ post }: { post: Post }) {
             <img
               src={post.coverUrl}
               alt={`کاور یادداشت ${post.title}`}
-              className='max-h-80 w-full rounded-sm object-cover'
+              className='aspect-[1200/630] h-auto w-full rounded-sm object-cover'
             />
             <p className='px-1 pt-1.5 text-[0.625rem] font-medium text-indigo-light'>
               تصویر کاور یادداشت — آرشیو چاپ دیجیتال فیل وب

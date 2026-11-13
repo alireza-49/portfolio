@@ -42,9 +42,17 @@
      the family itself so Persian reaches `--font-vazirmatn` on every device. */
   --font-display:
     "Epilogue", var(--font-vazirmatn), ui-sans-serif, sans-serif;
-  --font-serif: var(--font-newsreader), Georgia, "Times New Roman", serif;
+  /* Newsreader and Space Grotesk draw Latin only. Their Persian fallbacks used to
+     be Georgia/Courier, so a quoted paragraph or a Persian string inside a code
+     block rendered in a third, system face. Naming Vazirmatn right after the
+     Latin face keeps Latin on Newsreader/Space Grotesk and sends the Persian
+     glyphs to the site's own family. */
+  --font-serif:
+    var(--font-newsreader), Georgia, "Times New Roman", var(--font-vazirmatn),
+    serif;
   --font-mono:
-    var(--font-space-grotesk), ui-monospace, "Courier New", monospace;
+    var(--font-space-grotesk), var(--font-vazirmatn), ui-monospace,
+    "Courier New", monospace;
 
   /* Shapes — strictly soft die-cut cardstock */
   --radius-sm: 0.125rem;

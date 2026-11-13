@@ -46,6 +46,7 @@ export function PostCard({
   return (
     <Link
       href={`/blog/${post.slug}`}
+      prefetch
       className={cn(
         "craft-card flex flex-col overflow-hidden rounded-sm border-[2px] border-indigo-ink bg-paper-light",
         featured && "sm:flex-row",

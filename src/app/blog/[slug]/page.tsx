@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { cache } from "react";
-import { connection } from "next/server";
+import { Suspense } from "react";
 import { ArrowLeft } from "lucide-react";
 import { PublicPageShell } from "@/components/public-page-shell";
 import { PostHero } from "@/components/blog/post-hero";
@@ -12,16 +11,15 @@ import { PostComments } from "@/components/blog/post-comments";
 import { PostEngagement } from "@/components/blog/post-engagement";
 import { ReadingProgress } from "@/components/blog/reading-progress";
 import {
-  getPostBySlug,
-  isPostLikedBy,
-  listPostComments,
-  listPosts,
-} from "@/lib/content";
+  PostCommentsSkeleton,
+  PostEngagementSkeleton,
+} from "@/components/blog/blog-skeleton";
+import { isPostLikedBy, listPostComments } from "@/lib/content";
+import { blogPost, blogPosts } from "@/lib/blog-feed";
 import { readReaderId } from "@/lib/reader";
 import { deriveExcerpt } from "@/lib/text";
+import type { Post } from "@/lib/types";
 import { readerSalt, visitorHash } from "@/lib/visitor";
-
-export const instant = false;
 
 /** Next 16.4 hands the page the raw URL segment while metadata gets it decoded. */
 function decodeSlug(value: string): string {
@@ -33,19 +31,34 @@ function decodeSlug(value: string): string {
   }
 }
 
-const loadPost = cache(async (slug: string) => getPostBySlug(slug));
+/**
+ * Every published slug is prerendered at build (and upgraded by the daily
+ * cache), so a direct visit gets the finished article from the shell.
+ */
+/**
+ * The article reads the slug (and its cached post) at page level on purpose: a
+ * page-level `<Suspense>` or `loading.tsx` turns this route into a deferred
+ * segment that never hydrates here. That makes the segment a blocking one, so
+ * it opts out of instant-navigation validation — otherwise the dev overlay
+ * flags the `params` read and a dependency's `crypto.getRandomValues()` call
+ * during its simulated prerender.
+ */
+export const instant = false;
+
+export async function generateStaticParams() {
+  const posts = await blogPosts();
+  return posts.map((post) => ({ slug: post.slug }));
+}
 
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  await connection();
   const { slug: rawSlug } = await params;
-  const slug = decodeSlug(rawSlug);
-  const post = await loadPost(slug);
+  const post = await blogPost(decodeSlug(rawSlug));
 
-  if (!post || post.status !== "published") {
+  if (!post) {
     return { title: "یادداشت پیدا نشد | وب دیزاین فیل" };
   }
 
@@ -62,30 +75,51 @@ export async function generateMetadata({
   };
 }
 
+/** Per-reader and per-minute data: never cached, streams into its own hole. */
+async function ReaderEngagement({ post }: { post: Post }) {
+  const reader = await readReaderId();
+  const liked = reader
+    ? await isPostLikedBy(post.id, visitorHash(reader, readerSalt()))
+    : false;
+
+  return (
+    <PostEngagement
+      slug={post.slug}
+      views={post.views}
+      likes={post.likes}
+      liked={liked}
+      commentCount={post.commentCount}
+    />
+  );
+}
+
+async function ReaderComments({ post }: { post: Post }) {
+  const comments = await listPostComments(post.id);
+  return <PostComments slug={post.slug} initialComments={comments} />;
+}
+
+/**
+ * The article and its related strip are cached, so they are read at the page
+ * level: a `loading.tsx` here (or a page-level `<Suspense>`) turns the route
+ * into a deferred segment that never hydrates in this app — no like button, no
+ * comments, no file cards, no video island. Only the per-request sections keep
+ * their own boundaries.
+ */
 export default async function BlogPostPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  await connection();
   const { slug: rawSlug } = await params;
-  const slug = decodeSlug(rawSlug);
-  const post = await loadPost(slug);
+  const post = await blogPost(decodeSlug(rawSlug));
 
-  if (!post || post.status !== "published") notFound();
+  if (!post) notFound();
 
-  const reader = await readReaderId();
-  const liked = reader
-    ? await isPostLikedBy(post.id, visitorHash(reader, readerSalt()))
-    : false;
-  const comments = await listPostComments(post.id);
-
-  const all = await listPosts({ publishedOnly: true });
+  const all = await blogPosts();
   const related = all
     .filter(
       (item) =>
-        item.id !== post.id &&
-        item.tags.some((tag) => post.tags.includes(tag)),
+        item.id !== post.id && item.tags.some((tag) => post.tags.includes(tag)),
     )
     .slice(0, 3);
 
@@ -94,19 +128,17 @@ export default async function BlogPostPage({
       <ReadingProgress />
       <PostHero post={post} />
 
-      <PostEngagement
-        slug={post.slug}
-        views={post.views}
-        likes={post.likes}
-        liked={liked}
-        commentCount={post.commentCount}
-      />
+      <Suspense fallback={<PostEngagementSkeleton />}>
+        <ReaderEngagement post={post} />
+      </Suspense>
 
       <div className='mx-auto w-full max-w-7xl px-4 py-8 sm:px-8 lg:px-12'>
         <PostBody html={post.contentHtml} />
       </div>
 
-      <PostComments slug={post.slug} initialComments={comments} />
+      <Suspense fallback={<PostCommentsSkeleton />}>
+        <ReaderComments post={post} />
+      </Suspense>
 
       {related.length > 0 ? (
         <section className='border-t-[2.5px] border-indigo-ink bg-paper-dim/40 px-4 py-8 sm:px-8 lg:px-12'>
