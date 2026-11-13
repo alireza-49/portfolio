@@ -119,7 +119,8 @@ export function AdminShell({
             <SheetTitle>منوی کنسول مدیریت</SheetTitle>
             <SheetDescription>دسترسی به بخش‌های کنسول</SheetDescription>
           </SheetHeader>
-          <AdminBrand />
+          {/* `ps-12` keeps the brand clear of the sheet's close button. */}
+          <AdminBrand className='ps-12' />
           <div className='flex flex-1 flex-col gap-3 px-3 py-4'>
             <AdminNavLinks onNavigate={() => setMenuOpen(false)} />
           </div>

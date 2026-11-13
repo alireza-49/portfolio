@@ -76,9 +76,14 @@ export function AdminNavLinks({ onNavigate }: { onNavigate?: () => void }) {
   );
 }
 
-export function AdminBrand() {
+export function AdminBrand({ className }: { className?: string }) {
   return (
-    <div className='flex items-center gap-2.5 border-b-[2px] border-dashed border-indigo-ink/20 px-4 py-4'>
+    <div
+      className={cn(
+        "flex items-center gap-2.5 border-b-[2px] border-dashed border-indigo-ink/20 px-4 py-4",
+        className,
+      )}
+    >
       <LogoButton
         aria-label='وب دیزاین فیل'
         logoClassName='size-full'

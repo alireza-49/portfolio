@@ -304,16 +304,16 @@ export function CreateStudioSidebar({
       id='studio-settings'
       data-open={open ? "true" : "false"}
       aria-label='تنظیمات استودیو'
-      className={`order-2 z-20 flex w-full shrink-0 flex-col gap-4 border-b-[2.5px] border-indigo-ink bg-paper-light p-4 scroll-smooth max-lg:fixed max-lg:inset-y-0 max-lg:start-0 max-lg:z-50 max-lg:w-[min(21rem,calc(100vw-3rem))] max-lg:overflow-y-auto max-lg:overscroll-contain max-lg:border-b-0 max-lg:border-e-[2.5px] max-lg:shadow-[-8px_0_0_0_var(--color-indigo-ink)] max-lg:transition-[transform,visibility] max-lg:duration-200 max-lg:ease-out lg:order-1 lg:h-full lg:min-h-0 lg:w-80 lg:overflow-y-auto lg:border-b-0 lg:border-l-[2.5px] ${
+      className={`order-2 z-20 flex w-full shrink-0 flex-col gap-4 border-b-[2.5px] border-indigo-ink bg-paper-light p-4 scroll-smooth max-lg:fixed max-lg:inset-y-0 max-lg:start-0 max-lg:z-50 max-lg:w-[min(21rem,calc(100vw-3rem))] max-lg:gap-0 max-lg:overflow-hidden max-lg:border-b-0 max-lg:border-e-[2.5px] max-lg:shadow-[-8px_0_0_0_var(--color-indigo-ink)] max-lg:transition-[transform,visibility] max-lg:duration-200 max-lg:ease-out lg:order-1 lg:h-full lg:min-h-0 lg:w-80 lg:overflow-y-auto lg:border-b-0 lg:border-l-[2.5px] ${
         open
           ? "max-lg:visible max-lg:translate-x-0 max-lg:transition-[transform,visibility] max-lg:duration-200 max-lg:ease-out"
           : "max-lg:invisible max-lg:pointer-events-none max-lg:translate-x-full max-lg:delay-[0s,200ms]"
       }`}
     >
-      <div className='sticky top-0 z-10 -mx-4 -mt-4 flex items-center justify-between gap-2 border-b-[1.5px] border-indigo-ink bg-paper-dim px-3 py-2 lg:hidden'>
-        <span className='flex items-center gap-1.5'>
-          <SlidersHorizontal className='size-4 text-coral' />
-          <span className='text-xs font-black text-indigo-ink'>
+      <div className='flex shrink-0 items-center justify-between gap-2 border-b-[1.5px] border-indigo-ink bg-paper-dim px-3 py-2 lg:hidden'>
+        <span className='flex min-w-0 items-center gap-1.5'>
+          <SlidersHorizontal className='size-4 shrink-0 text-coral' />
+          <span className='min-w-0 truncate text-xs font-black text-indigo-ink'>
             تنظیمات استودیو
           </span>
         </span>
@@ -323,11 +323,14 @@ export function CreateStudioSidebar({
           data-settings-close
           aria-label='بستن تنظیمات'
           title='بستن تنظیمات'
-          className='flex size-8 items-center justify-center rounded-sm border-[1.5px] border-indigo-ink bg-paper-light text-indigo-ink shadow-craft-sm transition-transform active:translate-x-0.5 active:translate-y-0.5'
+          className='flex size-8 shrink-0 items-center justify-center rounded-sm border-[1.5px] border-indigo-ink bg-paper-light text-indigo-ink shadow-craft-sm transition-transform active:translate-x-0.5 active:translate-y-0.5'
         >
           <X className='size-4' />
         </button>
       </div>
+      {/* Below `lg` the header stays put and only this pane scrolls, so the
+          close button can never sit on top of the settings content. */}
+      <div className='flex min-h-0 flex-1 flex-col gap-4 max-lg:overflow-y-auto max-lg:overscroll-contain max-lg:px-4 max-lg:pt-4 max-lg:pb-4 lg:contents'>
       <div className='flex flex-col gap-1 border-b border-indigo-ink/20 pb-3'>
         <button
           type='button'
@@ -1333,6 +1336,7 @@ export function CreateStudioSidebar({
           به پیام شما پیوست می‌کند. فایل JSON خروجی را هم می‌توانید در همین پنل
           بارگذاری کنید.
         </p>
+      </div>
       </div>
     </aside>
   );
