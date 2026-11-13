@@ -40,6 +40,7 @@ export function FileCard({
   const downloadUrl = assetId ? `/api/media/asset/${assetId}/download` : href;
   const textPreview = isTextLike(mime, name);
   const pdfPreview = mime === "application/pdf" || /\.pdf$/i.test(name);
+  const meta = [size ? formatBytes(size) : null, mime].filter(Boolean).join(" · ");
 
   const preview = async () => {
     setOpen(true);
@@ -51,8 +52,14 @@ export function FileCard({
         headers: { accept: "text/plain" },
       });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const data = (await response.json()) as { text?: string };
-      setText(data.text ?? "");
+      // Stored assets come back as `{ text }`; a file served from `public/`
+      // (a course handout, a demo script) is the file itself.
+      const contentType = response.headers.get("content-type") ?? "";
+      setText(
+        contentType.includes("application/json")
+          ? ((await response.json()) as { text?: string }).text ?? ""
+          : await response.text(),
+      );
     } catch {
       setError("پیش‌نمایش این فایل ممکن نیست؛ آن را دانلود کنید.");
     }
@@ -64,10 +71,7 @@ export function FileCard({
         <span className='post-file-icon' aria-hidden>{labelFor(kind)}</span>
         <span className='min-w-0 flex-1'>
           <span className='post-file-name' title={name}>{name}</span>
-          <span className='post-file-meta'>
-            {formatBytes(size ?? 0)}
-            {mime ? ` · ${mime}` : ""}
-          </span>
+          <span className='post-file-meta'>{meta}</span>
         </span>
         <button type='button' onClick={preview} className='cc-node-btn' aria-label={`پیش‌نمایش ${name}`}>
           <Eye className='size-3.5' />

@@ -28,6 +28,7 @@ npm start         # اجرای بیلد
 npm run lint      # ESLint
 npm test          # تست‌های واحد/رگرسیون (Vitest)
 npm run db:setup  # اعمال schema.sql + seed نمونه روی DATABASE_URL
+npm run seed:course  # انتشار (یا به‌روزرسانی) مطلب‌های کارگاه از src/lib/course-posts.ts
 ```
 
 ## ساختار

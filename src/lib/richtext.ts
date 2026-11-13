@@ -142,8 +142,29 @@ const YOUTUBE_HOSTS = new Set([
   "youtu.be",
 ]);
 const VIMEO_HOSTS = new Set(["vimeo.com", "www.vimeo.com", "player.vimeo.com"]);
+const APARAT_HOSTS = new Set(["aparat.com", "www.aparat.com", "m.aparat.com"]);
 
-export type EmbedProvider = "youtube" | "vimeo";
+export type EmbedProvider = "youtube" | "vimeo" | "aparat";
+
+/** Guards the `data-embed` value before the reader mounts a player. */
+export function isEmbedProvider(value: string | null | undefined): value is EmbedProvider {
+  return value === "youtube" || value === "vimeo" || value === "aparat";
+}
+
+/**
+ * Aparat hashes are short alphanumerics (`woh65a0`). The same video is reachable
+ * as `/v/<hash>`, `/embed/<hash>` and `/video/video/embed/videohash/<hash>/vt/frame`;
+ * one canonical player URL keeps the stored embed stable.
+ */
+function aparatHash(pathname: string): string | null {
+  const parts = pathname.split("/").filter(Boolean);
+  const marker = parts.indexOf("videohash");
+  const hash =
+    (marker >= 0 ? parts[marker + 1] : undefined) ??
+    (parts[0] === "v" || parts[0] === "embed" ? parts[1] : undefined) ??
+    "";
+  return /^[A-Za-z0-9]{5,20}$/.test(hash) ? hash : null;
+}
 
 export function embedFromUrl(value: string): {
   provider: EmbedProvider;
@@ -173,6 +194,15 @@ export function embedFromUrl(value: string): {
       const id = url.pathname.split("/").filter(Boolean).pop() ?? "";
       if (!/^\d{5,12}$/.test(id)) return null;
       return { provider: "vimeo", src: `https://player.vimeo.com/video/${id}` };
+    }
+
+    if (APARAT_HOSTS.has(host)) {
+      const hash = aparatHash(url.pathname);
+      if (!hash) return null;
+      return {
+        provider: "aparat",
+        src: `https://www.aparat.com/video/video/embed/videohash/${hash}/vt/frame`,
+      };
     }
   } catch {
     return null;

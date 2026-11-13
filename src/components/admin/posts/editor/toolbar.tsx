@@ -372,8 +372,8 @@ export function EditorToolbar({ editor }: { editor: Editor }) {
         <MenuItem label='فایل' onClick={() => actions.openMedia("file")}>
           <Plus className='size-3.5' /> فایل
         </MenuItem>
-        <MenuItem label='جاسازی یوتیوب/ویمئو' onClick={() => actions.openEmbed()}>
-          <Frame className='size-3.5' /> جاسازی یوتیوب/ویمئو
+        <MenuItem label='جاسازی ویدیو (یوتیوب/ویمئو/آپارات)' onClick={() => actions.openEmbed()}>
+          <Frame className='size-3.5' /> جاسازی ویدیو
         </MenuItem>
         <MenuLabel>تعاملی</MenuLabel>
         <MenuItem label='دموی HTML/CSS/JS' onClick={() => actions.openDemo()}>

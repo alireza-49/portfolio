@@ -64,14 +64,32 @@ export function CustomCursor({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const dotRef = useRef<HTMLDivElement | null>(null);
   const ringRef = useRef<HTMLDivElement | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const shadowRef = useRef<ShadowRoot | null>(null);
 
   useEffect(() => {
     const container = containerRef.current;
     const dot = dotRef.current;
     const ring = ringRef.current;
-    const canvas = canvasRef.current;
-    if (!container || !dot || !ring || !canvas) return;
+    if (!container || !dot || !ring) return;
+
+    /**
+     * The trail canvas lives in a closed shadow root instead of the page's
+     * light DOM. Swarm Rebuild (a Chrome extension) hides every `html body *`,
+     * screenshots the viewport and rebuilds from that shot whenever it finds a
+     * visible `<canvas>` — this decorative overlay made it take that path, and
+     * the resulting crop of the canvas blanketed the rebuild, leaving only the
+     * header. Document-wide scans for page media now miss it; the slot keeps
+     * the ring and dot (React's children) painted above the trail.
+     */
+    let shadow = shadowRef.current;
+    if (!shadow) {
+      shadow = container.attachShadow({ mode: "closed" });
+      shadowRef.current = shadow;
+    }
+    const canvas = document.createElement("canvas");
+    canvas.style.cssText = "position:absolute;left:0;top:0;display:block";
+    const slot = document.createElement("slot");
+    shadow.replaceChildren(canvas, slot);
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
@@ -336,6 +354,7 @@ export function CustomCursor({
       finePointer.removeEventListener("change", onPointerCapabilityChange);
       reducedMotion.removeEventListener("change", onMotionChange);
       styleEl?.remove();
+      canvas.remove();
     };
   }, [hideNativeCursor, sprinkles]);
 
@@ -345,7 +364,6 @@ export function CustomCursor({
       aria-hidden
       className="pointer-events-none fixed inset-0 z-[2147483647] overflow-hidden"
     >
-      <canvas ref={canvasRef} className="absolute inset-0" />
       <div
         ref={ringRef}
         className="absolute top-0 left-0 rounded-full border-2 border-[#2b2d42]"
