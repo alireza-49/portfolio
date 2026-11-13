@@ -29,6 +29,14 @@ const STRETCH_SWELL = 0.22;
 const STRETCH_SQUASH = 0.45;
 
 /**
+ * The frame loop parks itself once everything has settled. These two constants
+ * decide when: the ring is within a sub-pixel of the pointer and the stretch
+ * has decayed to nothing.
+ */
+const REST_DISTANCE = 0.25; // px between the ring and the pointer
+const REST_STRETCH = 0.004;
+
+/**
  * Hiding the OS cursor is global (`cursor: none`) on purpose: it keeps every
  * child selector in the app out of the way, so components can use arbitrary
  * cursor utilities without fighting the overlay. Text fields opt back in
@@ -57,6 +65,21 @@ type Particle = {
   spin: number;
 };
 
+type Rect = { x0: number; y0: number; x1: number; y1: number };
+
+/**
+ * Pointer overlay: a dot pinned to the pointer, a ring that trails it and a
+ * short ink trail.
+ *
+ * The whole overlay is driven by the pointer, so it stays asleep until the
+ * pointer moves and goes back to sleep as soon as the ring has caught up and
+ * the last particle has died. A permanent 60 fps loop would repaint the
+ * viewport for as long as the page is open — during hydration, while scrolling
+ * and on an idle tab — which is exactly what makes the cursor feel heavy on a
+ * loaded page. Nothing is allocated at all until a fine pointer actually moves,
+ * and the trail canvas only clears the rectangle it drew into instead of the
+ * whole screen.
+ */
 export function CustomCursor({
   hideNativeCursor = true,
   sprinkles = true,
@@ -71,28 +94,6 @@ export function CustomCursor({
     const dot = dotRef.current;
     const ring = ringRef.current;
     if (!container || !dot || !ring) return;
-
-    /**
-     * The trail canvas lives in a closed shadow root instead of the page's
-     * light DOM. Swarm Rebuild (a Chrome extension) hides every `html body *`,
-     * screenshots the viewport and rebuilds from that shot whenever it finds a
-     * visible `<canvas>` — this decorative overlay made it take that path, and
-     * the resulting crop of the canvas blanketed the rebuild, leaving only the
-     * header. Document-wide scans for page media now miss it; the slot keeps
-     * the ring and dot (React's children) painted above the trail.
-     */
-    let shadow = shadowRef.current;
-    if (!shadow) {
-      shadow = container.attachShadow({ mode: "closed" });
-      shadowRef.current = shadow;
-    }
-    const canvas = document.createElement("canvas");
-    canvas.style.cssText = "position:absolute;left:0;top:0;display:block";
-    const slot = document.createElement("slot");
-    shadow.replaceChildren(canvas, slot);
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
 
     const finePointer = window.matchMedia("(pointer: fine)");
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -113,11 +114,16 @@ export function CustomCursor({
     let stretch = 0; // smoothed 0..1
     let emitAccumulator = 0;
 
-    // ---- canvas sizing ---------------------------------------------------
+    // ---- canvas (created on the first real pointer move) ------------------
+    let canvas: HTMLCanvasElement | null = null;
+    let ctx: CanvasRenderingContext2D | null = null;
     let width = 0;
     let height = 0;
+    /** Region painted by the previous frame, so we can erase just that much. */
+    let dirty: Rect | null = null;
 
-    const resize = () => {
+    const resizeCanvas = () => {
+      if (!canvas || !ctx) return;
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       width = window.innerWidth;
       height = window.innerHeight;
@@ -126,8 +132,49 @@ export function CustomCursor({
       canvas.style.width = `${width}px`;
       canvas.style.height = `${height}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      dirty = null;
     };
-    resize();
+
+    const ensureCanvas = () => {
+      if (ctx) return true;
+
+      /**
+       * The trail canvas lives in a closed shadow root instead of the page's
+       * light DOM. Swarm Rebuild (a Chrome extension) hides every `html body *`,
+       * screenshots the viewport and rebuilds from that shot whenever it finds a
+       * visible `<canvas>` — this decorative overlay made it take that path, and
+       * the resulting crop of the canvas blanketed the rebuild, leaving only the
+       * header. Document-wide scans for page media now miss it; the slot keeps
+       * the ring and dot (React's children) painted above the trail.
+       */
+      if (!shadowRef.current) {
+        shadowRef.current = container.attachShadow({ mode: "closed" });
+      }
+      const shadow = shadowRef.current;
+      const nextCanvas = document.createElement("canvas");
+      nextCanvas.style.cssText =
+        "position:absolute;left:0;top:0;display:block";
+      shadow.replaceChildren(nextCanvas, document.createElement("slot"));
+
+      const context = nextCanvas.getContext("2d");
+      if (!context) return false;
+
+      canvas = nextCanvas;
+      ctx = context;
+      resizeCanvas();
+      return true;
+    };
+
+    const clearDirty = () => {
+      if (!dirty || !ctx) return;
+      ctx.clearRect(
+        dirty.x0,
+        dirty.y0,
+        dirty.x1 - dirty.x0,
+        dirty.y1 - dirty.y0,
+      );
+      dirty = null;
+    };
 
     // ---- particles -------------------------------------------------------
     const particles: Particle[] = [];
@@ -163,54 +210,13 @@ export function CustomCursor({
       }
     };
 
-    // ---- events ----------------------------------------------------------
-    const onPointerMove = (event: PointerEvent) => {
-      if (!enabled) return;
-
-      const now = performance.now();
-      const dt = Math.max(now - lastMoveAt, 1);
-      lastMoveAt = now;
-
-      const dx = event.clientX - pointer.x;
-      const dy = event.clientY - pointer.y;
-      pointer.x = event.clientX;
-      pointer.y = event.clientY;
-
-      const dist = Math.hypot(dx, dy);
-      if (dist > 0.5) {
-        const instant = dist / dt;
-        speed = speed * 0.55 + instant * 0.45;
-        moveAngle = Math.atan2(dy, dx);
-      }
-
-      if (!hasPointer) {
-        hasPointer = true;
-        ringPos.x = pointer.x;
-        ringPos.y = pointer.y;
-        angle = moveAngle;
-        dot.style.opacity = "1";
-        ring.style.opacity = "1";
-      }
-    };
-
-    const onPointerLeave = () => {
-      dot.style.opacity = "0";
-      ring.style.opacity = "0";
-    };
-
-    const onPointerEnter = () => {
-      if (!hasPointer) return;
-      dot.style.opacity = "1";
-      ring.style.opacity = "1";
-    };
-
     // ---- render loop -----------------------------------------------------
     let raf = 0;
-    let lastFrame = performance.now();
+    let running = false;
+    let lastFrame = 0;
 
-    const frame = (now: number) => {
-      raf = requestAnimationFrame(frame);
-
+    /** Paint one frame; returns true while there is still something to move. */
+    const paint = (now: number): boolean => {
       const dt = Math.min(now - lastFrame, 48);
       lastFrame = now;
       const step = dt / 16.667;
@@ -219,7 +225,7 @@ export function CustomCursor({
       speed *= Math.exp(-dt / 110);
 
       // ring easing toward the pointer
-      const follow = 1 - Math.pow(1 - 0.17, step);
+      const follow = 1 - Math.pow(1 - 0.3, step);
       ringPos.x += (pointer.x - ringPos.x) * follow;
       ringPos.y += (pointer.y - ringPos.y) * follow;
 
@@ -234,9 +240,6 @@ export function CustomCursor({
         while (diff < -Math.PI) diff += Math.PI * 2;
         angle += diff * (1 - Math.pow(1 - 0.25, step));
       }
-
-      // dot: pinned, no lag
-      dot.style.transform = `translate3d(${pointer.x}px, ${pointer.y}px, 0) translate(-50%, -50%)`;
 
       // ring: elongated along the direction of travel, thinned across it.
       //
@@ -274,65 +277,193 @@ export function CustomCursor({
         }
       }
 
-      // draw
-      ctx.clearRect(0, 0, width, height);
+      // draw: erase the previous frame's rectangle, then paint the particles
+      if (ctx) {
+        clearDirty();
 
-      for (let i = particles.length - 1; i >= 0; i--) {
-        const p = particles[i];
-        p.life += dt;
+        let x0 = Infinity;
+        let y0 = Infinity;
+        let x1 = -Infinity;
+        let y1 = -Infinity;
 
-        if (p.life >= p.maxLife) {
-          particles.splice(i, 1);
-          continue;
+        for (let i = particles.length - 1; i >= 0; i--) {
+          const p = particles[i];
+          p.life += dt;
+
+          if (p.life >= p.maxLife) {
+            particles.splice(i, 1);
+            continue;
+          }
+
+          const t = p.life / p.maxLife;
+          const drag = Math.pow(0.92, step);
+
+          p.vx *= drag;
+          p.vy *= drag;
+          p.vy += 0.03 * step;
+          p.x += p.vx * step;
+          p.y += p.vy * step;
+          p.rot += p.spin * step;
+
+          const alpha = Math.pow(1 - t, 1.6);
+          const size = p.size * (1 - t * 0.4);
+
+          ctx.globalAlpha = alpha;
+          ctx.fillStyle = p.color;
+
+          if (p.square) {
+            ctx.beginPath();
+            const half = size / 2;
+            const c = Math.cos(p.rot);
+            const s = Math.sin(p.rot);
+            ctx.moveTo(p.x + c * -half - s * -half, p.y + s * -half + c * -half);
+            ctx.lineTo(p.x + c * half - s * -half, p.y + s * half + c * -half);
+            ctx.lineTo(p.x + c * half - s * half, p.y + s * half + c * half);
+            ctx.lineTo(p.x + c * -half - s * half, p.y + s * -half + c * half);
+            ctx.closePath();
+            ctx.fill();
+          } else {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, size / 2, 0, Math.PI * 2);
+            ctx.fill();
+          }
+
+          if (p.x - size < x0) x0 = p.x - size;
+          if (p.y - size < y0) y0 = p.y - size;
+          if (p.x + size > x1) x1 = p.x + size;
+          if (p.y + size > y1) y1 = p.y + size;
         }
 
-        const t = p.life / p.maxLife;
-        const drag = Math.pow(0.92, step);
+        ctx.globalAlpha = 1;
 
-        p.vx *= drag;
-        p.vy *= drag;
-        p.vy += 0.03 * step;
-        p.x += p.vx * step;
-        p.y += p.vy * step;
-        p.rot += p.spin * step;
-
-        const alpha = Math.pow(1 - t, 1.6);
-        const size = p.size * (1 - t * 0.4);
-
-        ctx.globalAlpha = alpha;
-        ctx.fillStyle = p.color;
-
-        if (p.square) {
-          ctx.save();
-          ctx.translate(p.x, p.y);
-          ctx.rotate(p.rot);
-          ctx.fillRect(-size / 2, -size / 2, size, size);
-          ctx.restore();
-        } else {
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, size / 2, 0, Math.PI * 2);
-          ctx.fill();
+        if (x1 > x0) {
+          // pad by a pixel so antialiased edges never leave residue
+          dirty = { x0: x0 - 1, y0: y0 - 1, x1: x1 + 1, y1: y1 + 1 };
         }
       }
 
-      ctx.globalAlpha = 1;
+      // Park the loop once the ring has caught up and the trail is gone.
+      const settled =
+        particles.length === 0 &&
+        stretch < REST_STRETCH &&
+        speed < 0.02 &&
+        Math.abs(pointer.x - ringPos.x) < REST_DISTANCE &&
+        Math.abs(pointer.y - ringPos.y) < REST_DISTANCE;
+
+      if (settled) {
+        ringPos.x = pointer.x;
+        ringPos.y = pointer.y;
+        clearDirty();
+        return false;
+      }
+
+      return true;
     };
 
-    raf = requestAnimationFrame(frame);
+    const frame = (now: number) => {
+      if (paint(now)) {
+        raf = requestAnimationFrame(frame);
+      } else {
+        running = false;
+        raf = 0;
+      }
+    };
 
-    // ---- wiring ----------------------------------------------------------
-    window.addEventListener("pointermove", onPointerMove, { passive: true });
-    window.addEventListener("resize", resize);
-    document.addEventListener("pointerleave", onPointerLeave);
-    document.addEventListener("pointerenter", onPointerEnter);
+    const wake = () => {
+      if (!enabled || running) return;
+      running = true;
+      lastFrame = performance.now();
+      raf = requestAnimationFrame(frame);
+    };
+
+    const sleep = () => {
+      if (raf) cancelAnimationFrame(raf);
+      raf = 0;
+      running = false;
+      clearDirty();
+    };
+
+    // ---- events ----------------------------------------------------------
+    const onPointerMove = (event: PointerEvent) => {
+      if (!enabled) return;
+
+      const now = performance.now();
+      const dt = Math.max(now - lastMoveAt, 1);
+      lastMoveAt = now;
+
+      const dx = event.clientX - pointer.x;
+      const dy = event.clientY - pointer.y;
+      pointer.x = event.clientX;
+      pointer.y = event.clientY;
+
+      const dist = Math.hypot(dx, dy);
+      if (dist > 0.5) {
+        const instant = dist / dt;
+        speed = speed * 0.55 + instant * 0.45;
+        moveAngle = Math.atan2(dy, dx);
+      }
+
+      if (!hasPointer) {
+        hasPointer = true;
+        ringPos.x = pointer.x;
+        ringPos.y = pointer.y;
+        angle = moveAngle;
+        dot.style.opacity = "1";
+        ring.style.opacity = "1";
+        ensureCanvas();
+      }
+
+      // The dot is pinned to the pointer, so it is written straight from the
+      // event: no frame of latency, and it keeps tracking while the trail loop
+      // is parked.
+      dot.style.transform = `translate3d(${pointer.x}px, ${pointer.y}px, 0) translate(-50%, -50%)`;
+
+      wake();
+    };
+
+    const onPointerLeave = () => {
+      dot.style.opacity = "0";
+      ring.style.opacity = "0";
+      // Snap the ring to the last known point so re-entering the window does
+      // not make it glide across the whole screen.
+      ringPos.x = pointer.x;
+      ringPos.y = pointer.y;
+      sleep();
+    };
+
+    const onPointerEnter = () => {
+      if (!hasPointer) return;
+      dot.style.opacity = "1";
+      ring.style.opacity = "1";
+      wake();
+    };
+
+    const onResize = () => {
+      resizeCanvas();
+      wake();
+    };
 
     const onPointerCapabilityChange = () => {
       enabled = finePointer.matches;
       container.style.display = enabled ? "" : "none";
+      if (!enabled) sleep();
     };
+
     const onMotionChange = () => {
       still = reducedMotion.matches;
+      if (still) {
+        particles.length = 0;
+        emitAccumulator = 0;
+      }
+      wake();
     };
+
+    // The handlers bail out immediately when the device has no fine pointer, so
+    // touch screens never allocate a canvas and never schedule a frame.
+    window.addEventListener("pointermove", onPointerMove, { passive: true });
+    window.addEventListener("resize", onResize);
+    document.addEventListener("pointerleave", onPointerLeave);
+    document.addEventListener("pointerenter", onPointerEnter);
 
     finePointer.addEventListener("change", onPointerCapabilityChange);
     reducedMotion.addEventListener("change", onMotionChange);
@@ -346,15 +477,15 @@ export function CustomCursor({
     }
 
     return () => {
-      cancelAnimationFrame(raf);
+      sleep();
       window.removeEventListener("pointermove", onPointerMove);
-      window.removeEventListener("resize", resize);
+      window.removeEventListener("resize", onResize);
       document.removeEventListener("pointerleave", onPointerLeave);
       document.removeEventListener("pointerenter", onPointerEnter);
       finePointer.removeEventListener("change", onPointerCapabilityChange);
       reducedMotion.removeEventListener("change", onMotionChange);
       styleEl?.remove();
-      canvas.remove();
+      canvas?.remove();
     };
   }, [hideNativeCursor, sprinkles]);
 

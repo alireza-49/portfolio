@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import { Pool, type QueryResultRow } from "pg";
 
@@ -95,19 +96,56 @@ function readSchemaSql(): string {
 }
 
 /**
- * Applies the idempotent schema once per process. A missing file (an unusual
- * serverless bundle) is reported as a build/setup problem instead of a crash
- * inside every query.
+ * One row that records which schema revision this database already has. The
+ * row is keyed on a constant `true`, so the table can never hold more than one
+ * entry.
+ */
+const SCHEMA_META_DDL = `
+  CREATE TABLE IF NOT EXISTS schema_meta (
+    id BOOLEAN PRIMARY KEY DEFAULT TRUE,
+    hash TEXT NOT NULL,
+    applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  );
+`;
+
+/**
+ * Applies the idempotent schema once per database revision.
+ *
+ * Every cold serverless instance used to replay the whole file — 49 statements
+ * of `CREATE ... IF NOT EXISTS` and `ALTER ... IF NOT EXISTS` catalog work —
+ * before it could answer the first query. With a serverless Postgres the first
+ * request of an instance pays that on top of the compute wake-up, which is why
+ * a cold `/blog` or `/track` took seconds. The file's content hash is stored in
+ * `schema_meta` instead: an up-to-date database costs one tiny `CREATE TABLE IF
+ * NOT EXISTS` plus a single-row read, and editing `schema.sql` still migrates
+ * automatically on the next process.
+ *
+ * A missing file (an unusual serverless bundle) is reported as a build/setup
+ * problem instead of a crash inside every query.
  */
 export function ensureSchema(): Promise<void> {
   if (!globalDb.__studioSchema) {
-    globalDb.__studioSchema = getPool()
-      .query(readSchemaSql())
-      .then(() => undefined)
-      .catch((error: unknown) => {
-        globalDb.__studioSchema = undefined;
-        throw error;
-      });
+    globalDb.__studioSchema = (async () => {
+      const pool = getPool();
+      const schema = readSchemaSql();
+      const hash = createHash("sha256").update(schema).digest("hex");
+
+      await pool.query(SCHEMA_META_DDL);
+      const { rows } = await pool.query<{ hash: string }>(
+        "SELECT hash FROM schema_meta LIMIT 1",
+      );
+      if (rows[0]?.hash === hash) return;
+
+      await pool.query(schema);
+      await pool.query(
+        `INSERT INTO schema_meta (id, hash) VALUES (TRUE, $1)
+         ON CONFLICT (id) DO UPDATE SET hash = EXCLUDED.hash, applied_at = NOW()`,
+        [hash],
+      );
+    })().catch((error: unknown) => {
+      globalDb.__studioSchema = undefined;
+      throw error;
+    });
   }
   return globalDb.__studioSchema;
 }
