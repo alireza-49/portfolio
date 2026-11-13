@@ -93,7 +93,9 @@ export function SiteHeader() {
               <Menu className='size-4' />
             </SheetTrigger>
             <SheetContent side='left' className='border-indigo-ink bg-paper'>
-              <SheetHeader className='border-b-[2px] border-indigo-ink'>
+              {/* Room for the sheet's absolutely placed close button on the
+                  inline-start edge, so it never sits on the title. */}
+              <SheetHeader className='border-b-[2px] border-indigo-ink ps-12'>
                 <SheetTitle className='text-right text-base font-black text-indigo-ink'>
                   منوی ناوبری
                 </SheetTitle>

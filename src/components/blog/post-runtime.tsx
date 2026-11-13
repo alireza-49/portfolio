@@ -9,9 +9,9 @@ import { FileCard } from "@/components/editor-blocks/file-card";
 import { EmbedFrame } from "@/components/editor-blocks/embed-frame";
 import {
   decodePayload,
+  isEmbedProvider,
   validateDemoPayload,
   validateNotebookPayload,
-  type EmbedProvider,
 } from "@/lib/richtext";
 import { mimeFromExtension } from "@/lib/media-url";
 import type { MediaKind } from "@/lib/types";
@@ -78,8 +78,8 @@ export function PostRuntime({
 
     for (const element of container.querySelectorAll("[data-embed]")) {
       const src = element.getAttribute("data-src");
-      const provider = element.getAttribute("data-embed") as EmbedProvider | null;
-      if (src && (provider === "youtube" || provider === "vimeo")) {
+      const provider = element.getAttribute("data-embed");
+      if (src && isEmbedProvider(provider)) {
         mount(element, <EmbedFrame provider={provider} src={src} />);
       }
     }

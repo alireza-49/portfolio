@@ -19,6 +19,10 @@ const newsreader = Newsreader({
   variable: "--font-newsreader",
   subsets: ["latin"],
   display: "swap",
+  // Only the article reader's blockquotes and the editor's "serif" swatch use
+  // this face. Eagerly preloading it made every page — including the landing
+  // page, which never renders it — download ~46 KB it cannot use.
+  preload: false,
 });
 
 const spaceGrotesk = Space_Grotesk({

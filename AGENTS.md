@@ -125,9 +125,11 @@ every preset and scenario.
 ## Console: data, auth, content
 
 - Postgres via `pg`; `DATABASE_URL` is the *pooled* connection string. `src/lib/db.ts` creates one
-  lazily-cached pool per process and applies `src/lib/schema.sql` once per process, so
-  `next build` never needs a database. `npm run db:setup` applies the schema and seeds demo rows
-  only into empty tables.
+  lazily-cached pool per process and applies `src/lib/schema.sql` when the database does not yet
+  carry that file's hash (`schema_meta`), so a warm database costs one `CREATE TABLE IF NOT EXISTS`
+  plus a single-row read per cold instance and `next build` never needs a database. Editing
+  `schema.sql` changes the hash and migrates on the next process; `npm run db:setup` applies the
+  schema and seeds demo rows only into empty tables.
 - `src/lib/content.ts` is the only module that queries Postgres — never import it (or `db.ts`,
   `sanitize.ts`, `auth.ts`) from a client component. `steps`/`updates`/`tags` are JSONB,
   re-validated field by field in `app/admin/(console)/{projects,posts}/validation.ts`; UUID guards

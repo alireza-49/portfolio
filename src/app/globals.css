@@ -42,9 +42,17 @@
      the family itself so Persian reaches `--font-vazirmatn` on every device. */
   --font-display:
     "Epilogue", var(--font-vazirmatn), ui-sans-serif, sans-serif;
-  --font-serif: var(--font-newsreader), Georgia, "Times New Roman", serif;
+  /* Newsreader and Space Grotesk draw Latin only. Their Persian fallbacks used to
+     be Georgia/Courier, so a quoted paragraph or a Persian string inside a code
+     block rendered in a third, system face. Naming Vazirmatn right after the
+     Latin face keeps Latin on Newsreader/Space Grotesk and sends the Persian
+     glyphs to the site's own family. */
+  --font-serif:
+    var(--font-newsreader), Georgia, "Times New Roman", var(--font-vazirmatn),
+    serif;
   --font-mono:
-    var(--font-space-grotesk), ui-monospace, "Courier New", monospace;
+    var(--font-space-grotesk), var(--font-vazirmatn), ui-monospace,
+    "Courier New", monospace;
 
   /* Shapes — strictly soft die-cut cardstock */
   --radius-sm: 0.125rem;
@@ -1368,6 +1376,7 @@
 }
 
 .post-callout,
+.post-body [data-callout],
 .cc-callout {
   margin: 1rem 0;
   border-inline-start: 4px solid var(--color-indigo-ink);
@@ -1377,31 +1386,36 @@
 }
 
 .post-callout[data-callout="info"],
+.post-body [data-callout="info"],
 .cc-callout-info {
   border-color: var(--color-teal-craft);
   background: color-mix(in srgb, var(--color-teal-light) 62%, var(--color-paper));
 }
 
 .post-callout[data-callout="tip"],
+.post-body [data-callout="tip"],
 .cc-callout-tip {
   border-color: var(--color-mustard-deep);
   background: color-mix(in srgb, var(--color-mustard) 30%, var(--color-paper));
 }
 
 .post-callout[data-callout="warning"],
+.post-body [data-callout="warning"],
 .cc-callout-warning {
   border-color: var(--color-mustard-deep);
   background: color-mix(in srgb, var(--color-mustard) 46%, var(--color-paper));
 }
 
 .post-callout[data-callout="danger"],
+.post-body [data-callout="danger"],
 .cc-callout-danger {
   border-color: var(--color-coral-dark);
   background: color-mix(in srgb, var(--color-coral-soft) 82%, var(--color-paper));
 }
 
 .post-callout .post-callout-title,
-.post-callout [data-callout-title] {
+.post-callout [data-callout-title],
+.post-body [data-callout] [data-callout-title] {
   margin: 0 0 0.35rem;
   font-size: 0.75rem;
   font-weight: 900;

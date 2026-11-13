@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="پنجرهٔ ترمینال پایتون و هرمی از ستاره‌ها، جلسهٔ اول کارگاه">
+  <defs>
+    <pattern id="paper-grain-a" width="18" height="18" patternUnits="userSpaceOnUse">
+      <circle cx="3" cy="4" r="1" fill="#264653" opacity="0.14" />
+      <circle cx="12" cy="13" r="0.85" fill="#e76f51" opacity="0.16" />
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="#fffdf5" />
+  <rect width="1200" height="630" fill="url(#paper-grain-a)" />
+
+  <!-- terminal window -->
+  <rect x="96" y="156" width="596" height="366" fill="#264653" />
+  <rect x="86" y="146" width="596" height="366" fill="none" stroke="#e76f51" stroke-width="4" />
+  <g fill="#fffdf5" opacity="0.9">
+    <rect x="120" y="184" width="72" height="10" rx="2" />
+    <rect x="204" y="184" width="72" height="10" rx="2" opacity="0.55" />
+    <rect x="288" y="184" width="72" height="10" rx="2" opacity="0.35" />
+  </g>
+  <g fill="#2a9d8f">
+    <rect x="120" y="232" width="34" height="12" rx="2" />
+    <rect x="166" y="232" width="150" height="12" rx="2" opacity="0.85" />
+    <rect x="328" y="232" width="66" height="12" rx="2" opacity="0.55" />
+  </g>
+  <g fill="#e9c46a">
+    <rect x="120" y="266" width="26" height="12" rx="2" />
+    <rect x="158" y="266" width="196" height="12" rx="2" opacity="0.8" />
+    <rect x="366" y="266" width="92" height="12" rx="2" opacity="0.5" />
+    <rect x="470" y="266" width="44" height="12" rx="2" opacity="0.3" />
+  </g>
+  <g fill="#fffdf5" opacity="0.7">
+    <rect x="144" y="300" width="210" height="12" rx="2" />
+    <rect x="366" y="300" width="120" height="12" rx="2" opacity="0.6" />
+  </g>
+  <g fill="#e76f51">
+    <rect x="144" y="334" width="60" height="12" rx="2" />
+    <rect x="216" y="334" width="150" height="12" rx="2" opacity="0.7" />
+    <rect x="378" y="334" width="26" height="12" rx="2" opacity="0.4" />
+  </g>
+  <rect x="120" y="380" width="12" height="20" fill="#e9c46a" />
+  <path d="M120 440 H664" stroke="#fffdf5" stroke-width="1.5" opacity="0.18" stroke-dasharray="6 6" />
+
+  <!-- pyramid of stars -->
+  <g fill="#e76f51" font-family="'Space Grotesk', ui-monospace, monospace" font-size="58" font-weight="700" text-anchor="middle">
+    <text x="900" y="300">*</text>
+    <text x="900" y="362">***</text>
+    <text x="900" y="424">*****</text>
+    <text x="900" y="486">*******</text>
+  </g>
+
+  <!-- measurement marks -->
+  <g fill="none" stroke="#2a9d8f" stroke-width="4" stroke-dasharray="8 8">
+    <path d="M742 300 H1088" />
+    <rect x="742" y="228" width="346" height="290" />
+  </g>
+  <g fill="none" stroke="#264653" stroke-width="3">
+    <path d="M120 556 H1092" />
+    <path d="M120 556 v-16 M692 556 v-16 M1092 556 v-16" />
+  </g>
+
+  <g fill="#264653" font-family="'Space Grotesk', ui-monospace, monospace" font-size="17" letter-spacing="3">
+    <text x="120" y="120">PYTHON WORKSHOP / SESSION 01</text>
+    <text x="120" y="590">PRINT · VARIABLES · LISTS · LOOPS — 240 MIN</text>
+  </g>
+  <g fill="#e76f51" font-family="'Space Grotesk', ui-monospace, monospace" font-size="14" letter-spacing="2">
+    <text x="760" y="212">OUTPUT</text>
+    <text x="120" y="522">NOW PLAYING</text>
+  </g>
+  <circle cx="1096" cy="100" r="10" fill="#e9c46a" />
+</svg>

@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "db:setup": "node --env-file-if-exists=.env.local --env-file-if-exists=.env scripts/db-setup.mjs",
+    "seed:course": "node --env-file-if-exists=.env.local --env-file-if-exists=.env scripts/seed-course.mjs",
     "test": "vitest run"
   },
   "dependencies": {

@@ -40,7 +40,9 @@ export function InquiryDrawer({
         side='left'
         className='w-full gap-0 border-indigo-ink bg-paper-light p-0 sm:max-w-lg'
       >
-        <SheetHeader className='border-b-[2px] border-indigo-ink bg-paper-dim px-4 py-3 sm:px-5'>
+        {/* `ps-12` keeps the title clear of the sheet's absolutely placed
+            close button on the inline-start edge. */}
+        <SheetHeader className='border-b-[2px] border-indigo-ink bg-paper-dim px-4 py-3 ps-12 sm:px-5 sm:ps-12'>
           <SheetTitle className='text-right text-sm font-black text-indigo-ink'>
             جزئیات درخواست
           </SheetTitle>

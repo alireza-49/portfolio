@@ -225,7 +225,7 @@ export function EmbedDialog({
 
   const save = () => {
     if (!current) {
-      setError("فقط نشانی یوتیوب یا ویمئو پشتیبانی می‌شود.");
+      setError("فقط نشانی یوتیوب، ویمئو یا آپارات پشتیبانی می‌شود.");
       return;
     }
     const attrs = current;
@@ -243,7 +243,7 @@ export function EmbedDialog({
   return (
     <Frame open={open} onClose={onClose} title='جاسازی ویدیو' icon={<FrameIcon className='size-4 text-coral' />}>
       <label className='grid gap-1 text-[0.6875rem] font-bold text-indigo-ink'>
-        نشانی یوتیوب یا ویمئو
+        نشانی یوتیوب، ویمئو یا آپارات
         <input
           value={url}
           onChange={(event) => { setUrl(event.target.value); setError(null); }}
