@@ -2,6 +2,7 @@
 
 import { Mail } from "lucide-react";
 import { faDateTime, faNumber } from "@/lib/fa";
+import { estimateOptionLabels } from "@/lib/estimator";
 import type { Submission, SubmissionStatus } from "@/lib/types";
 import { InquiryStudioPanel } from "./inquiry-studio";
 
@@ -21,6 +22,7 @@ export function InquiryDetail({
   const max = estimate ? String(estimate.max ?? "") : "";
   const type = estimate ? String(estimate.typeTitle ?? "") : "";
   const timeline = estimate ? String(estimate.timeline ?? "") : "";
+  const chosenOptions = estimateOptionLabels(estimate);
 
   return (
     <div className='flex flex-1 flex-col gap-5 overflow-y-auto p-4 sm:p-5'>
@@ -106,6 +108,23 @@ export function InquiryDetail({
               {faNumber(Number(estimate.addonsCount ?? 0))} افزونهٔ انتخابی
             </span>
           </div>
+          {chosenOptions.length > 0 ? (
+            <div className='flex flex-col gap-1'>
+              <span className='text-[0.625rem] font-bold text-indigo-light'>
+                گزینه‌هایی که کارفرما انتخاب کرده
+              </span>
+              <div className='flex flex-wrap gap-1'>
+                {chosenOptions.map((label) => (
+                  <span
+                    key={label}
+                    className='rounded-sm border border-indigo-ink/25 bg-paper px-1.5 py-0.5 text-[0.625rem] font-bold text-indigo-ink'
+                  >
+                    {label}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ) : null}
         </div>
       ) : null}
 

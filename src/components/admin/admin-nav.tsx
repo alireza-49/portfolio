@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   ArrowUpRight,
   CalendarClock,
+  Calculator,
   Gauge,
   Inbox,
   Layers,
@@ -35,6 +36,7 @@ export const ADMIN_NAV: NavItem[] = [
   { href: "/admin/plan", label: "برنامه‌ریزی و تقویم", icon: CalendarClock },
   { href: "/admin/progress", label: "پیشرفت پروژه‌ها", icon: Gauge },
   { href: "/admin/income", label: "درآمد و پیش‌بینی", icon: Wallet },
+  { href: "/admin/estimator", label: "برآورد قیمت", icon: Calculator },
   { href: "/admin/inbox", label: "درخواست‌های سفارش", icon: Inbox },
   { href: "/admin/posts", label: "نشر یادداشت‌ها", icon: Newspaper },
   { href: "/admin/comments", label: "نظرات یادداشت‌ها", icon: MessageSquare },

@@ -6,72 +6,23 @@ import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { setEstimate } from "@/components/estimate-store";
+import {
+  activeProjectTypes,
+  buildEstimate,
+  formatPrice,
+  optionsForType,
+  timingsForType,
+  type EstimatorConfig,
+} from "@/lib/estimator";
 
-const PROJECT_TYPES = [
-  {
-    value: "landing",
-    label: "لندینگ‌پیج معرفی و تبلیغاتی",
-    base: "پایه ۱ م.ت",
-  },
-  {
-    value: "wordpress",
-    label: "سایت وردپرسی و قالب آماده",
-    base: "پایه ۲ م.ت",
-  },
-  {
-    value: "ecommerce",
-    label: "آنلاین شاپ (همراه با صفحه معرفی و لندینگ رایگان)",
-    base: "پایه ۵ م.ت",
-  },
-  {
-    value: "webapp",
-    label:
-      "اپلیکیشن بر پایه وب / داشبورد مدیریتی (همراه با صفحه معرفی و لندینگ رایگان)",
-    base: "پایه ۶ م.ت",
-  },
-] as const;
-
-const SPEEDS = [
-  {
-    value: "standard",
-    title: "عادی (۱۰ تا ۱۴ روز)",
-    note: "بدون هزینه اضافه",
-    nominal: "",
-  },
-  { value: "fast", title: "سریع (۵ تا ۷ روز)", note: "", nominal: "+۱۰٪" },
-  { value: "urgent", title: "فوری (۳ تا ۵ روز)", note: "", nominal: "+۱۵٪" },
-] as const;
-
-const ADDONS = [
-  {
-    value: "cms",
-    label: "پنل مدیریت محتوای (وبلاگ اختصاصی)",
-    price: "+۱ م.ت",
-    struckPrice: "",
-  },
-  {
-    value: "support",
-    label: "پشتیبانی و مراقبت ۶ ماهه",
-    price: "+۱ م.ت",
-    struckPrice: "",
-  },
-  {
-    value: "motion",
-    label: "انیمیشن‌های اضافه",
-    price: "رایگان",
-    struckPrice: "۰٫۵ م.ت",
-  },
-  {
-    value: "payportal",
-    label: "پرتال پرداخت",
-    price: "رایگان",
-    struckPrice: "",
-  },
-] as const;
-
-type ProjectType = (typeof PROJECT_TYPES)[number]["value"];
-type Speed = (typeof SPEEDS)[number]["value"];
-type Addon = (typeof ADDONS)[number]["value"];
+/**
+ * The estimator is rendered from the config the console owns
+ * (`estimator_settings`), never from a hardcoded catalogue: adding, removing or
+ * repricing a type, a timing or an extra here changes the page, the invoice and
+ * the `estimate` payload the contact form posts in the same pass. The price
+ * itself comes from `buildEstimate` in `@/lib/estimator`, which is also what the
+ * console previews call.
+ */
 
 /**
  * Base UI draws each control as a `<span role="checkbox|radio">` beside a
@@ -90,63 +41,6 @@ const rowClick =
     activate();
   };
 
-/**
- * Which timing and which modules each project type can take. The form only
- * offers a combination that exists, so a project type can never be paired with
- * a timing or a module that is not built for it:
- * landing → every timing, every module except the payment portal;
- * wordpress → standard/fast, every module except extra animations;
- * online shop → standard/fast, every module;
- * web app → standard/fast, every module except the payment portal.
- */
-const TIMINGS: Record<ProjectType, readonly Speed[]> = {
-  landing: ["standard", "fast", "urgent"],
-  wordpress: ["standard", "fast"],
-  ecommerce: ["standard", "fast"],
-  webapp: ["standard", "fast"],
-};
-
-const MODULES: Record<ProjectType, readonly Addon[]> = {
-  landing: ["cms", "support", "motion"],
-  wordpress: ["cms", "support", "payportal"],
-  ecommerce: ["cms", "support", "motion", "payportal"],
-  webapp: ["cms", "support", "motion"],
-};
-
-const PRICES: Record<ProjectType, { min: number; max: number; title: string }> =
-  {
-    landing: { min: 1, max: 2, title: "لندینگ‌پیج معرفی و تبلیغاتی" },
-    wordpress: { min: 2, max: 3, title: "سایت وردپرسی و قالب آماده" },
-    ecommerce: {
-      min: 5,
-      max: 7,
-      title: "آنلاین شاپ (همراه با صفحه معرفی و لندینگ رایگان)",
-    },
-    webapp: {
-      min: 6,
-      max: 8,
-      title:
-        "اپلیکیشن بر پایه وب / داشبورد مدیریتی (همراه با صفحه معرفی و لندینگ رایگان)",
-    },
-  };
-
-/**
- * The rush surcharge (+۱۰٪ / +۱۵٪) is advertised struck through and waived
- * right now, so the estimate is priced at the base range for every timing.
- */
-const SPEED_TIMELINES: Record<Speed, string> = {
-  standard: "۱۰ تا ۱۴ روز کاری",
-  fast: "۵ تا ۷ روز کاری (شتاب‌یافته)",
-  urgent: "۳ تا ۵ روز کاری (تحویل فوری)",
-};
-
-const ADDON_PRICES: Record<Addon, number> = {
-  cms: 1,
-  support: 1,
-  motion: 0,
-  payportal: 0,
-};
-
 const PERSIAN_DIGITS = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
 
 /** Renders Latin digits as Persian ones, with the Persian decimal separator. */
@@ -156,61 +50,52 @@ function toPersianDigits(value: string | number) {
     .replace(/\./g, "٫");
 }
 
-/** A whole price reads `۴`, not `۴٫۰`; a real half keeps its decimal. */
-function trimZero(value: string) {
-  return value.replace(/\.0$/, "");
-}
+export function EstimatorSection({ config }: { config: EstimatorConfig }) {
+  const types = useMemo(() => activeProjectTypes(config), [config]);
+  const [typeId, setTypeId] = useState(() => types[0]?.id ?? "");
+  const [timingId, setTimingId] = useState(
+    () => timingsForType(config, types[0]?.id ?? "")[0]?.id ?? "",
+  );
+  const [optionIds, setOptionIds] = useState<string[]>([]);
 
-export function EstimatorSection() {
-  const [projectType, setProjectType] = useState<ProjectType>("landing");
-  const [speed, setSpeed] = useState<Speed>("standard");
-  const [addons, setAddons] = useState<Addon[]>([]);
+  const timings = useMemo(() => timingsForType(config, typeId), [config, typeId]);
+  const options = useMemo(() => optionsForType(config, typeId), [config, typeId]);
 
-  const estimate = useMemo(() => {
-    const base = PRICES[projectType];
-    const addonSum = addons.reduce(
-      (total, addon) => total + ADDON_PRICES[addon],
-      0,
-    );
+  const estimate = useMemo(
+    () => buildEstimate(config, { typeId, timingId, optionIds }),
+    [config, typeId, timingId, optionIds],
+  );
 
-    return {
-      min: trimZero((base.min + addonSum).toFixed(1)),
-      max: trimZero((base.max + addonSum).toFixed(1)),
-      typeTitle: base.title,
-      timeline: SPEED_TIMELINES[speed],
-      addonsCount: addons.length,
-    };
-  }, [projectType, speed, addons]);
-
+  // The contact form reads this store: it carries the exact type, timing and
+  // extras that were chosen, so the inbox sees what the visitor saw.
   useEffect(() => {
-    setEstimate({
-      typeTitle: estimate.typeTitle,
-      timeline: estimate.timeline,
-      min: estimate.min,
-      max: estimate.max,
-      addonsCount: estimate.addonsCount,
-    });
+    setEstimate(estimate);
   }, [estimate]);
 
   /** Switching the project type drops choices that type cannot take. */
-  const selectProjectType = (next: ProjectType) => {
-    setProjectType(next);
-    if (!TIMINGS[next].includes(speed)) {
-      setSpeed("standard");
-    }
-    setAddons((current) =>
-      current.filter((addon) => MODULES[next].includes(addon)),
+  const selectProjectType = (next: string) => {
+    setTypeId(next);
+    const nextTimings = timingsForType(config, next);
+    setTimingId((current) =>
+      nextTimings.some((timing) => timing.id === current)
+        ? current
+        : (nextTimings[0]?.id ?? ""),
+    );
+    const allowed = new Set(optionsForType(config, next).map((option) => option.id));
+    setOptionIds((current) => current.filter((id) => allowed.has(id)));
+  };
+
+  const toggleOption = (optionId: string) => {
+    if (!options.some((option) => option.id === optionId)) return;
+    setOptionIds((current) =>
+      current.includes(optionId)
+        ? current.filter((item) => item !== optionId)
+        : [...current, optionId],
     );
   };
 
-  const toggleAddon = (addon: Addon) => {
-    if (!MODULES[projectType].includes(addon)) return;
-    setAddons((current) =>
-      current.includes(addon)
-        ? current.filter((item) => item !== addon)
-        : [...current, addon],
-    );
-  };
+  // Nothing active on the console side = the section is not part of the page.
+  if (!estimate) return null;
 
   return (
     <section
@@ -234,18 +119,16 @@ export function EstimatorSection() {
                 <span>نوع وب‌سایت یا پروژه مورد نیاز:</span>
               </span>
               <RadioGroup
-                value={projectType}
-                onValueChange={(value) =>
-                  selectProjectType(value as ProjectType)
-                }
+                value={typeId}
+                onValueChange={(value) => selectProjectType(value)}
                 className='grid grid-cols-1 gap-3 sm:grid-cols-2'
               >
-                {PROJECT_TYPES.map((type) => {
-                  const checked = projectType === type.value;
+                {types.map((type) => {
+                  const checked = typeId === type.id;
                   return (
                     <label
-                      key={type.value}
-                      onClick={rowClick(() => selectProjectType(type.value))}
+                      key={type.id}
+                      onClick={rowClick(() => selectProjectType(type.id))}
                       className={cn(
                         "flex cursor-pointer items-center justify-between gap-2 rounded-sm border-[2px] p-3.5 transition-colors",
                         checked
@@ -255,7 +138,7 @@ export function EstimatorSection() {
                     >
                       <div className='flex items-start gap-2.5'>
                         <RadioGroupItem
-                          value={type.value}
+                          value={type.id}
                           className='mt-1 shrink-0'
                         />
                         <span className='text-sm font-bold text-indigo-ink'>
@@ -263,7 +146,7 @@ export function EstimatorSection() {
                         </span>
                       </div>
                       <span className='shrink-0 whitespace-nowrap font-mono text-[0.75rem] font-bold text-coral'>
-                        {type.base}
+                        پایه {toPersianDigits(formatPrice(type.min))} م.ت
                       </span>
                     </label>
                   );
@@ -278,68 +161,61 @@ export function EstimatorSection() {
                 </span>
                 <span>اولویت زمان‌بندی و تحویل کار:</span>
               </span>
-              <RadioGroup
-                value={speed}
-                onValueChange={(value) => setSpeed(value as Speed)}
-                className='grid grid-cols-1 gap-3 sm:grid-cols-3'
-              >
-                {SPEEDS.map((option) => {
-                  const available = TIMINGS[projectType].includes(option.value);
-                  const checked = speed === option.value;
-                  return (
-                    <label
-                      key={option.value}
-                      onClick={rowClick(() => {
-                        if (available) setSpeed(option.value);
-                      })}
-                      className={cn(
-                        "flex flex-col items-center justify-center gap-1 rounded-sm border-[2px] p-3 text-center transition-colors",
-                        !available
-                          ? "cursor-not-allowed border-dashed border-indigo-ink/30 bg-paper-dim text-indigo-ink/45"
-                          : checked
-                            ? "cursor-pointer border-coral bg-coral/10"
-                            : "cursor-pointer border-indigo-ink bg-paper hover:bg-mustard/20",
-                      )}
-                    >
-                      <RadioGroupItem
-                        value={option.value}
-                        disabled={!available}
-                        className='sr-only'
-                      />
-                      <div
+              {timings.length === 0 ? (
+                <p className='rounded-sm border-[1.5px] border-dashed border-indigo-ink/30 bg-paper-dim p-3 text-xs font-bold text-indigo-light'>
+                  برای این نوع پروژه زمان‌بندی جداگانه‌ای تعریف نشده است؛ بازهٔ
+                  تحویل در گفتگو مشخص می‌شود.
+                </p>
+              ) : (
+                <RadioGroup
+                  value={timingId}
+                  onValueChange={(value) => setTimingId(value)}
+                  className='grid grid-cols-1 gap-3 sm:grid-cols-3'
+                >
+                  {timings.map((timing) => {
+                    const checked = timingId === timing.id;
+                    return (
+                      <label
+                        key={timing.id}
+                        onClick={rowClick(() => setTimingId(timing.id))}
                         className={cn(
-                          "text-sm font-bold",
-                          !available
-                            ? "line-through decoration-indigo-ink/40"
-                            : "text-indigo-ink",
+                          "flex cursor-pointer flex-col items-center justify-center gap-1 rounded-sm border-[2px] p-3 text-center transition-colors",
+                          checked
+                            ? "border-coral bg-coral/10"
+                            : "border-indigo-ink bg-paper hover:bg-mustard/20",
                         )}
                       >
-                        {option.title}
-                      </div>
-                      {available ? (
-                        <div className='mt-0.5 flex items-center gap-1 font-mono text-[0.6875rem]'>
-                          {option.nominal ? (
-                            <>
-                              <span className='text-indigo-light line-through'>
-                                {option.nominal}
-                              </span>
-                              <span className='font-black text-coral'>۰٪</span>
-                            </>
-                          ) : (
-                            <span className='text-indigo-light'>
-                              {option.note}
+                        <RadioGroupItem
+                          value={timing.id}
+                          className='sr-only'
+                        />
+                        <div className='text-sm font-bold text-indigo-ink'>
+                          {timing.label}
+                        </div>
+                        {timing.surchargePercent > 0 ? (
+                          <div className='mt-0.5 flex items-center gap-1 font-mono text-[0.6875rem]'>
+                            <span
+                              className={cn(
+                                "text-indigo-light",
+                                timing.waived && "line-through",
+                              )}
+                            >
+                              +{toPersianDigits(timing.surchargePercent)}٪
                             </span>
-                          )}
-                        </div>
-                      ) : (
-                        <div className='mt-0.5 font-mono text-[0.625rem] font-bold text-indigo-ink/55'>
-                          برای این نوع پروژه نیست
-                        </div>
-                      )}
-                    </label>
-                  );
-                })}
-              </RadioGroup>
+                            {timing.waived ? (
+                              <span className='font-black text-coral'>۰٪</span>
+                            ) : null}
+                          </div>
+                        ) : timing.note ? (
+                          <div className='mt-0.5 font-mono text-[0.6875rem] text-indigo-light'>
+                            {timing.note}
+                          </div>
+                        ) : null}
+                      </label>
+                    );
+                  })}
+                </RadioGroup>
+              )}
             </div>
 
             <div>
@@ -349,52 +225,49 @@ export function EstimatorSection() {
                 </span>
                 <span>امکانات اضافه:</span>
               </span>
-              <div className='grid grid-cols-1 gap-3 sm:grid-cols-2'>
-                {ADDONS.map((addon) => {
-                  const available = MODULES[projectType].includes(addon.value);
-                  const checked = addons.includes(addon.value);
-                  return (
-                    <label
-                      key={addon.value}
-                      onClick={rowClick(() => toggleAddon(addon.value))}
-                      className={cn(
-                        "flex items-center gap-2.5 rounded-sm border-[1.5px] p-3",
-                        !available
-                          ? "cursor-not-allowed border-dashed border-indigo-ink/30 bg-paper-dim"
-                          : checked
-                            ? "cursor-pointer border-coral bg-coral/10"
-                            : "cursor-pointer border-indigo-ink/40 bg-paper hover:border-indigo-ink",
-                      )}
-                    >
-                      <Checkbox
-                        checked={checked}
-                        disabled={!available}
-                        onCheckedChange={() => toggleAddon(addon.value)}
-                      />
-                      <span className='flex items-baseline gap-1.5'>
-                        <span
-                          className={cn(
-                            "text-xs font-medium sm:text-sm",
-                            !available
-                              ? "text-indigo-ink/45 line-through decoration-indigo-ink/40"
-                              : "text-indigo-ink",
-                          )}
-                        >
-                          {addon.label}
+              {options.length === 0 ? (
+                <p className='rounded-sm border-[1.5px] border-dashed border-indigo-ink/30 bg-paper-dim p-3 text-xs font-bold text-indigo-light'>
+                  برای این نوع پروژه امکان اضافه‌ای تعریف نشده است.
+                </p>
+              ) : (
+                <div className='grid grid-cols-1 gap-3 sm:grid-cols-2'>
+                  {options.map((option) => {
+                    const checked = optionIds.includes(option.id);
+                    return (
+                      <label
+                        key={option.id}
+                        onClick={rowClick(() => toggleOption(option.id))}
+                        className={cn(
+                          "flex cursor-pointer items-center gap-2.5 rounded-sm border-[1.5px] p-3",
+                          checked
+                            ? "border-coral bg-coral/10"
+                            : "border-indigo-ink/40 bg-paper hover:border-indigo-ink",
+                        )}
+                      >
+                        <Checkbox
+                          checked={checked}
+                          onCheckedChange={() => toggleOption(option.id)}
+                        />
+                        <span className='flex items-baseline gap-1.5'>
+                          <span className='text-xs font-medium text-indigo-ink sm:text-sm'>
+                            {option.label}
+                          </span>
+                          <span className='shrink-0 whitespace-nowrap font-mono text-[0.6875rem] font-bold text-coral'>
+                            {option.struckPrice > 0 ? (
+                              <s className='me-1 text-indigo-light'>
+                                {toPersianDigits(formatPrice(option.struckPrice))} م.ت
+                              </s>
+                            ) : null}
+                            {option.price > 0
+                              ? `+${toPersianDigits(formatPrice(option.price))} م.ت`
+                              : "رایگان"}
+                          </span>
                         </span>
-                        <span className='shrink-0 whitespace-nowrap font-mono text-[0.6875rem] font-bold text-coral'>
-                          {addon.struckPrice ? (
-                            <s className='me-1 text-indigo-light'>
-                              {addon.struckPrice}
-                            </s>
-                          ) : null}
-                          {addon.price}
-                        </span>
-                      </span>
-                    </label>
-                  );
-                })}
-              </div>
+                      </label>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </Card>
 
@@ -416,13 +289,15 @@ export function EstimatorSection() {
                 <div className='flex items-center justify-between border-b border-indigo-ink/15 py-1.5'>
                   <span>زمان‌بندی تحویل:</span>
                   <span className='font-extrabold text-teal-craft'>
-                    {estimate.timeline}
+                    {estimate.timeline || "در گفتگو مشخص می‌شود"}
                   </span>
                 </div>
-                <div className='flex items-center justify-between border-b border-indigo-ink/15 py-1.5'>
-                  <span>امکانات جانبی:</span>
-                  <span className='font-extrabold text-coral'>
-                    {toPersianDigits(estimate.addonsCount)} مورد انتخاب شده
+                <div className='flex items-start justify-between gap-3 border-b border-indigo-ink/15 py-1.5'>
+                  <span className='shrink-0'>امکانات جانبی:</span>
+                  <span className='text-left font-extrabold text-coral'>
+                    {estimate.options.length > 0
+                      ? estimate.options.map((option) => option.label).join("، ")
+                      : "بدون امکان اضافه"}
                   </span>
                 </div>
                 <div className='flex items-center justify-between gap-3 border-b border-indigo-ink/15 py-1.5'>

@@ -1,13 +1,20 @@
+import { connection } from "next/server";
 import { ContactSection } from "@/components/contact-section";
-import { CraftValuesSection } from "@/components/craft-values-section";
 import { EstimatorSection } from "@/components/estimator-section";
 import { HeroSection } from "@/components/hero-section";
 import { ProjectsSection } from "@/components/projects-section";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { WhyMeSection } from "@/components/why-me-section";
+import { getEstimatorConfig } from "@/lib/content";
 
-export default function Home() {
+/** The estimator is editable in the console, so the page reads it per request. */
+export const instant = false;
+
+export default async function Home() {
+  await connection();
+  const estimator = await getEstimatorConfig();
+
   return (
     <>
       <SiteHeader />
@@ -15,7 +22,7 @@ export default function Home() {
         <HeroSection />
         <WhyMeSection />
         <ProjectsSection />
-        <EstimatorSection />
+        <EstimatorSection config={estimator} />
         <ContactSection />
       </main>
       <SiteFooter />

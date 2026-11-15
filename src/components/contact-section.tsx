@@ -837,6 +837,16 @@ export function ContactSection() {
                         {toPersianDigits(estimate.max)} میلیون تومان
                       </span>
                     </div>
+                    {estimate.options.length > 0 ? (
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="shrink-0">امکانات:</span>
+                        <span className="text-left font-bold text-indigo-ink">
+                          {estimate.options
+                            .map((option) => option.label)
+                            .join("، ")}
+                        </span>
+                      </div>
+                    ) : null}
                   </div>
                 </div>
               ) : (

@@ -1,5 +1,11 @@
 import { randomUUID } from "node:crypto";
-import { query, queryOne, type SqlValue } from "./db";
+import { hasDatabaseConfig, query, queryOne, type SqlValue } from "./db";
+import {
+  DEFAULT_ESTIMATOR,
+  cloneEstimatorConfig,
+  sanitizeEstimatorConfig,
+  type EstimatorConfig,
+} from "./estimator";
 import { buildIncomeSummary, type IncomeSummary } from "./income";
 import { decryptSecret, encryptSecret } from "./secrets";
 import { SMS_KINDS, type SmsKind, type SmsLogEntry, type SmsSettings } from "./types";
@@ -1693,6 +1699,49 @@ export async function saveSmsSettings(input: {
       input.notifyMobile.trim(),
       input.enabled,
     ],
+  );
+}
+
+/*
+ * ------------------------------------------------------------------------
+ * Home-page price estimator
+ *
+ * `getEstimatorConfig` never throws: a missing table, a closed database or a
+ * corrupt row falls back to the defaults so `/` always renders. The console
+ * writes the sanitized config back, so the home page, the contact form payload
+ * and the inbox previews read one source.
+ * ------------------------------------------------------------------------ */
+
+const ESTIMATOR_ID = "default";
+
+export async function getEstimatorConfig(): Promise<EstimatorConfig> {
+  if (!hasDatabaseConfig()) return cloneEstimatorConfig(DEFAULT_ESTIMATOR);
+
+  try {
+    const row = await queryOne<Row>(
+      `SELECT config FROM estimator_settings WHERE id = $1`,
+      [ESTIMATOR_ID],
+    );
+    return sanitizeEstimatorConfig(row?.config);
+  } catch (error) {
+    console.error(
+      "[estimator] falling back to the default estimator:",
+      error instanceof Error ? error.message : error,
+    );
+    return cloneEstimatorConfig(DEFAULT_ESTIMATOR);
+  }
+}
+
+export async function saveEstimatorConfig(
+  config: EstimatorConfig,
+): Promise<void> {
+  await query(
+    `INSERT INTO estimator_settings (id, config, updated_at)
+     VALUES ($1, $2::jsonb, NOW())
+     ON CONFLICT (id) DO UPDATE SET
+       config = EXCLUDED.config,
+       updated_at = NOW()`,
+    [ESTIMATOR_ID, JSON.stringify(config)],
   );
 }
 

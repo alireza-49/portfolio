@@ -275,6 +275,23 @@ CREATE TABLE IF NOT EXISTS app_settings (
 ALTER TABLE app_settings
   ADD COLUMN IF NOT EXISTS notify_mobile TEXT NOT NULL DEFAULT '';
 
+-- ==========================================================================
+-- Home-page price estimator
+-- ==========================================================================
+
+/*
+ * One row (`default`) with the whole estimator as JSONB: project types with
+ * their base range, delivery timings and optional extras. `src/lib/estimator.ts`
+ * owns the shape, the defaults and the price math; an empty row means "use the
+ * defaults", so a database created before this table existed still renders the
+ * estimator the site shipped with.
+ */
+CREATE TABLE IF NOT EXISTS estimator_settings (
+  id TEXT PRIMARY KEY,
+  config JSONB NOT NULL DEFAULT '{}'::jsonb,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 /*
  * A database created before the switch still has the Kavenegar columns. Rename
  * them in place so existing rows survive, then blank both: a Kavenegar key can
