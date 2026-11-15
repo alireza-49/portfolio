@@ -1,14 +1,9 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import type { Estimate } from "@/lib/estimator";
 
-export type Estimate = {
-  typeTitle: string;
-  timeline: string;
-  min: string;
-  max: string;
-  addonsCount: number;
-};
+export type { Estimate };
 
 let current: Estimate | null = null;
 const listeners = new Set<() => void>();

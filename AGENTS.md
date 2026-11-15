@@ -39,6 +39,7 @@ every preset and scenario.
 | `/admin/projects`, `/admin/projects/[id]` | project CRUD + full progress editor |
 | `/admin/progress` | quick progress board |
 | `/admin/plan` | planner: Jalali month grid, project timeline, task board, Google Calendar sync |
+| `/admin/estimator` | home-page price estimator: project types, base ranges, timings, extras |
 | `/admin/inbox` | contact submissions (filters, bulk status, CSV, slide-over) |
 | `/admin/posts`, `/admin/posts/new`, `/admin/posts/[id]` | post list + Tiptap editor |
 | `/admin/comments` | reader comments for every post (bulk delete) |
@@ -167,8 +168,16 @@ every preset and scenario.
   `dangerouslySetInnerHTML` — never render raw editor output from elsewhere. Editor swatches store
   `var(--color-*)`, never hex. Media URLs are `https://` or site-relative; direct uploads go to the
   Arvan S3 bucket when `ARVAN_S3_*` is configured. Never hotlink the Stitch exports.
-- `/api/contact` validates, throttles and stores the hand-off JSONB exactly as sent; `/admin/inbox`
-  only reads that row and never invents a submission.
+- The home estimator is data: `estimator_settings.config` (one `default` row) holds project types
+  with a base range, delivery timings and optional extras, and `src/lib/estimator.ts` owns the
+  shape, the defaults, the sanitizer, the draft validator and `buildEstimate` — the only price
+  rule. `/` reads it through `getEstimatorConfig()` (which falls back to defaults, never throws)
+  and renders `EstimatorSection` from the config; with no active type the section is absent. The
+  `estimate` payload (`typeId`, `typeTitle`, `timingId`, `timeline`, `min`, `max`, `addonsCount`,
+  `options[]`) keeps its old keys, so `/admin/income` and the inbox keep pricing old and new
+  submissions; `estimateOptionLabels` reads the option names out of that stored JSONB. A timing's
+  surcharge is real unless `waived`; an empty `appliesTo` means every type.
+- `/api/contact` validates, throttles and stores the hand-off JSONB exactly as sent; `/admin/inbox` only reads that row and never invents a submission.
 - The contact form locks its send button for ten minutes per browser
   (`cc-contact-pending-v1` in `localStorage`, server keeps the 6-per-IP throttle) and on success
   replaces the page with `/track?ref=<submission id>`. While that submission is `status = 'new'`
