@@ -53,3 +53,5 @@ REPO_MAP.md
 docs
 
 .tmp*
+src/lib/nace-drex.test.ts
+src/lib/nace-drex.ts
