@@ -42,6 +42,8 @@ export const metadata: Metadata = {
     "Next.js",
     "پورتفولیو",
   ],
+  // Verification tag for the e-Namad (اینماد) trust seal.
+  other: { enamad: "44456424" },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
